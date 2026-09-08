@@ -937,15 +937,50 @@
    ══════════════════════════════════════════════════════════════════════════
 
    İki şerit bir ZITLIK kurar (biri sağa, biri sola) ama bir DERİNLİK kurmaz:
-   göz iki hızı karşılaştırır ve orada durur. Üçüncü şerit en yavaş ve en
-   sönüktür; onunla birlikte hızlar bir sıraya dizilir.
+   göz iki hızı karşılaştırır ve orada durur. Üçüncü şerit en yavaş olandır;
+   onunla birlikte hızlar bir sıraya dizilir.
 
    Sönüklük bir renk DEĞİL bir opaklık: şeridin rengi zaten `--fg-secondary`
    ve ikinci bir renk tanımlamak, tema değiştiğinde ayrışacak ikinci bir
    kaynak olurdu.
+
+   ── OPAKLIK NEDEN 0.42 DEĞİL (WCAG döngü 1, 2026-09-08, docs/149) ──
+
+   Ölçüldü, tahmin edilmedi. `axe-core`, `prefers-contrast: more` hâlinde
+   bu şeridin 20 maddesini dört görünümde kusurlu bildirdi:
+
+       ölçülen 2.32:1 — gerek 4.5:1
+       (bileşik renk #4d4a66, zemin #0a0820, 13 piksel, normal ağırlık)
+
+   Varsayılan hâlde aynı kusur GÖRÜLEMİYORDU: şeridin arkasındaki tuval ve
+   degrade yüzünden axe arka planı bilemiyor ve kuralı "belirsiz" bırakıyor.
+   Yüksek kontrast isteyen ziyaretçinin hâli kusuru yaratmadı, GÖRÜNÜR KILDI.
+
+   Açık kipte daha da kötü: aynı hesap 2.05:1 veriyor. Yani ekranda sözcükler
+   duruyordu ama OKUNMUYORDU — sahibin *"yazılar okunmuyor"* cümlesinin
+   ölçülmüş karşılığı buydu.
+
+   ── NEDEN 0.8 ──
+
+   Eşiğin (4.5) üstüne çıkan en küçük yuvarlak değer, İKİ KİPTE birden:
+
+       koyu kip : 2.31:1 → 5.57:1
+       açık kip : 2.05:1 → 4.78:1
+
+   0.75 koyu kipte geçiyor (5.01) ama AÇIK kipte 4.22'de kalıyor; 0.8 iki
+   kipte de geçiyor.
+
+   ── DERİNLİK KAYBOLMUYOR ──
+
+   Şeridin "uzak" olması ARTIK YALNIZ HIZLA anlatılıyor ve bu zaten vardı:
+   bu şerit 74 saniyede, ötekiler 38 saniyede bir tur atıyor (yarı hız,
+   `home.blade.php`). Sönüklük ikinci ve GEREKSİZ bir işaretti; okunmayan
+   bir metin pahasına taşınan bir işaret ise bir işaret değil, bir kayıptır.
+   Atmosferik perspektif de zaten böyle çalışır: uzaktaki şey daha YAVAŞ
+   geçer, silik olduğu için değil.
 */
 .scene-drift[data-depth-lane='far'] {
-    opacity: 0.42;
+    opacity: 0.8;
 }
 
 /* Merdiven inince en uzak şerit ilk gider: en az bilgi taşıyan katman. */

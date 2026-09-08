@@ -1,0 +1,1756 @@
+#!/usr/bin/env node
+/*
+    WCAG 2.2 AA KAPISI — ölçülen sayfa, gerçek tarayıcı, adı konmuş ölçüt.
+
+    ═══ NEDEN VAR ═══
+
+    Sahibin cümlesi iki ayrı iddia taşıyordu:
+
+      · *"yazılar okunmuyor"* — somut bir okunabilirlik şikâyeti.
+      · *"standartları yok"*  — WCAG 2.2 AA'ya karşı ölçen bir kapı yok.
+
+    İkincisi birincisinin sebebiydi. Depoda erişilebilirlik testi VARDI
+    (`resources/js/design-system/a11y.guard.test.tsx`) ama jsdom'da koşuyor ve
+    jsdom düzen HESAPLAMAZ: orada hiçbir kutunun boyu yoktur, hiçbir renk
+    boyanmaz, hiçbir metin bir sahnenin üstüne düşmez. Yani "kontrast yeterli
+    mi" sorusu bu depoda hiç sorulamıyordu — sorulmadığı için cevabı
+    "bilinmiyor" kaldı, ama raporlarda "geçti" göründü.
+
+    Bu kapı o boşluğu kapatır: gerçek Chrome, gerçek düzen, gerçek piksel.
+
+    ═══ NE ÖLÇÜYOR — DOKUZ AİLE ═══
+
+    1. AXE (`axe-core` 4.13, npm'den — CDN YOK, üretim paketine GİRMEZ).
+       `wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa` etiketleri. axe 4.13'te
+       `wcag22aa` etiketi YALNIZ `target-size` kuralını taşıyor; 2.2'nin
+       kalan yeni AA ölçütleri axe tarafından ÖLÇÜLMEZ ve aşağıda elle
+       ölçülür. Bu bir eksiklik değil, ölçüm sınırının yazılmasıdır.
+
+    2. SAHNE KONTRASTI (1.4.3 / 1.4.11) — axe'ın "incomplete" dediği yer.
+       Metin bir tuvalin, bir ışımanın ya da bir degradenin üstündeyse axe
+       arka planı BİLEMEZ ve "belirsiz" der. Bu kapı orada durmaz: sahneyi
+       `prefers-reduced-motion: reduce` ile DONDURUR (deponun sözleşmesi
+       gereği motor hiç başlamaz), bütün metni görünmez yapıp bir ARKA PLAN
+       LEVHASI çeker, sonra her metin kutusunun altındaki gerçek pikselleri
+       okuyup en kötü kontrastı hesaplar. Sahibin şikâyetinin ölçüldüğü yer
+       burasıdır.
+
+    3. REFLOW (1.4.10) — 320 pikselde iki eksende kaydırma yok.
+    4. METİN %200 (1.4.4) — punto iki katına çıkınca metin kırpılıyor mu.
+    5. METİN ARALIĞI (1.4.12) — ölçütün kendi CSS'i uygulanıp kırpılma aranır.
+    6. HEDEF BOYUTU (2.5.8) — 24×24 CSS pikseli, ölçütün kendi istisnalarıyla.
+    7. ODAK GİZLENMESİ (2.4.11) — sekmeyle gezilir, her odak durağının
+       yapışkan bir katmanın ALTINDA kalıp kalmadığı ölçülür.
+    8. TUTARLI YARDIM (3.2.6) — yardım erişiminin göreli sırası sayfalar
+       arasında aynı mı.
+    9. ERİŞİLEBİLİR KİMLİK DOĞRULAMA (3.3.8) — giriş akışı yapıştırmayı
+       engelliyor mu, bir bilmece dayatıyor mu.
+
+    ═══ NE ÖLÇMÜYOR — "BİLİNMİYOR" YAZILIR, "GEÇTİ" DEĞİL ═══
+
+    · 2.5.7 Sürükleme hareketleri — sürükleme gerektiren bir etkileşimin
+      alternatifi OLUP OLMADIĞI bir ANLAM sorusudur. Kapı yalnız sürükleme
+      YÜZEYLERİNİ bulur (`draggable`, `[role=slider]`, pointer sürükleme
+      dinleyicisi) ve insana bildirir. "Alternatifi var" iddiasını ÜRETMEZ.
+    · 3.3.7 Gereksiz tekrar giriş — bir AKIŞ boyunca aynı bilginin iki kez
+      istenip istenmediği tek sayfadan görülmez. Kapı yalnız aynı sayfadaki
+      yinelenen autocomplete alanlarını bildirir.
+    · 3.1.2 Parçaların dili — kapı bir SEZGİ uygular (ilan edilen dile
+      yabancı yazı sistemi / Türkçeye özgü harfler) ve bulduğunu ADAY diye
+      bildirir. Sezgi bir kanıt değildir ve öyle raporlanmaz.
+    · Ekran okuyucu davranışı, klavye tuzağının tamamı, bilişsel yük,
+      anlamlı sıra. Bunlar insan kararıdır.
+
+    ═══ KULLANIM ═══
+
+        php artisan serve --port=8188 &
+        node scripts/wcag-gate --base http://127.0.0.1:8188
+        node scripts/wcag-gate --base … --fail        # borç büyürse kırıl
+        node scripts/wcag-gate --base … --update      # tabanı yenile
+        node scripts/wcag-gate --base … --json /tmp/wcag.json
+
+    `--fail` olmadan RAPORLAR ama kırılmaz. Taban (`wcag-gate.baseline.json`)
+    bugünkü borcu SAYAR; kapı yalnız borç BÜYÜRSE ya da tabandaki bir bulgu
+    sessizce kaybolursa kırılır — ikincisi de önemlidir, çünkü eskimiş bir
+    taban hiçbir şey söylemez.
+
+    ═══ PANEL TARAFI ═══
+
+    Panel ekranları oturum ister. Kapı PAROLA TAŞIMAZ: hazır bir oturum
+    çerezi `WCAG_SESSION_COOKIE` ortam değişkeninden gelir (nasıl üretildiği
+    aşağıda yazılı). Değişken yoksa panel ekranları "ölçülmedi" diye
+    raporlanır — "sorun yok" DEĞİL.
+*/
+
+import { spawn } from 'node:child_process';
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { inflateSync } from 'node:zlib';
+
+import {
+    bandColors,
+    boundaryContrast,
+    contrastRatio,
+    luminance,
+    worstContrastUnder,
+} from './wcag-gate.contrast.mjs';
+
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+
+const CHROME_CANDIDATES = [
+    process.env.CHROME_PATH,
+    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+    '/usr/bin/google-chrome',
+    '/usr/bin/google-chrome-stable',
+    '/usr/bin/chromium',
+    '/usr/bin/chromium-browser',
+].filter(Boolean);
+
+const CHROME = CHROME_CANDIDATES.find((candidate) => existsSync(candidate));
+
+if (CHROME === undefined) {
+    console.error('wcag-gate: Chrome bulunamadı — ölçüm YAPILMADI, sonuç "bilinmiyor".');
+    process.exit(2);
+}
+
+const AXE_SOURCE_PATH = join(ROOT, 'node_modules/axe-core/axe.min.js');
+
+if (!existsSync(AXE_SOURCE_PATH)) {
+    console.error('wcag-gate: axe-core bulunamadı (`npm ci`) — ölçüm YAPILMADI.');
+    process.exit(2);
+}
+
+const AXE_SOURCE = readFileSync(AXE_SOURCE_PATH, 'utf8');
+
+function flag(name, fallback) {
+    const index = process.argv.indexOf(`--${name}`);
+
+    return index > -1 ? process.argv[index + 1] : fallback;
+}
+
+const BASE = flag('base', 'http://127.0.0.1:8000').replace(/\/$/, '');
+const BASELINE_PATH = flag('baseline', join(ROOT, 'scripts/wcag-gate.baseline.json'));
+const JSON_OUT = flag('json', null);
+const ONLY = flag('only', null);
+const SHOULD_UPDATE = process.argv.includes('--update');
+const SHOULD_FAIL = process.argv.includes('--fail');
+
+/*
+    `--motion` — SAHNE BOYANMIŞ HÂLDE ÖLÇÜM.
+
+    Varsayılan ölçüm `prefers-reduced-motion: reduce` altındadır ve bunun tek
+    sebebi TEKRARLANABİLİRLİKTİR: o hâlde sahne motoru hiç başlamaz (deponun
+    kendi sözleşmesi, `docs/146`), yani her koşuda aynı pikseller boyanır ve
+    bir kapı ancak tekrarlanabilirse kapı olur.
+
+    Ama ziyaretçilerin ÇOĞU o hâlde değildir: onlarda yıldız alanı boyanır ve
+    metnin arkasındaki parlaklık değişir. `--motion` tam olarak o hâli ölçer.
+    Sonucu tabana BAĞLANMAZ — hareketli bir sahnede sayı koşudan koşuya
+    oynar ve oynayan bir sayıya bağlanan kapı bir hafta içinde kapatılır.
+    İnsan için ölçülür, kapı için değil.
+*/
+const MOTION = process.argv.includes('--motion');
+
+/*
+    `--state` — KULLANICININ İLAN ETTİĞİ İHTİYAÇ.
+
+    Üç hâl ölçülebilir ve üçü de aynı sayfanın FARKLI hâlleridir:
+
+      · `default`  — hiçbir tercih ilan edilmemiş.
+      · `contrast` — `prefers-contrast: more`. Bu bir zevk değil bir
+        İHTİYAÇTIR: ilan eden kişi varsayılan hâlde okuyamıyordur. Sitenin o
+        hâlde GERÇEKTEN daha kontrastlı boyandığı bugüne kadar ekran
+        görüntüsüyle bakılmıştı, SAYIYLA değil.
+      · `forced`   — `forced-colors: active`. Sistem paleti hükmeder; burada
+        ölçülen şey sitenin o paleti BOZUP bozmadığıdır (metni bir tuvale ya
+        da arka plan görüntüsüne gömen bir sayfa, zorlanmış renklerde
+        kaybolur).
+*/
+const STATE = flag('state', 'default');
+
+if (!['default', 'contrast', 'forced'].includes(STATE)) {
+    console.error(`wcag-gate: bilinmeyen hâl "${STATE}" (default | contrast | forced).`);
+    process.exit(2);
+}
+
+/*
+    PANEL OTURUMU — PAROLA İLE DEĞİL, ÇEREZ İLE.
+
+    Kapı bir parola TAŞIMAZ ve bir giriş formu DOLDURMAZ. Sebep basit: bir
+    betiğin içine ya da bir CI değişkenine konan parola, o parolanın artık
+    bir sır olmadığı gündür.
+
+    Bunun yerine oturum çerezi DIŞARIDA üretilir ve kapıya hazır verilir.
+    Yerel geliştirmede tek satır:
+
+        php artisan tinker --execute="\$u = App\Models\User::first();
+          \$s = app('session.store'); \$s->setId(Illuminate\Support\Str::random(40));
+          \$s->start();
+          \$s->put('login_web_'.sha1(Illuminate\Auth\SessionGuard::class), \$u->id);
+          \$s->save();
+          \$n = config('session.cookie'); \$e = app('encrypter');
+          echo \$n.'='.rawurlencode(\$e->encrypt(
+            Illuminate\Cookie\CookieValuePrefix::create(\$n, \$e->getKey()).\$s->getId(), false));"
+
+    Çıktı `WCAG_SESSION_COOKIE` olarak verilir. Değişken yoksa panel ekranları
+    "ölçülmedi" diye raporlanır — "sorun yok" DEĞİL.
+*/
+const PANEL_COOKIE = process.env.WCAG_SESSION_COOKIE ?? null;
+
+/*
+    HANGİ SAYFA.
+
+    Kurumsal sitenin yüzey aileleri (kahraman, fiyat, kurum, iletişim,
+    yardım), bir YASAL belge, kütükten çizilen bir İÇERİK sayfası ve panelin
+    giriş kapısı.
+
+    İKİ BAYRAK, İKİ KARŞIT ŞART:
+
+      · `auth: true`  — oturum İSTER. Oturumsuz gidilirse giriş sayfasına
+        düşer.
+      · `guest: true` — oturumu OLMAMASINI ister. Oturum açıkken gidilirse
+        ana sayfaya düşer.
+
+    Bu ayrım ölçülmüş bir kusurdan doğdu: ilk koşuda oturum çerezi verilince
+    `/login` ve `/register` sessizce `/` adresine yönlendi ve kapı ANA
+    SAYFAYI iki kez daha, "login" ve "register" adlarıyla ölçtü. Aynı
+    bulgular üç sayfadan geliyormuş gibi göründü; oysa tek bir sayfaydı.
+    Artık her sayfa kendi şartına göre çerezli ya da çerezsiz açılıyor ve
+    İNİLEN adres her koşuda doğrulanıyor.
+*/
+const PAGES = [
+    { key: 'home', path: '/' },
+    { key: 'pricing', path: '/pricing' },
+    { key: 'about', path: '/about' },
+    { key: 'contact', path: '/contact' },
+    { key: 'help', path: '/help' },
+    { key: 'legal-terms', path: '/terms' },
+    { key: 'content-qr-menu', path: '/en/product/qr-menu' },
+    { key: 'login', path: '/login', guest: true },
+    { key: 'register', path: '/register', guest: true },
+    { key: 'panel-app', path: '/app', auth: true },
+];
+
+/*
+    HANGİ GENİŞLİK.
+
+    320×480 TABANDIR (`TOUCH-FIRST-INTERFACE` §1) ve iki kere ölçülür: soldan
+    sağa ve sağdan sola. 1280 ve 1920 zenginleştirmedir; taban geçmeden
+    onların geçmesi bir şey KANITLAMAZ, ama borcun nerede olduğunu söyler.
+*/
+const VIEWPORTS = [
+    { key: '320', width: 320, height: 480, mobile: true, direction: 'ltr' },
+    { key: '320-rtl', width: 320, height: 480, mobile: true, direction: 'rtl' },
+    { key: '1280', width: 1280, height: 800, mobile: false, direction: 'ltr' },
+    { key: '1920', width: 1920, height: 1080, mobile: false, direction: 'ltr' },
+];
+
+/*
+    AXE ETİKETLERİ.
+
+    `wcag22aa` axe 4.13'te YALNIZ `target-size` taşır. Etiket listesine yine
+    de yazılıyor: axe büyüdüğünde bu kapı kendiliğinden büyür ve o gün kimse
+    bir listeyi güncellemeyi hatırlamak zorunda kalmaz.
+*/
+const AXE_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
+
+/*
+    KONTRAST LEVHASININ KAÇ DURAKTA ÇEKİLECEĞİ.
+
+    Sayfa BAŞTAN SONA taranır: durak sayısı belge yüksekliğinden hesaplanır,
+    pencereler %10 bindirmeyle art arda gelir. Sabit bir durak sayısı (ilk
+    denemede sekizdi) 320 pikselde 14.400 piksellik bir sayfanın YALNIZ
+    dörtte birini ölçüyordu ve geri kalanı sessizce "bulgu yok" oluyordu.
+
+    Üst sınır bir güvenlik kemeridir: patolojik uzunlukta bir sayfa kapıyı
+    saatlerce koşturmasın. Sınıra çarpıldığında ölçülemeyen kutu sayısı
+    raporda AÇIKÇA durur.
+*/
+const MAX_SCROLL_STEPS = 48;
+
+/* --- PNG çözücü ---------------------------------------------------------
+
+   ═══ NEDEN BURADA BİR KOPYA VAR ═══
+
+   `scene-visual-gate` de aynı işi yapıyor. Ortak bir modüle çıkarmak daha
+   temiz görünürdü ama o dosya şu anda BAŞKA bir paketin elinde; ortak bir
+   dosya iki paketi birbirine bağlar ve ikisini de bekletir. Kopya bilinçli
+   ve dar: Chrome'un ürettiği PNG dar bir kümedir (8 bit, geçişsiz, RGB/RGBA)
+   ve bu çözücü tam o kümeyi okur; başka bir şeyle karşılaşırsa SESSİZCE
+   YANLIŞ CEVAP VERMEZ, hata fırlatır.
+*/
+function decodePng(buffer) {
+    if (buffer.readUInt32BE(0) !== 0x89504e47) {
+        throw new Error('PNG imzası yok.');
+    }
+
+    let offset = 8;
+    let width = 0;
+    let height = 0;
+    let channels = 0;
+    const parts = [];
+
+    while (offset < buffer.length) {
+        const length = buffer.readUInt32BE(offset);
+        const type = buffer.toString('ascii', offset + 4, offset + 8);
+        const data = buffer.subarray(offset + 8, offset + 8 + length);
+        offset += length + 12;
+
+        if (type === 'IHDR') {
+            width = data.readUInt32BE(0);
+            height = data.readUInt32BE(4);
+            const depth = data[8];
+            const colorType = data[9];
+            const interlace = data[12];
+
+            if (depth !== 8 || interlace !== 0 || (colorType !== 2 && colorType !== 6)) {
+                throw new Error(`Desteklenmeyen PNG (derinlik ${depth}, tür ${colorType}).`);
+            }
+
+            channels = colorType === 6 ? 4 : 3;
+        } else if (type === 'IDAT') {
+            parts.push(data);
+        } else if (type === 'IEND') {
+            break;
+        }
+    }
+
+    const raw = inflateSync(Buffer.concat(parts));
+    const stride = width * channels;
+    const pixels = Buffer.alloc(height * stride);
+
+    for (let y = 0; y < height; y += 1) {
+        const filter = raw[y * (stride + 1)];
+        const line = raw.subarray(y * (stride + 1) + 1, y * (stride + 1) + 1 + stride);
+        const out = pixels.subarray(y * stride, (y + 1) * stride);
+        const prior = y === 0 ? null : pixels.subarray((y - 1) * stride, y * stride);
+
+        for (let x = 0; x < stride; x += 1) {
+            const a = x >= channels ? out[x - channels] : 0;
+            const b = prior === null ? 0 : prior[x];
+            const c = prior === null || x < channels ? 0 : prior[x - channels];
+            let value = line[x];
+
+            if (filter === 1) value += a;
+            else if (filter === 2) value += b;
+            else if (filter === 3) value += (a + b) >> 1;
+            else if (filter === 4) {
+                const p = a + b - c;
+                const pa = Math.abs(p - a);
+                const pb = Math.abs(p - b);
+                const pc = Math.abs(p - c);
+                value += pa <= pb && pa <= pc ? a : pb <= pc ? b : c;
+            }
+
+            out[x] = value & 255;
+        }
+    }
+
+    return { width, height, channels, pixels };
+}
+
+/* --- CDP ---------------------------------------------------------------- */
+
+let nextId = 0;
+
+function cdp(ws, method, params = {}) {
+    const id = ++nextId;
+    ws.send(JSON.stringify({ id, method, params }));
+
+    return new Promise((resolve, reject) => {
+        const onMessage = (event) => {
+            const message = JSON.parse(event.data);
+
+            if (message.id !== id) return;
+
+            ws.removeEventListener('message', onMessage);
+            message.error
+                ? reject(new Error(`${method}: ${message.error.message}`))
+                : resolve(message.result);
+        };
+
+        ws.addEventListener('message', onMessage);
+        setTimeout(() => reject(new Error(`CDP timeout: ${method}`)), 120000);
+    });
+}
+
+async function evaluate(ws, expression, awaitPromise = false) {
+    const result = await cdp(ws, 'Runtime.evaluate', {
+        expression,
+        awaitPromise,
+        returnByValue: true,
+    });
+
+    if (result.exceptionDetails) {
+        throw new Error(
+            result.exceptionDetails.exception?.description ??
+                result.exceptionDetails.text ??
+                'sayfa içi hata',
+        );
+    }
+
+    return result.result.value;
+}
+
+async function debuggerUrl(profile) {
+    const marker = join(profile, 'DevToolsActivePort');
+
+    for (let attempt = 0; attempt < 160; attempt += 1) {
+        try {
+            const [port] = readFileSync(marker, 'utf8').split('\n');
+            const list = await fetch(`http://127.0.0.1:${port.trim()}/json/list`).then((r) =>
+                r.json(),
+            );
+            const page = list.find((t) => t.type === 'page');
+
+            if (page) return page.webSocketDebuggerUrl;
+        } catch {
+            /* Chrome henüz dinlemiyor. */
+        }
+
+        await new Promise((r) => setTimeout(r, 250));
+    }
+
+    throw new Error('Chrome hata ayıklama portu açılmadı.');
+}
+
+async function settle(ws, ms) {
+    await cdp(ws, 'Runtime.evaluate', {
+        expression: `new Promise((resolve) => {
+            const done = () => document.fonts.ready.then(() => setTimeout(resolve, ${ms}));
+            const check = () => (document.readyState === 'complete' ? done() : setTimeout(check, 80));
+            check();
+        })`,
+        awaitPromise: true,
+    });
+}
+
+/* --- sayfa içi ölçüm ----------------------------------------------------- */
+
+/*
+    ORTAK YARDIMCILAR — her ölçüm ifadesinin başına konur.
+
+    Tek bir `Runtime.evaluate` bağlamı sayfa yenilenince kaybolur; bu yüzden
+    yardımcılar bir modül değil, bir metin parçasıdır.
+*/
+const HELPERS = `
+  const visible = (el) => {
+    const s = getComputedStyle(el);
+    if (s.visibility === 'hidden' || s.display === 'none' || s.opacity === '0') return false;
+    const r = el.getBoundingClientRect();
+    return r.width > 0 && r.height > 0;
+  };
+  /*
+      YALNIZ EKRAN OKUYUCU İÇİN DURAN METİN ÖLÇÜLMEZ.
+
+      "Skip to main content" gibi bağlantılar 1×1 piksellik bir kutuya
+      kırpılır ve odaklanınca görünür olur. O kırpılma bir KUSUR değil,
+      desenin kendisidir; kırpılma arayan her ölçüm onu her sayfada bulur ve
+      raporu bir gürültüye çevirir. Gürültü üreten bir kapı kapatılır.
+  */
+  const srOnly = (el) => {
+    const s = getComputedStyle(el);
+    if (s.clip === 'rect(0px, 0px, 0px, 0px)') return true;
+    if (/inset\\(\\s*50%/.test(s.clipPath)) return true;
+    const r = el.getBoundingClientRect();
+    return r.width <= 2 || r.height <= 2;
+  };
+  const label = (el) => {
+    const id = el.id ? '#' + el.id : '';
+    const cls = typeof el.className === 'string' && el.className
+      ? '.' + el.className.trim().split(/\\s+/).slice(0, 2).join('.')
+      : '';
+    const text = (el.textContent || '').replace(/\\s+/g, ' ').trim().slice(0, 40);
+    return el.tagName.toLowerCase() + id + cls + (text ? ' «' + text + '»' : '');
+  };
+  const INTERACTIVE = 'a[href], button, input:not([type=hidden]), select, textarea, summary, [tabindex]:not([tabindex="-1"]), [role=button], [role=link], [role=tab], [role=checkbox], [role=switch], [role=menuitem]';
+
+  /*
+      TAŞMA SORUSU KİME SORULMAZ.
+
+      Bir kutunun sağ kenarı görüntü alanının dışına uzanıyor olabilir ve bu
+      bir kusur OLMAYABİLİR. Üç hâl:
+
+        1. Bilerek yana kayan bir şerit (kategori rayı, akan bant). Kabı olan
+           bir şerit taşma değildir; ziyaretçi sayfayı değil şeridi kaydırır.
+        2. KAPALI bir açılır bölme (details ögesi). Ekranda olmayan bir panelin
+           genişliği ölçülemez; ölçülürse her sayfada olmayan bir kusur
+           bildirilir.
+        3. Boyanmayan bir katman (visibility: hidden, sıfır opaklık).
+
+      Bu üçü ayıklanmazsa ölçüm gürültü üretir ve gürültü üreten bir ölçüm
+      okunmaz.
+  */
+  const inClipped = (el) => {
+    for (let n = el.parentElement; n && n !== document.documentElement; n = n.parentElement) {
+      const s = getComputedStyle(n);
+      const x = s.overflowX;
+      if ((x === 'auto' || x === 'scroll' || x === 'clip' || x === 'hidden')
+          && n.scrollWidth > n.clientWidth + 1) return true;
+      if (s.visibility === 'hidden' || s.opacity === '0') return true;
+    }
+    return false;
+  };
+  const inClosedDetails = (el) => {
+    for (let n = el.parentElement; n; n = n.parentElement) {
+      if (n.tagName === 'DETAILS' && !n.open) return true;
+    }
+    return false;
+  };
+  /*
+      YÖN ÖNEMLİDİR VE YALNIZ YAPRAKLAR SUÇLANIR.
+
+      Sağdan sola bir sayfada taşma SOLA olur: kutular sağ kenardan
+      yerleşir ve fazlalık eksi koordinata taşar. Yalnız sağ kenara bakan bir
+      ölçüm sağdan sola hiçbir şey bulamaz — ya da daha kötüsü, taşma
+      olduğunda TAM GENİŞLİKTEKİ her kabı suçlar.
+
+      Aynı sebeple yalnız YAPRAK öğeler bildirilir. Bir tek sözcük satıra
+      sığmadığında onu saran on iki kap da "taşıyor" görünür; on üç bulgu
+      yazmak, bir bulguyu on iki kere gizlemektir.
+  */
+  const overflowing = (limit) => {
+    const rtl = getComputedStyle(document.documentElement).direction === 'rtl';
+    const out = [];
+    for (const el of document.body.querySelectorAll('*')) {
+      if (el.children.length > 0) continue;
+      const r = el.getBoundingClientRect();
+      if (r.width <= 0 || r.height <= 0) continue;
+      if (rtl ? r.left >= -1 : r.right <= limit + 1) continue;
+      if (inClipped(el) || inClosedDetails(el)) continue;
+      if (el.closest('[aria-hidden="true"]')) continue;
+      if (srOnly(el)) continue;
+      out.push({
+        el: label(el),
+        edge: Math.round(rtl ? r.left : r.right),
+        width: Math.round(r.width),
+      });
+    }
+    return out;
+  };
+`;
+
+/** 1.4.10 Reflow — 320'de ikinci eksende kaydırma olmamalı. */
+const MEASURE_REFLOW = `(() => {
+  ${HELPERS}
+  const doc = document.documentElement;
+  const w = doc.clientWidth;
+  const offenders = overflowing(w);
+  return {
+    width: w,
+    scrollWidth: doc.scrollWidth,
+    overflow: doc.scrollWidth - w,
+    offenders: offenders.slice(0, 8),
+    offenderCount: offenders.length,
+  };
+})()`;
+
+/*
+    1.4.4 Metnin %200 büyütülmesi.
+
+    Tarayıcı yakınlaştırması DEĞİL, YALNIZ METİN büyütmesi ölçülüyor — daha
+    zor olan hâl. Her öğenin hesaplanmış punto değeri iki katına yazılır,
+    sonra iki şey aranır: sayfanın ikinci eksende kaymaya başlaması ve
+    metnin SESSİZCE kırpılması (taşan ama ne kaydırılan ne üç noktayla
+    kesilen kutu).
+*/
+const MEASURE_TEXT_200 = `(() => {
+  ${HELPERS}
+  const nodes = [...document.body.querySelectorAll('*')];
+  /*
+      ÖNCE HEPSİ OKUNUR, SONRA HEPSİ YAZILIR — ve bu sıra zorunludur.
+
+      İlk sürüm tek geçişte okuyup yazıyordu ve punto KATLANIYORDU: bir
+      öğenin puntosu yazıldığı anda çocuklarının hesaplanmış puntosu da
+      değişiyor, sıra çocuğa geldiğinde ZATEN iki katı olan değer bir kez
+      daha ikiye katlanıyordu. Altbilgide kök 32 piksel, çocuğu 64,
+      torunu 128 oldu ve kapı "%200'de 12.684 piksel taşıyor" diye bir
+      sayı bildirdi. O sayı sayfanın değil, ölçümün kendi kusuruydu.
+  */
+  const sizes = nodes.map((el) => parseFloat(getComputedStyle(el).fontSize));
+  nodes.forEach((el, index) => {
+    const size = sizes[index];
+    if (Number.isFinite(size)) el.style.setProperty('font-size', (size * 2) + 'px', 'important');
+  });
+  document.body.offsetHeight;
+  const w = document.documentElement.clientWidth;
+  const offenders = overflowing(w);
+  const clipped = [];
+  for (const el of nodes) {
+    if (el.children.length > 0) continue;
+    if ((el.textContent || '').trim() === '') continue;
+    if (!visible(el)) continue;
+    if (srOnly(el)) continue;
+    const s = getComputedStyle(el);
+    const hides = (s.overflow === 'hidden' || s.overflowY === 'hidden' || s.overflowX === 'hidden');
+    if (!hides) continue;
+    if (s.textOverflow === 'ellipsis') continue;
+    const overY = el.scrollHeight - el.clientHeight;
+    const overX = el.scrollWidth - el.clientWidth;
+    if (overY > 2 || overX > 2) {
+      clipped.push({ el: label(el), overX, overY });
+    }
+  }
+  return { offenders: offenders.slice(0, 8), offenderCount: offenders.length, clipped: clipped.slice(0, 8) };
+})()`;
+
+/*
+    1.4.12 Metin aralığı.
+
+    Ölçütün KENDİ değerleri: satır yüksekliği 1.5, harf aralığı 0.12em,
+    sözcük aralığı 0.16em, paragraf aralığı 2em. Sonra tek soru: içerik ya da
+    işlev kayboldu mu — yani bir kutu metnini sessizce kırptı mı.
+*/
+const MEASURE_TEXT_SPACING = `(() => {
+  ${HELPERS}
+  const style = document.createElement('style');
+  style.textContent = '*, *::before, *::after { line-height: 1.5 !important; letter-spacing: 0.12em !important; word-spacing: 0.16em !important; } p, li, h1, h2, h3, h4, h5, h6 { margin-bottom: 2em !important; }';
+  document.head.appendChild(style);
+  document.body.offsetHeight;
+  const clipped = [];
+  for (const el of document.body.querySelectorAll('*')) {
+    if (el.children.length > 0) continue;
+    if ((el.textContent || '').trim() === '') continue;
+    if (!visible(el)) continue;
+    if (srOnly(el)) continue;
+    const s = getComputedStyle(el);
+    const hides = (s.overflow === 'hidden' || s.overflowY === 'hidden' || s.overflowX === 'hidden');
+    if (!hides || s.textOverflow === 'ellipsis') continue;
+    const overY = el.scrollHeight - el.clientHeight;
+    const overX = el.scrollWidth - el.clientWidth;
+    if (overY > 2 || overX > 2) clipped.push({ el: label(el), overX, overY });
+  }
+  return { clipped: clipped.slice(0, 8) };
+})()`;
+
+/*
+    2.5.8 Hedef boyutu (asgari) — 24×24 CSS pikseli.
+
+    Ölçütün istisnaları UYGULANIR, yoksa kapı gürültü üretir ve kapatılır:
+
+      · ARALIK — hedef küçük olsa bile, merkezine çizilen 24 piksellik daire
+        komşu hiçbir hedefin dairesiyle kesişmiyorsa ölçüt karşılanır.
+      · SATIR İÇİ — bir cümlenin içindeki bağlantı kapsam dışıdır.
+      · EŞDEĞER — aynı sayfada aynı işi yapan yeterli boyutta başka bir
+        hedef varsa (aynı href / aynı erişilebilir ad) ölçüt karşılanır.
+      · TARAYICI — boyutu yazar belirlemiyorsa (yerel `select` oku gibi)
+        ölçülmez.
+*/
+const MEASURE_TARGET_SIZE = `(() => {
+  ${HELPERS}
+  const MIN = 24;
+  const targets = [...document.querySelectorAll(INTERACTIVE)].filter((el) => {
+    if (!visible(el)) return false;
+    if (el.disabled) return false;
+    if (el.closest('[aria-hidden="true"]')) return false;
+    return true;
+  });
+
+  const inlineInText = (el) => {
+    if (el.tagName !== 'A') return false;
+    const s = getComputedStyle(el);
+    if (s.display !== 'inline' && s.display !== 'inline-block') return false;
+    const parent = el.parentElement;
+    if (!parent) return false;
+    /* Cümlenin içinde mi: kardeş metin düğümü var mı. */
+    for (const node of parent.childNodes) {
+      if (node.nodeType === 3 && node.textContent.trim().length > 1) return true;
+    }
+    return false;
+  };
+
+  const nameOf = (el) => (el.getAttribute('aria-label') || (el.textContent || '').replace(/\\s+/g, ' ').trim()).toLowerCase();
+
+  const boxes = targets.map((el) => {
+    const r = el.getBoundingClientRect();
+    return { el, r, w: r.width, h: r.height, cx: r.left + r.width / 2, cy: r.top + r.height / 2 };
+  });
+
+  const findings = [];
+  for (const b of boxes) {
+    if (b.w >= MIN && b.h >= MIN) continue;
+    if (inlineInText(b.el)) continue;
+    if (b.el.tagName === 'SELECT' || b.el.tagName === 'OPTION') continue;
+
+    /* Eşdeğer hedef istisnası. */
+    const href = b.el.getAttribute('href');
+    const name = nameOf(b.el);
+    const equivalent = boxes.some((o) => o !== b && o.w >= MIN && o.h >= MIN
+      && ((href && o.el.getAttribute('href') === href) || (name && nameOf(o.el) === name)));
+    if (equivalent) continue;
+
+    /* Aralık istisnası: 24 piksellik daireler kesişmiyorsa geçer. */
+    const crowded = boxes.some((o) => {
+      if (o === b) return false;
+      const dx = o.cx - b.cx;
+      const dy = o.cy - b.cy;
+      return Math.hypot(dx, dy) < MIN;
+    });
+    if (!crowded) continue;
+
+    findings.push({ el: label(b.el), w: Math.round(b.w), h: Math.round(b.h) });
+  }
+  return { total: boxes.length, findings: findings.slice(0, 12) };
+})()`;
+
+/*
+    2.4.11 Odak gizlenmesi (asgari).
+
+    Sekmeyle gezilir. Her durakta odaklanan öğenin kutusu alınır ve o kutunun
+    beş noktasında (dört köşe + merkez) EN ÜSTTEKİ öğe sorulur. En üstteki
+    öğe, odaklanan öğenin ne kendisi ne atası ise ve YAPIŞKAN/SABİT bir
+    katmansa, odak gizlenmiş demektir.
+
+    Not: ölçüt "TAMAMEN gizlenmemiş olmalı" der; kapı beş noktanın BEŞİNİN de
+    kapalı olmasını arar. Kısmen kapalı bir odak 2.4.12'nin (AAA) işidir ve
+    burada bulgu SAYILMAZ.
+*/
+const MEASURE_FOCUS_OBSCURED = `(() => {
+  ${HELPERS}
+  const targets = [...document.querySelectorAll(INTERACTIVE)].filter(visible).slice(0, 60);
+  const findings = [];
+  for (const el of targets) {
+    el.focus({ preventScroll: false });
+    if (document.activeElement !== el) continue;
+    const r = el.getBoundingClientRect();
+    if (r.width <= 0 || r.height <= 0) continue;
+    if (r.bottom < 0 || r.top > innerHeight) continue;
+    const points = [
+      [r.left + 1, r.top + 1], [r.right - 1, r.top + 1],
+      [r.left + 1, r.bottom - 1], [r.right - 1, r.bottom - 1],
+      [r.left + r.width / 2, r.top + r.height / 2],
+    ];
+    let coveredBy = null;
+    let allCovered = true;
+    for (const [x, y] of points) {
+      if (x < 0 || y < 0 || x > innerWidth || y > innerHeight) { allCovered = false; break; }
+      const top = document.elementFromPoint(x, y);
+      if (!top || top === el || el.contains(top) || top.contains(el)) { allCovered = false; break; }
+      /* Örtücü katman gerçekten YAPIŞKAN mı — akıştaki bir kardeş değil. */
+      let sticky = null;
+      for (let n = top; n; n = n.parentElement) {
+        const p = getComputedStyle(n).position;
+        if (p === 'fixed' || p === 'sticky') { sticky = n; break; }
+      }
+      if (!sticky) { allCovered = false; break; }
+      coveredBy = label(sticky);
+    }
+    if (allCovered && coveredBy) findings.push({ el: label(el), coveredBy });
+  }
+  return { checked: targets.length, findings: findings.slice(0, 10) };
+})()`;
+
+/*
+    3.2.6 Tutarlı yardım + 3.3.8 Erişilebilir kimlik doğrulama +
+    3.3.7 Gereksiz tekrar giriş adayı + 2.5.7 Sürükleme yüzeyi +
+    3.1.2 Parçaların dili adayı.
+
+    Beşi bir ölçümde toplanıyor: hepsi aynı DOM'a tek geçiş ister.
+*/
+const MEASURE_SEMANTIC = `(() => {
+  ${HELPERS}
+  /* --- 3.2.6: yardım erişiminin göreli sırası. --- */
+  const links = [...document.querySelectorAll('a[href], button')].filter(visible);
+  const helpIndex = links.findIndex((el) => {
+    const t = ((el.getAttribute('aria-label') || '') + ' ' + (el.textContent || '')).toLowerCase();
+    const href = (el.getAttribute('href') || '').toLowerCase();
+    return /\\bhelp\\b|\\bsupport\\b|\\bcontact\\b/.test(t) || /\\/help|\\/contact|\\/support/.test(href);
+  });
+  const helpTrail = helpIndex === -1 ? null : links.slice(0, helpIndex + 1)
+    .map((el) => ((el.getAttribute('aria-label') || el.textContent || '').replace(/\\s+/g, ' ').trim().slice(0, 24)))
+    .filter(Boolean);
+
+  /* --- 3.3.8: giriş akışı bilişsel bir test dayatıyor mu. --- */
+  const passwords = [...document.querySelectorAll('input[type=password]')];
+  const auth = {
+    passwordFields: passwords.length,
+    pasteBlocked: passwords.filter((el) => el.getAttribute('onpaste') !== null
+      || el.getAttribute('onPaste') !== null
+      || el.getAttribute('autocomplete') === 'off').map(label),
+    missingAutocomplete: passwords.filter((el) => !el.getAttribute('autocomplete')).map(label),
+    captcha: [...document.querySelectorAll('iframe[src*="captcha"], iframe[src*="recaptcha"], iframe[src*="hcaptcha"], .g-recaptcha, [data-sitekey]')].map(label),
+  };
+
+  /* --- 3.3.7 adayı: aynı sayfada yinelenen autocomplete alanları. --- */
+  const seen = new Map();
+  const duplicated = [];
+  for (const el of document.querySelectorAll('input[autocomplete], select[autocomplete]')) {
+    const key = el.getAttribute('autocomplete');
+    if (!key || key === 'off' || key === 'on' || /current-password|new-password/.test(key)) continue;
+    if (seen.has(key)) duplicated.push({ autocomplete: key, first: seen.get(key), second: label(el) });
+    else seen.set(key, label(el));
+  }
+
+  /* --- 2.5.7: sürükleme yüzeyleri. Alternatif İDDİA EDİLMEZ. --- */
+  const drag = [...document.querySelectorAll('[draggable="true"], [role=slider], input[type=range]')].filter(visible).map(label);
+
+  /* --- 3.1.2 adayı: ilan edilen dile yabancı yazı. --- */
+  const docLang = (document.documentElement.getAttribute('lang') || '').toLowerCase();
+  const foreign = [];
+  if (docLang.startsWith('en')) {
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+      const text = n.textContent.trim();
+      if (text.length < 3) continue;
+      const parent = n.parentElement;
+      if (!parent || parent.closest('[lang]:not(html)')) continue;
+      if (parent.closest('script, style, [aria-hidden="true"]')) continue;
+      /* Türkçeye özgü harfler ve latin dışı yazı sistemleri. */
+      if (/[ışğŞĞİı]|[\\u0600-\\u06ff]|[\\u0400-\\u04ff]|[\\u4e00-\\u9fff]/.test(text)) {
+        foreign.push({ text: text.slice(0, 48), el: label(parent) });
+      }
+      if (foreign.length >= 8) break;
+    }
+  }
+
+  return {
+    lang: document.documentElement.getAttribute('lang'),
+    dir: document.documentElement.getAttribute('dir'),
+    helpIndex,
+    helpTrail,
+    auth,
+    duplicated: duplicated.slice(0, 6),
+    drag: drag.slice(0, 8),
+    foreign,
+  };
+})()`;
+
+/*
+    1.4.3 / 1.4.11 — SAHNE ÜSTÜNDEKİ GERÇEK KONTRAST.
+
+    İki adım. Önce her metin kutusunun rengi ve BELGE koordinatındaki kutusu
+    toplanır; sonra bütün metin görünmez yapılır ve sayfanın bir ARKA PLAN
+    LEVHASI çekilir. Bu betik birinci adımı yapar.
+
+    ÖLÇÜLEN ŞEY: kutunun İÇİNDEKİ pikseller. Metnin kendi harfleri değil —
+    onlar levhada yok — arkasında GERÇEKTEN ne varsa o: tuval, ışıma,
+    degrade, kart, gölge. axe'ın "belirsiz" dediği yer tam burasıdır.
+
+    KOORDİNAT BELGE KOORDİNATIDIR (`scrollY` eklenmiş), görüntü alanı değil:
+    levha birden çok kaydırma durağında çekiliyor ve bir kutunun hangi durakta
+    göründüğü sonradan hesaplanıyor. Görüntü alanı koordinatı kullanılsaydı
+    yalnız ilk ekran ölçülürdü ve altbilgi hiç sorulmazdı.
+*/
+const COLLECT_TEXT_BOXES = `(() => {
+  ${HELPERS}
+  /*
+      METİN DÜĞÜMÜ SAYFADA SAKLANIR — KUTUSU DEĞİL.
+
+      İki ders, ikisi de ölçüm yanlış çıktığı için öğrenildi:
+
+      1. KUTU DEĞİL, SATIR. İlk sürüm öğenin kendi sınır kutusunu örnekliyordu
+         ve o kutu metinden çok daha büyüktür: dolgusu, yuvarlatılmış
+         köşelerinin dışı, sol kenarındaki süs rayı hep içine girer. Sonuç,
+         hap biçimli bir düğmenin köşesindeki sayfa zeminini "metnin arka
+         planı" sanmaktı. Artık örneklenen şey metnin KENDİ SATIR
+         DİKDÖRTGENLERİDİR (\`Range.getClientRects\`) — harflerin gerçekten
+         durduğu yer.
+
+      2. ANLIK DEĞİL, DURAK DURAK. Opaklık ve konum yalnız toplama anında
+         okunursa yanlış sayfa ölçülür: hareket açıkken bir bölüm görünür
+         alana girene kadar saydamdır. Öğeler burada bir listeye konur; kutu
+         ve opaklık her kaydırma durağında YENİDEN okunur.
+  */
+  window.__wcagNodes = [];
+  const boxes = [];
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  const seen = new Set();
+  for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+    const text = n.textContent.replace(/\\s+/g, ' ').trim();
+    if (text.length < 2) continue;
+    const el = n.parentElement;
+    if (!el || seen.has(el)) continue;
+    if (el.closest('script, style, noscript')) continue;
+    if (el.closest('[aria-hidden="true"]')) continue;
+    if (!visible(el)) continue;
+    if (srOnly(el)) continue;
+    /* KAPALI bir açılır bölmenin içindeki metin ekranda yoktur; onun
+       "arka planı" diye ölçülen şey altındaki bambaşka bir bölümdür. */
+    if (inClosedDetails(el)) continue;
+    seen.add(el);
+    const s = getComputedStyle(el);
+    const size = parseFloat(s.fontSize);
+    const weight = parseInt(s.fontWeight, 10) || 400;
+    /* WCAG "büyük metin": 18pt (24px) ya da kalın 14pt (18.66px). */
+    const large = size >= 24 || (size >= 18.66 && weight >= 700);
+    window.__wcagNodes.push(n);
+    boxes.push({
+      el: label(el),
+      color: s.color,
+      size,
+      weight,
+      large,
+      text: text.slice(0, 48),
+    });
+  }
+  window.__wcagNodes = window.__wcagNodes.slice(0, 400);
+  return boxes.slice(0, 400);
+})()`;
+
+/*
+    HER DURAKTA YENİDEN OKUNAN SATIRLAR, OPAKLIK VE ÖRTÜLME.
+
+    `alpha` ata zincirindeki bütün opaklıkların çarpımıdır: yarı saydam bir
+    kabın içindeki metnin GERÇEK rengi soluktur ve okunan renk odur.
+
+    `occluded` ise bambaşka bir soruyu kapatır: metnin durduğu noktada EN
+    ÜSTTE o metin mi var? Değilse üstüne başka bir katman binmiş demektir ve
+    orada ölçülen kontrast metnin kontrastı DEĞİLDİR. Ölçülmez ve ölçülmediği
+    yazılır.
+*/
+const READ_BOX_STATE = `(() => {
+  const out = [];
+  const range = document.createRange();
+  for (const node of window.__wcagNodes) {
+    const el = node.parentElement;
+    if (!el) { out.push(null); continue; }
+    range.selectNodeContents(node);
+    const rects = [...range.getClientRects()]
+      .filter((r) => r.width >= 4 && r.height >= 4)
+      .slice(0, 6)
+      .map((r) => ({ x: r.left, y: r.top, w: r.width, h: r.height }));
+    if (rects.length === 0) { out.push(null); continue; }
+    let alpha = 1;
+    for (let a = el; a && a !== document.documentElement; a = a.parentElement) {
+      const o = parseFloat(getComputedStyle(a).opacity);
+      if (Number.isFinite(o)) alpha *= o;
+    }
+    const first = rects[0];
+    const cx = first.x + first.w / 2;
+    const cy = first.y + first.h / 2;
+    let occluded = false;
+    if (cx >= 0 && cy >= 0 && cx <= innerWidth && cy <= innerHeight) {
+      const top = document.elementFromPoint(cx, cy);
+      occluded = top !== null && top !== el && !el.contains(top) && !top.contains(el);
+    }
+    out.push({ rects, alpha, occluded });
+  }
+  return out;
+})()`;
+
+/*
+    1.4.11 METİN DIŞI KONTRAST — BİR KONTROLÜN KENDİSİ GÖRÜNÜYOR MU.
+
+    Ölçüt metin okunurluğundan AYRI bir şey ister: bir girdinin, bir
+    düğmenin, bir onay kutusunun NEREDE BİTTİĞİ zeminine karşı en az 3:1
+    ayırt edilebilmeli. Yazısı pırıl pırıl okunan ama kenarı görünmeyen bir
+    form alanı, ziyaretçiye "buraya yazılır" demeyi hiç başaramaz.
+
+    Kapı bunu iki ŞERİT karşılaştırarak ölçer: kontrolün kenarının hemen
+    DIŞINDAKİ dört piksel ve hemen İÇİNDEKİ dört piksel. İkisinin baskın
+    renkleri arasındaki oran 3'ün altındaysa o kontrolün sınırı yoktur.
+
+    KİME SORULMAZ: komşusuna 8 pikselden yakın duran kontroller (dış şerit
+    komşunun içine düşerdi ve ölçüm başka bir şeyi ölçerdi) ve kenarı
+    görüntü alanının dışında kalanlar. İkisi de "ölçülmedi" sayılır.
+*/
+const COLLECT_CONTROLS = `(() => {
+  ${HELPERS}
+  /*
+      HANGİ KONTROLE SINIR SORULUR.
+
+      Ölçütün kendi notu açıktır: METİN bu ölçütün kapsamında değildir ve
+      bir sınır yalnız bileşeni TANIMAK için gerekliyse istenir. Yazısı
+      okunan bir düğme ("Log in") ya da bir açılır başlık ("Account ⌄")
+      zaten kendini tanıtır; ona kenar çizgisi dayatmak, ölçütün istemediği
+      bir şeyi istemek olurdu — ve ilk ölçüm tam bunu yapıp altbilgideki her
+      açılır başlığı kusurlu bildirdi.
+
+      Sınır GERÇEKTEN bilgi taşıyan yer, içi BOŞ olabilen alanlardır: bir
+      metin girdisi, bir açılır liste, bir metin kutusu. Onların nerede
+      başlayıp nerede bittiği yalnız sınırlarından bilinir; sınır yoksa
+      ziyaretçi oraya yazılabileceğini hiç öğrenemez.
+  */
+  const SELECTOR = 'input:not([type=hidden]):not([type=checkbox]):not([type=radio]):not([type=submit]):not([type=button]):not([type=reset]), select, textarea';
+  window.__wcagControls = [];
+  const out = [];
+  for (const el of document.querySelectorAll(SELECTOR)) {
+    if (!visible(el) || srOnly(el) || inClosedDetails(el)) continue;
+    if (el.closest('[aria-hidden="true"]')) continue;
+    const r = el.getBoundingClientRect();
+    if (r.width < 8 || r.height < 8) continue;
+    window.__wcagControls.push(el);
+    out.push({ el: label(el), tag: el.tagName.toLowerCase() });
+  }
+  window.__wcagControls = window.__wcagControls.slice(0, 60);
+  return out.slice(0, 60);
+})()`;
+
+const READ_CONTROL_STATE = `(() => {
+  const boxes = window.__wcagControls.map((el) => {
+    const r = el.getBoundingClientRect();
+    return { x: r.left, y: r.top, w: r.width, h: r.height };
+  });
+  return boxes.map((box, index) => {
+    /* Komşusu çok yakınsa dış şerit komşunun İÇİNE düşer; o ölçüm bir
+       kontrolün sınırını değil iki kontrolün arasını ölçerdi. */
+    const crowded = boxes.some((other, j) => {
+      if (j === index) return false;
+      const gapX = Math.max(box.x - (other.x + other.w), other.x - (box.x + box.w));
+      const gapY = Math.max(box.y - (other.y + other.h), other.y - (box.y + box.h));
+      return gapX < 8 && gapY < 8;
+    });
+    return { ...box, crowded };
+  });
+})()`;
+
+/*
+    ARKA PLAN LEVHASI — metin görünmez, DÜZEN AYNI.
+
+    ═══ NEDEN BİR STİL SAYFASI DEĞİL ═══
+
+    İlk deneme `* { color: transparent !important }` enjekte ediyordu ve
+    ÇALIŞMADI: bu depo Tailwind/daisyUI ile kaskad KATMANLARI (`@layer`)
+    kullanıyor ve katmanlı `!important` bildirimlerinde sıra TERSİNE döner —
+    katmansız bir `!important`, katmanlı olanın ALTINDA kalır. Sonuç sessizdi
+    ve tehlikeliydi: metin boyanmaya devam ediyordu, kapı da metnin kendi
+    rengini "arka plan" sanıp her paragrafta 1:1 kontrast bildiriyordu. Yani
+    kapı çalışıyor GÖRÜNÜYOR ama ölçtüğü şey kendi gölgesiydi.
+
+    ═══ NEDEN METİN SİLİNMİYOR ═══
+
+    Metni kaldırmak kutuları çökertir; o zaman toplanmış koordinatlar başka
+    bir sayfaya ait olurdu. `visibility: hidden` düzeni DEĞİŞTİRMEZ — kutu
+    yerinde durur, yalnız boyanmaz — ve bir SATIR İÇİ sarmalayıcıya
+    uygulandığı için atanın arka planı, kenarı ve ışıması boyanmaya devam
+    eder. Ölçülmek istenen tam olarak odur.
+*/
+const HIDE_ALL_TEXT = `(() => {
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+    if (n.textContent.trim() === '') continue;
+    if (n.parentElement && n.parentElement.closest('script, style, noscript')) continue;
+    nodes.push(n);
+  }
+  for (const n of nodes) {
+    const wrapper = document.createElement('span');
+    wrapper.setAttribute('data-wcag-plate', '');
+    wrapper.style.visibility = 'hidden';
+    n.parentNode.insertBefore(wrapper, n);
+    wrapper.appendChild(n);
+  }
+  document.body.offsetHeight;
+  return nodes.length;
+})()`;
+
+/* --- yürütme ------------------------------------------------------------- */
+
+function parseColor(css) {
+    const match = css.match(/rgba?\(([^)]+)\)/);
+
+    if (!match) return null;
+
+    const parts = match[1].split(',').map((v) => parseFloat(v));
+
+    return { r: parts[0], g: parts[1], b: parts[2], a: parts.length > 3 ? parts[3] : 1 };
+}
+
+const profileDir = mkdtempSync(join(tmpdir(), 'wcag-gate-'));
+const chrome = spawn(
+    CHROME,
+    [
+        '--headless=new',
+        '--remote-debugging-port=0',
+        `--user-data-dir=${join(profileDir, 'profile')}`,
+        '--no-first-run',
+        '--hide-scrollbars',
+        '--force-device-scale-factor=1',
+        '--enable-unsafe-swiftshader',
+        'about:blank',
+    ],
+    { stdio: 'ignore' },
+);
+
+const report = {
+    base: BASE,
+    axeTags: AXE_TAGS,
+    motion: MOTION,
+    state: STATE,
+    views: {},
+    notMeasured: [],
+};
+const findings = [];
+/** Bulgu kimliği → sayı. Taban bunu saklar. */
+const counts = {};
+
+function record(id, message) {
+    counts[id] = (counts[id] ?? 0) + 1;
+    findings.push(message);
+}
+
+let exitCode = 0;
+
+try {
+    const ws = new WebSocket(await debuggerUrl(join(profileDir, 'profile')));
+    await new Promise((resolve, reject) => {
+        ws.addEventListener('open', resolve, { once: true });
+        ws.addEventListener('error', reject, { once: true });
+    });
+
+    await cdp(ws, 'Page.enable');
+    await cdp(ws, 'Runtime.enable');
+
+    /*
+        OTURUM — panel ekranları için.
+
+        Parola betikte YOK; ortam değişkeninden gelir. Yoksa panel ekranları
+        ölçülmez ve bu AÇIKÇA yazılır.
+    */
+    let authenticated = false;
+    let panelCookieName = null;
+    let panelCookieValue = null;
+
+    if (PANEL_COOKIE !== null) {
+        const separator = PANEL_COOKIE.indexOf('=');
+        panelCookieName = PANEL_COOKIE.slice(0, separator).trim();
+        panelCookieValue = decodeURIComponent(PANEL_COOKIE.slice(separator + 1).trim());
+
+        await cdp(ws, 'Network.enable');
+        await cdp(ws, 'Network.setCookie', {
+            name: panelCookieName,
+            value: panelCookieValue,
+            url: BASE,
+            path: '/',
+            httpOnly: true,
+        });
+
+        await cdp(ws, 'Emulation.setDeviceMetricsOverride', {
+            width: 1280,
+            height: 800,
+            deviceScaleFactor: 1,
+            mobile: false,
+        });
+        await cdp(ws, 'Page.navigate', { url: `${BASE}/app` });
+        await settle(ws, 800);
+
+        /* Oturum GERÇEKTEN açıldı mı: giriş sayfasına düşmediyse açıldı. */
+        authenticated = await evaluate(ws, `!/\\/login/.test(location.pathname)`);
+    }
+
+    if (!authenticated) {
+        report.notMeasured.push(
+            'Panel ekranları (`/app`) ÖLÇÜLMEDİ: WCAG_SESSION_COOKIE verilmedi ya da oturum ' +
+                'geçerli değil. Sonuç "bilinmiyor" — "sorun yok" DEĞİL.',
+        );
+    }
+
+    for (const page of PAGES) {
+        if (ONLY !== null && page.key !== ONLY) continue;
+        if (page.auth === true && !authenticated) continue;
+
+        for (const viewport of VIEWPORTS) {
+            const view = `${page.key}-${viewport.key}`;
+
+            await cdp(ws, 'Emulation.setDeviceMetricsOverride', {
+                width: viewport.width,
+                height: viewport.height,
+                deviceScaleFactor: 1,
+                mobile: viewport.mobile,
+            });
+            /*
+                SAHNE DONDURULUR.
+
+                `prefers-reduced-motion: reduce` bu deponun sözleşmesinde
+                MUTLAKTIR: motor hiç başlamaz (`docs/146`). Hareketli bir
+                sahnenin üstündeki kontrast her koşuda başka çıkardı ve
+                gürültü üreten bir kapı kapatılır. Dondurulmuş sahne aynı
+                zamanda EN İYİ hâl değildir: yıldız alanı yine boyanır.
+            */
+            const media = [
+                { name: 'prefers-reduced-motion', value: MOTION ? 'no-preference' : 'reduce' },
+            ];
+
+            if (STATE === 'contrast') media.push({ name: 'prefers-contrast', value: 'more' });
+            if (STATE === 'forced') media.push({ name: 'forced-colors', value: 'active' });
+
+            await cdp(ws, 'Emulation.setEmulatedMedia', { features: media });
+
+            /*
+                ÇEREZ SAYFANIN ŞARTINA GÖRE KURULUR ya da SİLİNİR.
+
+                Yanlış tarafta bir çerez, ölçülen sayfayı sessizce
+                değiştirir — ve sessiz değişiklik, yanlış bir sayıdan
+                daha tehlikelidir: sayı doğru görünür, yalnız başka bir
+                sayfaya aittir.
+            */
+            if (PANEL_COOKIE !== null) {
+                if (page.guest === true) {
+                    await cdp(ws, 'Network.clearBrowserCookies');
+                } else {
+                    await cdp(ws, 'Network.setCookie', {
+                        name: panelCookieName,
+                        value: panelCookieValue,
+                        url: BASE,
+                        path: '/',
+                        httpOnly: true,
+                    });
+                }
+            }
+
+            await cdp(ws, 'Page.navigate', { url: `${BASE}${page.path}` });
+            await settle(ws, 600);
+
+            /*
+                İNİLEN ADRES İSTENEN ADRES Mİ.
+
+                Yönlendirilmiş bir sayfa ölçülebilir ama ölçülen şey artık
+                istenen sayfa DEĞİLDİR. Kapı onu bir bulgu saymaz; ölçmez ve
+                ölçmediğini yazar.
+            */
+            const landed = await evaluate(ws, 'location.pathname');
+
+            if (landed !== page.path) {
+                report.notMeasured.push(
+                    `${view} ÖLÇÜLMEDİ: ${page.path} istendi, ${landed} adresine yönlendi.`,
+                );
+                continue;
+            }
+
+            if (viewport.direction === 'rtl') {
+                await evaluate(ws, `document.documentElement.setAttribute('dir', 'rtl')`);
+                await new Promise((r) => setTimeout(r, 250));
+            }
+
+            const viewReport = {};
+
+            /* --- 1. axe --- */
+            await evaluate(ws, AXE_SOURCE);
+            /*
+                ZORLANMIŞ RENKLERDE axe'IN KONTRAST KURALI KAPATILIR.
+
+                Bu bir kolaylık değil, ÖLÇÜLMÜŞ bir düzeltme. `forced-colors:
+                active` hâlinde tarayıcı yazarın renklerini sistem paletiyle
+                DEĞİŞTİRİR. axe bunu göremiyor: giriş formunun düğmesi için
+                `getComputedStyle` beyaz üstüne siyah (21:1) derken axe aynı
+                düğmeyi "#080616 üstüne #000000, 1.04:1" diye bildirdi —
+                yani ekranda hiç boyanmamış bir rengi ölçtü. Sekiz görünümde
+                sekiz sahte bulgu.
+
+                axe'ın KENDİ tasarımı da bu kuralı gerçek yüksek kontrast
+                kipinde atlar; atlayamamasının sebebi, kipi tarayıcıdan değil
+                bir hile ile yoklaması ve CDP taklidinde o yoklamanın
+                tutmamasıdır. Burada niyet elle geri konuyor.
+
+                KAPSAM KAYBI YOK: bu hâlde metnin gerçekten okunup
+                okunmadığını kapının KENDİ piksel ölçümü söylüyor ve o,
+                boyanan pikseli okuduğu için zorlanmış renklerde de doğrudur.
+            */
+            const axeResult = await evaluate(
+                ws,
+                `axe.run(document, {
+                    runOnly: { type: 'tag', values: ${JSON.stringify(AXE_TAGS)} },
+                    rules: {
+                        'target-size': { enabled: true },
+                        'color-contrast': { enabled: ${STATE !== 'forced'} },
+                    },
+                    resultTypes: ['violations', 'incomplete'],
+                }).then((r) => ({
+                    violations: r.violations.map((v) => ({
+                        id: v.id,
+                        impact: v.impact,
+                        tags: v.tags.filter((t) => t.startsWith('wcag')),
+                        help: v.help,
+                        nodes: v.nodes.slice(0, 4).map((n) => ({
+                            target: n.target.join(' '),
+                            summary: (n.failureSummary || '').replace(/\\s+/g, ' ').slice(0, 200),
+                        })),
+                        count: v.nodes.length,
+                    })),
+                    incomplete: r.incomplete.map((v) => ({ id: v.id, count: v.nodes.length })),
+                }))`,
+                true,
+            );
+
+            viewReport.axe = axeResult;
+
+            for (const violation of axeResult.violations) {
+                record(
+                    `axe:${violation.id}`,
+                    `WCAG[${violation.tags.join(',')}] ${view}: ${violation.id} — ` +
+                        `${violation.help} (${violation.count} öğe). ` +
+                        `İlk: ${violation.nodes[0]?.target ?? '?'} — ${violation.nodes[0]?.summary ?? ''}`,
+                );
+            }
+
+            /* --- 2. reflow / metin %200 / metin aralığı --- */
+            viewReport.reflow = await evaluate(ws, MEASURE_REFLOW);
+
+            if (viewport.width === 320 && viewReport.reflow.offenderCount > 0) {
+                record(
+                    'reflow',
+                    `WCAG[1.4.10] ${view}: ${viewReport.reflow.offenderCount} öğe görüntü alanının ` +
+                        `(${viewReport.reflow.width}px) dışına taşıyor, sayfa ` +
+                        `${viewReport.reflow.scrollWidth}px geniş — ikinci eksende kaydırma. Taşıran: ` +
+                        `${viewReport.reflow.offenders.map((o) => `${o.el} (kenar ${o.edge}px)`).join(' | ')}`,
+                );
+            }
+
+            viewReport.semantic = await evaluate(ws, MEASURE_SEMANTIC);
+            viewReport.targetSize = await evaluate(ws, MEASURE_TARGET_SIZE);
+
+            for (const t of viewReport.targetSize.findings) {
+                record(
+                    'target-size-24',
+                    `WCAG[2.5.8] ${view}: ${t.el} — ölçülen ${t.w}×${t.h} CSS pikseli, ` +
+                        'gerek 24×24 (aralık, satır içi ve eşdeğer istisnaları uygulandı).',
+                );
+            }
+
+            for (const d of viewReport.semantic.duplicated) {
+                record(
+                    'redundant-entry',
+                    `WCAG[3.3.7 adayı] ${view}: "${d.autocomplete}" aynı sayfada iki kez isteniyor ` +
+                        `(${d.first} ve ${d.second}). Akış boyunca tekrar İNSAN kararıdır.`,
+                );
+            }
+
+            for (const f of viewReport.semantic.foreign) {
+                record(
+                    'lang-of-parts',
+                    `WCAG[3.1.2 adayı] ${view}: belge dili "${viewReport.semantic.lang}" ama ` +
+                        `${f.el} içinde yabancı yazı var: "${f.text}". Sezgidir, kanıt değildir.`,
+                );
+            }
+
+            if (viewReport.semantic.auth.captcha.length > 0) {
+                record(
+                    'accessible-auth',
+                    `WCAG[3.3.8] ${view}: kimlik doğrulamada bilişsel test bulundu ` +
+                        `(${viewReport.semantic.auth.captcha.join(', ')}).`,
+                );
+            }
+
+            for (const el of viewReport.semantic.auth.pasteBlocked) {
+                record(
+                    'accessible-auth',
+                    `WCAG[3.3.8] ${view}: ${el} parola alanı yapıştırmayı/otomatik doldurmayı ` +
+                        'engelliyor; parola yöneticisi kullanılamaz.',
+                );
+            }
+
+            /* --- 3. sahne kontrastı: ÖNCE kutular, SONRA arka plan levhası --- */
+            const boxes = await evaluate(ws, COLLECT_TEXT_BOXES);
+            const controls = await evaluate(ws, COLLECT_CONTROLS);
+            const hidden = await evaluate(ws, HIDE_ALL_TEXT);
+
+            /*
+                LEVHA BİRDEN ÇOK DURAKTA ÇEKİLİR.
+
+                Tek bir ekran görüntüsü yalnız ilk ekranı ölçerdi ve
+                altbilgiye hiç sorulmazdı. Sayfa `SCROLL_STEPS` durakta
+                taranır; her kutu, TAMAMEN içine düştüğü ilk durakta ölçülür.
+                Hiçbir durağa tam sığmayan kutular ÖLÇÜLMEDİ sayılır ve
+                sayıları raporda durur — "sorun yok" DEĞİL.
+            */
+            const docHeight = await evaluate(
+                ws,
+                `Math.max(document.body.scrollHeight, document.documentElement.scrollHeight)`,
+            );
+            const span = Math.max(0, docHeight - viewport.height);
+            const stepCount =
+                span === 0
+                    ? 1
+                    : Math.min(MAX_SCROLL_STEPS, Math.ceil(span / (viewport.height * 0.9)) + 1);
+            const contrastFindings = [];
+            const controlFindings = [];
+            const measuredBoxes = new Set();
+            const measuredControls = new Set();
+            let worstRatio = Infinity;
+            let worstBox = null;
+
+            let midAnimation = 0;
+
+            for (let step = 0; step < stepCount; step += 1) {
+                const offset = stepCount === 1 ? 0 : Math.round((span * step) / (stepCount - 1));
+                await evaluate(ws, `window.scrollTo(0, ${offset}); scrollY`);
+                /*
+                    HAREKET AÇIKKEN DAHA UZUN BEKLENİR.
+
+                    Belirme geçişleri kaydırmayla başlar; ölçüm onların
+                    ORTASINDA yapılırsa yarı saydam bir metin ölçülür ve
+                    sonuç "kontrast 1:1" olur — ekranda görünen metnin değil,
+                    henüz boyanmamış bir hâlin sayısı.
+                */
+                await new Promise((r) => setTimeout(r, MOTION ? 900 : 220));
+
+                const shot = await cdp(ws, 'Page.captureScreenshot', { format: 'png' });
+                const plate = decodePng(Buffer.from(shot.data, 'base64'));
+                const state = await evaluate(ws, READ_BOX_STATE);
+                const controlState = await evaluate(ws, READ_CONTROL_STATE);
+
+                /* --- 1.4.11: kontrolün sınırı zeminine karşı görünüyor mu --- */
+                for (const [index, control] of controls.entries()) {
+                    if (measuredControls.has(index)) continue;
+
+                    const box = controlState[index];
+
+                    if (box === undefined || box.crowded) continue;
+                    if (box.y - 4 < 0 || box.y + box.h + 4 > viewport.height) continue;
+                    if (box.x - 4 < 0 || box.x + box.w + 4 > viewport.width) continue;
+
+                    if (box.w < 16 || box.h < 16) continue;
+
+                    const boundary = boundaryContrast(plate, box);
+
+                    measuredControls.add(index);
+
+                    if (boundary === null) continue;
+
+                    if (boundary.ratio + 0.005 < 3) {
+                        controlFindings.push({
+                            el: control.el,
+                            ratio: Number(boundary.ratio.toFixed(2)),
+                            inside: boundary.inside,
+                            outside: boundary.outside,
+                        });
+                    }
+                }
+
+                for (const [index, box] of boxes.entries()) {
+                    if (measuredBoxes.has(index)) continue;
+
+                    const now = state[index];
+
+                    if (now === null || now === undefined) continue;
+                    if (now.occluded) continue;
+
+                    /* Bütün satırlar bu pencerede mi: yarısı dışarıda kalan
+                       bir metin yarım ölçülür ve yarım ölçüm yanlıştır. */
+                    const inWindow = now.rects.every(
+                        (r) => r.y >= 0 && r.y + r.h <= viewport.height && r.x >= 0,
+                    );
+
+                    if (!inWindow) continue;
+
+                    /*
+                        YARI SAYDAM BİR METİN ÖLÇÜLMEZ.
+
+                        Belirme geçişinin ortasındaki bir metnin kontrastı
+                        gerçek değildir; onu bulgu saymak olmayan bir kusuru
+                        bildirmek olurdu. Sayısı raporda durur ve ÖLÇÜLMEDİ
+                        sayılır — "sorun yok" DEĞİL.
+                    */
+                    if (now.alpha < 0.95) {
+                        midAnimation += 1;
+                        continue;
+                    }
+
+                    const color = parseColor(box.color);
+
+                    measuredBoxes.add(index);
+
+                    if (color === null) continue;
+
+                    const alpha = now.alpha * color.a;
+                    let worstHere = null;
+
+                    for (const rect of now.rects) {
+                        const measured = worstContrastUnder(plate, rect, color, alpha);
+
+                        if (measured === null) continue;
+                        if (worstHere === null || measured.ratio < worstHere.ratio)
+                            worstHere = measured;
+                    }
+
+                    if (worstHere === null) continue;
+
+                    const required = box.large ? 3 : 4.5;
+
+                    if (worstHere.ratio < worstRatio) {
+                        worstRatio = worstHere.ratio;
+                        worstBox = {
+                            ...box,
+                            ratio: worstHere.ratio,
+                            background: worstHere.background,
+                        };
+                    }
+
+                    if (worstHere.ratio + 0.005 < required) {
+                        contrastFindings.push({
+                            el: box.el,
+                            text: box.text,
+                            color: box.color,
+                            alpha: Number(alpha.toFixed(3)),
+                            size: box.size,
+                            large: box.large,
+                            ratio: Number(worstHere.ratio.toFixed(2)),
+                            absoluteWorst: worstHere.absoluteWorst,
+                            required,
+                            background: worstHere.background,
+                        });
+                    }
+                }
+            }
+
+            viewReport.nonText = {
+                controls: controls.length,
+                measured: measuredControls.size,
+                findings: controlFindings,
+            };
+
+            for (const c of controlFindings) {
+                record(
+                    'contrast-nontext',
+                    `WCAG[1.4.11] ${view}: ${c.el} — kontrolün sınırı zeminine karşı en güçlü ` +
+                        `geçişte ${c.ratio}:1, gerek 3:1. Kenarın içi ` +
+                        `rgb(${c.inside.r},${c.inside.g},${c.inside.b}), dışı ` +
+                        `rgb(${c.outside.r},${c.outside.g},${c.outside.b}).`,
+                );
+            }
+
+            viewReport.contrast = {
+                textNodes: hidden,
+                boxes: boxes.length,
+                measured: measuredBoxes.size,
+                unmeasured: boxes.length - measuredBoxes.size,
+                skippedMidAnimation: midAnimation,
+                steps: stepCount,
+                worst: Number.isFinite(worstRatio)
+                    ? {
+                          ratio: Number(worstRatio.toFixed(2)),
+                          el: worstBox?.el,
+                          text: worstBox?.text,
+                      }
+                    : null,
+                findings: contrastFindings,
+            };
+
+            for (const c of contrastFindings) {
+                record(
+                    'contrast-rendered',
+                    `WCAG[${c.large ? '1.4.3 büyük metin' : '1.4.3'}] ${view}: ${c.el} — ` +
+                        `ölçülen kontrast ${c.ratio}:1 (piksellerin en kötü %5'i), gerek ${c.required}:1; ` +
+                        `mutlak en kötü piksel ${c.absoluteWorst}:1. ` +
+                        `Metin ${c.color}${c.alpha < 1 ? ` (efektif opaklık ${c.alpha})` : ''}, ` +
+                        `arkasında rgb(${c.background.r},${c.background.g},${c.background.b}). ` +
+                        `Metin: "${c.text}"`,
+                );
+            }
+
+            /*
+                SIRALAMA BİR ZEVK DEĞİL, ÖLÇÜMÜN ŞARTIDIR.
+
+                Bundan sonraki üç ölçüm sayfayı KALICI olarak değiştirir:
+                odak ölçümü sayfayı kaydırır, aralık ölçümü stil enjekte eder,
+                %200 ölçümü her puntoyu yeniden yazar. Her birinin ÖNÜNDE
+                sayfa yeniden yükleniyor; yoksa ikinci ölçüm birincinin
+                bıraktığı sayfayı ölçerdi ve sonuç bir başka sayfaya ait
+                olurdu.
+            */
+            await cdp(ws, 'Page.navigate', { url: `${BASE}${page.path}` });
+            await settle(ws, 400);
+
+            if (viewport.direction === 'rtl') {
+                await evaluate(ws, `document.documentElement.setAttribute('dir', 'rtl')`);
+            }
+
+            viewReport.focus = await evaluate(ws, MEASURE_FOCUS_OBSCURED);
+
+            for (const f of viewReport.focus.findings) {
+                record(
+                    'focus-obscured',
+                    `WCAG[2.4.11] ${view}: ${f.el} odaklandığında TAMAMEN ${f.coveredBy} ` +
+                        'katmanının altında kalıyor.',
+                );
+            }
+
+            await cdp(ws, 'Page.navigate', { url: `${BASE}${page.path}` });
+            await settle(ws, 400);
+
+            if (viewport.direction === 'rtl') {
+                await evaluate(ws, `document.documentElement.setAttribute('dir', 'rtl')`);
+            }
+
+            viewReport.textSpacing = await evaluate(ws, MEASURE_TEXT_SPACING);
+
+            for (const c of viewReport.textSpacing.clipped) {
+                record(
+                    'text-spacing',
+                    `WCAG[1.4.12] ${view}: ${c.el} — ölçütün aralık değerleri uygulandığında ` +
+                        `metin sessizce kırpılıyor (yatay ${c.overX}px, dikey ${c.overY}px taşma).`,
+                );
+            }
+
+            await cdp(ws, 'Page.navigate', { url: `${BASE}${page.path}` });
+            await settle(ws, 400);
+
+            if (viewport.direction === 'rtl') {
+                await evaluate(ws, `document.documentElement.setAttribute('dir', 'rtl')`);
+            }
+
+            viewReport.text200 = await evaluate(ws, MEASURE_TEXT_200);
+
+            if (viewport.width === 320 && viewReport.text200.offenderCount > 0) {
+                record(
+                    'text-200',
+                    `WCAG[1.4.4] ${view}: punto iki katına çıkınca ${viewReport.text200.offenderCount} ` +
+                        'öğe görüntü alanının dışına taşıyor: ' +
+                        `${viewReport.text200.offenders.map((o) => `${o.el} (kenar ${o.edge}px)`).join(' | ')}`,
+                );
+            }
+
+            for (const c of viewReport.text200.clipped) {
+                record(
+                    'text-200',
+                    `WCAG[1.4.4] ${view}: ${c.el} — punto iki katına çıkınca metin sessizce ` +
+                        `kırpılıyor (yatay ${c.overX}px, dikey ${c.overY}px taşma).`,
+                );
+            }
+
+            report.views[view] = viewReport;
+            process.stderr.write(`  ölçüldü: ${view}\n`);
+        }
+    }
+
+    /* --- 3.2.6 Tutarlı yardım: sayfalar ARASINDA karşılaştırılır. --- */
+    const helpOrder = new Map();
+
+    for (const [view, data] of Object.entries(report.views)) {
+        if (!view.endsWith('-1280')) continue;
+        if (data.semantic?.helpTrail) helpOrder.set(view, data.semantic.helpTrail.length);
+    }
+
+    const distinct = new Set(helpOrder.values());
+
+    report.consistentHelp = Object.fromEntries(helpOrder);
+
+    if (distinct.size > 1) {
+        record(
+            'consistent-help',
+            `WCAG[3.2.6] Yardım erişimi sayfalar arasında AYNI göreli sırada değil: ` +
+                [...helpOrder].map(([v, n]) => `${v}=${n}. bağlantı`).join(', '),
+        );
+    }
+
+    if (helpOrder.size === 0) {
+        report.notMeasured.push(
+            '3.2.6 Tutarlı yardım ÖLÇÜLEMEDİ: hiçbir sayfada yardım bağlantısı bulunamadı.',
+        );
+    }
+} finally {
+    chrome.kill('SIGKILL');
+    rmSync(profileDir, { recursive: true, force: true });
+}
+
+report.counts = counts;
+report.total = findings.length;
+
+/*
+    ÖLÇÜLMEYENLER — her koşuda yazılır.
+
+    "Muhtemelen uyumlu" bu dosyada geçmez. Ölçülmemiş bir ölçüt, geçmiş bir
+    ölçüt değildir.
+*/
+report.notMeasured.push(
+    '2.5.7 Sürükleme hareketleri: kapı yalnız sürükleme YÜZEYLERİNİ buluyor; ' +
+        'alternatifin var olup olmadığı ÖLÇÜLMÜYOR.',
+    '3.3.7 Gereksiz tekrar giriş: yalnız tek sayfa içi yinelenme ölçülüyor; ' +
+        'çok adımlı akış boyunca tekrar ÖLÇÜLMÜYOR.',
+    '3.1.2 Parçaların dili: sezgi (yabancı yazı sistemi) uygulanıyor; ' +
+        'her parçanın doğru dili ilan ettiği ÖLÇÜLMÜYOR.',
+    '2.4.7 Odak görünürlüğü: odaklanan öğede GÖZLE GÖRÜLÜR bir değişiklik olduğu ' +
+        'ölçülmüyor; kapı yalnız odağın bir katmanın altında kalıp kalmadığına bakıyor (2.4.11).',
+    'Ekran okuyucu davranışı, anlamlı okuma sırası ve klavye tuzağının tamamı ÖLÇÜLMÜYOR.',
+);
+
+if (STATE === 'forced') {
+    report.notMeasured.push(
+        "axe'ın `color-contrast` kuralı bu hâlde KAPALI: axe tarayıcının zorlanmış renk " +
+            'devralmasını göremiyor ve boyanmamış renkleri ölçüyor. Metin kontrastı bu hâlde ' +
+            'YALNIZ kapının kendi piksel ölçümüyle biliniyor.',
+    );
+}
+
+if (!MOTION) {
+    report.notMeasured.push(
+        'Sahne BOYANMIŞ hâlde (hareket açık) kontrast bu koşuda ölçülmedi: ' +
+            '`--motion` ile ayrıca koşulur ve sonucu tabana bağlanmaz.',
+    );
+}
+
+for (const line of findings) {
+    console.log(line);
+}
+
+console.log('');
+console.log(`wcag-gate: ${findings.length} bulgu, ${Object.keys(report.views).length} görünüm.`);
+
+for (const [id, count] of Object.entries(counts).sort((a, b) => b[1] - a[1])) {
+    console.log(`  ${id}: ${count}`);
+}
+
+console.log('');
+console.log('ÖLÇÜLMEYENLER — sonuç "bilinmiyor", "sorun yok" DEĞİL:');
+
+for (const line of report.notMeasured) {
+    console.log(`  · ${line}`);
+}
+
+if (JSON_OUT !== null) {
+    writeFileSync(JSON_OUT, `${JSON.stringify(report, null, 2)}\n`);
+}
+
+/*
+    TABAN HÂL BAŞINA TUTULUR.
+
+    Üç hâl (varsayılan, yüksek kontrast, zorlanmış renkler) aynı sayfanın
+    farklı hâlleridir ve farklı bulgular verirler — bu paketin tek kusuru
+    yalnız İKİNCİ hâlde görünür oldu. Tek bir sayı listesi tutulsaydı, bir
+    hâlde koşan kapı öteki hâlin borcunu "kayboldu" sanır ve her koşuda
+    kırılırdı.
+*/
+const storedBaseline = existsSync(BASELINE_PATH)
+    ? JSON.parse(readFileSync(BASELINE_PATH, 'utf8'))
+    : { states: {} };
+
+if (SHOULD_UPDATE) {
+    writeFileSync(
+        BASELINE_PATH,
+        `${JSON.stringify(
+            {
+                measuredAt: new Date().toISOString().slice(0, 10),
+                states: { ...(storedBaseline.states ?? {}), [STATE]: counts },
+            },
+            null,
+            /* Girinti deponun `prettier` ayarıyla aynı: kapının yazdığı
+               dosya, kapıyı koşturan kişinin biçim kapısını kırmamalı. */
+            4,
+        )}\n`,
+    );
+    console.log(`\nTaban yenilendi (hâl: ${STATE}): ${BASELINE_PATH}`);
+} else if (existsSync(BASELINE_PATH)) {
+    const baseline = storedBaseline.states?.[STATE] ?? {};
+    const drift = [];
+
+    for (const id of new Set([...Object.keys(baseline), ...Object.keys(counts)])) {
+        const was = baseline[id] ?? 0;
+        const now = counts[id] ?? 0;
+
+        if (now > was) drift.push(`BÜYÜDÜ ${id}: ${was} → ${now}`);
+        /*
+            KÜÇÜLMEK DE KAPIYI KIRAR.
+
+            Düzelmiş bir borç tabanda kalırsa liste yıllarca eskir, içinde
+            çoktan kapanmış bulgular taşır ve o bulgular bir gün yeniden
+            açıldığında hiçbir şey söylemez.
+        */
+        if (now < was) drift.push(`KÜÇÜLDÜ ${id}: ${was} → ${now} (tabanı yenileyin: --update)`);
+    }
+
+    if (drift.length > 0) {
+        console.log('\nTABANDAN SAPMA:');
+
+        for (const line of drift) console.log(`  ${line}`);
+
+        if (SHOULD_FAIL) exitCode = 1;
+    } else {
+        console.log('\nTaban ile aynı.');
+    }
+} else if (SHOULD_FAIL && findings.length > 0) {
+    exitCode = 1;
+}
+
+process.exit(exitCode);
