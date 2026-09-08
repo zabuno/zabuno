@@ -827,6 +827,23 @@ kırıntı, başlık ölçeği, blok ritmi — ORADA ölçülmüştü. Bandı o 
 İçeride duran bant köşesini yuvarlar; ekranın kenarına dayanmayan keskin bir
 dikdörtgen bir bant gibi değil bir kusur gibi okunur.
 
+**Aynı birleşme bir kapı çakışması üretti ve çözümü kompozisyonu iyileştirdi.**
+`CONTENT-TEMPLATE-02` (`docs/148`) doğrudan cevabın `</h1>`den HEMEN sonra
+gelmesini şart koşuyor — cevap sistemleri sayfanın başından okur. Bant H1'i
+taşıyınca ikisinin arasına sahnenin katmanları girdi ve kapı kırıldı. Kapıyı
+gevşetmek bir seçenek DEĞİLDİ: başka bir paketin ölçtüğü bir kuralı, onu
+ölçmeden zayıflatmak olurdu. Cevap bandın içine alındı ve **kendi kimliğiyle**
+(`site-doc-lede`, `data-block="direct_answer"`, marka rayı) — yani bant onu
+kopyalamıyor, TAŞIYOR. Sonuç, kahramanın olması gereken şey: başlık ve cevabın
+birlikte durduğu ilk ekran.
+
+Bunun bir okunurluk bedeli vardı ve ölçülerek kapatıldı: bandın içinde artık
+bir satır değil 320 pikselde altı satır var ve yıldızlar harflerin arasına
+giriyordu. **Perdeyi koyultmak denendi ve İŞE YARAMADI** — vinyetin merkezi
+%62'ye kadar saydam ve metin tam orada duruyor; koyulaşan şey kenarlar oldu
+(ekran görüntüsüyle görüldü). Doğru kaldıraç alanın kendisiydi: içeride duran
+bantta tuval %52 opaklıkta. Gökyüzü duruyor, paraziti gitti.
+
 Yeni kapılar `SAHNE-B9…B12` (`CalmSceneOnReadingSurfacesTest`, 30 test / 142
 iddia): her okuma yüzeyinde bant VAR ve SAKİN; tuval 0, düzlem 0; uyarı bantta
 önce; kütük sayfası tek tuval, tek `h1`, iki farklı derinlik iki farklı yüz.
@@ -854,6 +871,13 @@ Gerçek Chrome, CPU ×4:
 
 Dört bağlam da GERÇEKTEN açıldı (`data-scene-live` dördünde de `true`) ve
 kare süresine etkisi ölçülemedi: p50 sabit, p95 farkı ±0,1 ms, uzun kare 0.
+
+**JS yığını sayıları GÜVENİLİR DEĞİL ve öyle sunulmuyor.** Aynı düzenek üç kez
+koşturulduğunda 1 tuval 1407 KB, 2 tuval 837 KB, 4 tuval 1460 KB dedi — yani
+sayı tuval sayısıyla birlikte artmıyor bile. Ölçülen şey o an çöp toplayıcının
+nerede olduğudur. Bu satırdan çıkarılabilecek tek doğru cümle şudur: ikinci
+bağlamın JS tarafındaki payı, ÖLÇÜM GÜRÜLTÜSÜNÜN altında kalıyor. Tek
+yönlü bir eğilim iddia edilmiyor.
 
 **Buna rağmen `SAHNE-B7` sayfa başına tuvali 1'de tutuyor** ve gerekçe ölçümün
 kendi sınırı: bu ölçüm **GPU belleğini göremez** — sürücü tarafındaki doku ve
@@ -905,12 +929,12 @@ paketinki — ve ikisinin arasında `php artisan view:clear` koştu.
 | Ölçüt | `origin/main` | Bu paketle | Fark | Tavan |
 | --- | --- | --- | --- | --- |
 | Kurumsal betik (gzip) | 4.700 | **4.700** | **+0** | 6.144 |
-| Kurumsal stil (gzip) | 35.275 | **35.365** | **+90** | 40.960 |
+| Kurumsal stil (gzip) | 35.275 | **35.373** | **+98** | 40.960 |
 
 Betik hiç büyümedi ve bu tesadüf değil: Döngü 3 motora tek satır eklemedi.
-Sakin bant bir YOKLUKTUR — çizilmeyen katmanın kodu da yoktur. Stildeki 90 bayt
-dört kuralın tamamı: `.site-prologue-calm`, `.site-prologue-inset`,
-`.scene-still`, `.site-inline-action`.
+Sakin bant bir YOKLUKTUR — çizilmeyen katmanın kodu da yoktur. Stildeki 98 bayt
+beş kuralın tamamı: `.site-prologue-calm`, `.site-prologue-inset`,
+`.site-prologue-inset .scene-canvas`, `.scene-still`, `.site-inline-action`.
 
 **Ölçüm sırası önemli ve bu da bir borç kaydı:** kirli bir Blade önbelleğiyle
 alınan ilk ölçüm 38.039 bayt dedi — yani gerçeğin 2,7 KB üstünde. Tailwind

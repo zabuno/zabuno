@@ -218,7 +218,9 @@ final class SceneContractTest extends TestCase
                 dördüncü bağlam GERÇEKTEN açıldı (`data-scene-live` dört
                 tuvalde de `true`) ve kare süresine etkisi ÖLÇÜLEBİLİR
                 DEĞİLDİ — p50 16,7 ms sabit, p95 farkı ±0,1 ms, uzun kare 0.
-                JS yığını 320'de 787→890 KB, 1280'de 797→1449 KB.
+                JS yığını ölçüldü ama GÜRÜLTÜLÜ: aynı düzenekte tuval sayısıyla
+                birlikte artmıyor bile (1407 / 837 / 1460 KB), yani ölçülen şey
+                çöp toplayıcının o anki hâli.
 
                 Buna rağmen sayı 1'de kalıyor ve gerekçesi ölçümün KENDİ
                 sınırı: bu ölçüm GPU belleğini göremez — sürücü tarafındaki

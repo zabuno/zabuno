@@ -51,6 +51,33 @@
         count($trail) === 2 => 'grid',
         default => 'conduit',
     };
+
+    /*
+        DOĞRUDAN CEVAP BANDIN İÇİNE GİRER — BİR KAPININ GEREĞİ OLARAK.
+
+        `CONTENT-TEMPLATE-02` (`docs/148`) doğrudan cevabın `</h1>`den HEMEN
+        sonra gelmesini şart koşuyor ve gerekçesi doğru: cevap sistemleri
+        sayfanın başından okur. Bant H1'i taşıdığına göre cevap da bandın
+        içine girmek zorunda; aksi hâlde ikisinin arasına sahnenin katmanları
+        girer ve "hemen ardında" cümlesi yalan olur.
+
+        Blok KENDİ görünümüyle çiziliyor (`site-doc-lede`, `data-block`), yani
+        kimliği ve marka rayı korunuyor — bant onu kopyalamıyor, TAŞIYOR. Aynı
+        blok döngüde bir kez daha çizilmesin diye listeden çıkarılıyor;
+        `CONTENT-TEMPLATE-01` her blok türünü sayfada TAM BİR KEZ arıyor.
+    */
+    $leadBlock = null;
+    $bodyBlocks = [];
+
+    foreach ($content->blocks as $block) {
+        if ($leadBlock === null && $block->type->value === 'direct_answer') {
+            $leadBlock = $block;
+
+            continue;
+        }
+
+        $bodyBlocks[] = $block;
+    }
 @endphp
 
 @section('content')
@@ -133,9 +160,12 @@
             'prologueVariant' => $prologueVariant,
             'prologueMeasure' => '',
             'prologueInset' => true,
+            'prologueLeadHtml' => $leadBlock === null
+                ? null
+                : view('content.blocks.direct_answer', ['block' => $leadBlock])->render(),
         ])
 
-        @foreach ($content->blocks as $block)
+        @foreach ($bodyBlocks as $block)
             @include('content.blocks.'.$block->type->value, ['block' => $block])
         @endforeach
 

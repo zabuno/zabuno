@@ -106,6 +106,25 @@
 }
 
 /*
+    İÇERİDE DURAN BANTTA YILDIZ ALANI SÖNÜK.
+
+    Sebep kompozisyon değil OKUNURLUK. Kütük sayfalarında bu bandın içinde
+    yalnız bir başlık değil, sayfanın DOĞRUDAN CEVABI da duruyor
+    (`CONTENT-TEMPLATE-02`) — 320 pikselde altı satır. Kahramanda metin bir
+    satırdır ve yıldızlar onun ETRAFINDADIR; burada metin bandı doldurunca
+    yıldızlar harflerin ARASINA giriyor.
+
+    Perdeyi (`scene-vignette`) koyultmak DENENDİ ve İŞE YARAMADI: perdenin
+    merkezi %62'ye kadar saydam ve tam da metnin durduğu yer orası —
+    koyulaşan şey kenarlar oluyordu (ekran görüntüsüyle ölçüldü). Doğru
+    kaldıraç alanın kendisi: %52 opaklıkta gökyüzü hâlâ var, ama harflerin
+    üstündeki parazit yok.
+*/
+.site-prologue-inset .scene-canvas {
+    opacity: 0.52;
+}
+
+/*
     SAKİN ZEMİN (`scene-still`).
 
     Tek bir gradyan, sıfır animasyon, sıfır `transform`. Nebuladan farkı

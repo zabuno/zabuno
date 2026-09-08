@@ -37,6 +37,14 @@
                            belge, yardım makalesi) boş geçilir, aksi hâlde iki
                            dolgu üst üste biner ve 320 pikselde metin dar bir
                            şeride sıkışır (`TOUCH-FIRST-INTERFACE` madde 3).
+     `$prologueLeadHtml` — giriş cümlesinin YERİNE konacak, ZATEN ÇİZİLMİŞ
+                           HTML. Bir sayfanın giriş paragrafı kendi kimliğini
+                           taşıyorsa (kütük sayfalarında `data-block`,
+                           `site-doc-lede`) o kimliği bandın içinde de
+                           korumalı — aksi hâlde aynı cümle iki farklı yerde
+                           iki farklı şey olurdu. Metin yine kaynağında
+                           kaçırılır; bu değişken bir dize değil, bir GÖRÜNÜM
+                           çıktısı taşır.
      `$prologueInset`    — bant tam kanamalı DEĞİL, sayfanın kendi okuma
                            sütununun içinde duruyorsa `true`. Yasal belge
                            böyledir: gövdesi `.site-legal` sütununda yaşıyor ve
@@ -89,6 +97,7 @@
     $prologueId = $prologueId ?? null;
     $prologueMeasure = $prologueMeasure ?? 'site-measure-page';
     $prologueInset = $prologueInset ?? false;
+    $prologueLeadHtml = $prologueLeadHtml ?? null;
 @endphp
 @php
     $prologueCalm = $prologueVariant === 'calm';
@@ -175,7 +184,17 @@
         <div class="site-prologue-text">
             <{{ $prologueTag }} @if ($prologueId) id="{{ $prologueId }}" @endif class="site-display-2">{{ $prologueHeading }}</{{ $prologueTag }}>
 
-            @if ($prologueLead)
+            @if ($prologueLeadHtml)
+                {{-- BAŞLIĞIN HEMEN ARDINDA, ARADA HİÇBİR ŞEY YOK.
+
+                     Kütük sayfalarında bu paragraf sayfanın DOĞRUDAN CEVABIdır
+                     ve bir kapı (`CONTENT-TEMPLATE-02`, `docs/148`) onun
+                     `</h1>`den hemen sonra gelmesini şart koşuyor: cevap
+                     sistemleri sayfanın başından okur, sonda duran bir cevap
+                     cevap değildir. Bant başlığı taşıyınca cevabın da bandın
+                     içine girmesi bir tercih değil, o kapının gereğiydi. --}}
+                {!! $prologueLeadHtml !!}
+            @elseif ($prologueLead)
                 <p class="site-lede">{{ $prologueLead }}</p>
             @endif
         </div>
