@@ -33,9 +33,9 @@ describe('workspace t() çeviri zinciri', () => {
         document.documentElement.lang = 'en';
 
         expect(t('workspace.loading')).toBe('Loading your workspace…');
-        expect(t('workspace.media.upload.optimize.savedNote', { before: '4 MB', after: '600 kB' })).toBe(
-            '600 kB will be sent instead of 4 MB. That is data you do not pay for twice.',
-        );
+        expect(
+            t('workspace.media.upload.optimize.savedNote', { before: '4 MB', after: '600 kB' }),
+        ).toBe('600 kB will be sent instead of 4 MB. That is data you do not pay for twice.');
     });
 
     it('var olan bir çalışma alanı anahtarı Türkçe panelde Türkçe okunur', async () => {
@@ -55,6 +55,8 @@ describe('workspace t() çeviri zinciri', () => {
         );
         expect(
             t('workspace.media.upload.optimize.savedNote', { before: '4 MB', after: '600 kB' }),
-        ).toBe('4 MB yerine 600 kB gönderilecek. Bu kadar veriyi ikinci kez ödemek zorunda kalmazsınız.');
+        ).toBe(
+            '4 MB yerine 600 kB gönderilecek. Bu kadar veriyi ikinci kez ödemek zorunda kalmazsınız.',
+        );
     });
 });
