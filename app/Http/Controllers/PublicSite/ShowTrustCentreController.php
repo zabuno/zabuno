@@ -6,6 +6,7 @@ namespace App\Http\Controllers\PublicSite;
 
 use App\Application\Assurance\Port\AssuranceLibraryPort;
 use App\Http\Controllers\Controller;
+use App\Support\Localization\PageLanguage;
 use App\Support\Site\SiteShell;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -49,9 +50,11 @@ final class ShowTrustCentreController extends Controller
 
     public function __invoke(Request $request): View
     {
-        $statement = $this->assurance->trustCentre();
+        $context = $this->shell->context($request, 'trust', '/trust');
+        $statement = $this->assurance->trustCentre($context['lang']->ui);
+        $context['lang'] = PageLanguage::for($statement->language);
 
-        return view('public.assurance', $this->shell->context($request, 'trust', '/trust') + [
+        return view('public.assurance', $context + [
             'statement' => $statement,
             /*
                 ÖNSÖZ YÜZÜ — `orbit` DEĞİL, `grid`.

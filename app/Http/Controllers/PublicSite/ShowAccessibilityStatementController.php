@@ -6,6 +6,7 @@ namespace App\Http\Controllers\PublicSite;
 
 use App\Application\Assurance\Port\AssuranceLibraryPort;
 use App\Http\Controllers\Controller;
+use App\Support\Localization\PageLanguage;
 use App\Support\Site\SiteShell;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -38,9 +39,11 @@ final class ShowAccessibilityStatementController extends Controller
 
     public function __invoke(Request $request): View
     {
-        $statement = $this->assurance->accessibilityStatement();
+        $context = $this->shell->context($request, 'accessibility', '/accessibility');
+        $statement = $this->assurance->accessibilityStatement($context['lang']->ui);
+        $context['lang'] = PageLanguage::for($statement->language);
 
-        return view('public.assurance', $this->shell->context($request, 'accessibility', '/accessibility') + [
+        return view('public.assurance', $context + [
             'statement' => $statement,
             /*
                 ÖNSÖZ YÜZÜ — `conduit`. Erişilebilirlik bir durum değil bir

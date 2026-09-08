@@ -20,11 +20,11 @@ interface AssuranceLibraryPort
     /**
      * Güven merkezi — kurumsal alıcının satın almadan önce sorduğu sorular.
      */
-    public function trustCentre(): AssuranceStatement;
+    public function trustCentre(string $locale = 'en'): AssuranceStatement;
 
     /**
      * Erişilebilirlik beyanı — neyi ölçüyoruz, hangi kapı koruyor, neyi
      * ölçmedik.
      */
-    public function accessibilityStatement(): AssuranceStatement;
+    public function accessibilityStatement(string $locale = 'en'): AssuranceStatement;
 }
