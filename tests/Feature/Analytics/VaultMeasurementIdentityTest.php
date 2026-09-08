@@ -224,6 +224,17 @@ final class VaultMeasurementIdentityTest extends TestCase
         */
         config(['analytics.gtm_container_id' => '']);
 
+        /*
+            BAĞIMLI TABLO ÖNCE DÜŞER.
+
+            `ai_connection_assignments` bu tabloya yabancı anahtarla bağlı.
+            SQLite bağımlılığı umursamadan tabloyu düşürür; PostgreSQL
+            `2BP01` ile reddeder — ve dağıtım hedefi PostgreSQL'dir, yani
+            doğru davranış PostgreSQL'inkidir. `cascade` yazmak yerine
+            bağımlıyı adıyla düşürüyoruz: hangi tablonun neye bağlı olduğu
+            testte görünür kalsın, sessizce silinen bir şey olmasın.
+        */
+        Schema::dropIfExists('ai_connection_assignments');
         Schema::drop('platform_credential_connections');
 
         $response = $this->visit();
@@ -241,6 +252,17 @@ final class VaultMeasurementIdentityTest extends TestCase
     {
         config(['analytics.gtm_container_id' => self::ENV_CONTAINER]);
 
+        /*
+            BAĞIMLI TABLO ÖNCE DÜŞER.
+
+            `ai_connection_assignments` bu tabloya yabancı anahtarla bağlı.
+            SQLite bağımlılığı umursamadan tabloyu düşürür; PostgreSQL
+            `2BP01` ile reddeder — ve dağıtım hedefi PostgreSQL'dir, yani
+            doğru davranış PostgreSQL'inkidir. `cascade` yazmak yerine
+            bağımlıyı adıyla düşürüyoruz: hangi tablonun neye bağlı olduğu
+            testte görünür kalsın, sessizce silinen bir şey olmasın.
+        */
+        Schema::dropIfExists('ai_connection_assignments');
         Schema::drop('platform_credential_connections');
 
         $response = $this->visit();
