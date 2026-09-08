@@ -37,11 +37,15 @@
     üç kırılmanın üçü de o sözleşmenin bozulmasıydı.
 */
 
-import { spawn } from 'node:child_process';
-import { existsSync, mkdtempSync, writeFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
+import {
+    exitBrowserUnavailable,
+    launchBrowser,
+    MEASUREMENT_FAILED_EXIT,
+} from './browser-session.mjs';
 import {
     ACCOUNT,
     BOTTOM_NAV,
@@ -53,32 +57,23 @@ import {
 } from './shell-scroll-gate.classes.mjs';
 
 /*
-    TARAYICI BULUNAMAZSA KAPI GEÇMEZ, KIRILIR.
+    TARAYICI AÇILAMAZSA KAPI GEÇMEZ, KIRILIR.
 
     "Chrome yok, atlıyorum" demek bu deponun en sık tekrar eden kusuru
     olurdu (`docs/109` §8.7): çalışan ama söylediği şeyi ölçmeyen bir kapı.
     Ölçüm yapılmadıysa sonuç "geçti" değil, "bilinmiyor"dur — ve bilinmeyen
     bir sonuç yeşil renkte gösterilemez.
+
+    Tarayıcıyı BULMAK ve AÇMAK artık `scripts/browser-session.mjs` işidir
+    (`docs/147`). Bu dosya bir zamanlar Chrome'u kendi kopyaladığı kodla,
+    sabit bir portla (9333) ve 15 saniyelik bir pencereyle açıyordu;
+    `mobile-ux-audit` aynı işi başka bir sözleşmeyle yapıyordu ve CI'da
+    düşen taraf hep bu dosyaydı (run 33997789409). İki kopya artık yok.
+
+    Kapı GEVŞEMEDİ: tarayıcı açılamazsa çıkış hâlâ sıfırdan farklıdır.
+    Değişen tek şey, o kırmızının ARTIK AYIRT EDİLEBİLİR olması —
+    altyapı arızası 3 ile, ölçülmüş bir ihlal 1 ile çıkar.
 */
-const CHROME_CANDIDATES = [
-    process.env.CHROME_PATH,
-    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-    '/usr/bin/google-chrome',
-    '/usr/bin/google-chrome-stable',
-    '/usr/bin/chromium',
-    '/usr/bin/chromium-browser',
-].filter(Boolean);
-
-const CHROME = CHROME_CANDIDATES.find((candidate) => existsSync(candidate));
-
-if (CHROME === undefined) {
-    console.error('shell-scroll-gate: Chrome bulunamadı — ölçüm YAPILMADI, kapı geçemez.');
-    console.error(`denenen yollar: ${CHROME_CANDIDATES.join(', ')}`);
-    console.error('CHROME_PATH ortam değişkeniyle yol verilebilir.');
-    process.exit(2);
-}
-
-const PORT = 9333;
 
 /*
     Sınıflar AYRI bir modülde yaşıyor ve `AdminShell.contract.test.tsx`
@@ -154,23 +149,8 @@ async function cdp(ws, method, params = {}) {
     });
 }
 
-async function connect() {
-    for (let attempt = 0; attempt < 60; attempt++) {
-        try {
-            const list = await fetch(`http://127.0.0.1:${PORT}/json/list`).then((r) => r.json());
-            const page = list.find((t) => t.type === 'page');
-            if (page) return page.webSocketDebuggerUrl;
-        } catch {
-            /* Chrome henüz dinlemiyor. */
-        }
-        await new Promise((r) => setTimeout(r, 250));
-    }
-    throw new Error('Chrome hata ayıklama portu açılmadı.');
-}
-
-async function measure(url, width, height) {
-    const wsUrl = await connect();
-    const ws = new WebSocket(wsUrl);
+async function measure(session, url, width, height) {
+    const ws = new WebSocket(session.debuggerUrl);
     await new Promise((resolve, reject) => {
         ws.addEventListener('open', resolve, { once: true });
         ws.addEventListener('error', reject, { once: true });
@@ -245,31 +225,33 @@ const dir = mkdtempSync(join(tmpdir(), 'shell-scroll-'));
 const page = join(dir, 'index.html');
 writeFileSync(page, harness(cssHref));
 
-const chrome = spawn(
-    CHROME,
-    [
-        '--headless=new',
-        `--remote-debugging-port=${PORT}`,
-        `--user-data-dir=${join(dir, 'profile')}`,
-        '--no-first-run',
-        '--disable-gpu',
-        'about:blank',
-    ],
-    { stdio: 'ignore' },
-);
+let session;
+
+try {
+    session = await launchBrowser({ label: 'shell-scroll-gate' });
+} catch (error) {
+    rmSync(dir, { recursive: true, force: true });
+    exitBrowserUnavailable(error);
+}
 
 try {
     console.log('shell-scroll-gate');
-    check('telefon 320×568', await measure(`file://${page}`, 320, 568));
-    check('masaüstü 1440×900', await measure(`file://${page}`, 1440, 900));
+    /*
+        SÜRÜM KAYDA GEÇER. Ölçtüğümüz motor sessizce değişirse
+        ölçümler de sessizce değişir; bu depoda yazı tipi yüzünden birebir
+        bu yaşandı. Künye çıktıda durur ki iki koşum karşılaştırılabilsin.
+    */
+    console.log(`  tarayıcı: ${session.version}`);
+    check('telefon 320×568', await measure(session, `file://${page}`, 320, 568));
+    check('masaüstü 1440×900', await measure(session, `file://${page}`, 1440, 900));
 } finally {
-    chrome.kill();
+    session.close();
     rmSync(dir, { recursive: true, force: true });
 }
 
 if (failures.length > 0) {
     console.log(`${failures.length} ölçüm başarısız`);
-    process.exit(1);
+    process.exit(MEASUREMENT_FAILED_EXIT);
 }
 
 console.log('tüm ölçümler geçti');

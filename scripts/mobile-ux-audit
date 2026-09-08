@@ -78,35 +78,31 @@
     dilin kendisi değil, düzenin ters yönde ayakta kalıp kalmadığıdır.
 */
 
-import { spawn } from 'node:child_process';
-import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
-const CHROME_CANDIDATES = [
-    process.env.CHROME_PATH,
-    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-    '/usr/bin/google-chrome',
-    '/usr/bin/google-chrome-stable',
-    '/usr/bin/chromium',
-    '/usr/bin/chromium-browser',
-].filter(Boolean);
-
-const CHROME = CHROME_CANDIDATES.find((candidate) => existsSync(candidate));
-
-if (CHROME === undefined) {
-    console.error('mobile-ux-audit: Chrome bulunamadı — ölçüm YAPILMADI, sonuç "bilinmiyor".');
-    process.exit(2);
-}
+import {
+    exitBrowserUnavailable,
+    launchBrowser,
+    MEASUREMENT_FAILED_EXIT,
+} from './browser-session.mjs';
 
 /*
-    SABİT PORT YOK — Chrome portu kendisi seçer, araç onu diskten okur.
+    TARAYICIYI BULMAK VE AÇMAK BU DOSYANIN İŞİ DEĞİL.
 
-    Sabit bir port (9355), aynı makinede eşzamanlı çalışan İKİNCİ bir
-    denetimin (başka bir çalışma ağacı, başka bir işçi) Chrome'una
-    bağlanmayı mümkün kılardı: iki araç aynı sayfayı yönlendirir, biri
-    diğerinin hikâyesini ölçer. Bu bir olasılıktı, yaşanmış bir kusur
-    değil; portu Chrome'a bırakmak o olasılığı sıfırlar.
+    Bu araç bir zamanlar Chrome'u kendi kopyaladığı kodla açıyordu ve
+    `shell-scroll-gate` aynı işi BAŞKA bir sözleşmeyle yapıyordu: biri
+    sabit port ve 15 saniye, öteki serbest port ve 30 saniye. İki kopya
+    ayrışınca birinde düzeltilen bir şey ötekinde düzelmiyordu ve CI'da
+    düşen hep aynı taraf oluyordu (`docs/147`).
+
+    Başlatma artık `scripts/browser-session.mjs` içinde, TEK yerde:
+    portun gerçekten dinlemeye başlaması beklenir, sınırlı sayıda yeniden
+    denenir, arıza hâlinde hangi ikili/sürüm/bayrak/stderr olduğu basılır
+    ve ALTYAPI arızası (çıkış 3) ölçülmüş bir ihlalden (çıkış 1) ayrılır.
+
+    Kapı gevşemedi: tarayıcı açılamazsa sonuç hâlâ kırmızıdır, çünkü ölçüm
+    yapılmadıysa sonuç "geçti" değil "bilinmiyor"dur.
 */
 
 /*
@@ -462,26 +458,6 @@ function cdp(ws, method, params = {}) {
     });
 }
 
-async function debuggerUrl(profile) {
-    /* `--remote-debugging-port=0`: Chrome seçtiği portu profil dizinine yazar. */
-    const marker = join(profile, 'DevToolsActivePort');
-
-    for (let attempt = 0; attempt < 120; attempt++) {
-        try {
-            const [port] = readFileSync(marker, 'utf8').split('\n');
-            const list = await fetch(`http://127.0.0.1:${port.trim()}/json/list`).then((r) =>
-                r.json(),
-            );
-            const page = list.find((t) => t.type === 'page');
-            if (page) return page.webSocketDebuggerUrl;
-        } catch {
-            /* Chrome henüz dinlemiyor ya da portu henüz yazmadı. */
-        }
-        await new Promise((r) => setTimeout(r, 250));
-    }
-    throw new Error('Chrome hata ayıklama portu açılmadı.');
-}
-
 /*
     HİKÂYE ÇİZİLMEDEN ÖLÇÜLMEZ.
 
@@ -746,26 +722,28 @@ const baseline =
         ? JSON.parse(readFileSync(baselinePath, 'utf8')).stories
         : null;
 
-const profileDir = mkdtempSync(join(tmpdir(), 'mobile-audit-'));
+let session;
 
-const chrome = spawn(
-    CHROME,
-    [
-        '--headless=new',
-        '--remote-debugging-port=0',
-        `--user-data-dir=${join(profileDir, 'profile')}`,
-        '--no-first-run',
-        '--disable-gpu',
-        '--allow-file-access-from-files',
-        'about:blank',
-    ],
-    { stdio: 'ignore' },
-);
+try {
+    session = await launchBrowser({
+        label: 'mobile-ux-audit',
+        extraArgs: ['--allow-file-access-from-files'],
+    });
+} catch (error) {
+    exitBrowserUnavailable(error);
+}
+
+/*
+    SÜRÜM KAYDA GEÇER. Ölçtüğümüz motor sessizce değişirse ölçümler de
+    sessizce değişir; bu depoda yazı tipi yüzünden birebir bu yaşandı.
+    Künye çıktıda durur ki iki koşum karşılaştırılabilsin.
+*/
+process.stderr.write(`mobile-ux-audit · tarayıcı: ${session.version}\n`);
 
 const report = [];
 
 try {
-    const ws = new WebSocket(await debuggerUrl(join(profileDir, 'profile')));
+    const ws = new WebSocket(session.debuggerUrl);
     await new Promise((resolve, reject) => {
         ws.addEventListener('open', resolve, { once: true });
         ws.addEventListener('error', reject, { once: true });
@@ -920,21 +898,14 @@ try {
 
     ws.close();
 } finally {
-    chrome.kill();
-
     /*
         Chrome kapanırken profil dizinine hâlâ yazıyor olabilir; hemen silmek
         `ENOTEMPTY` ile patlıyordu ve BÜTÜN ÖLÇÜM raporlanmadan kayboluyordu.
-        Temizlik bir ayrıntı, ölçüm sonucu değil: başarısız olursa sessizce
-        geçilir.
+        Bekleme burada, silme `browser-session.mjs` içinde ve orada da hata
+        yutuluyor: temizlik bir ayrıntı, ölçüm sonucu değil.
     */
     await new Promise((r) => setTimeout(r, 500));
-
-    try {
-        rmSync(profileDir, { recursive: true, force: true });
-    } catch {
-        /* Geçici dizin işletim sistemine bırakılır. */
-    }
+    session.close();
 }
 
 const byKind = new Map();
@@ -1071,10 +1042,10 @@ if (baseline !== null) {
     if (regressions.length > 0) {
         console.log('');
         console.log('Yeni ihlal DÜZELTİLİR — listeye eklenmez.');
-        process.exit(1);
+        process.exit(MEASUREMENT_FAILED_EXIT);
     }
 }
 
 if (failOnFindings && affected > 0) {
-    process.exit(1);
+    process.exit(MEASUREMENT_FAILED_EXIT);
 }

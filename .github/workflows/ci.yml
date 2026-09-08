@@ -80,6 +80,25 @@ jobs:
       - name: Install Node dependencies
         run: npm ci
 
+      # GERCEK TARAYICI KAPILARININ ALTYAPISI, PAHALI ADIMLARDAN ONCE.
+      #
+      # Iki kapi gercek Chrome'da olcuyor (kabuk kaydirma ve 320px mobil
+      # denetim). Chrome acilmazsa o kapilar KIRILIR -- olculmeyen bir sey
+      # "gecti" sayilmaz -- ama arizanin ~4 dakikalik bir Storybook
+      # derlemesinin SONUNDA gorunmesi icin bir sebep yok.
+      #
+      # Bu adim ayrica tarayicinin SURUMUNU kayda gecirir. Runner imajinin
+      # Chrome'u sessizce degisirse olculen degerler de sessizce degisir;
+      # bu depoda yazi tipi yuzunden birebir bu yasandi (docs/147 §5).
+      # Surum kayitta durursa iki kosum karsilastirilabilir.
+      #
+      # `continue-on-error` YOK: bu adim duserse is duser.
+      - name: Browser preflight (version on record, one real launch)
+        run: node scripts/browser-session.mjs --preflight
+
+      - name: Browser session self-test
+        run: ./scripts/browser-session.test.sh
+
       - name: Copy local environment file
         run: cp .env.example .env
 
@@ -131,6 +150,11 @@ jobs:
       # sahibin ekraninda kirildi ve her seferinde butun testler yesildi.
       # Bu adim gercek Chrome'da olcer: kabuk gorunen alan boyunda mi, belge
       # kayiyor mu, ana alan kaydirilabiliyor mu, alt cubuk dipte mi.
+      #
+      # CIKIS KODU AYRIMI (docs/147): 3 = tarayici baslatilamadi (ALTYAPI,
+      # olcum YAPILMADI), 1 = olcum yapildi ve kural ihlal edildi (KUSUR).
+      # Ikisi de kirmizidir ve oyle kalir; ayrim, bakan kisinin "benim
+      # degisikligim mi bozdu yoksa makine mi" sorusunu cevaplamak icin.
       - name: Shell scroll gate (real browser)
         run: node scripts/shell-scroll-gate "file://$PWD/$(ls public/build/assets/app-*.css | head -1)"
 
