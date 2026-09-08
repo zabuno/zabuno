@@ -71,6 +71,56 @@ final class PublishedPagesSurfaceTest extends TestCase
         return $match[0];
     }
 
+    /**
+     * pSEO BANDININ TAMAMI — iç içe `<details>`leri SAYARAK.
+     *
+     * Bandın içindeki her grup FF-237'den beri kendi `<details>`i (grup
+     * dörtten çok madde taşıyorsa kapalı başlar). Tembel bir düzenli ifade
+     * (`.*?</details>`) ilk İÇ kapanışta durur ve bandın yalnız ilk grubunu
+     * yakalar: on sekiz bağlantılı bir bant üç bağlantı gibi ÖLÇÜLÜR ve kapı
+     * yanlış yerde kırılır — ölçüldü (2026-09-08).
+     *
+     * Bu yüzden bant düzenli ifadeyle değil, açılış/kapanış SAYILARAK
+     * kesiliyor. Yöntem iç içe geçme derinliğinden bağımsızdır; bir gruba bir
+     * katlama daha eklendiğinde kapı yine bandın tamamını ölçer.
+     */
+    private function band(string $footer): string
+    {
+        $start = strpos($footer, '<details class="site-footer-content"');
+
+        self::assertNotFalse($start, 'PUBLISHED-SURFACE-02: pSEO bandı hiç çizilmedi.');
+
+        $start = (int) $start;
+        $depth = 0;
+        $offset = $start;
+
+        while (preg_match('#</?details\\b#', $footer, $match, PREG_OFFSET_CAPTURE, $offset) === 1) {
+            [$tag, $at] = $match[0];
+            $depth += $tag === '</details' ? -1 : 1;
+            $offset = $at + strlen($tag);
+
+            if ($depth === 0) {
+                $end = strpos($footer, '>', $offset);
+
+                return substr($footer, $start, ($end === false ? $offset : $end + 1) - $start);
+            }
+        }
+
+        self::fail('PUBLISHED-SURFACE-02: pSEO bandının kapanışı bulunamadı.');
+    }
+
+    /**
+     * Etiket karşılaştırması için etiket İÇİ boşluğu tek boşluğa indirir.
+     *
+     * Blade uzun bir `<a>`yı okunur kalsın diye satırlara bölüyor; ziyaretçi
+     * için hiçbir şey değişmez, düz bir alt dize araması içinse her şey.
+     * Karşılaştırılan üçlü aynı kalır: adres, sınıf ve etiket.
+     */
+    private static function tidy(string $html): string
+    {
+        return (string) preg_replace(['#\\s+#', '#\\s+>#'], [' ', '>'], $html);
+    }
+
     /** @return list<string> */
     private function sitemapLocations(): array
     {
@@ -125,15 +175,9 @@ final class PublishedPagesSurfaceTest extends TestCase
     {
         $this->applyRealDecisions();
 
-        preg_match(
-            '#<details class="site-footer-content".*?</details>#s',
-            $this->footer('/pricing'),
-            $match
-        );
+        $band = $this->band($this->footer('/pricing'));
 
-        self::assertNotSame([], $match, 'PUBLISHED-SURFACE-02: pSEO bandı hiç çizilmedi.');
-
-        preg_match_all('~href="(/[^"\#]*)"~', $match[0], $links);
+        preg_match_all('~href="(/[^"\#]*)"~', $band, $links);
 
         $inBand = array_values(array_unique($links[1]));
         sort($inBand);
@@ -142,7 +186,7 @@ final class PublishedPagesSurfaceTest extends TestCase
 
         // Grup iskeleti sayfaların KENDİ hiyerarşisinden çıkar: ürün ağacı,
         // menü yönetiminin alt ağacı ve ebeveyni olmayanların yığını.
-        preg_match_all('~data-nav-group="(content-[^"]+)"~', $match[0], $groups);
+        preg_match_all('~data-nav-group="(content-[^"]+)"~', $band, $groups);
 
         self::assertSame(
             ['content-explore', 'content-urun', 'content-urun-menu-yonetimi'],
@@ -214,13 +258,7 @@ final class PublishedPagesSurfaceTest extends TestCase
     {
         $this->applyRealDecisions();
 
-        preg_match(
-            '#<details class="site-footer-content".*?</details>#s',
-            $this->footer('/pricing'),
-            $match
-        );
-
-        $band = $match[0] ?? '';
+        $band = self::tidy($this->band($this->footer('/pricing')));
         $library = $this->app->make(ContentLibraryPort::class);
         $normalizer = $this->app->make(UrlNormalizer::class);
 

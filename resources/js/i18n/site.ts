@@ -140,6 +140,12 @@ export const siteTranslations = {
        arada durduğunu buradan öğrenir. */
     'site.nav.account': 'Account',
     'site.footer.product': 'Product',
+    /*
+        ŞİRKET GRUBU (FF-237). "Hakkımızda" ve "İletişim" FF-232'de `Ürün`
+        başlığının altındaydı; ikisi de ürün değil, SATICI hakkındadır ve
+        ödeme kuruluşunun üye iş yeri incelemesi onları o adla arar.
+    */
+    'site.footer.company': 'Company',
     'site.footer.legal': 'Legal',
     'site.footer.terms': 'Terms',
     'site.footer.privacy': 'Privacy',
@@ -153,6 +159,30 @@ export const siteTranslations = {
     'site.footer.delivery': 'Delivery and Performance Terms',
     'site.footer.refundPolicy': 'Cancellation and Refund Policy',
     'site.footer.cookies': 'Cookie Policy',
+    /*
+        ON ÜÇ BELGENİN TAMAMI ALTBİLGİDE (FF-237).
+
+        Aşağıdaki beş etiket FF-232'de yoktu ve karşılıkları olan beş sayfa
+        canlıda 200 dönüyordu — yani yazılmış, incelenmiş ve yayınlanmış bir
+        sözleşme, onu arayan kişinin bakacağı tek yerde bulunamıyordu.
+
+        Etiketler belgelerin KENDİ başlıklarıyla aynı sözcüklerdir
+        (`app/Infrastructure/Legal/Documents`): altbilgide bir ad, sayfada
+        başka bir ad görmek, aynı belgenin iki olduğunu düşündürür.
+    */
+    'site.footer.marketingConsent': 'Electronic Commercial Message Consent',
+    'site.footer.dataProcessing': 'Data Processing Agreement',
+    'site.footer.sla': 'Service Level Terms',
+    'site.footer.acceptableUse': 'Acceptable Use Policy',
+    'site.footer.thirdPartyLicenses': 'Third-Party Licences',
+    /*
+        ALT SATIRIN GERİ DÖNÜŞ YOLU (FF-237). Altbilgi 320 pikselde bir
+        ekran boyundan uzun; sonuna varan kişinin gezintiye dönmek için
+        parmağıyla geri kaydırması gerekirdi. Hedef `#main-content`:
+        atlama bağlantısının zaten kullandığı çıpa, yani ikinci bir kimlik
+        icat edilmedi.
+    */
+    'site.footer.backToTop': 'Back to top',
     'site.footer.tagline': 'Your menu behind a QR code, kept up to date by your own team.',
     /*
         pSEO içerik menüleri bandını AÇAN sözcük (FF-232). Bandın içindeki

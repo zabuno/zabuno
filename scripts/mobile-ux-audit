@@ -47,6 +47,8 @@
         php artisan site:export-static --out=<dizin>
         node scripts/mobile-ux-audit <dizin> [--json rapor.json] [--fail]
 
+    Ölçülen çerçeve: `--width` ve `--height` (varsayılan 320×568).
+
     İkinci kip, dizinde `index.json` OLMAMASINDAN anlaşılır. Kurumsal sitenin
     kabuğu bir React hikâyesi değil, Blade'dir; onu ölçmek için elle bir
     hikâye yazmak, ölçtüğünü sandığı şeyden sessizce ayrışan bir düzenek

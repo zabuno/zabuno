@@ -168,12 +168,28 @@ msgstr "Mesajı gönder"
 msgid "site.engineering.title"
 msgstr "Zabuno — Mühendislik"
 
+#: site:site.footer.acceptableUse
+msgid "site.footer.acceptableUse"
+msgstr ""
+
+#: site:site.footer.backToTop
+msgid "site.footer.backToTop"
+msgstr ""
+
+#: site:site.footer.company
+msgid "site.footer.company"
+msgstr ""
+
 #: site:site.footer.contentMenus
 msgid "site.footer.contentMenus"
 msgstr ""
 
 #: site:site.footer.cookies
 msgid "site.footer.cookies"
+msgstr ""
+
+#: site:site.footer.dataProcessing
+msgid "site.footer.dataProcessing"
 msgstr ""
 
 #: site:site.footer.delivery
@@ -192,6 +208,10 @@ msgstr "KVKK"
 msgid "site.footer.legal"
 msgstr "Yasal"
 
+#: site:site.footer.marketingConsent
+msgid "site.footer.marketingConsent"
+msgstr ""
+
 #: site:site.footer.preInformation
 msgid "site.footer.preInformation"
 msgstr ""
@@ -208,6 +228,10 @@ msgstr "Ürün"
 msgid "site.footer.refundPolicy"
 msgstr ""
 
+#: site:site.footer.sla
+msgid "site.footer.sla"
+msgstr ""
+
 #: site:site.footer.tagline
 msgid "site.footer.tagline"
 msgstr "Menünüz bir karekodun arkasında; güncel tutan kendi ekibiniz."
@@ -215,6 +239,10 @@ msgstr "Menünüz bir karekodun arkasında; güncel tutan kendi ekibiniz."
 #: site:site.footer.terms
 msgid "site.footer.terms"
 msgstr "Kullanım koşulları"
+
+#: site:site.footer.thirdPartyLicenses
+msgid "site.footer.thirdPartyLicenses"
+msgstr ""
 
 #: site:site.home.chain.heading
 msgid "site.home.chain.heading"
