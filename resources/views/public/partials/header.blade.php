@@ -1,4 +1,4 @@
-{{-- KURUMSAL KABUĞUN ÜST ÇUBUĞU — TEK tanım (`docs/100` §2, `docs/136`, `docs/138`).
+{{-- KURUMSAL KABUĞUN ÜST ÇUBUĞU — TEK tanım (`docs/100` §2, `docs/136`, `docs/141`).
 
      Bu dosya deponun tek kurumsal `<header>`'ıdır ve bir test onu böyle
      donduruyor (`SHELL-SINGLE-SOURCE-01`). Burada yapılan bir değişiklik,

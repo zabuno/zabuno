@@ -1,4 +1,4 @@
-{{-- ALTBİLGİDEKİ BİR BAĞLANTI GRUBU — TEK çizim (FF-237, `docs/138` §3).
+{{-- ALTBİLGİDEKİ BİR BAĞLANTI GRUBU — TEK çizim (FF-237, `docs/141` §3).
 
      Altbilgi altı satır taşıyor ve üç ayrı satırda bağlantı grubu çiziliyor:
      ürün/şirket/hesap satırı, yasal satır ve kütükten türeyen pSEO bandı.

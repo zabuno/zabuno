@@ -266,7 +266,7 @@ final class ShellLayersTest extends TestCase
             menü açmak zorundaydı.
 
             Çubuğa BİR eylem çıktı, ikisi değil — ve bu bir tercih değil bir
-            ölçüm sonucu (`docs/138` §4): iki düğme 320 pikselde çubuğu üç
+            ölçüm sonucu (`docs/141` §4): iki düğme 320 pikselde çubuğu üç
             satıra çıkarıyor, 157 piksel yer kaplıyordu. Çubukta kalan,
             siteyi ilk kez açan kişinin ihtiyacı olandır.
 

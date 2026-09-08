@@ -6,7 +6,7 @@
     diye ayrılmıştır. Uydurulmuş sayfa, bağlantı ya da metrik yoktur.
 -->
 
-# 138 — Masterpage'in katmanları: altı satırlık altbilgi ve olgunlaşan üst çubuk
+# 141 — Masterpage'in katmanları: altı satırlık altbilgi ve olgunlaşan üst çubuk
 
 ## 1. Sahibin isteği ve FF-232'nin bıraktığı eksik
 

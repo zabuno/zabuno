@@ -1,4 +1,4 @@
-{{-- KURUMSAL KABUĞUN ALT ÇUBUĞU — TEK tanım (`docs/100` §2, `docs/136` §6, `docs/138`).
+{{-- KURUMSAL KABUĞUN ALT ÇUBUĞU — TEK tanım (`docs/100` §2, `docs/136` §6, `docs/141`).
 
      ── Sahibin isteği ───────────────────────────────────────────────────
 

@@ -101,7 +101,7 @@ final class SiteNavigation
                     HESAP GRUBUNUN İKİNCİ YARISI — bölmede kalır.
 
                     Birincil eylem (`/register`) çubuğa çıktı; oturum açmak
-                    burada. Ayrımın sebebi ÖLÇÜLDÜ (`docs/138` §4): 320
+                    burada. Ayrımın sebebi ÖLÇÜLDÜ (`docs/141` §4): 320
                     pikselde marka (62px) + iki hesap düğmesi (211px) + menü
                     düğmesi (95px) yan yana SIĞMIYOR ve çubuk ÜÇ satıra
                     çıkıyordu — 157 piksel, yani 480 piksel boyundaki bir
