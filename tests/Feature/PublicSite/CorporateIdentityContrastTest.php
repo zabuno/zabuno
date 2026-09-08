@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\PublicSite;
 
+use App\Domain\Branding\SrgbColor;
 use Tests\Support\CorporateIdentityTokens;
 use Tests\TestCase;
 
@@ -170,7 +171,7 @@ final class CorporateIdentityContrastTest extends TestCase
         );
 
         /*
-            KABUK VE TEMA DOSYALARINDA HİÇ HAM RENK YOK.
+            KABUKTA YALNIZ SINIRLI MASAÜSTÜ PALETİ; TEMADA HAM RENK YOK.
 
             Kimlik katmanı doğru yazılıp kabuk yanlış yazılırsa sonuç yine
             iki kaynaktır — üstelik bu kez fark edilmesi daha zor, çünkü
@@ -182,6 +183,11 @@ final class CorporateIdentityContrastTest extends TestCase
                 (string) file_get_contents(base_path($relative))
             );
 
+            if ($relative === 'resources/css/site-shell.css') {
+                [$block] = $this->desktopPalette($other);
+                $other = str_replace($block, '', $other);
+            }
+
             foreach (['#', 'rgb(', 'hsl(', 'oklch('] as $needle) {
                 self::assertStringNotContainsString(
                     $needle,
@@ -191,6 +197,42 @@ final class CorporateIdentityContrastTest extends TestCase
                 );
             }
         }
+    }
+
+    /** @return array{string, array<string, SrgbColor>} */
+    private function desktopPalette(string $css): array
+    {
+        // Only the six named tokens directly inside the 64rem shell block are exempt.
+        preg_match_all('/@media \(min-width: 64rem\)\s*\{\s*\.site-shell\s*\{([^{}]*)\}/', $css, $blocks);
+        self::assertCount(1, $blocks[0], 'Desktop palette must have one explicit 64rem shell scope.');
+        preg_match_all('/(--site-desktop-[a-z-]+):\s*(#[a-fA-F0-9]{6});/', $blocks[1][0], $declarations, PREG_SET_ORDER);
+        $colors = [];
+        foreach ($declarations as $declaration) {
+            self::assertArrayNotHasKey($declaration[1], $colors, 'Duplicate desktop primitive.');
+            $colors[$declaration[1]] = SrgbColor::fromHex($declaration[2]);
+        }
+        self::assertSame([
+            '--site-desktop-ink', '--site-desktop-panel', '--site-desktop-cream',
+            '--site-desktop-muted', '--site-desktop-coral', '--site-desktop-coral-ink',
+        ], array_keys($colors));
+        self::assertSame('', trim((string) preg_replace('/--site-desktop-[a-z-]+:\s*#[a-fA-F0-9]{6};/', '', $blocks[1][0])), 'No unrelated declaration may hide inside the primitive exception.');
+
+        return [$blocks[0][0], $colors];
+    }
+
+    public function test_desktop_text_pairs_preserve_the_body_text_contrast_contract(): void
+    {
+        [, $colors] = $this->desktopPalette(CorporateIdentityTokens::withoutComments(
+            (string) file_get_contents(base_path('resources/css/site-shell.css'))
+        ));
+        foreach (['ink', 'panel'] as $background) {
+            foreach (['cream', 'muted', 'coral'] as $foreground) {
+                $ratio = $colors['--site-desktop-'.$foreground]->contrastRatio($colors['--site-desktop-'.$background]);
+                self::assertGreaterThanOrEqual(7.0, $ratio, "Desktop {$foreground}/{$background} text must remain at least 7:1.");
+            }
+        }
+        // Filled calls to action use ink text on coral; the same ratio is symmetric.
+        self::assertGreaterThanOrEqual(7.0, $colors['--site-desktop-ink']->contrastRatio($colors['--site-desktop-coral']));
     }
 
     // --- KIMLIK-02 -------------------------------------------------------------
