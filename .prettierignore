@@ -33,3 +33,11 @@ resources/js/generated
 # kalmalı. Prettier burada çalışsaydı her güncelleme, tek bir değer
 # değişmiş olsa bile yüzlerce satırlık bir fark üretirdi.
 resources/css/aep
+
+# Sahne görsel tabanı (`docs/146` §12). Bu dosyanın baytlarını
+# `scripts/scene-visual-gate --update` yazar: 16×12 hücrelik parlaklık
+# imzaları. Prettier burada çalışsaydı iki yazar olurdu — kapı diziyi satır
+# başına bir sayı olarak yazar, biçimlendirici onu yeniden sarar ve her
+# taban güncellemesinden sonra biçim kapısı kırılırdı. Aynı gerekçe
+# `resources/js/generated` için de yazılı.
+scripts/scene-visual.baseline.json

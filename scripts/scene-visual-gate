@@ -46,41 +46,69 @@
 
     Renk doğruluğu, yazı tipi tırtıklanması ve GPU rasterleştirmesi. Başsız
     Chrome yazılım rasterleştirici kullanabilir; imza 16×12 hücrede
-    ortalandığı için bu fark kapıyı kırmaz ama aynı sebeple ince bir tipografi
-    gerilemesini de görmez.
+    ortalanması küçük farkları azaltır, fakat her rasterleştiricide geçiş
+    garantisi vermez. Linux CI yardım görünümünde aynı düzen 13/255 saptı;
+    bu tek görünümün incelenmiş imzası platformOverrides altında kayıtlıdır.
+    Kaba imza ince bir tipografi gerilemesini de kaçırabilir.
+
+    ═══ TABAN İKİ RASTERLEŞTİRİCİDE SINANDI (Döngü 3) ═══
+
+    Döngü 2 bunu bilmediğini yazmıştı: *"`scene-visual-gate` yalnız bu makinede
+    koştu; farklı bir rasterleştiricide 8/255 toleransının yetip yetmediği
+    bilinmiyor."* Artık biliniyor, çünkü ölçüldü (2026-09-08).
+
+    Düzenek: aynı sunucu, aynı sayfa, aynı dil; bir yanda macOS'taki başsız
+    Chrome, öte yanda bir Debian kabındaki başsız Chromium (arm64), imzalar
+    hücre hücre karşılaştırıldı.
+
+      · İLK ÖLÇÜM: sapma 233–255/255 — yani neredeyse ters bir resim. Sebep
+        rasterleştirici DEĞİLDİ: macOS'taki Chrome sistemin KOYU kipini miras
+        alıyor, kaptaki Chromium AÇIK kipe düşüyordu. Kapı iki farklı SİTE
+        ölçüyordu ve bunu hiç söylemiyordu. `prefers-color-scheme` artık her
+        hâlde açıkça yazılıyor.
+      · İKİNCİ ÖLÇÜM (kip sabitlendikten sonra): sapma **1–7/255**, en kötü
+        hücre 7.
+
+    Tolerans bu yüzden 8 değil **12**: ölçülen en kötü rasterleştirici farkı 7
+    ve 8, bir sonraki yazı tipi güncellemesinde kırılacak kadar dar bir pay
+    bırakıyordu. 12 hâlâ ayırt eder — gerçek bir gerileme (kaybolan katman,
+    çöken kap) aynı düzenekte 36–80/255 kaydırdı, yani beş kat.
+
+    ═══ ÖLÇÜLEN SAYFA HER MAKİNEDE AYNI OLMALI ═══
+
+    Kurumsal sitenin dili ziyaretçinin `Accept-Language` başlığından gelir.
+    Kapı dili yazmıyordu, yani Türkçe bir makinede Türkçe, İngilizce bir
+    koşucuda İngilizce bir sayfa ölçülüyordu — ve taban, ölçüldüğü makinenin
+    diline sessizce bağlanıyordu. Dil artık `browser-session.mjs` üzerinden
+    sabit (`en-US`); bu bir çeviri kararı değil, bir ölçüm kararıdır.
 
     ═══ KULLANIM ═══
 
         php artisan serve --port=8177 &
         node scripts/scene-visual-gate --base http://127.0.0.1:8177 [--fail]
-        node scripts/scene-visual-gate --base … --update     # taban yenile
-        node scripts/scene-visual-gate --base … --png /tmp/g  # göz için PNG
+        node scripts/scene-visual-gate --base … --update       # taban yenile
+        node scripts/scene-visual-gate --base … --png /tmp/g   # göz için PNG
 */
 
-import { spawn } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { platform } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { inflateSync } from 'node:zlib';
 
+import {
+    cdp,
+    closeChrome,
+    connect,
+    debuggerUrl,
+    launchChrome,
+    pinLanguage,
+    requireChrome,
+} from './browser-session.mjs';
+
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 
-const CHROME_CANDIDATES = [
-    process.env.CHROME_PATH,
-    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-    '/usr/bin/google-chrome',
-    '/usr/bin/google-chrome-stable',
-    '/usr/bin/chromium',
-    '/usr/bin/chromium-browser',
-].filter(Boolean);
-
-const CHROME = CHROME_CANDIDATES.find((candidate) => existsSync(candidate));
-
-if (CHROME === undefined) {
-    console.error('scene-visual-gate: Chrome bulunamadı — ölçüm YAPILMADI, sonuç "bilinmiyor".');
-    process.exit(2);
-}
+const CHROME = requireChrome('scene-visual-gate');
 
 function flag(name, fallback) {
     const index = process.argv.indexOf(`--${name}`);
@@ -93,6 +121,16 @@ const BASELINE = flag('baseline', join(ROOT, 'scripts/scene-visual.baseline.json
 const PNG_DIR = flag('png', null);
 const SHOULD_UPDATE = process.argv.includes('--update');
 const SHOULD_FAIL = process.argv.includes('--fail');
+/*
+    TOLERANS 12/255 — ÖLÇÜLDÜ, SEÇİLMEDİ.
+
+    İlk iki rasterleştirici ölçümünde fark 1–7, örnek gerçek gerilemelerde
+    36–80 idi. Sonraki Linux CI yardım farkı 13 olarak ayrıca kaydedildi;
+    tek görünüm istisnası genel toleransı yükseltmez.
+*/
+const TOLERANCE = 12;
+/* Taban hangi makinede yazıldı: bir sapma tartışılırken ilk sorulan soru. */
+const PLATFORM = platform();
 
 /*
     HANGİ SAYFA, HANGİ GENİŞLİK.
@@ -106,6 +144,22 @@ const PAGES = [
     { key: 'pricing', path: '/pricing', widths: [320, 1280] },
     { key: 'about', path: '/about', widths: [320] },
     { key: 'contact', path: '/contact', widths: [320] },
+    /*
+        DÖNGÜ 3'ÜN İKİ YENİ YÜZEYİ — SAKİN BANT.
+
+        Yasal belge ve yardım makalesi bandı `calm` kipte giyiyor: tuval yok,
+        düzlem yok, animasyon yok. Bu üç yokluğun DOM tarafı bir kapıda
+        (`CalmSceneOnReadingSurfacesTest`); burada ölçülen şey PİKSEL — bir
+        gün biri bandı hareketlendirirse, DOM'da hiçbir şey değişmeden de
+        yapabilir (bir CSS kuralı yeter) ve o kusur ancak burada görünür.
+
+        Kütükten çizilen sayfalar bu listede YOK ve bu bilerek: içerikleri
+        veritabanından geliyor, yani imzaları kurulumun verisine bağlı olurdu
+        ve taban makineden makineye kayardı. Onların sözleşmesi DOM tarafında
+        (`SAHNE-B12`), pikselde değil.
+    */
+    { key: 'terms', path: '/terms', widths: [320] },
+    { key: 'help', path: '/help', widths: [320] },
 ];
 
 /*
@@ -119,10 +173,43 @@ const PAGES = [
       · `contrast` — `prefers-contrast: more` bir tercih değil bir İHTİYAÇTIR.
       · `forced`   — zorlanmış renklerde sistem paleti hükmeder.
 */
+/*
+    RENK KİPİ HER HÂLDE YAZILIR — ÖLÇÜLMÜŞ BİR ZORUNLULUK.
+
+    Bu satır Döngü 3'te eklendi ve sebebi bir tahmin değil: aynı sunucu, aynı
+    sayfa, aynı dil, iki işletim sistemi ölçüldüğünde imza 233–255/255
+    sapıyordu — yani neredeyse ters bir resim. Sebep rasterleştirici değildi:
+    macOS'taki başsız Chrome sistemin KOYU kipini miras alıyor, kaptaki
+    Chromium AÇIK kipe düşüyordu. Tema kabuğu (`theme-bootstrap`)
+    `prefers-color-scheme` okur, yani kapı iki farklı SİTE ölçüyordu.
+
+    Kip yazılmadığında ölçülen şey makinenin ayarıdır, sayfanın kendisi değil.
+*/
+const DARK = { name: 'prefers-color-scheme', value: 'dark' };
+
 const STATES = {
-    reduce: { media: [{ name: 'prefers-reduced-motion', value: 'reduce' }], static: true },
+    reduce: {
+        media: [{ name: 'prefers-reduced-motion', value: 'reduce' }, DARK],
+        static: true,
+    },
+    /*
+        AÇIK KİP de bir hâldir ve o da hareketsiz olmak zorunda.
+
+        Koyu kip sahnenin kendi zemini; ama açık kipte de bir `animation`
+        unutulabilir ve hiç ölçülmezse kimse görmez. Burada `reduce` ile
+        birlikte ölçülüyor: iki hâli tek karede kanıtlamak yerine, her
+        genişlikte bir kare daha almak toplam süreyi ~15 saniye uzatıyor ve
+        karşılığında açık kipin durağanlığı ARTIK ÖLÇÜLÜYOR.
+    */
+    light: {
+        media: [
+            { name: 'prefers-reduced-motion', value: 'reduce' },
+            { name: 'prefers-color-scheme', value: 'light' },
+        ],
+        static: true,
+    },
     minimal: {
-        media: [{ name: 'prefers-reduced-motion', value: 'no-preference' }],
+        media: [{ name: 'prefers-reduced-motion', value: 'no-preference' }, DARK],
         concurrency: 2,
         static: true,
     },
@@ -130,6 +217,7 @@ const STATES = {
         media: [
             { name: 'prefers-reduced-motion', value: 'no-preference' },
             { name: 'prefers-contrast', value: 'more' },
+            DARK,
         ],
         static: true,
     },
@@ -137,12 +225,23 @@ const STATES = {
         media: [
             { name: 'prefers-reduced-motion', value: 'no-preference' },
             { name: 'forced-colors', value: 'active' },
+            DARK,
         ],
         static: true,
     },
     /* Hareketli hâl: yalnız göz için yazılır, karşılaştırılmaz. */
-    motion: { media: [{ name: 'prefers-reduced-motion', value: 'no-preference' }], static: false },
+    motion: {
+        media: [{ name: 'prefers-reduced-motion', value: 'no-preference' }, DARK],
+        static: false,
+    },
 };
+
+/* Yalnız kanıtı kaydedilmiş platform/görünüm çifti varsayılanı değiştirebilir. */
+function selectBaseline(baseline, view, currentPlatform) {
+    return (
+        baseline.platformOverrides?.[currentPlatform]?.[view]?.signature ?? baseline.views?.[view]
+    );
+}
 
 /* --- PNG çözücü ---------------------------------------------------------
 
@@ -266,52 +365,7 @@ function signature(image) {
     return out;
 }
 
-/* --- CDP ---------------------------------------------------------------- */
-
-let nextId = 0;
-
-function cdp(ws, method, params = {}) {
-    const id = ++nextId;
-    ws.send(JSON.stringify({ id, method, params }));
-
-    return new Promise((resolve, reject) => {
-        const onMessage = (event) => {
-            const message = JSON.parse(event.data);
-
-            if (message.id !== id) return;
-
-            ws.removeEventListener('message', onMessage);
-            message.error
-                ? reject(new Error(`${method}: ${message.error.message}`))
-                : resolve(message.result);
-        };
-
-        ws.addEventListener('message', onMessage);
-        setTimeout(() => reject(new Error(`CDP timeout: ${method}`)), 60000);
-    });
-}
-
-async function debuggerUrl(profile) {
-    const marker = join(profile, 'DevToolsActivePort');
-
-    for (let attempt = 0; attempt < 160; attempt += 1) {
-        try {
-            const [port] = readFileSync(marker, 'utf8').split('\n');
-            const list = await fetch(`http://127.0.0.1:${port.trim()}/json/list`).then((r) =>
-                r.json(),
-            );
-            const page = list.find((t) => t.type === 'page');
-
-            if (page) return page.webSocketDebuggerUrl;
-        } catch {
-            /* Chrome henüz dinlemiyor. */
-        }
-
-        await new Promise((r) => setTimeout(r, 250));
-    }
-
-    throw new Error('Chrome hata ayıklama portu açılmadı.');
-}
+/* --- CDP: ortak oturum modülünden (`browser-session.mjs`) ------------- */
 
 async function settle(ws, ms) {
     await cdp(ws, 'Runtime.evaluate', {
@@ -324,24 +378,27 @@ async function settle(ws, ms) {
     });
 }
 
-const profileDir = mkdtempSync(join(tmpdir(), 'scene-visual-'));
-const chrome = spawn(
-    CHROME,
-    [
-        '--headless=new',
-        '--remote-debugging-port=0',
-        `--user-data-dir=${join(profileDir, 'profile')}`,
-        '--no-first-run',
-        '--hide-scrollbars',
-        '--force-device-scale-factor=1',
-        '--enable-unsafe-swiftshader',
-        'about:blank',
-    ],
-    { stdio: 'ignore' },
-);
-
 const baseline = existsSync(BASELINE) ? JSON.parse(readFileSync(BASELINE, 'utf8')) : { views: {} };
-const report = { base: BASE, cells: `${CELLS_X}x${CELLS_Y}`, views: {} };
+
+if (SHOULD_UPDATE && Object.keys(baseline.platformOverrides ?? {}).length > 0) {
+    console.error(
+        'SAHNE-GORSEL: --update refused: reviewed platform overrides require a targeted refresh with new provenance.',
+    );
+    process.exit(1);
+}
+
+const { chrome, profileDir, profilePath } = launchChrome(CHROME, 'scene-visual-', [
+    '--hide-scrollbars',
+    '--force-device-scale-factor=1',
+]);
+
+const report = {
+    base: BASE,
+    platform: PLATFORM,
+    tolerance: TOLERANCE,
+    cells: `${CELLS_X}x${CELLS_Y}`,
+    views: {},
+};
 const findings = [];
 const next = { views: {} };
 
@@ -350,13 +407,14 @@ if (PNG_DIR !== null) {
 }
 
 try {
-    const ws = new WebSocket(await debuggerUrl(join(profileDir, 'profile')));
-    await new Promise((resolve, reject) => {
-        ws.addEventListener('open', resolve, { once: true });
-        ws.addEventListener('error', reject, { once: true });
-    });
+    const ws = await connect(await debuggerUrl(profilePath, chrome));
+
+    report.browser = await cdp(ws, 'Browser.getVersion');
 
     await cdp(ws, 'Page.enable');
+    /* Ölçülen sayfanın dili makinenin değil kapının kararı — gerekçe
+       `browser-session.mjs` içinde. */
+    await pinLanguage(ws);
 
     for (const page of PAGES) {
         for (const width of page.widths) {
@@ -376,6 +434,34 @@ try {
 
                 await cdp(ws, 'Page.navigate', { url: `${BASE}${page.path}` });
                 await settle(ws, 700);
+
+                /*
+                    SAYFA GERÇEKTEN ÇİZİLDİ Mİ.
+
+                    Ölçüldü (2026-09-08): geliştirme sunucusu koşunun ortasında
+                    öldü ve Chrome her adreste aynı hata sayfasını gösterdi.
+                    Kapı bunu bir GERİLEME olarak bildirdi — her görünüm için
+                    "tabandan 250/255 saptı" dedi. Yön doğruydu (kırmızı yandı)
+                    ama SEBEP yanlıştı ve yanlış sebep, yanlış yerde saat
+                    harcatır: taban güncellenirdi ve hata sayfası taban olurdu.
+
+                    Kabuğun kökü aranıyor: bir hata sayfasında o yok. Ölçüm
+                    yapılamadıysa sonuç "geçti" de değil "gerileme" de değil,
+                    BİLİNMİYOR.
+                */
+                const rendered = await cdp(ws, 'Runtime.evaluate', {
+                    expression: 'document.querySelector(".site-shell") !== null',
+                    returnByValue: true,
+                });
+
+                if (rendered.result.value !== true) {
+                    findings.push(
+                        `SAHNE-GORSEL: [${view}] sayfa ÇİZİLMEDİ — kurumsal kabuk yok. ` +
+                            'Sunucu ayakta mı? Ölçüm yapılmadı; bu bir gerileme DEĞİL.',
+                    );
+                    report.views[view] = { compared: false, drift: null, reason: 'not-rendered' };
+                    continue;
+                }
 
                 const first = await cdp(ws, 'Page.captureScreenshot', { format: 'png' });
                 const firstImage = decodePng(Buffer.from(first.data, 'base64'));
@@ -418,7 +504,7 @@ try {
 
                 next.views[view] = firstSignature;
 
-                const known = baseline.views?.[view];
+                const known = selectBaseline(baseline, view, PLATFORM);
 
                 if (known === undefined) {
                     if (!SHOULD_UPDATE) {
@@ -437,20 +523,28 @@ try {
                     0,
                 );
 
-                report.views[view] = { compared: true, drift };
+                const worstCell = firstSignature.findIndex(
+                    (value, index) => Math.abs(value - known[index]) === drift,
+                );
+                report.views[view] = {
+                    compared: true,
+                    baselineSource: baseline.platformOverrides?.[PLATFORM]?.[view]
+                        ? `platformOverrides.${PLATFORM}.${view}`
+                        : `views.${view}`,
+                    drift,
+                    worstCell: {
+                        column: worstCell % CELLS_X,
+                        row: Math.floor(worstCell / CELLS_X),
+                        expected: known[worstCell],
+                        actual: firstSignature[worstCell],
+                    },
+                };
 
-                /*
-                    TOLERANS 8/255.
-
-                    Sıfır tolerans, iki farklı makinede farklı rasterleştirici
-                    kullanan Chrome'da her koşuda kırılırdı. 8, gözle
-                    ayırt edilemeyen bir farktır; bir katmanın kaybolması ya da
-                    bir kabın çökmesi ise onlarca birim kaydırır.
-                */
-                if (drift > 8) {
+                if (drift > TOLERANCE) {
                     findings.push(
-                        `SAHNE-GORSEL: [${view}] tabandan ${drift}/255 saptı. Bir katman ` +
-                            'kaybolmuş, bir kap çökmüş ya da bir renk ters dönmüş olabilir.',
+                        `SAHNE-GORSEL: [${view}] tabandan ${drift}/255 saptı (tolerans ` +
+                            `${TOLERANCE}). Bir katman kaybolmuş, bir kap çökmüş ya da bir ` +
+                            'renk ters dönmüş olabilir.',
                     );
                 }
             }
@@ -461,14 +555,7 @@ try {
 } catch (error) {
     findings.push(`SAHNE-GORSEL: ölçüm yapılamadı — ${error.message}`);
 } finally {
-    chrome.kill();
-    await new Promise((resolve) => chrome.once('exit', resolve));
-
-    try {
-        rmSync(profileDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
-    } catch {
-        /* Geçici dizin işletim sistemine bırakılır. */
-    }
+    await closeChrome(chrome, profileDir);
 }
 
 if (SHOULD_UPDATE && findings.every((finding) => !finding.includes('ölçüm yapılamadı'))) {
@@ -482,8 +569,16 @@ if (SHOULD_UPDATE && findings.every((finding) => !finding.includes('ölçüm yap
                     'gereken dört hâl burada dondurulur: azaltılmış hareket, minimal derece, ' +
                     'yüksek kontrast, zorlanmış renkler. Hareketli hâl KARŞILAŞTIRILMAZ — ' +
                     'yıldızlar sabit tohumlu ama aynı milisaniyede yakalanamaz.',
+                tolerance:
+                    'Tolerans 12/255. İlk macOS/Debian ölçümünde fark 1–7, örnek gerilemelerde ' +
+                    '36–80 idi. Her rasterleştirici için garanti değildir; incelenmiş ' +
+                    'platform/görünüm istisnaları platformOverrides altında kanıtıyla saklanır.',
                 cells: { x: CELLS_X, y: CELLS_Y },
+                writtenOn: PLATFORM,
                 views: next.views,
+                ...(baseline.platformOverrides
+                    ? { platformOverrides: baseline.platformOverrides }
+                    : {}),
             },
             null,
             4,

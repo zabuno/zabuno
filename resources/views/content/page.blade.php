@@ -22,6 +22,64 @@
 @section('title', $content->metadata->seoTitle)
 @section('description', $content->metadata->metaDescription)
 
+@php
+    /*
+        SAHNE, 386 SAYFAYA TEK YERDEN (`docs/146` §12).
+
+        Döngü 2 bu sayfaları bilerek dışarıda bırakmıştı: *"kütük sayfalarının
+        kompozisyonu hiç ölçülmedi ve 386 sayfayı tek seferde giydirmek,
+        sahibin göreceği ilk kusuru üretirdi."* Cevap sayfa sayısını
+        azaltmak değil, KARARI TEKİLLEŞTİRMEK: bant burada bir kez isteniyor
+        ve 386 sayfanın hepsi aynı anda aynı şeyi giyiyor.
+
+        ── BANDIN YÜZÜ SAYFANIN ANLAMINDAN TÜRER, RASTGELE DEĞİL ──
+
+        `docs/146` §10.1'in kuralı: aynı bandı üst üste görmek, bandın
+        kendisini görünmez yapar. Ama 386 sayfaya elle yüz seçilemez. Seçim
+        ekmek kırıntısının DERİNLİĞİNDEN geliyor ve derinlik sayfanın
+        hiyerarşideki rolüdür:
+
+          · kök seviyesi  → `orbit`   — bir SİSTEMİN kendisi
+          · ikinci seviye → `grid`    — o sistemin üstünde durduğu ZEMİN
+          · daha derin    → `conduit` — bir İŞLEMİN anlatıldığı yer
+
+        Rastgele bir seçim (yol karması) de üç yüzü dağıtırdı, ama hiçbir
+        şey ANLATMAZDI; ve iki komşu sayfa aynı yüzü rastgele alabilirdi.
+    */
+    $prologueVariant = match (true) {
+        count($trail) <= 1 => 'orbit',
+        count($trail) === 2 => 'grid',
+        default => 'conduit',
+    };
+
+    /*
+        DOĞRUDAN CEVAP BANDIN İÇİNE GİRER — BİR KAPININ GEREĞİ OLARAK.
+
+        `CONTENT-TEMPLATE-02` (`docs/148`) doğrudan cevabın `</h1>`den HEMEN
+        sonra gelmesini şart koşuyor ve gerekçesi doğru: cevap sistemleri
+        sayfanın başından okur. Bant H1'i taşıdığına göre cevap da bandın
+        içine girmek zorunda; aksi hâlde ikisinin arasına sahnenin katmanları
+        girer ve "hemen ardında" cümlesi yalan olur.
+
+        Blok KENDİ görünümüyle çiziliyor (`site-doc-lede`, `data-block`), yani
+        kimliği ve marka rayı korunuyor — bant onu kopyalamıyor, TAŞIYOR. Aynı
+        blok döngüde bir kez daha çizilmesin diye listeden çıkarılıyor;
+        `CONTENT-TEMPLATE-01` her blok türünü sayfada TAM BİR KEZ arıyor.
+    */
+    $leadBlock = null;
+    $bodyBlocks = [];
+
+    foreach ($content->blocks as $block) {
+        if ($leadBlock === null && $block->type->value === 'direct_answer') {
+            $leadBlock = $block;
+
+            continue;
+        }
+
+        $bodyBlocks[] = $block;
+    }
+@endphp
+
 @section('content')
     {{-- `site-main` kabuğun kolonu (genişlik, dolgu); `site-doc` bu sayfanın
          okuma ritmi. İkisi ayrı sınıf, çünkü ikisi ayrı pakete ait. --}}
@@ -82,10 +140,32 @@
             </ol>
         @endif
 
-        {{-- SAYFANIN TEK H1'i. Şablon tek H1 üretir; ikincisini yazacak yer yok. --}}
-        <h1 class="site-doc-title">{{ $content->metadata->h1 }}</h1>
+        {{-- SAYFANIN TEK H1'i, ARTIK SAHNENİN İÇİNDE. Şablon tek H1 üretir;
+             ikincisini yazacak yer yok — bant onu taşıyınca da öyle kaldı.
 
-        @foreach ($content->blocks as $block)
+             ── BANT NEDEN İÇERİDE, TAM KANAMALI DEĞİL ──
+
+             `site-main site-doc` bu sayfanın okuma sütunudur ve `docs/148`in
+             kendi ölçümü ona bağlı (kırıntı, başlık ölçeği, blok ritmi). Bandı
+             o sütunun dışına çıkarmak, ölçülmüş bir düzeni ölçülmemiş bir
+             düzenle değiştirmek olurdu. İçeride duran bant köşesini yuvarlar
+             (`site-prologue-inset`) — ekranın kenarına dayanmayan keskin bir
+             dikdörtgen, bir bant gibi değil bir kusur gibi okunur.
+
+             Ölçü kabı BOŞ: sütunun kendi yatay dolgusu zaten var ve bandın
+             kabını da eklemek 320 pikselde metni iki kat dolgunun arasına
+             sıkıştırırdı (`TOUCH-FIRST-INTERFACE` madde 3). --}}
+        @include('public.partials.prologue', [
+            'prologueHeading' => $content->metadata->h1,
+            'prologueVariant' => $prologueVariant,
+            'prologueMeasure' => '',
+            'prologueInset' => true,
+            'prologueLeadHtml' => $leadBlock === null
+                ? null
+                : view('content.blocks.direct_answer', ['block' => $leadBlock])->render(),
+        ])
+
+        @foreach ($bodyBlocks as $block)
             @include('content.blocks.'.$block->type->value, ['block' => $block])
         @endforeach
 

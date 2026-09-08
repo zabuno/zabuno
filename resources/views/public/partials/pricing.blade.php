@@ -95,7 +95,7 @@
         --}}
         <p class="site-pricing-note">
             {{ $st['pricingEmpty'] }}
-            <a class="underline underline-offset-2" href="/contact">{{ $st['pricingEmptyCta'] }}</a>
+            <a class="site-inline-action" href="/contact">{{ $st['pricingEmptyCta'] }}</a>
         </p>
     @else
         {{--
@@ -133,7 +133,7 @@
                         --}}
                         <span class="site-pricing-note">
                             {{ $st['perRestaurant'] }}
-                            <a class="underline underline-offset-2" href="/contact">{{ $st['perRestaurantCta'] }}</a>
+                            <a class="site-inline-action" href="/contact">{{ $st['perRestaurantCta'] }}</a>
                         </span>
                     @else
                         {{-- `tabular-nums`: rakamlar eşit genişlikte olmazsa
@@ -173,7 +173,7 @@
 
         <p class="site-pricing-note">
             {{ $st['unsure'] }}
-            <a class="underline underline-offset-2" href="/contact">{{ $st['unsureCta'] }}</a>
+            <a class="site-inline-action" href="/contact">{{ $st['unsureCta'] }}</a>
         </p>
 
         {{-- KABUL EDİLEN ÖDEME YÖNTEMİ, FİYATIN YANINDA (FF-216).
@@ -192,8 +192,9 @@
             {{-- Bağlantı CÜMLENİN İÇİNDE değil, kendi satırında ve 44
                  piksel: satır içi bir bağlantı dar ekranda 18-42 piksel
                  yüksekliğinde kalıyor ve parmakla ıskalanıyor (`docs/117`).
-                 Bu sayfadaki eski satır içi bağlantılar #279'un borcudur ve
-                 ayrı ölçülür; YENİ bağlantı o borcu büyütmez. --}}
+                 Bu sayfadaki eski satır içi bağlantılar #279'un borcuydu ve
+                 o borç Döngü 3'te kapandı (`.site-inline-action`, `docs/146`
+                 §12.8): satır içi kalan üç bağlantı da artık 44 piksel. --}}
             <a class="site-action self-start underline underline-offset-2"
                href="/pre-information">{{ $st['paymentMethodsCta'] }}</a>
         </div>

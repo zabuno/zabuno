@@ -1,0 +1,306 @@
+#!/usr/bin/env node
+/*
+    İKİNCİ WEBGL BAĞLAMININ MALİYETİ — ölçüm, tahmin değil.
+
+    ═══ NEDEN VAR ═══
+
+    Bu soru iki döngüdür açık ve iki döngüdür aynı cümleyle bırakıldı
+    (`docs/146` §9 madde 4, §11 madde 1):
+
+      *"İkinci bir WebGL bağlamının maliyeti TAHMİN edildi, ölçülmedi."*
+
+    Ölçülmediği için sahne dağarcığının tamamı saf CSS'te doğdu ve kapı
+    (`SAHNE-B7`) sayfa başına tuval sayısını 1'de dondurdu. Bu doğru bir
+    karardı — ölçülmemiş bir maliyeti ürüne sokmamak. Ama sonsuza kadar
+    doğru kalmaz: bir gün ikinci bir bağlam GEREKİRSE, kararın dayanağı bir
+    ölçüm olmalı, "geçen sefer de böyle yapmıştık" değil.
+
+    ═══ NE ÖLÇÜYOR ═══
+
+    Aynı sayfa, aynı makine, aynı kısma, yalnız TUVAL SAYISI değişerek:
+
+      1. KARE SÜRESİ — kaydırırken p50 / p95 / en uzun kare / uzun kare
+         sayısı. Merdivenin (`tier.ts`) baktığı sayı budur; ikinci bir
+         bağlam sahneyi bir alt basamağa itiyorsa, o basamak ölçülmüş olur.
+      2. BAĞLAM GERÇEKTEN AÇILDI MI — Chrome eşzamanlı WebGL bağlamı sayısını
+         sınırlar ve sınırı aşan bir sayfa EN ESKİ bağlamı kaybeder. Bir
+         "maliyet" ölçümünün ilk sorusu, ölçülen şeyin var olup olmadığıdır:
+         her tuvalin `data-scene-live` değeri okunuyor.
+      3. JS YIĞINI — `Performance.getMetrics` üzerinden `JSHeapUsedSize`.
+         Bu, GPU belleğini ÖLÇMEZ ve ölçtüğünü iddia etmiyor: sürücü
+         tarafındaki doku ve tampon belleği hiçbir tarayıcı API'sinden
+         görünmez. Ölçülen şey, ikinci bir alanın JS tarafında ne kadar
+         yer tuttuğu.
+
+    ═══ NE ÖLÇMÜYOR ═══
+
+    GPU belleği (yukarıda), gerçek bir telefonun sürücüsü ve iOS Safari'nin
+    kendi bağlam sınırı. Başsız Chrome yazılım rasterleştirici kullanabilir;
+    o hâlde ölçüm gerçek bir GPU'dan KÖTÜMSERDİR — yani ikinci bağlam burada
+    ucuz çıkarsa gerçek cihazda daha da ucuzdur, tersi değil.
+
+    ═══ NASIL: TUVAL SAYFAYA DIŞARIDAN EKLENİYOR ═══
+
+    Motor sayfada ne bulursa onu kurar (`mount.ts`: `[data-scene="field"]`).
+    Bu araç, belge ayrıştırılırken ilk tuvali görüp yanına kopyalarını
+    koyuyor — yani üretim kodunda tek bayt değişmeden ikinci bağlam açılıyor.
+    Ölçülen şey ürünün kendi motoru; bir laboratuvar taklidi değil.
+
+    ═══ KULLANIM ═══
+
+        php artisan serve --port=8291 &
+        node scripts/scene-webgl-context-cost --url http://127.0.0.1:8291/ \
+            --canvases 1,2,3 --cpu 4 [--json rapor.json]
+*/
+
+import { writeFileSync } from 'node:fs';
+
+import {
+    cdp,
+    closeChrome,
+    connect,
+    debuggerUrl,
+    launchChrome,
+    pinLanguage,
+    requireChrome,
+} from './browser-session.mjs';
+
+const CHROME = requireChrome('scene-webgl-context-cost');
+
+function flag(name, fallback) {
+    const index = process.argv.indexOf(`--${name}`);
+
+    return index > -1 ? process.argv[index + 1] : fallback;
+}
+
+const URL_UNDER_TEST = flag('url', 'http://127.0.0.1:8000/');
+const WIDTH = Number(flag('width', '320'));
+const HEIGHT = Number(flag('height', '480'));
+const CPU = Number(flag('cpu', '4'));
+const SECONDS = Number(flag('seconds', '4'));
+const COUNTS = flag('canvases', '1,2,3')
+    .split(',')
+    .map((value) => Number(value.trim()))
+    .filter((value) => Number.isFinite(value) && value >= 1);
+const JSON_OUT = flag('json', null);
+
+async function evaluate(ws, expression) {
+    const result = await cdp(ws, 'Runtime.evaluate', {
+        expression,
+        awaitPromise: true,
+        returnByValue: true,
+    });
+
+    if (result.exceptionDetails) {
+        throw new Error(result.exceptionDetails.text ?? 'sayfa içi hata');
+    }
+
+    return result.result.value;
+}
+
+/*
+    KOPYALAYICI — belge ayrıştırılırken çalışır, motordan ÖNCE.
+
+    Modüller ertelenir ve ayrıştırma bittikten sonra koşar; bu gözlemci
+    tuvali DOM'a girdiği anda görür ve kopyalarını yanına koyar. Motor
+    sonradan geldiğinde ortada `n` tane tuval bulur ve hepsini kurar.
+
+    ── GÖZLEMCİ `document` ÜZERİNDE, `documentElement` ÜZERİNDE DEĞİL ──
+
+    Bu betik belge açılmadan ÖNCE koşuyor ve o an `documentElement` henüz
+    YOKTUR: `observe(null)` bir istisna fırlatır, betik sessizce ölür ve araç
+    hiç kopya üretmeden "maliyet sıfır" der. Ölçüldü (2026-09-08): ilk sürüm
+    tam olarak bunu yaptı — üç koşuda da tek tuval vardı ve rapor bunu bir
+    sonuç gibi bastı. Bu yüzden rapor `canvases` ve `live` sayılarını da
+    yazıyor: bir maliyet ölçümünün ilk kanıtı, ölçtüğü şeyin VAR olduğudur.
+
+    (Aşağıdaki dize sayfaya gömülüyor; içinde ters tırnak KULLANILAMAZ.)
+*/
+const cloner = (count) => `
+    (() => {
+        if (${count} <= 1) return;
+
+        const observer = new MutationObserver(() => {
+            const first = document.querySelector('canvas[data-scene="field"]');
+
+            if (first === null) return;
+
+            observer.disconnect();
+
+            for (let index = 1; index < ${count}; index += 1) {
+                const copy = first.cloneNode(false);
+                copy.dataset.sceneCopy = String(index);
+                first.parentElement.appendChild(copy);
+            }
+        });
+
+        observer.observe(document, { childList: true, subtree: true });
+    })();
+`;
+
+const sampler = (seconds) => `new Promise((resolve) => {
+    const durationMs = ${Math.round(seconds * 1000)};
+    const frames = [];
+    const reach = Math.max(document.body.scrollHeight - window.innerHeight, 1);
+    let previous = performance.now();
+    const started = previous;
+
+    const step = (now) => {
+        frames.push(now - previous);
+        previous = now;
+
+        const progress = (now - started) / durationMs;
+        const wave = progress < 0.5 ? progress * 2 : (1 - progress) * 2;
+        window.scrollTo(0, reach * Math.max(Math.min(wave, 1), 0));
+
+        if (now - started < durationMs) {
+            requestAnimationFrame(step);
+        } else {
+            /* İlk kare her zaman uzundur (ilk boyama, gölgelendirici
+               derlemesi); ölçülen şey SÜRDÜRÜLEBİLİR hız. */
+            const sorted = frames.slice(1).sort((a, b) => a - b);
+            const at = (q) => sorted[Math.min(Math.floor(sorted.length * q), sorted.length - 1)] ?? 0;
+            const canvases = [...document.querySelectorAll('canvas[data-scene="field"]')];
+
+            resolve({
+                frames: sorted.length,
+                p50: Number(at(0.5).toFixed(2)),
+                p95: Number(at(0.95).toFixed(2)),
+                max: Number((sorted[sorted.length - 1] ?? 0).toFixed(2)),
+                longFrames: sorted.filter((ms) => ms > 50).length,
+                tier: document.documentElement.dataset.sceneTier ?? null,
+                canvases: canvases.length,
+                /* Bağlamı GERÇEKTEN alan tuvaller. Chrome eşzamanlı bağlam
+                   sayısını sınırlar; sınırı aşan tuval sessizce boş kalır. */
+                live: canvases.filter((c) => c.dataset.sceneLive === 'true').length,
+                renderers: [...new Set(canvases.map((c) => c.dataset.sceneRenderer ?? 'none'))],
+            });
+        }
+    };
+
+    requestAnimationFrame(step);
+})`;
+
+const { chrome, profileDir, profilePath } = launchChrome(CHROME, 'scene-webgl-');
+
+const report = {
+    url: URL_UNDER_TEST,
+    width: WIDTH,
+    height: HEIGHT,
+    cpu: CPU,
+    runs: [],
+};
+const findings = [];
+
+try {
+    const ws = await connect(await debuggerUrl(profilePath, chrome));
+
+    await cdp(ws, 'Page.enable');
+    await cdp(ws, 'Performance.enable');
+    await pinLanguage(ws);
+    await cdp(ws, 'Emulation.setDeviceMetricsOverride', {
+        width: WIDTH,
+        height: HEIGHT,
+        deviceScaleFactor: 1,
+        mobile: WIDTH < 768,
+    });
+    await cdp(ws, 'Emulation.setEmulatedMedia', {
+        features: [
+            { name: 'prefers-reduced-motion', value: 'no-preference' },
+            { name: 'prefers-color-scheme', value: 'dark' },
+        ],
+    });
+
+    for (const count of COUNTS) {
+        if (CPU > 1) {
+            await cdp(ws, 'Emulation.setCPUThrottlingRate', { rate: CPU });
+        }
+
+        /*
+            HER KOŞU KENDİ KOPYALAYICISIYLA.
+
+            Eski betiği kaldırmak yerine yenisini eklemek, üçüncü koşuda
+            altı tuval üretirdi — yani ölçülen sayı ile raporlanan sayı
+            ayrışırdı ve kimse fark etmezdi.
+        */
+        const { identifier } = await cdp(ws, 'Page.addScriptToEvaluateOnNewDocument', {
+            source: cloner(count),
+        });
+
+        await cdp(ws, 'Page.navigate', { url: URL_UNDER_TEST });
+        await evaluate(
+            ws,
+            `new Promise((resolve) => {
+                const check = () => (document.readyState === 'complete'
+                    ? document.fonts.ready.then(() => setTimeout(resolve, 600))
+                    : setTimeout(check, 100));
+                check();
+            })`,
+        );
+
+        const motion = await evaluate(ws, sampler(SECONDS));
+        const metrics = await cdp(ws, 'Performance.getMetrics');
+        const heap = metrics.metrics.find((metric) => metric.name === 'JSHeapUsedSize');
+
+        report.runs.push({
+            requested: count,
+            ...motion,
+            jsHeapUsedBytes: heap === undefined ? null : Math.round(heap.value),
+        });
+
+        await cdp(ws, 'Page.removeScriptToEvaluateOnNewDocument', { identifier });
+    }
+
+    ws.close();
+} catch (error) {
+    findings.push(`SAHNE-WEBGL: ölçüm yapılamadı — ${error.message}`);
+} finally {
+    await closeChrome(chrome, profileDir);
+}
+
+/*
+    KARŞILAŞTIRMA — sayıyı okuyanın hesap yapmak zorunda kalmaması için.
+
+    Bir raporun içindeki üç satırı gözle çıkarmak, o raporu okuyan kişinin
+    hata yapabileceği tek yerdir.
+*/
+const baseline = report.runs.find((run) => run.requested === 1);
+
+if (baseline !== undefined) {
+    report.delta = report.runs
+        .filter((run) => run.requested !== 1)
+        .map((run) => ({
+            canvases: run.requested,
+            live: run.live,
+            p50Ms: Number((run.p50 - baseline.p50).toFixed(2)),
+            p95Ms: Number((run.p95 - baseline.p95).toFixed(2)),
+            longFrames: run.longFrames - baseline.longFrames,
+            jsHeapBytes:
+                run.jsHeapUsedBytes === null || baseline.jsHeapUsedBytes === null
+                    ? null
+                    : run.jsHeapUsedBytes - baseline.jsHeapUsedBytes,
+            /* Bağlam açılmadıysa ölçülen "maliyet" bir maliyet değil, bir
+               yokluktur ve öyle raporlanır. */
+            allContextsLive: run.live === run.requested,
+        }));
+}
+
+report.findings = findings;
+
+const output = JSON.stringify(report, null, 2);
+
+if (JSON_OUT !== null) {
+    writeFileSync(JSON_OUT, `${output}\n`);
+}
+
+console.log(output);
+
+/*
+    BU BİR KAPI DEĞİL.
+
+    Ölçer ve yazar; bir eşiği yoktur ve bir şeyi kırmaz. Kapı `SAHNE-B7`
+    (`SceneContractTest`) ve o kapı sayfa başına tuvali 1'de tutuyor. Bu
+    araç, o sayının bir gün değiştirilmesi gerekirse kararın dayanağını
+    üretir — kararın kendisini değil.
+*/
+process.exit(findings.length > 0 ? 2 : 0);

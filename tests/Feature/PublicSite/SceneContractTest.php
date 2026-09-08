@@ -192,10 +192,11 @@ final class SceneContractTest extends TestCase
             bandının üç canlı kurumsal adreste de çizildiğini donduruyor —
             ve bir sayfanın sahnesini sessizce kaybetmesini imkânsız kılıyor.
 
-            KALAN YÜZEYLER Döngü 3'e: yardım makaleleri, yasal belgeler ve
-            kütükten çizilen kurumsal sayfalar. Onların kompozisyonu ÖLÇÜLMEDİ
-            ve ölçülmemiş bir şeyi yayına almak, sahibin göreceği ilk kusuru
-            üretir.
+            KALAN YÜZEYLER DÖNGÜ 3'TE KAPANDI: yardım makalesi, on üç yasal
+            belge ve kütükten çizilen sayfalar artık bandı giyiyor — ama
+            okunan yüzeylerde SAKİN kipte. O sözleşme ayrı bir kapıda
+            (`CalmSceneOnReadingSurfacesTest`, SAHNE-B9…B12), çünkü ölçtüğü
+            şey farklı: burada "bant var mı", orada "bant SUSUYOR mu".
         */
         foreach (['/pricing', '/about', '/contact'] as $uri) {
             $xpath = $this->document($uri);
@@ -210,13 +211,24 @@ final class SceneContractTest extends TestCase
             );
 
             /*
-                SAYFA BAŞINA TEK TUVAL.
+                SAYFA BAŞINA TEK TUVAL — VE BU SAYI ÖLÇÜMDEN SONRA DA 1.
 
-                İkinci bir WebGL bağlamının maliyeti Döngü 1'de TAHMİN edildi,
-                ölçülmedi (`docs/146` §9 madde 4) ve Döngü 2 de ölçmedi.
-                Ölçülmemiş bir maliyeti ürüne sokmamanın tek yolu, onu bir
-                kapıya yazmaktır: yörünge, tel kafes ve veri hattı saf CSS'tir
-                ve bu sayı 1'de kalmalıdır.
+                Döngü 3 maliyeti ölçtü (`scripts/scene-webgl-context-cost`,
+                gerçek Chrome, CPU ×4, 320×480 ve 1280×800): ikinci, üçüncü ve
+                dördüncü bağlam GERÇEKTEN açıldı (`data-scene-live` dört
+                tuvalde de `true`) ve kare süresine etkisi ÖLÇÜLEBİLİR
+                DEĞİLDİ — p50 16,7 ms sabit, p95 farkı ±0,1 ms, uzun kare 0.
+                JS yığını ölçüldü ama GÜRÜLTÜLÜ: aynı düzenekte tuval sayısıyla
+                birlikte artmıyor bile (1407 / 837 / 1460 KB), yani ölçülen şey
+                çöp toplayıcının o anki hâli.
+
+                Buna rağmen sayı 1'de kalıyor ve gerekçesi ölçümün KENDİ
+                sınırı: bu ölçüm GPU belleğini göremez — sürücü tarafındaki
+                doku ve tampon belleği hiçbir tarayıcı API'sinden okunmuyor,
+                üstelik başsız Chrome yazılım rasterleştirici kullanıyor. Yani
+                elde edilen sayı "ikinci bağlam bedava" demiyor; "ikinci
+                bağlamın ölçebildiğimiz kısmı bedava" diyor. Asıl kalemi
+                göremeyen bir ölçüm, bir kapıyı gevşetmeye yetmez.
             */
             $canvases = $xpath->query('//canvas[@data-scene="field"]');
             self::assertNotFalse($canvases);
