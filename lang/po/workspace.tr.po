@@ -5584,6 +5584,10 @@ msgstr "Sade"
 msgid "workspace.publication.qrScreen.cardTheme.signage"
 msgstr "Tabela"
 
+#: workspace:workspace.publication.qrScreen.codeAlwaysDark
+msgid "workspace.publication.qrScreen.codeAlwaysDark"
+msgstr ""
+
 #: workspace:workspace.publication.qrScreen.custom
 msgid "workspace.publication.qrScreen.custom"
 msgstr "Başka bir ölçü gerekiyor"
