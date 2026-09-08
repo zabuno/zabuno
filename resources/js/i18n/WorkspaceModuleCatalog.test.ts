@@ -280,7 +280,7 @@ const FROZEN_MODULE_FILENAMES = [
 // ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
 // msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
 
-// MASAÜSTÜ KUYRUĞU (`docs/149`): `ordering.ts` kataloğuna, yalnız
+// MASAÜSTÜ KUYRUĞU (`docs/153`): `ordering.ts` kataloğuna, yalnız
 // işaretleyici/klavye yüzeyinde çizilen ON BİR anahtar eklendi — kısayol
 // satırı, çoklu seçim şeridi, toplu ret sebebi, bağlam menüsü ve ayrıntı
 // bölmesi. Dokunmada bunların karşılığı YOKTUR (`hover` yok, sağ tık yok,

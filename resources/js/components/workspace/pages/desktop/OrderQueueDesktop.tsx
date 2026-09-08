@@ -17,12 +17,12 @@ import { useOrderFeed, type OrderFeedRow } from '../orders/useOrderFeed';
 import type { OrderQueueSurfaceContext } from '../orders/queueSurface';
 
 /**
- * GARSON KUYRUĞU — İŞARETLEYİCİ SÜRÜMÜ (`docs/149` §6).
+ * GARSON KUYRUĞU — İŞARETLEYİCİ SÜRÜMÜ (`docs/153` §6).
  *
  * ## Bu neden mobil kuyruğun geniş hâli DEĞİL
  *
  * Aynı veriye bakan iki farklı İŞ var, ve fark ekran genişliği değil giriş
- * kipidir (`docs/149` §2):
+ * kipidir (`docs/153` §2):
  *
  * - **Telefondaki garson** salonda yürür, elinde tek bir sipariş vardır ve
  *   ekrana bakmadan basar. Onun ekranı bir kart listesidir: tek sütun, 44
@@ -44,7 +44,7 @@ import type { OrderQueueSurfaceContext } from '../orders/queueSurface';
  *    demektir.
  * 3. **Sağ tık bağlam menüsü** — ve klavye karşılığı (Shift+F10 / Menü
  *    tuşu), çünkü sağ tıkın klavyesi yoksa iş klavyeyle yapılamaz olur
- *    (WCAG 2.2 AA, `docs/149` §7).
+ *    (WCAG 2.2 AA, `docs/153` §7).
  * 4. **Kalıcı ayrıntı bölmesi.** Seçili siparişin satırları ve alerjenleri
  *    sağda DURUR; telefonda aynı bilgi kartın içindedir çünkü orada ikinci
  *    bir sütun yoktur.
@@ -57,7 +57,7 @@ import type { OrderQueueSurfaceContext } from '../orders/queueSurface';
  * Veri (`useOrderFeed`), durum değişikliği (`changeOrderStatus`), cümleler
  * (`orderPresentation`) ve boş kuyruğun sebebi (`queueEmptyState`) İKİ
  * yüzeyde de aynıdır. Bu dosyada tek bir `fetch` yoktur ve tek bir ürün
- * kararı verilmez — ayrışan yalnız SUNUM ve ETKİLEŞİMdir (`docs/149` §4).
+ * kararı verilmez — ayrışan yalnız SUNUM ve ETKİLEŞİMdir (`docs/153` §4).
  *
  * ## Hareket
  *
@@ -454,7 +454,7 @@ export function OrderQueueDesktop({
                             Klavyeyle çalışan bir liste, varlığı SÖYLENMEDİKÇE
                             yoktur: kimse Enter'a basmayı denemez. Bu satır
                             telefonda hiç çizilmez, çünkü orada bu tuşlar yok
-                            (`docs/149` §2).
+                            (`docs/153` §2).
                         */}
                         <p className="flex items-center gap-[var(--space-2)] text-meta text-fg-muted">
                             <Keyboard size={16} weight="regular" aria-hidden="true" />
@@ -689,7 +689,7 @@ export function OrderQueueDesktop({
 
                                         /*
                                             SAĞ TIKIN KLAVYE KARŞILIĞI —
-                                            WCAG 2.2 AA (`docs/149` §7).
+                                            WCAG 2.2 AA (`docs/153` §7).
 
                                             Shift+F10 her masaüstü
                                             tarayıcısında, `ContextMenu` ise
@@ -898,7 +898,7 @@ function QueueRowDesktop({
                 /*
                     `hover` ANLAMLIDIR ve yalnız burada: dokunmada imleç
                     yoktur, bu yüzden mobil kuyrukta eylemler her zaman
-                    görünür (`docs/149` §2).
+                    görünür (`docs/153` §2).
                 */
                 'hover:bg-surface-accent',
                 selected ? 'bg-surface-accent' : '',

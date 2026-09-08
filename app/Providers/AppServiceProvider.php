@@ -9,6 +9,7 @@ use App\Application\Ai\Port\EmbeddingPort;
 use App\Application\Ai\Port\StructuredGenerationPort;
 use App\Application\Ai\Port\VisionExtractionPort;
 use App\Application\Analytics\Port\AnalyticsRepositoryPort;
+use App\Application\Assurance\Port\AssuranceLibraryPort;
 use App\Application\Authorization\Port\AuthorizationPort;
 use App\Application\Billing\Port\BillingModePort;
 use App\Application\Billing\Port\BillingProfileRepositoryPort;
@@ -136,6 +137,7 @@ use App\Infrastructure\Ai\StructuredGenerationRouter;
 use App\Infrastructure\Ai\VisionExtractionRouter;
 use App\Infrastructure\Analytics\Persistence\EloquentAnalyticsRepository;
 use App\Infrastructure\Analytics\VaultAnalyticsSettings;
+use App\Infrastructure\Assurance\MeasuredAssuranceLibrary;
 use App\Infrastructure\Authorization\Persistence\EloquentAuthorizationDecisionPoint;
 use App\Infrastructure\Billing\Persistence\EloquentBillingMode;
 use App\Infrastructure\Billing\Persistence\EloquentBillingProfileRepository;
@@ -303,6 +305,16 @@ final class AppServiceProvider extends ServiceProvider
             kasayı bugünkü sözleşmeye yazdırırdı.
         */
         $this->app->bind(SubprocessorRegistryPort::class, MeasuredSubprocessors::class);
+        /*
+            GÜVEN MERKEZİ VE ERİŞİLEBİLİRLİK BEYANI (FF-252).
+
+            `bind`, `singleton` DEĞİL — ve gerekçe alt işleyen listesindekiyle
+            AYNI: beyanın içeriği o anki yapılandırmadan doğuyor (kasa, SLA
+            değerleri, destek taahhüdü). Tekil yapmak, uzun ömürlü bir süreçte
+            dünkü yapılandırmayı bugünkü sayfaya yazdırırdı — ve bir güven
+            merkezinde bayat bir olgu, olmayan bir olgudan kötüdür.
+        */
+        $this->app->bind(AssuranceLibraryPort::class, MeasuredAssuranceLibrary::class);
         $this->app->bind(ThirdPartyLicensePort::class, ManifestThirdPartyLicenses::class);
         $this->app->bind(ConsentLedgerPort::class, DatabaseConsentLedger::class);
 

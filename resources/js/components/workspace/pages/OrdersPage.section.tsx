@@ -15,7 +15,7 @@ const OrdersPage = lazy(async () => ({
 }));
 
 /*
-    BU KAYIT CİHAZ TANIMAZ ve tanımamalı (`docs/149` §5).
+    BU KAYIT CİHAZ TANIMAZ ve tanımamalı (`docs/153` §5).
 
     Kayıtlar `import.meta.glob` ile TOPLUCA ve EAGER okunur, yani bu dosya
     iki pakete birden girer. Burada masaüstü kuyruğu adıyla anılsaydı, kodu

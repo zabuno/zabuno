@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
 /**
- * GARSON KUYRUĞUNUN CİHAZA ÖZGÜ YÜZEYİ — `docs/149`, `docs/54`.
+ * GARSON KUYRUĞUNUN CİHAZA ÖZGÜ YÜZEYİ — `docs/153`, `docs/54`.
  *
  * `kitchenSurface.ts` ile aynı desen ve aynı sebep: paylaşılan kod "bir
  * kuyruk çizicisi alırım" der, ama MASAÜSTÜ çiziciyi ADIYLA ANMAZ. Kabuk

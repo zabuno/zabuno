@@ -6,7 +6,7 @@ import type { WorkspaceSectionRuntimeContext } from '../../WorkspaceApp';
 import { OrderQueueDesktop } from './OrderQueueDesktop';
 
 /**
- * SİPARİŞLER ekranının MASAÜSTÜ bileşimi — `docs/149` §6.
+ * SİPARİŞLER ekranının MASAÜSTÜ bileşimi — `docs/153` §6.
  *
  * Sayfanın kendisi (sekmeler, izin kapıları, şalter okuması) PAYLAŞILANdIR
  * ve buraya kopyalanmaz: iki kopya sekme mantığı, yarın bir izin
@@ -15,7 +15,7 @@ import { OrderQueueDesktop } from './OrderQueueDesktop';
  *
  * Yani bu dosya bir sayfa DEĞİL, bir BİLEŞİMdir: paylaşılan sayfa + bu
  * cihazın kuyruğu. Masaüstüne taşınacak sonraki ekranlar da aynı biçimi
- * alır — ortak olan paylaşılır, ayrışan enjekte edilir (`docs/149` §4).
+ * alır — ortak olan paylaşılır, ayrışan enjekte edilir (`docs/153` §4).
  */
 export function OrdersScreenDesktop({ ctx }: { ctx: WorkspaceSectionRuntimeContext }): ReactNode {
     return (

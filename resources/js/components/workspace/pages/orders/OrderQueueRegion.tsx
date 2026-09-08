@@ -172,7 +172,7 @@ export function OrderQueueRegion({
     /*
         Boş listenin sebebi PAYLAŞILAN kararla belirlenir
         (`queueEmptyState`): masaüstü kuyruğu da aynı işlevi çağırır, yani
-        iki ekran aynı akşam aynı cümleyi kurar (`docs/149` §4).
+        iki ekran aynı akşam aynı cümleyi kurar (`docs/153` §4).
     */
     const emptyReason = queueEmptyReason(feed.orders.length, acceptsOrders, planIncludesOrdering);
 

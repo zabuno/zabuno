@@ -111,6 +111,9 @@ final class SiteText
             'navHelp' => 'site.nav.help',
             'navAbout' => 'site.nav.about',
             'navContact' => 'site.nav.contact',
+            // Güven merkezi ve erişilebilirlik beyanı (FF-252).
+            'navTrust' => 'site.nav.trust',
+            'navAccessibility' => 'site.nav.accessibility',
             'navLogin' => 'site.nav.login',
             'navRegister' => 'site.nav.register',
             // Kabuk menüsünü açan sözcük (FF-190). Grup ve madde adları
@@ -238,6 +241,21 @@ final class SiteText
             'aboutReachCta' => 'site.about.reach.cta',
             'aboutIncompleteHeading' => 'site.about.incomplete.heading',
             'aboutIncompleteBody' => 'site.about.incomplete.body',
+            /*
+                GÜVENCE BEYANLARININ ETİKETLERİ (FF-252).
+
+                Beyan METNİ katalogda DEĞİL: alt işleyen listesi kasadan,
+                hizmet seviyesi yapılandırmadan, kanıtlar depodaki kapıların
+                adlarından geliyor ve hiçbiri bir çevirmenin düzelteceği bir
+                dize değil (`MeasuredAssuranceLibrary`). Katalogda duran şey
+                yalnız o metnin ÇEVRESİ: bir iddianın hâlini söyleyen kelime
+                ve kanıt satırının etiketi — yasal belgelerle aynı ayrım.
+            */
+            'assuranceMeasured' => 'site.assurance.state.measured',
+            'assuranceNotMeasured' => 'site.assurance.state.notMeasured',
+            'assuranceKnownGap' => 'site.assurance.state.knownGap',
+            'assuranceNotHeld' => 'site.assurance.state.notHeld',
+            'assuranceEvidence' => 'site.assurance.evidence',
             // Gönderim sonrası REFERANS (FF-201, `docs/125`): denetleyici
             // `{reference}` yer tutucusunu doldurur, şablon yalnız yazar.
             'contactSentReference' => 'site.contact.sentReference',

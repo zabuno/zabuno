@@ -1,5 +1,5 @@
 /**
- * BOŞ KUYRUK NEDEN BOŞ — kararın TEK yeri (`docs/115` Y1/Y3, `docs/149` §4).
+ * BOŞ KUYRUK NEDEN BOŞ — kararın TEK yeri (`docs/115` Y1/Y3, `docs/153` §4).
  *
  * Bu bir biçimlendirme yardımcısı değil, bir ÜRÜN kararıdır: aynı boş liste
  * üç ayrı şey anlatabilir ve üçünün çıkış yolu farklıdır. Sessiz bir akşam
@@ -10,7 +10,7 @@
  * masaüstü kuyruğu) aynı işlevi çağırır. Her yüzey kendi başına karar
  * verseydi, aynı akşam telefonda "bugün sipariş yok", masaüstünde "planında
  * yok" yazabilirdi — ve sahip hangisinin doğru olduğunu bilemezdi. Ayrışan
- * yalnız SUNUM olmalı (`docs/149` §4); bu dosya ayrışmayanı tutar.
+ * yalnız SUNUM olmalı (`docs/153` §4); bu dosya ayrışmayanı tutar.
  */
 
 /** Plan hakkı YOKSA söylenir — liste dolu olsa BİLE. */

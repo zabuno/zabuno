@@ -211,7 +211,7 @@ export function renderActiveSection(
     activeKey: string,
     ctx: WorkspaceSectionRuntimeContext,
     /**
-     * BU CİHAZ PAKETİNİN kendi sayfaları — `docs/149` §5.
+     * BU CİHAZ PAKETİNİN kendi sayfaları — `docs/153` §5.
      *
      * Harita GİRİŞ NOKTASINDAN gelir; bu dosya hiçbir cihaza özgü modülü
      * adıyla anmaz. Verilmezse (telefon) her bölüm kendi kayıtlı çizimiyle
@@ -246,7 +246,7 @@ export function renderActiveSection(
     }
 
     /*
-        CİHAZIN KENDİ SAYFASI, İZİN KAPISININ ARDINDAN (`docs/149` §5).
+        CİHAZIN KENDİ SAYFASI, İZİN KAPISININ ARDINDAN (`docs/153` §5).
 
         Sıra kritik: harita yukarıdaki izin kontrolünden SONRA sorulur.
         Önce sorulsaydı, cihaza özgü bir sayfa izin kapısını atlayabilir ve

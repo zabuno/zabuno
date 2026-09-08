@@ -6,7 +6,7 @@ import type { WorkspaceSectionRuntimeContext } from '../WorkspaceApp';
 import type { WorkspacePageOverrideMap } from '../pages/pageOverride';
 
 /**
- * CİHAZA ÖZGÜ SAYFA HARİTASI — `docs/149` §5.
+ * CİHAZA ÖZGÜ SAYFA HARİTASI — `docs/153` §5.
  *
  * Bu dosyanın sorusu, kuyruğun nasıl göründüğü değil: haritanın SÖZLEŞMESİ.
  * Üç şey donuyor ve üçü de sessizce bozulabilecek türden:
