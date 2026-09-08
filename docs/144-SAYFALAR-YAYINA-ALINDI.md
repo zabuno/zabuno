@@ -63,8 +63,16 @@ Bu pakette yasak yeni komutu da kapsayacak şekilde genişletildi ve
 her `site:` komutunu bulur ve listede olmasını şart koşar. Üçüncü bir komut
 yazıldığı gün, kimse listeye eklemeyi hatırlamasa bile kapı kırılır.
 
-Sonucu açıkça: **bir dağıtım siteyi kendiliğinden açmaz.** Yayın kararı elle
-uygulanır (bkz. §5).
+Sonucu açıkça: **bir dağıtım ÖLÇÜMDEN bir yayın kararı türetmez.**
+
+> **Güncelleme (`docs/147`, 2026-09-08).** Bu bölüm ilk yazıldığında
+> *"bir dağıtım siteyi kendiliğinden açmaz; yayın kararı elle uygulanır"*
+> diyordu. O genişletme bir DAĞITIM BOŞLUĞU üretti ve boşluk ölçüldü: karar
+> main'e girip dağıtıldığında bile, birisi sunucuya SSH ile girip komutu
+> koşana kadar sayfa canlıda yoktu. Sahibin kararıyla yasak DARALTILDI —
+> `site:sync-content-status` (ölçümden türetir) yasaklı kaldı,
+> `site:apply-publication-decisions` (verilmiş kararı uygular) artık her
+> dağıtımda kendiliğinden koşuyor. Ayrıntı: `docs/147`.
 
 ## 3. Yayına alınan sayfalar — on sekizi de adıyla
 
@@ -182,9 +190,13 @@ tekrar çalıştırmak zararsızdır: bir kez yayınlanmış bir satıra bir dah
 dokunmaz, dolayısıyla sahibin SONRADAN verdiği bir kararı sessizce geri
 almaz.
 
-Sunucuda sıra şudur: `php artisan site:import-map` (kütüğü doldurur, her
-dağıtımda kendiliğinden koşar) → `php artisan site:apply-publication-decisions`
-(yayın kararını uygular, **elle**).
+Sunucuda sıra şudur ve **ikisi de her dağıtımda kendiliğinden koşar**
+(`docker/entrypoint.sh`): `php artisan migrate --force` →
+`php artisan site:import-map` (kütüğü doldurur) →
+`php artisan site:apply-publication-decisions` (yayın kararını uygular).
+
+Yukarıdaki komut, kararı dağıtımı beklemeden uygulamak ya da `--dry-run` ile
+önce görmek istendiğinde elle de koşulabilir; ama artık **gerekmez**.
 
 ## 6. Nasıl geri alınır
 
