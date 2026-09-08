@@ -596,6 +596,326 @@ msgstr ""
 msgid "site.home.parts.team.title"
 msgstr ""
 
+#: site:site.investors.built.cta
+msgid "site.investors.built.cta"
+msgstr ""
+
+#: site:site.investors.built.heading
+msgid "site.investors.built.heading"
+msgstr ""
+
+#: site:site.investors.built.lead
+msgid "site.investors.built.lead"
+msgstr ""
+
+#: site:site.investors.chain.heading
+msgid "site.investors.chain.heading"
+msgstr ""
+
+#: site:site.investors.chain.label
+msgid "site.investors.chain.label"
+msgstr ""
+
+#: site:site.investors.chain.lead
+msgid "site.investors.chain.lead"
+msgstr ""
+
+#: site:site.investors.commitment.cta
+msgid "site.investors.commitment.cta"
+msgstr ""
+
+#: site:site.investors.commitment.heading
+msgid "site.investors.commitment.heading"
+msgstr ""
+
+#: site:site.investors.commitment.missingLabel
+msgid "site.investors.commitment.missingLabel"
+msgstr ""
+
+#: site:site.investors.commitment.open
+msgid "site.investors.commitment.open"
+msgstr ""
+
+#: site:site.investors.commitment.set
+msgid "site.investors.commitment.set"
+msgstr ""
+
+#: site:site.investors.contact.cta
+msgid "site.investors.contact.cta"
+msgstr ""
+
+#: site:site.investors.contact.heading
+msgid "site.investors.contact.heading"
+msgstr ""
+
+#: site:site.investors.contact.lead
+msgid "site.investors.contact.lead"
+msgstr ""
+
+#: site:site.investors.contactPage.commitment.absent
+msgid "site.investors.contactPage.commitment.absent"
+msgstr ""
+
+#: site:site.investors.contactPage.cta
+msgid "site.investors.contactPage.cta"
+msgstr ""
+
+#: site:site.investors.contactPage.heading
+msgid "site.investors.contactPage.heading"
+msgstr ""
+
+#: site:site.investors.contactPage.identity.body
+msgid "site.investors.contactPage.identity.body"
+msgstr ""
+
+#: site:site.investors.contactPage.identity.heading
+msgid "site.investors.contactPage.identity.heading"
+msgstr ""
+
+#: site:site.investors.contactPage.lead
+msgid "site.investors.contactPage.lead"
+msgstr ""
+
+#: site:site.investors.contactPage.meta.description
+msgid "site.investors.contactPage.meta.description"
+msgstr ""
+
+#: site:site.investors.contactPage.meta.title
+msgid "site.investors.contactPage.meta.title"
+msgstr ""
+
+#: site:site.investors.contactPage.what.body
+msgid "site.investors.contactPage.what.body"
+msgstr ""
+
+#: site:site.investors.contactPage.what.heading
+msgid "site.investors.contactPage.what.heading"
+msgstr ""
+
+#: site:site.investors.deck.evidenceLabel
+msgid "site.investors.deck.evidenceLabel"
+msgstr ""
+
+#: site:site.investors.deck.heading
+msgid "site.investors.deck.heading"
+msgstr ""
+
+#: site:site.investors.deck.lead
+msgid "site.investors.deck.lead"
+msgstr ""
+
+#: site:site.investors.deck.meta.description
+msgid "site.investors.deck.meta.description"
+msgstr ""
+
+#: site:site.investors.deck.meta.title
+msgid "site.investors.deck.meta.title"
+msgstr ""
+
+#: site:site.investors.deckBuilt.body
+msgid "site.investors.deckBuilt.body"
+msgstr ""
+
+#: site:site.investors.deckBuilt.evidence
+msgid "site.investors.deckBuilt.evidence"
+msgstr ""
+
+#: site:site.investors.deckBuilt.heading
+msgid "site.investors.deckBuilt.heading"
+msgstr ""
+
+#: site:site.investors.deckChecked.body
+msgid "site.investors.deckChecked.body"
+msgstr ""
+
+#: site:site.investors.deckChecked.evidence
+msgid "site.investors.deckChecked.evidence"
+msgstr ""
+
+#: site:site.investors.deckChecked.heading
+msgid "site.investors.deckChecked.heading"
+msgstr ""
+
+#: site:site.investors.deckCommitment.body
+msgid "site.investors.deckCommitment.body"
+msgstr ""
+
+#: site:site.investors.deckCommitment.heading
+msgid "site.investors.deckCommitment.heading"
+msgstr ""
+
+#: site:site.investors.deckCta
+msgid "site.investors.deckCta"
+msgstr ""
+
+#: site:site.investors.deckNotBuilt.body
+msgid "site.investors.deckNotBuilt.body"
+msgstr ""
+
+#: site:site.investors.deckNotBuilt.evidence
+msgid "site.investors.deckNotBuilt.evidence"
+msgstr ""
+
+#: site:site.investors.deckNotBuilt.heading
+msgid "site.investors.deckNotBuilt.heading"
+msgstr ""
+
+#: site:site.investors.deckPrice.body
+msgid "site.investors.deckPrice.body"
+msgstr ""
+
+#: site:site.investors.deckPrice.evidence
+msgid "site.investors.deckPrice.evidence"
+msgstr ""
+
+#: site:site.investors.deckPrice.heading
+msgid "site.investors.deckPrice.heading"
+msgstr ""
+
+#: site:site.investors.deckRuns.body
+msgid "site.investors.deckRuns.body"
+msgstr ""
+
+#: site:site.investors.deckRuns.evidence
+msgid "site.investors.deckRuns.evidence"
+msgstr ""
+
+#: site:site.investors.deckRuns.heading
+msgid "site.investors.deckRuns.heading"
+msgstr ""
+
+#: site:site.investors.deckUnknown.body
+msgid "site.investors.deckUnknown.body"
+msgstr ""
+
+#: site:site.investors.deckUnknown.evidence
+msgid "site.investors.deckUnknown.evidence"
+msgstr ""
+
+#: site:site.investors.deckUnknown.heading
+msgid "site.investors.deckUnknown.heading"
+msgstr ""
+
+#: site:site.investors.deckWhat.body
+msgid "site.investors.deckWhat.body"
+msgstr ""
+
+#: site:site.investors.deckWhat.evidence
+msgid "site.investors.deckWhat.evidence"
+msgstr ""
+
+#: site:site.investors.deckWhat.heading
+msgid "site.investors.deckWhat.heading"
+msgstr ""
+
+#: site:site.investors.heading
+msgid "site.investors.heading"
+msgstr ""
+
+#: site:site.investors.infrastructure.dataLabel
+msgid "site.investors.infrastructure.dataLabel"
+msgstr ""
+
+#: site:site.investors.infrastructure.heading
+msgid "site.investors.infrastructure.heading"
+msgstr ""
+
+#: site:site.investors.infrastructure.lead
+msgid "site.investors.infrastructure.lead"
+msgstr ""
+
+#: site:site.investors.infrastructure.locationLabel
+msgid "site.investors.infrastructure.locationLabel"
+msgstr ""
+
+#: site:site.investors.infrastructure.roleLabel
+msgid "site.investors.infrastructure.roleLabel"
+msgstr ""
+
+#: site:site.investors.infrastructure.unreadable
+msgid "site.investors.infrastructure.unreadable"
+msgstr ""
+
+#: site:site.investors.lead
+msgid "site.investors.lead"
+msgstr ""
+
+#: site:site.investors.limits.heading
+msgid "site.investors.limits.heading"
+msgstr ""
+
+#: site:site.investors.limits.lead
+msgid "site.investors.limits.lead"
+msgstr ""
+
+#: site:site.investors.meta.description
+msgid "site.investors.meta.description"
+msgstr ""
+
+#: site:site.investors.meta.title
+msgid "site.investors.meta.title"
+msgstr ""
+
+#: site:site.investors.product.heading
+msgid "site.investors.product.heading"
+msgstr ""
+
+#: site:site.investors.product.lead
+msgid "site.investors.product.lead"
+msgstr ""
+
+#: site:site.investors.product.meta.description
+msgid "site.investors.product.meta.description"
+msgstr ""
+
+#: site:site.investors.product.meta.title
+msgid "site.investors.product.meta.title"
+msgstr ""
+
+#: site:site.investors.product.sourceLabel
+msgid "site.investors.product.sourceLabel"
+msgstr ""
+
+#: site:site.investors.product.sourceMissing
+msgid "site.investors.product.sourceMissing"
+msgstr ""
+
+#: site:site.investors.product.sourceNone
+msgid "site.investors.product.sourceNone"
+msgstr ""
+
+#: site:site.investors.rules.body
+msgid "site.investors.rules.body"
+msgstr ""
+
+#: site:site.investors.rules.body2
+msgid "site.investors.rules.body2"
+msgstr ""
+
+#: site:site.investors.rules.heading
+msgid "site.investors.rules.heading"
+msgstr ""
+
+#: site:site.investors.verification.gates
+msgid "site.investors.verification.gates"
+msgstr ""
+
+#: site:site.investors.verification.heading
+msgid "site.investors.verification.heading"
+msgstr ""
+
+#: site:site.investors.verification.lead
+msgid "site.investors.verification.lead"
+msgstr ""
+
+#: site:site.investors.verification.missing
+msgid "site.investors.verification.missing"
+msgstr ""
+
+#: site:site.investors.verification.present
+msgid "site.investors.verification.present"
+msgstr ""
+
 #: site:site.legal.contents
 msgid "site.legal.contents"
 msgstr ""
@@ -698,6 +1018,10 @@ msgstr "Nasıl çalışır"
 
 #: site:site.nav.integrations
 msgid "site.nav.integrations"
+msgstr ""
+
+#: site:site.nav.investors
+msgid "site.nav.investors"
 msgstr ""
 
 #: site:site.nav.login
@@ -824,6 +1148,18 @@ msgstr "Son güncelleme"
 msgid "site.plan.analytics"
 msgstr "Analitik: misafirler neye bakıyor, ne arayıp bulamıyor"
 
+#: site:site.plan.audience.restaurant
+msgid "site.plan.audience.restaurant"
+msgstr ""
+
+#: site:site.plan.audience.starter
+msgid "site.plan.audience.starter"
+msgstr ""
+
+#: site:site.plan.audience.team
+msgid "site.plan.audience.team"
+msgstr ""
+
 #: site:site.plan.branding
 msgid "site.plan.branding"
 msgstr ""
@@ -848,6 +1184,18 @@ msgstr "Yetkisini sizin belirlediğiniz ekip üyeleri"
 msgid "site.pricing.adds"
 msgstr "Ek olarak"
 
+#: site:site.pricing.audience
+msgid "site.pricing.audience"
+msgstr ""
+
+#: site:site.pricing.cancellation
+msgid "site.pricing.cancellation"
+msgstr ""
+
+#: site:site.pricing.cancellation.cta
+msgid "site.pricing.cancellation.cta"
+msgstr ""
+
 #: site:site.pricing.empty
 msgid "site.pricing.empty"
 msgstr "Plan fiyatları henüz yayımlanmadı. Restoranınızı anlatın, size özel bir fiyatla dönelim."
@@ -855,6 +1203,98 @@ msgstr "Plan fiyatları henüz yayımlanmadı. Restoranınızı anlatın, size �
 #: site:site.pricing.empty.cta
 msgid "site.pricing.empty.cta"
 msgstr "Bize yazın"
+
+#: site:site.pricing.excluded.campaign
+msgid "site.pricing.excluded.campaign"
+msgstr ""
+
+#: site:site.pricing.excluded.currency
+msgid "site.pricing.excluded.currency"
+msgstr ""
+
+#: site:site.pricing.excluded.delivery
+msgid "site.pricing.excluded.delivery"
+msgstr ""
+
+#: site:site.pricing.excluded.heading
+msgid "site.pricing.excluded.heading"
+msgstr ""
+
+#: site:site.pricing.excluded.kitchenHardware
+msgid "site.pricing.excluded.kitchenHardware"
+msgstr ""
+
+#: site:site.pricing.excluded.lead
+msgid "site.pricing.excluded.lead"
+msgstr ""
+
+#: site:site.pricing.excluded.payment
+msgid "site.pricing.excluded.payment"
+msgstr ""
+
+#: site:site.pricing.excluded.pos
+msgid "site.pricing.excluded.pos"
+msgstr ""
+
+#: site:site.pricing.faq.branch.answer
+msgid "site.pricing.faq.branch.answer"
+msgstr ""
+
+#: site:site.pricing.faq.branch.question
+msgid "site.pricing.faq.branch.question"
+msgstr ""
+
+#: site:site.pricing.faq.cancel.answer
+msgid "site.pricing.faq.cancel.answer"
+msgstr ""
+
+#: site:site.pricing.faq.cancel.question
+msgid "site.pricing.faq.cancel.question"
+msgstr ""
+
+#: site:site.pricing.faq.change.answer
+msgid "site.pricing.faq.change.answer"
+msgstr ""
+
+#: site:site.pricing.faq.change.question
+msgid "site.pricing.faq.change.question"
+msgstr ""
+
+#: site:site.pricing.faq.heading
+msgid "site.pricing.faq.heading"
+msgstr ""
+
+#: site:site.pricing.faq.refund.answer
+msgid "site.pricing.faq.refund.answer"
+msgstr ""
+
+#: site:site.pricing.faq.refund.question
+msgid "site.pricing.faq.refund.question"
+msgstr ""
+
+#: site:site.pricing.faq.reprint.answer
+msgid "site.pricing.faq.reprint.answer"
+msgstr ""
+
+#: site:site.pricing.faq.reprint.question
+msgid "site.pricing.faq.reprint.question"
+msgstr ""
+
+#: site:site.pricing.faq.stop.answer
+msgid "site.pricing.faq.stop.answer"
+msgstr ""
+
+#: site:site.pricing.faq.stop.question
+msgid "site.pricing.faq.stop.question"
+msgstr ""
+
+#: site:site.pricing.faq.trial.answer
+msgid "site.pricing.faq.trial.answer"
+msgstr ""
+
+#: site:site.pricing.faq.trial.question
+msgid "site.pricing.faq.trial.question"
+msgstr ""
 
 #: site:site.pricing.free
 msgid "site.pricing.free"
@@ -895,6 +1335,14 @@ msgstr "Fiyat restoran başınadır."
 #: site:site.pricing.perRestaurant.cta
 msgid "site.pricing.perRestaurant.cta"
 msgstr "Bize yazın"
+
+#: site:site.pricing.plans.heading
+msgid "site.pricing.plans.heading"
+msgstr ""
+
+#: site:site.pricing.terms.heading
+msgid "site.pricing.terms.heading"
+msgstr ""
 
 #: site:site.pricing.unsure
 msgid "site.pricing.unsure"

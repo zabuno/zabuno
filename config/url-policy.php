@@ -156,6 +156,13 @@ return [
         */
         'about', 'delivery',
         /*
+            YATIRIMCI İLİŞKİLERİ (FF-251). `/investors` ve üç alt adresi üst
+            düzey yollardır (URL-RESERVED-COVERS-ROUTES-13); bir işletme
+            `investors` slug'ını alırsa, bir yatırımcının adıyla aradığı
+            sayfa o işletmenin menüsüyle gölgelenirdi.
+        */
+        'investors',
+        /*
             KURUMSAL SÖZLEŞMELER (FF-228, `docs/140`). Aynı kural: dördü de
             üst düzey yoldur (URL-RESERVED-COVERS-ROUTES-13) ve bir işletme
             `sla` slug'ını alırsa hizmet seviyesi sayfası o işletmenin

@@ -291,6 +291,136 @@ export const siteTranslations = {
     // (`docs/122` Y6, `GuestRichMediaTest`).
     'site.plan.richMedia': 'Photographs of your dishes on the guest menu',
 
+    /*
+        ═══ KİME UYGUN — FF-239 (`docs/139`, `docs/107` Faz 2.7) ═══
+
+        "Pro" bir şey anlatmaz. Kademenin ADI, telefonundan bakan bir restoran
+        sahibine hangisini alacağını söylemez; ölçüt onun KENDİ durumudur.
+
+        ÜÇ CÜMLE DE UYDURULMADI, `PlanCatalogueSeeder`'ın kendi gerekçesinden
+        türetildi (`docs/90`): ücretsiz kademe "zaten ücretsiz olan"ı
+        adlandırır; `restaurant` "kırk masalık, sahip-işletmeli bir salonun ilk
+        gün ihtiyacı"dır; `team` "sahibin menüyü tek başına yönetmediği yer".
+        Yani sayfada okunan cümle, kademenin var olma sebebinin kendisidir —
+        pazarlama için sonradan yazılmış ikinci bir gerekçe değil.
+
+        Cümleler hakları TEKRAR SAYMAZ: "Adds" listesi zaten onu yapıyor ve
+        aynı şeyi iki kez yazmak, dar ekranda kartın yarısını harcardı.
+
+        Anahtar plan KODUNA bağlıdır ve tanınmayan bir kod hiç cümle üretmez
+        (`SiteText::planAudienceLabel`) — sahibin panelden açtığı dördüncü bir
+        plana uydurulmuş bir kitle yakıştırmak, tam olarak bu bölümün
+        engellemek için var olduğu şey olurdu.
+    */
+    /*
+        BÖLÜM BAŞLIKLARI. Fiyat sayfası artık dört bölümlü ve her bölümün
+        görünür bir başlığı var: gizli bir başlık, ekran okuyucuya verilen
+        hizmeti gören kullanıcıya vermez ve dar ekranda kaydıran birine
+        nerede olduğunu söyleyen tek şey odur.
+    */
+    'site.pricing.plans.heading': 'The plans',
+    'site.pricing.terms.heading': 'Paying, and stopping',
+    'site.pricing.audience': 'Who it is for',
+    'site.plan.audience.starter':
+        'You are putting your menu behind a QR code for the first time, you look after it yourself, and you would rather not pay to find out whether it works.',
+    'site.plan.audience.restaurant':
+        'You run a room of tables yourself, and you want the page the guest reads to look like your restaurant rather than like a form.',
+    'site.plan.audience.team':
+        'You are not the only one who touches the menu: a manager, a waiter or an accountant needs an account of their own instead of yours.',
+
+    /*
+        ═══ NE DAHİL DEĞİL — HİÇBİR PLANDA ═══
+
+        Bir fiyat sayfasının en pahalı sessizliği burasıdır. Tik dolu bir
+        tablo, pahalı sütunun NEYE SAHİP olduğunu söyler; parasını ödedikten
+        sonra masada hâlâ olmayacak şeyi söylemez.
+
+        Altı satırın altısı da ölçülmüş bir yokluktur ve DİLİ ödünç alınmıştır,
+        yeniden icat edilmemiştir: dördü sipariş sayfasının "What it does not
+        do" bloğundan (`OrderingPage`), ikisi kurumsal fiyat sayfasının
+        "What this page does not offer" bloğundan (`PricingPage`). Aynı
+        yokluğu iki yüzeyde iki ayrı cümleyle anlatmak, ikisinden hangisinin
+        doğru olduğunu bir gün bilinmez yapardı (`docs/137` §2a).
+
+        Başlık "hiçbir plan" der, "ucuz plan" değil: bunlar bir kademe farkı
+        değil, ürünün bugünkü sınırıdır.
+    */
+    'site.pricing.excluded.heading': 'What no plan includes',
+    'site.pricing.excluded.lead':
+        'These are missing from every plan, not only from the cheap one. They are written here rather than found out after paying.',
+    'site.pricing.excluded.payment':
+        'Guests do not pay through Zabuno. An order carries no card step and no bill; the money is still handled at the table, exactly as it is today.',
+    'site.pricing.excluded.pos':
+        'There is no connection to a till, a point-of-sale system or an accounting package. An order lives in Zabuno and is read on a Zabuno screen.',
+    'site.pricing.excluded.delivery':
+        'There is no takeaway, no delivery, no collection and no ordering before arriving. The one way to send an order is to scan the code on a table.',
+    'site.pricing.excluded.kitchenHardware':
+        'Nothing prints and nothing beeps. Orders appear on a screen that refreshes itself, so somebody has to be able to see that screen.',
+    'site.pricing.excluded.campaign':
+        'There is no trial period, no introductory rate, no annual discount and no campaign. A plan is a name, an amount and a set of rights.',
+    'site.pricing.excluded.currency':
+        'Prices are in Turkish lira only. There is no second currency and no conversion at the payment step.',
+
+    /*
+        ═══ SSS — SORULAR UYDURULMADI ═══
+
+        Kaynak üç yerdir ve her sorunun karşılığı depoda ölçülebilir:
+
+          · YARDIM MAKALESİ (`resources/help/en/first-15-minutes.blade.php`) —
+            basılı kodun ölmemesi oradan gelir.
+          · ÜRÜNÜN "NE DEĞİLDİR" LİSTELERİ (`PricingPage`, `OrderingPage`) —
+            deneme süresi, şube başına fiyat, kişi başına fiyat.
+          · YAYINLANMIŞ YASAL METİN (`RefundPolicy`, `docs/134`) — iptal, ne
+            zaman yürürlüğe girdiği, iade, plan değiştirme, ödemesiz süre.
+
+        DESTEK TALEBİ YÜZEYİ BİLEREK KULLANILMADI ve sebebi ölçüldü:
+        `support_requests` bir konu taksonomisi taşımıyor (`workspace.support`
+        kataloğunda tek bir serbest metin alanı var) ve depoda gerçek bir
+        talep kütüğü yok. Oradan soru "türetmek", uydurmanın kaynak göstermiş
+        hâli olurdu.
+
+        Cevaplar ürünün BUGÜNKÜ davranışını anlatır; hiçbiri süre, oran ya da
+        garanti sözü vermez. Ödemesiz sürenin gün sayısı da burada YAZMAZ —
+        o bir yapılandırmadır (`billing.subscription.grace_days`) ve metne
+        kopyalansaydı ilk değişiklikte ayrışırdı (`RefundPolicy` ile aynı
+        gerekçe).
+    */
+    'site.pricing.faq.heading': 'Questions people ask before paying',
+    'site.pricing.faq.stop.question': 'What happens to my menu if I stop paying?',
+    'site.pricing.faq.stop.answer':
+        'It keeps working. Writing the menu, publishing it, the printed codes and the page your guests read never needed a plan. When a paid period ends without a payment, the plan features stay on for a further period shown on your Billing screen, then switch off; your workspace, your menus and your published pages stay exactly as they are.',
+    'site.pricing.faq.cancel.question': 'Can I cancel it myself?',
+    'site.pricing.faq.cancel.answer':
+        'Yes, from the Billing screen of your workspace. Cancelling stops the renewal: the plan stays active until the end of the period you have already paid for, and you can undo the cancellation from the same screen before that date without paying again.',
+    'site.pricing.faq.refund.question':
+        'Do I get money back if I cancel in the middle of a period?',
+    'site.pricing.faq.refund.answer':
+        'No. A period that has already started is not refunded, and you keep everything it included until it ends. The exceptions are a consumer exercising the statutory right of withdrawal, and us ending or reducing the service before a paid period is over; the Cancellation and Refund Policy states them.',
+    'site.pricing.faq.change.question': 'How do I move to a bigger or a smaller plan?',
+    'site.pricing.faq.change.answer':
+        'From the same Billing screen. Moving up takes effect as soon as its payment succeeds. Moving down is scheduled for the end of the period you have paid for, and before you confirm it the screen names the capabilities the cheaper plan does not include.',
+    'site.pricing.faq.trial.question': 'Is the free plan a trial that runs out?',
+    'site.pricing.faq.trial.answer':
+        'No, and there is no trial on the paid plans either. The free plan is the part of the product that never needed a plan, named rather than hidden: you can write the whole menu, publish it and print codes before deciding anything.',
+    'site.pricing.faq.branch.question': 'Does a second branch or another waiter cost more?',
+    'site.pricing.faq.branch.answer':
+        'No. A plan carries one amount for the whole workspace, whatever it holds. Accounts for your team are a right the top plan opens, not a price per person.',
+    'site.pricing.faq.reprint.question':
+        'Do I have to reprint the codes if I change my prices or my plan?',
+    'site.pricing.faq.reprint.answer':
+        'No. Print once. You can change prices, reorganise the menu, publish a wrong list and go back to the previous one, or move where a code points; the paper on the table keeps working.',
+
+    /*
+        İPTAL VE İADE, FİYATIN YANINDA — ödeme yönteminin yanında (FF-216 ile
+        aynı gerekçe). "Nasıl çıkarım?" sorusu tam burada sorulur; cevabını
+        yalnız sözleşmenin içinde bırakmak, onu ödeme adımından SONRA
+        öğrenmek demekti. Yasal metin `/refund-policy` adresinde yaşıyor ve
+        bu satır onun yerine geçmez, ona götürür.
+    */
+    'site.pricing.cancellation':
+        'You cancel from your own workspace, and the plan runs to the end of the period you paid for.',
+    'site.pricing.cancellation.cta': 'Read the Cancellation and Refund Policy',
+
     // --- İletişim --------------------------------------------------------
     'site.contact.heading': 'Contact',
     'site.contact.lead':
@@ -574,6 +704,143 @@ export const siteTranslations = {
     'site.home.contact.lead':
         'Ask about pricing, a pilot, or anything that is in your way. We keep every message; you get a confirmation on screen.',
     'site.home.contact.cta': 'Write to us',
+    // --- YATIRIMCI İLİŞKİLERİ (FF-251) -----------------------------------
+    /*
+        DÖRT SAYFANIN METNİ. Buradaki hiçbir dize bir RAKAM taşımaz; taşıdığı
+        şey `{parts}`, `{limits}`, `{sources}`, `{gates}` gibi yer
+        tutuculardır ve onları `ShowInvestorPageController` ÖLÇÜLEN değerlerle
+        doldurur (`InvestorDossier`).
+
+        Kural bir üslup tercihi değil bir KAPI: `INVESTOR-HONEST-01` sayfadaki
+        her rakamın dosyadan geldiğini ölçer. Buraya elle yazılmış tek bir
+        sayı, o kapıyı kırar — ki maksat tam olarak budur.
+    */
+    'site.nav.investors': 'Investors',
+    'site.investors.meta.title': 'Investor relations',
+    'site.investors.meta.description':
+        'What Zabuno is, which parts of it are built, which are deliberately not, what has been committed and what nobody has measured yet — with the file behind every claim.',
+    'site.investors.heading': 'Investor relations',
+    'site.investors.lead':
+        'Zabuno is a working product before it is a business. These pages say what has been built, what has not, and what nobody has measured yet.',
+    'site.investors.rules.heading': 'What is not on these pages',
+    'site.investors.rules.body':
+        'These pages carry no figure this repository cannot measure. How many places run the product, what it earns, how fast either moves, how large the market is and who else has praised it are counted nowhere in this code, so none of them is written here.',
+    'site.investors.rules.body2':
+        'What is here instead is the work itself: the product’s own inventory, the file behind each claim, the commitments deliberately left empty, and the gates that check them. A test breaks the build if a number nobody measured is ever added to these pages.',
+    'site.investors.chain.heading': 'What the product does, in order',
+    'site.investors.chain.lead':
+        'The base journey is the same for everybody and costs nothing: an account, a business, a branch, a menu, a published version, a printed code. Plans add capability on top of that chain; they never switch the chain off.',
+    'site.investors.chain.label': 'The product journey, step by step',
+    'site.investors.built.heading': 'What is built',
+    'site.investors.built.lead':
+        'The product has {parts} parts, and every one of them is read from the product’s own inventory rather than written for this page. If a part is renamed or dropped, this list changes with it.',
+    'site.investors.built.cta': 'Read the full inventory',
+    'site.investors.limits.heading': 'What is not built',
+    'site.investors.limits.lead':
+        'There are {limits} things the product deliberately does not do. This is the section to read first: a capability someone assumed was there is discovered to be missing during service, when there is no time left to change anything.',
+    'site.investors.commitment.heading': 'What has been committed, and what has not',
+    'site.investors.commitment.open':
+        'No availability figure is committed. The service level terms exist and describe how availability would be measured, excluded, notified and compensated — but the values themselves are deliberately empty, because nothing in this deployment measures uptime yet and a promise nobody can check is not a promise.',
+    'site.investors.commitment.missingLabel': 'Empty on purpose, in config/sla.php:',
+    'site.investors.commitment.set':
+        'An availability figure has been committed. The service level terms carry it, together with how it is measured and what happens when it is missed.',
+    'site.investors.commitment.cta': 'Read the service level terms',
+    'site.investors.infrastructure.heading': 'Where it runs, and who else sees the data',
+    'site.investors.infrastructure.lead':
+        'This list of {subprocessors} entries is not written by hand. It is read from the hosting configuration, from the credential vault and from the measurement settings each time the page is drawn, so it cannot quietly go out of date.',
+    'site.investors.infrastructure.unreadable':
+        'The credential vault could not be read while this page was drawn, so this list may be short. “We could not look” is not the same sentence as “there is nothing”.',
+    'site.investors.infrastructure.roleLabel': 'Role',
+    'site.investors.infrastructure.dataLabel': 'Data it sees',
+    'site.investors.infrastructure.locationLabel': 'Where it processes',
+    'site.investors.verification.heading': 'How a claim is checked',
+    'site.investors.verification.lead':
+        '{sources} of the claims on these pages name the file in this deployment that produces them, and each of those files is looked for while the page is drawn. A claim whose file has gone is shown as missing rather than quietly kept.',
+    'site.investors.verification.gates':
+        'Gate scripts found in this deployment: {gates}. Each one is a check that runs against the real product rather than a description of it.',
+    'site.investors.verification.present': 'Present',
+    'site.investors.verification.missing': 'Not in this deployment',
+    'site.investors.contact.heading': 'Talking to us',
+    'site.investors.contact.lead':
+        'Questions about what is built, what is not, and how a claim is checked are answered from the same inventory these pages are drawn from.',
+    'site.investors.contact.cta': 'How to reach us',
+    'site.investors.deckCta': 'Read the short version',
+
+    /* `/investors/product` — envanterin kendisi. */
+    'site.investors.product.meta.title': 'What has been built',
+    'site.investors.product.meta.description':
+        'The product inventory part by part, each part named together with the file in this deployment that produces it, and the seven things the product deliberately does not do.',
+    'site.investors.product.heading': 'What has been built',
+    'site.investors.product.lead':
+        'The product’s own inventory, part by part, with the file behind each part. Nothing on this page was written for an investor; it is the same list the product describes itself with.',
+    'site.investors.product.sourceLabel': 'Produced by',
+    'site.investors.product.sourceMissing':
+        'The file behind this claim is not in this deployment, so treat the claim as unproven.',
+    'site.investors.product.sourceNone':
+        'This entry names no file, because it describes something the product does not do — an absence has nothing to point at.',
+
+    /* `/investors/deck` — aynı olgular, bir kez okunacak sırada. */
+    'site.investors.deck.meta.title': 'The short version',
+    'site.investors.deck.meta.description':
+        'The same measured facts as the rest of this section, in the order you would read them once: what it is, what is built, what is not, what it costs, what is committed, where it runs, how it is checked and what nobody knows.',
+    'site.investors.deck.heading': 'The short version',
+    'site.investors.deck.lead':
+        'The same facts as the rest of this section, in the order you would read them once. There is no file to download and no separate story: a deck that says something the product does not is a deck somebody has to correct later.',
+    'site.investors.deck.evidenceLabel': 'Measured',
+    'site.investors.deckWhat.heading': 'What it is',
+    'site.investors.deckWhat.body':
+        'One web product for places that serve food and drink: you write a menu, publish it, print a code for each table, and guests read the menu in the browser already on their phone. No app for the guest, no account for the guest.',
+    'site.investors.deckWhat.evidence':
+        'The journey has {chain} steps, and each step names the controller that runs it.',
+    'site.investors.deckBuilt.heading': 'What is built',
+    'site.investors.deckBuilt.body':
+        'Menu, publication, printable codes, photos, branding, languages, branches, reports, ordering from the table, a team and ratings live in one account, not as separate products.',
+    'site.investors.deckBuilt.evidence': '{parts} parts, each read from the product inventory.',
+    'site.investors.deckNotBuilt.heading': 'What is not built',
+    'site.investors.deckNotBuilt.body':
+        'The product is not a point-of-sale system, does not take money from a guest, does not do reservations, has no third-party integrations and has no in-store app. Those are stated as plainly as the capabilities are.',
+    'site.investors.deckNotBuilt.evidence':
+        '{limits} stated limits, carried on the public home page as well as here.',
+    'site.investors.deckPrice.heading': 'What it costs',
+    'site.investors.deckPrice.body':
+        'The base journey costs nothing and plans add capability on top of it. Every price shown on this site is read from the plan catalogue, never typed into a page.',
+    'site.investors.deckPrice.evidence':
+        'Prices are read from the plan catalogue and published at /pricing without an account.',
+    'site.investors.deckCommitment.heading': 'What has been committed',
+    'site.investors.deckCommitment.body':
+        'The commercial commitments a buyer asks for — availability, incident notice, service credit — are written as terms but left without values, on purpose, until something measures them.',
+    'site.investors.deckRuns.heading': 'Where it runs',
+    'site.investors.deckRuns.body':
+        'One virtual server carries the application, the database and the uploaded files. Everything else that touches customer data is named, and named only while it is actually switched on.',
+    'site.investors.deckRuns.evidence':
+        '{subprocessors} entries, read from configuration and the credential vault at render time.',
+    'site.investors.deckChecked.heading': 'How it is checked',
+    'site.investors.deckChecked.body':
+        'Claims are tied to files and behaviour is tied to gates. A capability that disappears from the product cannot keep being sold on a page, because a red test says so before a reader does.',
+    'site.investors.deckChecked.evidence':
+        '{sources} claims tied to a file, {gates} gate scripts present.',
+    'site.investors.deckUnknown.heading': 'What nobody knows yet',
+    'site.investors.deckUnknown.body':
+        'Demand, what a restaurant will pay, whether a restaurant keeps using it after the first month, and what it costs to serve one at scale. None of that is measured anywhere in this code, and this section does not pretend otherwise.',
+    'site.investors.deckUnknown.evidence':
+        'Not measured. The honest answer to an unmeasured question is that it is unmeasured.',
+
+    /* `/investors/contact` — ikinci bir form altyapısı YOK. */
+    'site.investors.contactPage.meta.title': 'Talking to us',
+    'site.investors.contactPage.meta.description':
+        'There is one contact route on this site and investors use the same one, together with the legal identity of the seller as this deployment has it configured.',
+    'site.investors.contactPage.heading': 'Talking to us',
+    'site.investors.contactPage.lead':
+        'There is one contact route on this site and investors use the same one. A separate investor inbox has not been set up, and pretending otherwise would send your message to an address nobody reads.',
+    'site.investors.contactPage.what.heading': 'What to send',
+    'site.investors.contactPage.what.body':
+        'Say who you are, what you are looking at and what you want to see. Questions about a capability are answered from the inventory these pages are drawn from, so the answer you get is the same answer the product gives itself.',
+    'site.investors.contactPage.identity.heading': 'Who you would be talking to',
+    'site.investors.contactPage.identity.body':
+        'The identity below is read from this deployment’s own configuration. Where a field says it has not been provided, it has not been provided; an empty field is shown rather than hidden.',
+    'site.investors.contactPage.commitment.absent':
+        'No response time has been committed, so none is shown here. A fallback sentence such as “as soon as possible” would be a promise nobody made.',
+    'site.investors.contactPage.cta': 'Open the contact form',
 } as const;
 
 export type SiteTranslationKey = keyof typeof siteTranslations;
