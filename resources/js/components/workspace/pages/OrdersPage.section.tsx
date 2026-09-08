@@ -3,6 +3,7 @@ import { lazy, Suspense, type ReactNode } from 'react';
 
 import type { WorkspaceSectionRuntimeContext } from '../WorkspaceApp';
 import type { WorkspaceSectionDescriptor } from '../shell/WorkspaceSectionRegistry';
+import { ordersPropsFromContext } from './orders/ordersSectionProps';
 
 /*
     EKRAN İSTENDİĞİNDE İNER (FF-97 deseni). Kaydın METADATASI (ad, ikon,
@@ -13,22 +14,18 @@ const OrdersPage = lazy(async () => ({
     default: (await import('./OrdersPage')).OrdersPage,
 }));
 
+/*
+    BU KAYIT CİHAZ TANIMAZ ve tanımamalı (`docs/149` §5).
+
+    Kayıtlar `import.meta.glob` ile TOPLUCA ve EAGER okunur, yani bu dosya
+    iki pakete birden girer. Burada masaüstü kuyruğu adıyla anılsaydı, kodu
+    telefona da inerdi — çizilmese bile. Masaüstü çizimi bu yüzden kayıtta
+    değil, cihaz paketindeki sayfa haritasında durur.
+*/
 function render(ctx: WorkspaceSectionRuntimeContext): ReactNode {
     return (
         <Suspense fallback={null}>
-            <OrdersPage
-                workspaceId={ctx.workspaceId}
-                locationId={ctx.catalogLocationId}
-                subPath={ctx.subPath}
-                onNavigate={ctx.onNavigateToSection}
-                can={ctx.can}
-                /*
-                    Mutfak monitörü çizicisi GİRİŞ NOKTASINDAN gelir; bu dosya
-                    onu adıyla anmaz (`docs/54` §5). Telefon paketinde
-                    `undefined` olur ve ekran nedenini söyler.
-                */
-                renderKitchenMonitor={ctx.renderKitchenMonitor}
-            />
+            <OrdersPage {...ordersPropsFromContext(ctx)} />
         </Suspense>
     );
 }

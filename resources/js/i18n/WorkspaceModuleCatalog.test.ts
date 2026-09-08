@@ -280,8 +280,15 @@ const FROZEN_MODULE_FILENAMES = [
 // ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
 // msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
 
+// MASAÜSTÜ KUYRUĞU (`docs/149`): `ordering.ts` kataloğuna, yalnız
+// işaretleyici/klavye yüzeyinde çizilen ON BİR anahtar eklendi — kısayol
+// satırı, çoklu seçim şeridi, toplu ret sebebi, bağlam menüsü ve ayrıntı
+// bölmesi. Dokunmada bunların karşılığı YOKTUR (`hover` yok, sağ tık yok,
+// Enter yok) ve o yüzden mobil kuyrukta hiçbiri çizilmez.
+// ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
+// msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'f9101db45b20e19291508407806f3bd47e235a69b9fc01bf6de31e29271d934e';
+    'e1a3729def42d9f5655197c47320b648cbdf1d355b7ac996e0ac9753e96ad4a3';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
@@ -289,7 +296,7 @@ function normalizedHash(entries: Record<string, string>): string {
     return createHash('sha256').update(normalized, 'utf8').digest('hex');
 }
 
-const FROZEN_LEGACY_KEY_COUNT = 1778;
+const FROZEN_LEGACY_KEY_COUNT = 1789;
 
 describe('workspace i18n modular catalog contract', () => {
     // Başlıktaki SAYI kaldırıldı ve bir daha yazılmayacak: liste zaten

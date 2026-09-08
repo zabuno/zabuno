@@ -1,14 +1,15 @@
 import { useCallback, useId, useState } from 'react';
-import { Check, X, Warning } from '@phosphor-icons/react';
+import { Check, X } from '@phosphor-icons/react';
 
 import { t } from '../../../../i18n/workspace';
 import { PageState } from '../shared/PageState';
+import { FeedStatusLine } from './FeedStatusLine';
 import { changeOrderStatus } from './changeOrderStatus';
+import { planGateVisible, queueEmptyReason } from './queueEmptyState';
 import {
     lineTotal,
     orderAllergens,
     orderStatusLabel,
-    updatedAtLabel,
     waitingLabel,
     waitingMinutes,
 } from './orderPresentation';
@@ -168,6 +169,13 @@ export function OrderQueueRegion({
 
     const timeZone = feed.orders[0]?.timeZone ?? null;
 
+    /*
+        Boş listenin sebebi PAYLAŞILAN kararla belirlenir
+        (`queueEmptyState`): masaüstü kuyruğu da aynı işlevi çağırır, yani
+        iki ekran aynı akşam aynı cümleyi kurar (`docs/149` §4).
+    */
+    const emptyReason = queueEmptyReason(feed.orders.length, acceptsOrders, planIncludesOrdering);
+
     return (
         <section
             aria-label={t('workspace.orders.queue.region')}
@@ -175,7 +183,7 @@ export function OrderQueueRegion({
         >
             <FeedStatusLine feed={feed} timeZone={timeZone} />
 
-            {planIncludesOrdering === false ? (
+            {planGateVisible(planIncludesOrdering) ? (
                 /*
                     PLAN KAPISI, ŞALTERDEN ÖNCE VE LİSTEDEN BAĞIMSIZ.
 
@@ -217,33 +225,31 @@ export function OrderQueueRegion({
                 />
             ) : null}
 
-            {feed.orders.length === 0 ? (
-                planIncludesOrdering === false ? null : acceptsOrders === false ? (
-                    <PageState
-                        kind="prerequisite"
-                        screen="orders_queue"
-                        title={t('workspace.orders.queue.empty.closed.title')}
-                        description={t('workspace.orders.queue.empty.closed.description')}
-                        action={
-                            <button
-                                type="button"
-                                className="underline"
-                                onClick={onNavigateToSettings}
-                            >
-                                {t('workspace.orders.tab.settings')}
-                            </button>
-                        }
-                    />
-                ) : (
-                    <PageState
-                        kind="empty"
-                        screen="orders_queue"
-                        title={t('workspace.orders.queue.empty.title')}
-                        description={t('workspace.orders.queue.empty.description')}
-                        whyNoAction={t('workspace.orders.queue.empty.description')}
-                    />
-                )
-            ) : (
+            {emptyReason === 'closed' ? (
+                <PageState
+                    kind="prerequisite"
+                    screen="orders_queue"
+                    title={t('workspace.orders.queue.empty.closed.title')}
+                    description={t('workspace.orders.queue.empty.closed.description')}
+                    action={
+                        <button type="button" className="underline" onClick={onNavigateToSettings}>
+                            {t('workspace.orders.tab.settings')}
+                        </button>
+                    }
+                />
+            ) : null}
+
+            {emptyReason === 'quiet' ? (
+                <PageState
+                    kind="empty"
+                    screen="orders_queue"
+                    title={t('workspace.orders.queue.empty.title')}
+                    description={t('workspace.orders.queue.empty.description')}
+                    whyNoAction={t('workspace.orders.queue.empty.description')}
+                />
+            ) : null}
+
+            {feed.orders.length > 0 ? (
                 <>
                     <p className="text-meta text-fg-secondary">
                         {t('workspace.orders.queue.count', {
@@ -270,45 +276,8 @@ export function OrderQueueRegion({
                         ))}
                     </ul>
                 </>
-            )}
-        </section>
-    );
-}
-
-/**
- * "Ne zaman güncellendi" satırı — `docs/115` §6.
- *
- * Ekran "canlı" demez. Mutfakta donmuş bir ekranla dolu bir ekran aynı
- * görünür; tek ayırt edici şey bu satırdır.
- */
-export function FeedStatusLine({
-    feed,
-    timeZone,
-}: {
-    feed: { lastUpdatedAt: Date | null; stale: boolean; refresh: () => void };
-    timeZone: string | null;
-}) {
-    return (
-        <div className="flex flex-wrap items-center gap-[var(--space-3)]">
-            <p className="text-meta text-fg-muted" data-testid="orders-updated-at">
-                {updatedAtLabel(feed.lastUpdatedAt, timeZone)}
-            </p>
-            {feed.stale ? (
-                /*
-                    `status`, `alert` DEĞİL: ortada bozulmuş bir şey yok,
-                    yalnız son deneme tutmadı ve ekrandaki liste eskimiş
-                    olabilir. `alert` ekran okuyucuyu bölerdi ve gerçek
-                    uyarının değerini düşürürdü (`docs/59`).
-                */
-                <p role="status" className="flex items-center gap-1 text-meta text-fg-secondary">
-                    <Warning size={16} weight="regular" aria-hidden="true" />
-                    {t('workspace.orders.stale')}
-                </p>
             ) : null}
-            <button type="button" className="text-meta underline" onClick={() => feed.refresh()}>
-                {t('workspace.orders.refresh')}
-            </button>
-        </div>
+        </section>
     );
 }
 

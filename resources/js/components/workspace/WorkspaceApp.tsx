@@ -34,6 +34,7 @@ import {
     type WorkspaceSectionDescriptor,
 } from './shell/WorkspaceSectionRegistry';
 import type { WorkspaceInspectorMap } from './inspectors/types';
+import type { WorkspacePageOverrideMap } from './pages/pageOverride';
 import type { KitchenSurfaceRenderer } from './pages/orders/kitchenSurface';
 
 export type CatalogPhase =
@@ -205,6 +206,19 @@ export type WorkspaceAppProps = {
      * yalnız gizlerdi, kod paylaşılan bölüm kaydından yine indirilirdi.
      */
     renderKitchenMonitor?: KitchenSurfaceRenderer;
+    /**
+     * BU CİHAZ PAKETİNİN kendi SAYFALARI — `docs/149`.
+     *
+     * `inspectors` bir bölümün yanındaki paneli, `renderKitchenMonitor` bir
+     * sekmenin içindeki yüzeyi cihaza özgü kılar. Bu harita aynı desenin
+     * bölümün TAMAMI için olanıdır: masaüstü girişi kendi sayfasını verir,
+     * mobil giriş hiç vermez ve bölüm kayıtlı çizimiyle çizilir.
+     *
+     * Bayrak değil HARİTA geçilir, hep aynı sebeple: bir bayrak yalnız
+     * gizlerdi — masaüstü sayfası paylaşılan bölüm kaydından telefona yine
+     * inerdi (`docs/149` §3).
+     */
+    pageOverrides?: WorkspacePageOverrideMap;
 };
 
 export type WorkspaceChromeContext = {
@@ -257,6 +271,7 @@ export function WorkspaceApp({
     renderBottomBar,
     inspectors,
     renderKitchenMonitor,
+    pageOverrides,
 }: WorkspaceAppProps) {
     const [phase, setPhase] = useState<Phase>('loading');
     const [user, setUser] = useState<WorkspaceUser | null>(null);
@@ -1451,7 +1466,7 @@ export function WorkspaceApp({
             */}
             {sectionContext !== null && !showOnboardingForm && (
                 <AppErrorBoundary scope="route" resetKey={activeSection}>
-                    {renderActiveSection(activeSection, sectionContext)}
+                    {renderActiveSection(activeSection, sectionContext, pageOverrides)}
                 </AppErrorBoundary>
             )}
 
