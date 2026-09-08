@@ -1,17 +1,49 @@
 @extends('public.layout')
 
-{{-- METİN KATALOGDAN gelir, Blade'e gömülmez (`docs/100` Faz 2).
-     Bir dize şablonda kaldığı sürece sahibi onu hiçbir PO dosyasında
-     bulamaz ve çeviremez; borç `lang/untranslatable-debt.json` içinde
-     SIFIRDIR ve bu paket onu artırmadı: aşağıdaki her görünür sözcük
-     `SiteText` üzerinden geliyor, bir tanesi bile yeni değil.
+{{-- ANA SAYFA — SAHNE (`docs/146`) + GERÇEK İDDİA (`docs/138`).
 
-     SAHNE (`docs/146`). Sahibin emri (2026-09-08): *"Bir uzay teknolojileri
-     şirketi gibi, abartı dursun, görünsün, hissettirsin."*
+     ── METİN KATALOGDAN GELİR ────────────────────────────────────────────
 
-     Bu sayfa o emrin karşılığıdır ve şunu DEĞİŞTİRMEZ: içerik gerçektir.
-     Sahte müşteri, sahte rakam, sahte logo, sahte canlı gösterge yok
-     (`HOME-HONEST-03`). Gösteri, SUNUMDA kuruldu — sözde değil. --}}
+     Blade'e gömülen bir dize hiçbir PO dosyasında görünmez; sahibi onu açıp
+     çeviremez (`I18N-SSR-RATCHET-16`, borç `lang/untranslatable-debt.json`
+     içinde SIFIR). Aşağıdaki her görünür sözcük `SiteText` ya da
+     `HomeStory` üzerinden geliyor ve bir tanesi bile yeni değil.
+
+     ── İDDİA UYDURULMAZ ──────────────────────────────────────────────────
+
+     Bu sayfa iki paketin BİRLEŞİMİDİR ve birleşmede hangi tarafın neyi
+     verdiği açıkça karara bağlandı:
+
+       · SAHNE dili (`site-stage`, `site-deep`, `site-veil`, `site-field`,
+         `scene-reveal`, `--scene-order`, `data-scene-progress`, `data-axis`,
+         yörünge / tel kafes / veri hattı / morph) sahne motorundan gelir.
+       · İÇERİK `App\Support\Site\HomeStory` üzerinden ÜRÜNÜN KENDİ
+         envanterinden gelir ve başlıkları `ProductOverviewPage`in
+         terimleriyle BİREBİR aynıdır.
+
+     Eski model (dört uydurma "feature", dört genel "step") silindi ve
+     sebebi içerik: o dört başlık ürünün envanterinden bağımsız yazılmıştı
+     ve envanterle ayrışsa hiçbir şey kırılmazdı. Yenisinde ayrışma
+     `SceneContractTest`in HOME-REAL-07 kapısını kırar.
+
+     Sayfada YOK ve bilerek yok: müşteri logosu, referans, "1000+ restoran",
+     ödül, canlı sayaç, uydurma grafik, "yakında" vaadi (HOME-HONEST-08).
+     Yatırımcıya hazırlık uydurmayla değil, YAPILMIŞ İŞİ göstererek kurulur
+     — bu yüzden sayfanın en uzun iki bölümü ürünün on iki PARÇASI ve yedi
+     SINIRIDIR.
+
+     ── DAR EKRAN TABAN, YAZIM SIRASI DA (`docs/118` E1) ──────────────────
+
+     Bu dosyada tek bir kırılma noktası jetonu (`sm:`, `md:`…), tek bir
+     `max-*` bastırması ve tek bir "mobilde gizle" yoktur. Kapılar:
+     `HOME-FLUID-04` (`PublicHomeContractTest`) ve HOME-SCENE-01.
+
+     ── DEKOR GEZİNMEYİ ÖRTMEZ ────────────────────────────────────────────
+
+     Her sahne katmanı `aria-hidden` ve `pointer-events: none`
+     (`site-shell.css`), katman sırası `--layer-scene-*` (0-2) — yani
+     içeriğin (10), menünün (20), çerez şeridinin (30) ve atlama
+     bağlantısının (50) hep ALTINDA. Kapı: HOME-SCENE-03/04. --}}
 @section('title', $st['homeMetaTitle'])
 @section('description', $st['homeMetaDescription'])
 
@@ -31,30 +63,31 @@
         <section class="site-stage site-deep site-veil home-hero" data-scene-progress>
             {{-- Yıldız alanı. Betik yoksa tuval boş kalır ve GÖRÜNMEZ
                  (`opacity: 0`), yani sayfada boş bir siyah dikdörtgen
-                 durmaz — geriye nebulanın kendisi kalır. --}}
-            <div class="site-stage-layer">
+                 durmaz — geriye nebulanın kendisi kalır.
+
+                 SAYFA BAŞINA TEK TUVAL: ikinci bir WebGL bağlamının
+                 maliyeti henüz ÖLÇÜLMEDİ ve ölçülmemiş bir maliyet ürüne
+                 sokulmaz (SAHNE-B7). --}}
+            <div class="site-stage-layer" aria-hidden="true">
                 <canvas class="scene-canvas" data-scene="field" data-scene-sway="0.18" data-scene-speed="0.24" aria-hidden="true"></canvas>
             </div>
 
-            {{-- Nebula EN UZAK düzlem: kaydırmada en yavaş hareket eder. Döngü
-                 2'de eksen `xy` oldu — yani hem aşağı hem YANA süzülüyor.
-                 Sahibin "sağlı sollu hareket eden landing page" isteği
-                 (`docs/146` §9 madde 5) burada bir şeritte değil, kahramanın
-                 kendi katmanında. --}}
+            {{-- Nebula EN UZAK düzlem: kaydırmada en yavaş hareket eder.
+                 Eksen `xy` — yani hem aşağı hem YANA süzülüyor. Sahibin
+                 "sağlı sollu hareket eden landing page" isteği burada bir
+                 şeritte değil, kahramanın kendi katmanında. --}}
             <div class="site-stage-layer scene-plane" data-plane="far" data-axis="xy" aria-hidden="true">
                 <span class="scene-nebula"></span>
             </div>
 
-            {{-- YÖRÜNGE (Döngü 2). Üç halka, üç hız, ortadaki ters yönde.
-                 Yıldız alanı UZAKLIĞI anlatır; yörünge İŞ yapıldığını anlatır
-                 ve bir uzay şirketinin dağarcığında ikincisi birincisinden
-                 önce gelir. Düzlem TERS eksende akıyor: iki katman aynı yöne
-                 kayarsa göz tek bir blok görür, zıt yönde kaydıklarında
-                 aralarında derinlik doğar.
+            {{-- YÖRÜNGE. Üç halka, üç hız, ortadaki ters yönde. Yıldız alanı
+                 UZAKLIĞI anlatır; yörünge İŞ yapıldığını anlatır ve bir uzay
+                 şirketinin dağarcığında ikincisi birincisinden önce gelir.
+                 Düzlem TERS eksende akıyor: iki katman aynı yöne kayarsa göz
+                 tek bir blok görür, zıt yönde kaydıklarında aralarında
+                 derinlik doğar.
 
-                 Saf CSS — ikinci bir WebGL bağlamı AÇILMIYOR (`docs/146` §9
-                 madde 4 hâlâ ölçülmedi ve ölçülmemiş bir maliyet ürüne
-                 sokulmaz). --}}
+                 Saf CSS — ikinci bir WebGL bağlamı AÇILMIYOR. --}}
             <div class="site-stage-layer scene-plane" data-plane="mid" data-axis="x-" aria-hidden="true">
                 <span class="scene-orbit">
                     <span class="scene-orbit-ring" style="--scene-orbit-scale: 1; --scene-orbit-spin: 52s"></span>
@@ -96,63 +129,72 @@
                     <p class="site-lede">{{ $st['homeHeroLead'] }}</p>
                 </div>
 
+                {{-- İKİ EYLEM, ÜÇ DEĞİL.
+
+                     Üçüncüsü (`/login`) kabuğun menüsünde zaten duruyor ve
+                     `HOME-A11Y-02` onu ORADA arıyor. 320×480'de üç düğme üst
+                     üste 132 piksel eder ve vaat cümlesini katlanmanın
+                     altına iterdi. Sıra da düşünülmüştür: ilk düğme HENÜZ
+                     HESABI OLMAYAN için, ikincisi geri dönen için. --}}
                 <nav aria-label="{{ $st['homeHeroActionsLabel'] }}" class="home-actions scene-reveal" style="--scene-order: 1">
-                    <a href="/app" class="site-action site-cta" data-emphasis="true">{{ $st['homeOpenApp'] }}</a>
-                    <a href="/login" class="site-action site-cta">{{ $st['navLogin'] }}</a>
-                    <a href="/register" class="site-action site-cta">{{ $st['navRegister'] }}</a>
+                    <a href="/register" class="site-action site-cta" data-emphasis="true">{{ $st['homeHeroRegister'] }}</a>
+                    <a href="/app" class="site-action site-cta">{{ $st['homeOpenApp'] }}</a>
                 </nav>
+
+                {{-- Ücretsiz zincir bir kampanya değil, plan kataloğundaki
+                     ölçülmüş bir olgu (`PlanCatalogueSeeder`). --}}
+                <p class="home-hero-note scene-reveal" style="--scene-order: 2">{{ $st['homeHeroNote'] }}</p>
             </div>
         </section>
 
         {{-- ══ AKAN BANTLAR ══════════════════════════════════════════════
 
-             İki şerit, iki yön: biri satır başına, öteki satır sonuna akar.
-             Yön MANTIKSALDIR — sağdan sola yazılan bir dilde ikisi de
-             kendiliğinden yer değiştirir (`site-scene.css` §4).
+             Üç şerit, iki yön: biri satır başına, öteki satır sonuna akar,
+             üçüncüsü en yavaş ve en sönük olanıdır. Yön MANTIKSALDIR —
+             sağdan sola yazılan bir dilde hepsi kendiliğinden yer değiştirir
+             (`site-scene.css` §4).
 
-             İÇERİK GERÇEKTİR: her madde, aşağıdaki bölümlerde de yazan bir
-             ürün yeteneği ya da bir adımdır. `aria-hidden`, çünkü aynı
-             sözcükler birkaç santim aşağıda okunabilir bir bölümde zaten
-             duruyor; ekran okuyucuya kopyayı ikinci kez okutmak gürültü
-             olurdu.
+             İÇERİK GERÇEKTİR ve artık ENVANTERDEN: her madde ürünün kendi
+             genel bakış sayfasında da yazan bir PARÇA ya da zincirin bir
+             ADIMIDIR. `aria-hidden`, çünkü aynı sözcükler birkaç santim
+             aşağıda okunabilir bir bölümde zaten duruyor; ekran okuyucuya
+             kopyayı ikinci kez okutmak gürültü olurdu.
 
              Şerit BLADE'de iki kez basılıyor, betikte değil: döngünün
              dikişsiz olması için ikinci kopya gerekiyor ve betiği
              engellenmiş bir ziyaretçide de bant tam görünmeli. --}}
         @php
-            /* Bant maddeleri: KATALOG anahtarlarından, elle yazılmış tek bir
-               sözcük yok. Liste iki kez basılacağı için burada bir kez
-               kuruluyor — şablonda iki ayrı liste olsaydı, biri güncellenip
-               öteki unutulurdu. */
-            $driftCapabilities = [
-                $st['homeFeatureWorkspaceTitle'],
-                $st['homeFeatureMenuTitle'],
-                $st['homeFeaturePublicationTitle'],
-                $st['homeFeatureMediaTitle'],
-            ];
+            /* Bant maddeleri ENVANTERDEN, elle yazılmış tek bir sözcük yok.
+               Liste iki kez basılacağı için burada bir kez kuruluyor —
+               şablonda iki ayrı liste olsaydı, biri güncellenip öteki
+               unutulurdu.
 
-            $driftSteps = [
-                $st['homeStepSetupTitle'],
-                $st['homeStepBuildTitle'],
-                $st['homeStepPublishTitle'],
-                $st['homeStepUpdateTitle'],
-            ];
+               Şerit `parts`ın TAMAMINI değil ilk yarısını taşıyor: on iki
+               madde bir bantta okunmaz, akar geçer. Aşağıdaki bölüm on
+               ikisini de sayıyor; bandın işi haber vermek, saymak değil. */
+            $driftParts = array_map(
+                static fn (array $part): string => $part['title'],
+                array_slice($story['parts'], 0, 6),
+            );
 
-            /* ÜÇÜNCÜ ŞERİT (Döngü 2). İki şerit bir ZITLIK kurar ama bir
-               DERİNLİK kurmaz: göz iki hızı karşılaştırır ve orada durur. Üçüncü
-               şerit en yavaş ve en sönük olanıdır; onunla birlikte hızlar bir
-               sıraya dizilir ve şeritler bir yüzey değil, bir HACİM okunur.
+            $driftChain = array_map(
+                static fn (array $step): string => $step['title'],
+                $story['chain'],
+            );
 
-               İçerik yine gerçektir ve yine katalogdan: iki listenin birleşimi.
-               Yeni bir dize yazılmadı (`HOME-HONEST-03`, borç hâlâ sıfır). */
-            $driftDepth = array_merge($driftCapabilities, $driftSteps);
+            /* ÜÇÜNCÜ ŞERİT. İki şerit bir ZITLIK kurar ama bir DERİNLİK
+               kurmaz: göz iki hızı karşılaştırır ve orada durur. Üçüncü
+               şerit en yavaş ve en sönük olanıdır; onunla birlikte hızlar
+               bir sıraya dizilir ve şeritler bir yüzey değil, bir HACİM
+               okunur. */
+            $driftDepth = array_merge($driftParts, $driftChain);
         @endphp
 
         <div class="site-stage home-drift" aria-hidden="true">
             <div class="site-bleed scene-drift" data-direction="start">
                 <div class="scene-drift-track">
                     @foreach ([1, 2] as $pass)
-                        @foreach ($driftCapabilities as $label)
+                        @foreach ($driftParts as $label)
                             <span class="scene-drift-item">{{ $label }}</span>
                         @endforeach
                     @endforeach
@@ -162,7 +204,7 @@
             <div class="site-bleed scene-drift" data-direction="end">
                 <div class="scene-drift-track">
                     @foreach ([1, 2] as $pass)
-                        @foreach ($driftSteps as $label)
+                        @foreach ($driftChain as $label)
                             <span class="scene-drift-item">{{ $label }}</span>
                         @endforeach
                     @endforeach
@@ -182,7 +224,102 @@
             </div>
         </div>
 
-        {{-- ══ YETENEKLER ════════════════════════════════════════════════
+        {{-- ══ ZİNCİR ════════════════════════════════════════════════════
+
+             `id="how-it-works"` KORUNDU: kabuğun gezintisi (`SiteNavigation`)
+             bu çıpaya işaret ediyor.
+
+             YATAY ŞERİT — dokunmanın ucuz hareketi. Altı adımı 320 pikselde
+             dikey dizmek, ilk ekranı zincirin BİR adımına ayırmak demekti.
+             Şerit kendi kaydırma kabıdır: sayfa yana kaymaz.
+
+             Kaydırılabilirlik HOVER İLE anlatılmaz (dokunmada hover yoktur,
+             `docs/118` E2): bir sonraki kartın kenarı görünür kalır. Bu her
+             giriş kipinde aynı biçimde çalışır.
+
+             Burada TUVAL YOK ve bu ölçülmüş bir karar: aynı sayfada ikinci
+             bir WebGL bağlamı açmak, düşük güçlü bir telefonda kare süresini
+             iki katına çıkarır ve kazandırdığı şey birincisinin zaten
+             verdiği derinliktir. Bandın hacmi saf CSS'ten geliyor. --}}
+        <section id="how-it-works" aria-labelledby="how-it-works-heading" class="site-stage site-deep" data-scene-progress>
+            {{-- Nebula katmanı ŞEKİL DEĞİŞTİRİYOR (`scene-morph`): bant
+                 kaydırıldıkça ışık halesinin sınırı dar bir kubbeden geniş
+                 bir yaya açılıyor — aynı `--scene-progress`, üçüncü bir
+                 yüz. --}}
+            <div class="site-stage-layer scene-plane scene-morph" data-plane="far" data-axis="x-" aria-hidden="true">
+                <span class="scene-nebula"></span>
+            </div>
+
+            {{-- TEL KAFES ZEMİN. Yıldız alanı derinlik verir ama ZEMİN
+                 vermez; sahnenin "nerede" olduğu sorusunun cevabı yoktu.
+                 Ufka doğru daralan çizgiler, bakanın bir yüzeyin üstünde
+                 durduğunu söyler. Saf CSS: iki `repeating-linear-gradient`
+                 ve tek bir `rotateX`. --}}
+            <div class="site-stage-layer" aria-hidden="true">
+                <span class="scene-grid"></span>
+            </div>
+
+            <div class="site-stage-layer scene-plane" data-plane="mid" data-depth="mid" aria-hidden="true">
+                <span class="scene-horizon scene-progress-glow"></span>
+            </div>
+
+            <div class="site-stage-content">
+                <div class="site-measure-page home-band-head">
+                    <div class="home-head scene-reveal">
+                        <h2 id="how-it-works-heading" class="site-display-2">{{ $st['homeChainHeading'] }}</h2>
+                        <p class="home-lead">{{ $st['homeChainLead'] }}</p>
+                    </div>
+                </div>
+
+                {{-- ŞERİT ÖLÇÜ KABININ DIŞINDA, HİZASI İÇİNDE.
+
+                     Sahibin şikâyeti birebir buydu (2026-09-08, 1560 px):
+                     *"bu niye sığmamış? sığsın"* — şeridin ilk kartı
+                     üstündeki başlığın soluna hizalanmıyordu.
+
+                     Sebep ölçüldü: şerit tam genişlikte durup dolgusunu
+                     `--zc-gutter`den alınca kendini GÖRÜNTÜ ALANININ
+                     kenarına hizalıyor, başlık ise 82 rem'lik ölçü kabının
+                     içinde duruyordu; 1560 pikselde aradaki fark 124
+                     pikseldi (gerçek Chrome, 2026-09-08). Düzeltmeden sonra
+                     aynı ölçüm: ikisi de 163,19 px, fark 0.
+
+                     Çözüm bir medya sorgusu DEĞİL: `.home-rail`in dolgusu
+                     kendi kabından türetiliyor (`site-home.css`
+                     `--home-rail-gutter`). Şeridin KENDİSİ tam genişlikte
+                     kalır — dokunmada kenardan kenara kaydırma korunur — ama
+                     İÇERİĞİ sütunla aynı pikselde başlar. 320 pikselde
+                     tavan devreye bile girmez ve dolgu `--zc-gutter`e
+                     çözülür; geniş ekran taban kuralın ÜSTÜNE ekleniyor,
+                     onu bastırmıyor.
+
+                     `tabindex="0"`: kendi kaydırma kabı olan bir bölge
+                     klavyeyle de gezilebilmeli — ok tuşları, tarayıcının
+                     kendi davranışı, betiksiz. `role="list"` ise
+                     `display: grid`in bazı ekran okuyucularda liste anlamını
+                     düşürmesine karşı yazıldı. --}}
+                <ol class="home-rail" role="list" tabindex="0" aria-label="{{ $st['homeChainLabel'] }}">
+                    @foreach ($story['chain'] as $index => $step)
+                        <li class="site-panel site-lit home-rail-card scene-reveal" style="--scene-order: {{ $index }}">
+                            {{-- Numara ekran okuyucuya `<ol>` üzerinden zaten
+                                 ulaşır; rozet onu İKİNCİ kez söylemez. --}}
+                            <span class="home-step-index" aria-hidden="true">{{ str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT) }}</span>
+                            <h3 class="site-display-3">{{ $step['title'] }}</h3>
+                            <p class="home-card-body">{{ $step['body'] }}</p>
+                        </li>
+                    @endforeach
+                </ol>
+            </div>
+        </section>
+
+        {{-- ══ PARÇALAR ══════════════════════════════════════════════════
+
+             `id="features"` KORUNDU: dış bağlantılar ve kabuğun gezintisi bu
+             çıpaya işaret ediyor (`SiteNavigation`), adı değiştirmek çalışan
+             bağlantıları kırardı.
+
+             On iki başlık `ProductOverviewPage`in terimleriyle birebir
+             aynı; ölçen kapı HOME-REAL-07.
 
              Kartlar `3D görünen 2D`: kalınlık `site-panel`den (parıltı +
              kenar + renkli gölge), eğilme `scene-tilt`ten geliyor. Eğilme
@@ -193,11 +330,11 @@
                  ışık katmanı kabın %30 dışına taşar (`site-identity.css` §6)
                  ve kırpılmazsa sayfayı YATAY olarak kaydırır — 320 pikselde
                  ölçülen ilk kusur. Kırpma `.site-stage`in işi. --}}
-            {{-- VERİ HATTI (Döngü 2), yeteneklerin ARKASINDA. Yıldız ve yörünge
-                 MEKÂN anlatır; veri hattı İŞLEM anlatır — ve bu bölüm tam olarak
+            {{-- VERİ HATTI, parçaların ARKASINDA. Yıldız ve yörünge MEKÂN
+                 anlatır; veri hattı İŞLEM anlatır — ve bu bölüm tam olarak
                  ürünün ne YAPTIĞINI sayıyor. Çizgi durur, ışık akar; her hat
-                 farklı hızda, çünkü eşit hızda giden paketler bir ışık çubuğu
-                 gibi okunur, bir ağ gibi değil. --}}
+                 farklı hızda, çünkü eşit hızda giden paketler bir ışık
+                 çubuğu gibi okunur, bir ağ gibi değil. --}}
             <div class="site-stage-layer scene-plane" data-plane="far" data-axis="x" aria-hidden="true">
                 <span class="scene-conduit">
                     <span class="scene-conduit-line" style="--scene-conduit-run: 9s"></span>
@@ -208,71 +345,54 @@
             </div>
 
             <div class="site-measure-page home-band">
-            {{-- GÖZ İZİ YOK, ve bu ÖLÇÜLDÜ.
+                {{-- GÖZ İZİ YOK, ve bu ÖLÇÜLDÜ.
 
-                 İlk sürüm başlığın üstüne `site.nav.features` etiketini
-                 koyuyordu. Katalogda o anahtarın karşılığı da "Features" —
-                 yani ekranda aynı sözcük iki kez, alt alta yazıyordu
-                 (2026-09-08, 1280×800 ekran görüntüsü). Bir göz izi, başlığı
-                 SINIFLANDIRIR; onu tekrar etmez. Katalogda bugün ayrı bir
-                 sınıflandırma dizesi yok ve UYDURULMAZ — yeni bir dize
-                 Blade'e yazmak, sahibinin hiçbir PO dosyasında bulamayacağı
-                 bir metin yaratırdı (`I18N-SSR-RATCHET-16`). --}}
-            {{-- BAŞLIK VE IZGARA ZIT YÖNLERDE SÜZÜLÜR (Döngü 2).
+                     İlk sürüm başlığın üstüne `site.nav.features` etiketini
+                     koyuyordu. Katalogda o anahtarın karşılığı da "Features"
+                     — yani ekranda aynı sözcük iki kez, alt alta yazıyordu
+                     (2026-09-08, 1280×800 ekran görüntüsü). Bir göz izi,
+                     başlığı SINIFLANDIRIR; onu tekrar etmez. --}}
+                {{-- BAŞLIK VE IZGARA ZIT YÖNLERDE SÜZÜLÜR.
 
-                 Mesafe `--motion-drift-near` (320'de 10 piksel, geniş ekranda
-                 28): okunan bir metnin altındaki yatay hareket BÜYÜK olamaz —
-                 satırı kovalayan bir göz, okuduğunu kaybeder. Zıtlık burada
-                 hızdan değil YÖNDEN geliyor ve bu ölçüde bile ikisi arasında
-                 bir düzlem farkı doğuruyor. --}}
-            <div class="home-head scene-reveal scene-plane" data-plane="near" data-axis="x-">
-                <h2 id="features-heading" class="site-display-2">{{ $st['homeFeaturesHeading'] }}</h2>
-            </div>
+                     Mesafe `--motion-drift-near` (320'de 10 piksel, geniş
+                     ekranda 28): okunan bir metnin altındaki yatay hareket
+                     BÜYÜK olamaz — satırı kovalayan bir göz, okuduğunu
+                     kaybeder. Zıtlık burada hızdan değil YÖNDEN geliyor. --}}
+                <div class="home-head scene-reveal scene-plane" data-plane="near" data-axis="x-">
+                    <h2 id="features-heading" class="site-display-2">{{ $st['homePartsHeading'] }}</h2>
+                    <p class="home-lead">{{ $st['homePartsLead'] }}</p>
+                </div>
 
-            <div class="home-grid scene-plane" data-plane="near" data-axis="x">
-                @foreach ([
-                    ['title' => $st['homeFeatureWorkspaceTitle'], 'body' => $st['homeFeatureWorkspaceBody']],
-                    ['title' => $st['homeFeatureMenuTitle'], 'body' => $st['homeFeatureMenuBody']],
-                    ['title' => $st['homeFeaturePublicationTitle'], 'body' => $st['homeFeaturePublicationBody']],
-                    ['title' => $st['homeFeatureMediaTitle'], 'body' => $st['homeFeatureMediaBody']],
-                ] as $index => $feature)
-                    <div class="scene-tilt scene-reveal" style="--scene-order: {{ $index }}">
-                        <div class="site-panel site-lit scene-tilt-face home-card">
-                            <span class="home-card-index" aria-hidden="true">{{ str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT) }}</span>
-                            <h3 class="site-display-3">{{ $feature['title'] }}</h3>
-                            <p class="home-card-body">{{ $feature['body'] }}</p>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
+                <ul class="home-grid scene-plane" role="list" data-plane="near" data-axis="x">
+                    @foreach ($story['parts'] as $index => $part)
+                        <li class="scene-tilt scene-reveal" style="--scene-order: {{ $index }}">
+                            <div class="site-panel site-lit scene-tilt-face home-card">
+                                <h3 class="site-display-3">{{ $part['title'] }}</h3>
+                                <p class="home-card-body">{{ $part['body'] }}</p>
+                            </div>
+                        </li>
+                    @endforeach
+                </ul>
             </div>
         </section>
 
-        {{-- ══ NASIL ÇALIŞIR ═════════════════════════════════════════════
+        {{-- ══ SINIRLAR — ürünün NE OLMADIĞI ═════════════════════════════
 
-             İkinci derin bant. Burada TUVAL YOK ve bu ölçülmüş bir karar:
-             aynı sayfada ikinci bir WebGL bağlamı açmak, düşük güçlü bir
-             telefonda kare süresini iki katına çıkarır ve kazandırdığı şey
-             birincisinin zaten verdiği derinliktir. Bandın hacmi saf
-             CSS'ten geliyor — nebula, ufuk ve parallax düzlemleri
-             (`docs/146` §4). --}}
-        <section id="how-it-works" aria-labelledby="how-it-works-heading" class="site-stage site-deep" data-scene-progress>
-            {{-- Nebula katmanı artık ŞEKİL DEĞİŞTİRİYOR (`scene-morph`): bant
-                 kaydırıldıkça ışık halesinin sınırı dar bir kubbeden geniş bir
-                 yaya açılıyor. Döngü 1'de geçiş yalnız IŞIKLA anlatılıyordu —
-                 aynı `--scene-progress`, üçüncü bir yüz (`docs/146` §9 madde
-                 5: "bölümler arası gerçek morph geçişi"). --}}
-            <div class="site-stage-layer scene-plane scene-morph" data-plane="far" data-axis="x-" aria-hidden="true">
+             Bir tanıtım sayfasının en zor bölümü ve bu ürünün en dürüst
+             kanıtı. Gerekçesi `/urun/` sayfasında yazılı: yanlış varsayımın
+             bedeli SERVİS SIRASINDA ödenir — var sandığı bir özelliğin
+             olmadığını, hiçbir şeyi değiştiremeyeceği saatte öğrenir.
+
+             Yedi başlık `ProductOverviewPage`in "What Zabuno is not"
+             bloğuyla birebir aynı; ölçen kapı HOME-REAL-07.
+
+             SAHNE BURADA SÖNÜKTÜR ve bu bir karar: bir sınırın okunduğu yer,
+             dikkatin bölünmemesi gereken yerdir. Bant derindir (kompozisyon
+             kopmasın) ama ne tuval ne yörünge ne veri hattı taşır — yalnız
+             morph eden bir nebula ve ufuk. --}}
+        <section id="limits" aria-labelledby="limits-heading" class="site-stage site-deep" data-scene-progress>
+            <div class="site-stage-layer scene-plane scene-morph" data-plane="far" data-axis="x" aria-hidden="true">
                 <span class="scene-nebula"></span>
-            </div>
-
-            {{-- TEL KAFES ZEMİN (Döngü 2). Yıldız alanı derinlik verir ama
-                 ZEMİN vermez; sahnenin "nerede" olduğu sorusunun cevabı yoktu.
-                 Ufka doğru daralan çizgiler, bakanın bir yüzeyin üstünde
-                 durduğunu söyler. Saf CSS: iki `repeating-linear-gradient` ve
-                 tek bir `rotateX`. --}}
-            <div class="site-stage-layer" aria-hidden="true">
-                <span class="scene-grid"></span>
             </div>
 
             <div class="site-stage-layer scene-plane" data-plane="mid" data-depth="mid" aria-hidden="true">
@@ -281,23 +401,18 @@
 
             <div class="site-stage-content site-measure-page home-band">
                 <div class="home-head scene-reveal">
-                    <h2 id="how-it-works-heading" class="site-display-2">{{ $st['homeHowItWorksHeading'] }}</h2>
+                    <h2 id="limits-heading" class="site-display-2">{{ $st['homeLimitsHeading'] }}</h2>
+                    <p class="home-lead">{{ $st['homeLimitsLead'] }}</p>
                 </div>
 
-                <ol class="home-steps">
-                    @foreach ([
-                        ['title' => $st['homeStepSetupTitle'], 'body' => $st['homeStepSetupBody']],
-                        ['title' => $st['homeStepBuildTitle'], 'body' => $st['homeStepBuildBody']],
-                        ['title' => $st['homeStepPublishTitle'], 'body' => $st['homeStepPublishBody']],
-                        ['title' => $st['homeStepUpdateTitle'], 'body' => $st['homeStepUpdateBody']],
-                    ] as $index => $step)
-                        <li class="home-step scene-reveal" style="--scene-order: {{ $index }}">
-                            <span class="home-step-index" aria-hidden="true">{{ str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT) }}</span>
-                            <h3 class="site-display-3">{{ $step['title'] }}</h3>
-                            <p class="home-card-body">{{ $step['body'] }}</p>
+                <ul class="home-grid" role="list">
+                    @foreach ($story['limits'] as $index => $limit)
+                        <li class="site-panel home-card scene-reveal" style="--scene-order: {{ $index }}">
+                            <h3 class="site-display-3">{{ $limit['title'] }}</h3>
+                            <p class="home-card-body">{{ $limit['body'] }}</p>
                         </li>
                     @endforeach
-                </ol>
+                </ul>
             </div>
         </section>
 
@@ -305,46 +420,57 @@
 
              Rakam plan kataloğundan gelir, sayfaya elle yazılmaz
              (`docs/88`). Sahne burada susar: bir fiyatın okunduğu yer,
-             dikkatin bölünmemesi gereken yerdir. --}}
-        {{-- ÖLÇÜ `form` DEĞİL `page` (Döngü 2).
+             dikkatin bölünmemesi gereken yerdir.
 
-             Fiyat bölümü kurumsal yüzey diline geçince dört plan bir IZGARA
-             oldu (`site-pages.css` §3); okuma genişliğindeki bir kapta ızgara
-             iki sütuna sıkışıyor ve kartlar arasında karşılaştırma yapılamıyordu
-             (2026-09-08, 1280×800 ekran görüntüsü). Bir fiyat tablosu okunan
-             bir paragraf değil, KARŞILAŞTIRILAN bir tablodur. --}}
+             ÖLÇÜ `form` DEĞİL `page`: fiyat bölümü kurumsal yüzey diline
+             geçince dört plan bir IZGARA oldu (`site-pages.css` §3); okuma
+             genişliğindeki bir kapta ızgara iki sütuna sıkışıyor ve kartlar
+             arasında karşılaştırma yapılamıyordu (2026-09-08, 1280×800
+             ekran görüntüsü). Bir fiyat tablosu okunan bir paragraf değil,
+             KARŞILAŞTIRILAN bir tablodur. --}}
         <div class="site-measure-page home-prose scene-reveal">
             @include('public.partials.pricing')
         </div>
 
-        {{-- ══ SSS ═══════════════════════════════════════════════════════ --}}
+        {{-- ══ SSS ═══════════════════════════════════════════════════════
+
+             `<details>` tabandır: tarayıcının kendi açılır kapanır düğmesi,
+             klavyeyle çalışır, durumunu ekran okuyucuya söyler ve betiksiz
+             açılır. Cevap metni KAPALIYKEN DE HTML'dedir — arama motoru ve
+             betik çalıştırmayan bot onu görür (HOME-SCENE-05).
+
+             480 piksellik bir ekranda beş açık soru-cevap 600 piksel eder;
+             kapalı başlamak, okuyucuya hangi soruyu açacağını SEÇTİRİR. --}}
         <section id="faq" aria-labelledby="faq-heading" class="site-measure-page home-prose">
             <div class="home-head scene-reveal">
                 <h2 id="faq-heading" class="site-display-2">{{ $st['homeFaqHeading'] }}</h2>
             </div>
 
-            <dl class="home-faq">
-                <div class="site-panel scene-reveal">
-                    <dt>{{ $st['homeFaqWhatQuestion'] }}</dt>
-                    <dd>{{ $st['homeFaqWhatAnswer'] }}</dd>
-                </div>
-                <div class="site-panel scene-reveal" style="--scene-order: 1">
-                    <dt>{{ $st['homeFaqAccountQuestion'] }}</dt>
-                    <dd>{{ $st['homeFaqAccountAnswer'] }}</dd>
-                </div>
-                <div class="site-panel scene-reveal" style="--scene-order: 2">
-                    <dt>{{ $st['faqCostQuestion'] }}</dt>
-                    <dd>
-                        <a class="underline underline-offset-2" href="/pricing">{{ $st['pricingHeading'] }}</a>
-                        — {{ $st['faqCostAnswer'] }}
-                    </dd>
-                </div>
-            </dl>
+            <div class="home-faq">
+                @foreach ([
+                    ['q' => $st['homeFaqWhatQuestion'], 'a' => $st['homeFaqWhatAnswer']],
+                    ['q' => $st['homeFaqAccountQuestion'], 'a' => $st['homeFaqAccountAnswer']],
+                    ['q' => $st['homeFaqInstallQuestion'], 'a' => $st['homeFaqInstallAnswer']],
+                    ['q' => $st['homeFaqPosQuestion'], 'a' => $st['homeFaqPosAnswer']],
+                    ['q' => $st['faqCostQuestion'], 'a' => $st['faqCostAnswer']],
+                ] as $index => $entry)
+                    <details class="site-panel home-faq-item scene-reveal" style="--scene-order: {{ $index }}">
+                        <summary class="home-faq-question">{{ $entry['q'] }}</summary>
+                        <p class="home-faq-answer">{{ $entry['a'] }}</p>
+                    </details>
+                @endforeach
+            </div>
+
+            {{-- Fiyat sorusunun cevabı bir SAYFADIR; bağlantı cümlenin
+                 içinde değil, kendi satırında ve 44 piksel (`docs/117` K1).
+                 Cümle içine gömülmüş bir bağlantı dar ekranda 18 piksel
+                 yüksekliğinde kalıyor ve parmakla ıskalanıyor. --}}
+            <a href="/pricing" class="site-action site-cta home-faq-link">{{ $st['pricingHeading'] }}</a>
         </section>
 
         {{-- ══ İLETİŞİM — kapanış sahnesi ════════════════════════════════ --}}
         <section id="contact" aria-labelledby="contact-heading" class="site-stage site-deep" data-scene-progress>
-            <div class="site-stage-layer scene-plane scene-morph" data-plane="far" data-axis="x" aria-hidden="true">
+            <div class="site-stage-layer scene-plane scene-morph" data-plane="far" data-axis="xy" aria-hidden="true">
                 <span class="scene-nebula"></span>
             </div>
 

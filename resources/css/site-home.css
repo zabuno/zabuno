@@ -111,6 +111,19 @@
 }
 
 /*
+    ── KAHRAMANIN DİPNOTU ──
+
+    Ücretsiz zincir bir kampanya değil, plan kataloğundaki ölçülmüş bir
+    olgu. Eylemin ALTINDA duruyor ve düğmeden küçük: bir dipnot, çağırdığı
+    eylemin önüne geçmez.
+*/
+.home-hero-note {
+    margin: 0;
+    color: var(--fg-secondary);
+    max-width: min(100%, 46rem);
+}
+
+/*
     DÜĞMENİN KENDİSİ BU DOSYADA DEĞİL (`site-pages.css` §5, Döngü 2).
 
     `.home-action` ana sayfaya özgü sanılmıştı; Döngü 2'de iletişim formunun
@@ -139,6 +152,19 @@
     margin-block-end: var(--zc-rhythm-tight);
 }
 
+/* Bölümün giriş cümlesi. `site-lede`den küçük: kahramanın vaadi ile bir
+   bölümün açıklaması aynı ağırlıkta olamaz. */
+.home-lead {
+    margin: 0;
+    color: var(--fg-secondary);
+}
+
+/* Başlık ölçü kabında, şerit onun DIŞINDA; ikisi arasındaki nefes burada
+   ve TEK yerde. */
+.home-band-head {
+    padding-block-start: var(--zc-rhythm);
+}
+
 /* ── IZGARA ───────────────────────────────────────────────────────────────
 
    `minmax(min(100%, 17rem), 1fr)`: 320 pikselde `min()` %100'ü seçer ve
@@ -146,6 +172,10 @@
    altına inen bir sütun kart başlığını iki satıra bölerdi.
 */
 .home-grid {
+    /* Liste işareti kapatılıyor: `role="list"` anlamı taşır, nokta taşımaz. */
+    list-style: none;
+    margin: 0;
+    padding: 0;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
     gap: var(--space-4);
@@ -162,41 +192,91 @@
     border-radius: var(--zc-radius-lg);
 }
 
-.home-card-index {
-    font-size: var(--zc-eyebrow);
-    font-weight: var(--zc-weight-display);
-    letter-spacing: var(--zc-eyebrow-tracking);
-    color: var(--zc-accent);
-}
-
 .home-card-body {
     color: var(--fg-secondary);
     margin: 0;
 }
 
-/* ── ADIMLAR ──────────────────────────────────────────────────────────────
+/* ── ZİNCİR ŞERİDİ (`home-rail`) ──────────────────────────────────────────
 
-   Sıra numarası `<ol>`un kendi numarası DEĞİL, çizilen bir jeton: liste
-   işareti kapatılıyor ve numara bir öğe olarak yazılıyor. Sebep erişim:
-   `list-style` ile çizilen numara ekran okuyucuda okunur ama BÜYÜTÜLEMEZ ve
-   renklendirilemez; burada numara gerçek bir metin düğümü ve sayfanın
-   ölçeğine uyar.
+   Altı adım YATAY bir şeritte. Dokunmada yana kaydırma ucuz bir harekettir;
+   altı adımı 320 pikselde dikey dizmek, ilk ekranı zincirin BİR adımına
+   ayırmak demekti.
+
+   ═══ GENİŞ EKRAN HİZASI — sahibin şikâyeti (2026-09-08, 1560 px) ═══
+
+   *"bu niye sığmamış? sığsın"*: şeridin ilk kartının sol kenarı, üstündeki
+   başlığın sol kenarıyla aynı pikselde değildi.
+
+   ÖLÇÜLDÜ (2026-09-08, gerçek Chrome, 1560×900). Başlık `.site-measure-page`
+   içinde duruyor — genişliği `min(100%, 82rem)`, ortalanmış, dolgusu
+   `--zc-gutter` (o genişlikte 39,2 px). Şerit ise tam genişlikte durup
+   dolgusunu doğrudan `--zc-gutter`den alıyordu, yani kendini GÖRÜNTÜ
+   ALANININ kenarına hizalıyordu. Fark: ilk kartın sol kenarı başlığınkinden
+   **124 piksel** solda.
+
+   Aynı ölçüm bu kuralla birlikte tekrarlandı: başlık 163,19 px, ilk kart
+   163,19 px, fark **0 piksel**; sayfanın yatay taşması 0. 320×480'de dolgu
+   14,39 pikselde (yani `--zc-gutter`) kalıyor, fark yine 0 ve bir sonraki
+   kartın 40 pikseli görünür duruyor.
+
+   ═══ ÇÖZÜM BİR MEDYA SORGUSU DEĞİL ═══
+
+   Dolgu kabın kendisinden TÜRETİLİYOR:
+
+       max(--zc-gutter, (100% - 82rem) / 2 + --zc-gutter)
+
+   `100%` bir dolgu yüzdesidir, yani şeridin KABININ genişliği. Kap 82 rem'in
+   altındayken `min(100%, 82rem)` `100%`e çözülür, fark sıfırlanır ve dolgu
+   `--zc-gutter`de kalır — 320 pikselde tabanla BİRE BİR aynı. Kap 82 rem'i
+   aştığındaysa fark, ölçü kabının sol boşluğunu tam olarak geri verir.
+
+   Yani taban kural koşulsuz yazıldı, geniş ekran onun ÜSTÜNE eklendi. Hiçbir
+   şey bastırılmadı, hiçbir genişlik eşiği yazılmadı (HOME-SCENE-01).
+
+   Şeridin KENDİSİ tam genişlikte kalır: dokunmada kenardan kenara kaydırma
+   korunur ve son kart ekranın sağ kenarına kadar gidebilir.
+
+   ═══ KAYDIRILABİLİRLİK HOVER İLE ANLATILMAZ ═══
+
+   Dokunmada `hover` yoktur (`TOUCH-FIRST-INTERFACE` §2). Kart genişliği
+   `min(78vw, 18rem)`: 320 pikselde bir sonraki kartın kenarı görünür kalır
+   ve şeridin devam ettiğini her giriş kipinde aynı biçimde söyler.
 */
-.home-steps {
+.home-rail {
+    --home-rail-gutter: max(
+        var(--zc-gutter),
+        calc((100% - var(--zc-measure-page)) / 2 + var(--zc-gutter))
+    );
     list-style: none;
-    padding: 0;
     margin: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    grid-auto-flow: column;
+    grid-auto-columns: min(78vw, 18rem);
     gap: var(--space-4);
+    padding-inline: var(--home-rail-gutter);
+    /* Dikey dolgu panelin gölgesine ve odak halkasına yer bırakır: sıfır
+       olsaydı kaydırma kabı ikisini de kırpardı. */
+    padding-block: var(--space-2);
+    overflow-x: auto;
+    /* Yatay kaydırma ŞERİDİN İŞİ: sayfa yana kaymaz. */
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: inline proximity;
+    scroll-padding-inline: var(--home-rail-gutter);
 }
 
-.home-step {
+.home-rail:focus-visible {
+    outline: 2px solid var(--zc-focus);
+    outline-offset: 2px;
+}
+
+.home-rail-card {
     display: flex;
     flex-direction: column;
     gap: var(--space-2);
-    padding-block-start: var(--space-4);
-    border-block-start: 1px solid var(--zc-edge-lit);
+    padding: var(--space-4);
+    border-radius: var(--zc-radius-lg);
+    scroll-snap-align: start;
 }
 
 .home-step-index {
@@ -229,29 +309,56 @@
     gap: var(--zc-rhythm-tight);
 }
 
+/*
+    SSS TEK SÜTUN ve `<details>`.
+
+    Izgara değil: beş soru iki sütuna dizilince göz hangi cevabın hangi
+    soruya ait olduğunu kaybediyor ve açılan bir bölme yanındaki sütunu
+    aşağı itiyordu. Kapalı başlamak 480 piksellik bir ekranda okuyucuya
+    hangi soruyu açacağını SEÇTİRİR.
+*/
 .home-faq {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
-    gap: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
     margin: 0;
 }
 
-.home-faq > div {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-    padding: var(--space-4);
+.home-faq-item {
+    padding: var(--space-3) var(--space-4);
     border-radius: var(--zc-radius-lg);
 }
 
-.home-faq dt {
+/*
+    ÖZET BİR DOKUNMA HEDEFİDİR (`docs/117` K1): 44 pikselin altına inmez.
+    `list-style` kapatılmıyor — tarayıcının kendi üçgeni durumu (açık/kapalı)
+    renk olmadan da anlatır ve bu, rengi göremeyen okuyucunun tek ipucudur.
+*/
+.home-faq-question {
+    display: flex;
+    align-items: center;
+    min-block-size: var(--control-height);
     font-weight: var(--zc-weight-strong);
-    margin: 0;
+    cursor: pointer;
 }
 
-.home-faq dd {
+.home-faq-question:focus-visible {
+    outline: 2px solid var(--zc-focus);
+    outline-offset: 2px;
+}
+
+.home-faq-answer {
     margin: 0;
+    padding-block-start: var(--space-2);
     color: var(--fg-secondary);
+    line-height: 1.6;
+}
+
+/* Bağlantı kendi satırında ve 44 piksel; cümle içine gömülmüş bir bağlantı
+   dar ekranda parmakla ıskalanıyor. `align-self` olmasa düğme sütunun
+   tamamına yayılır ve bir bant gibi okunurdu. */
+.home-faq-link {
+    align-self: start;
 }
 
 /* ── KAPANIŞ ──────────────────────────────────────────────────────────── */

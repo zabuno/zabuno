@@ -51,7 +51,7 @@
 <section class="site-stage site-deep site-veil site-prologue" data-scene-progress>
     {{-- Yıldız alanı. Betik yoksa tuval boş kalır ve GÖRÜNMEZ; geriye
          nebulanın kendisi kalır. --}}
-    <div class="site-stage-layer">
+    <div class="site-stage-layer" aria-hidden="true">
         <canvas class="scene-canvas" data-scene="field" data-scene-sway="0.14" data-scene-speed="0.18" aria-hidden="true"></canvas>
     </div>
 

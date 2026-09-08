@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Feature\PublicSite;
 
+use App\Domain\Content\Block\BlockType;
+use App\Domain\Content\Block\ContentBlock;
+use App\Infrastructure\Content\Pages\ProductOverviewPage;
+use App\Support\Localization\SiteText;
+use App\Support\Site\HomeStory;
 use DOMDocument;
 use DOMElement;
 use DOMXPath;
@@ -29,7 +34,25 @@ use Tests\TestCase;
  * içinde mi, ve kurumsal sayfa hâlâ React yüklemiyor mu. Dördü de bir
  * yorum satırıyla değil, kaynakla kanıtlanabilir.
  *
- * Requirement ID'leri: SAHNE-B1…B6.
+ * ── FF-233'ÜN KAPILARI BURAYA TAŞINDI ────────────────────────────────────
+ *
+ * `HomeSceneContractTest` silindi: sahne sürümü onun ölçtüğü dosyayı
+ * (`resources/css/site-motion.css`) ve ölçtüğü işaretlemeyi ortadan
+ * kaldırmıştı, yani kapı var olmayan bir şeyi ölçüyordu. Ama içindeki İKİ
+ * kapı İÇERİK dürüstlüğünü koruyordu ve onlar bir sürüm kararıyla
+ * kaybolamaz — ikisi de aynı adla buraya taşındı:
+ *
+ *   · HOME-REAL-07  — sayfadaki her iddia ürünün kendi envanterinden gelir
+ *     ve ondan AYRIŞAMAZ.
+ *   · HOME-HONEST-08 — sayfada uydurma kanıt yok.
+ *
+ * HOME-SCENE-01/03/04/05 de anlamını korudukları ölçüde taşındı; hangisinin
+ * neden taşınmadığı `test_the_retired_home_scene_gates_are_accounted_for`
+ * yorumunda tek tek yazılı. HOME-FLUID-04 taşınmadı çünkü hiç kaybolmadı:
+ * `PublicHomeContractTest` içinde duruyor ve çizilen HTML üzerinde çalışıyor.
+ *
+ * Requirement ID'leri: SAHNE-B1…B8, HOME-SCENE-01/03/04/05, HOME-REAL-07,
+ * HOME-HONEST-08.
  */
 final class SceneContractTest extends TestCase
 {
@@ -481,7 +504,439 @@ final class SceneContractTest extends TestCase
         }
     }
 
+    // --- HOME-SCENE-01 : dar ekran TABAN, YAZIM SIRASI da -----------------
+
+    /**
+     * Sahibin cümlesi (2026-09-08): *"Sadece media query değil, gerçek
+     * mobile first."*
+     *
+     * Ölçülebilir karşılığı budur: geniş ekran için yazılıp dar ekranda geri
+     * alınan bir kural YOKTUR. `max-width` bir medya sorgusu, `max-*:` bir
+     * Tailwind varyantı olarak tam bunu yapar — geniş ekranın kuralını taban
+     * sayıp dar ekranda bastırır. Çıktı benzese bile borç oradan birikir:
+     * ikinci düzen yine indirilir, yine odaklanılabilir, yine bakım ister.
+     *
+     * ÖLÇÜLEN DOSYA DEĞİŞTİ, KURAL DEĞİŞMEDİ. Kapı `site-motion.css`i
+     * arıyordu; o dosya bu dalda silindi ve işini üç dosya devraldı. Üçü de
+     * kendi başlık yorumunda "tek bir `@media (min-width: …)` yok" diye
+     * yazıyor; bu kapı o cümleyi bir ölçüye çeviriyor.
+     */
+    public function test_no_corporate_rule_is_written_for_a_wide_screen_and_undone_on_a_narrow_one(): void
+    {
+        foreach ([
+            'resources/css/site-scene.css',
+            'resources/css/site-home.css',
+            'resources/css/site-pages.css',
+        ] as $relative) {
+            /* Yorumlar ÇIKARILIR: bu üç dosyanın kendi başlık yorumu
+               "tek bir `@media (min-width: …)` yok" cümlesini KELİMESİ
+               KELİMESİNE taşıyor ve bir kapı, kendi gerekçesini ihlal
+               saymamalı. Aranan şey KURALDIR. */
+            $css = (string) preg_replace(
+                '#/\*.*?\*/#s',
+                '',
+                (string) file_get_contents(base_path($relative))
+            );
+
+            self::assertDoesNotMatchRegularExpression(
+                '/@media[^{]*\bmax-width\b/i',
+                $css,
+                "HOME-SCENE-01: [{$relative}] `max-width` medya sorgusu taşıyor — geniş ekran "
+                .'kuralı taban sayılıp dar ekranda bastırılıyor. Taban 320 pikseldir; geniş '
+                .'ekran onun ÜSTÜNE eklenir.'
+            );
+
+            self::assertDoesNotMatchRegularExpression(
+                '/@media[^{]*\bmin-width\b/i',
+                $css,
+                "HOME-SCENE-01: [{$relative}] genişlik kırılma noktası taşıyor — düzen "
+                .'`clamp()`, `min()` ve `repeat(auto-fit, minmax(…))` ile akışkan yazılır.'
+            );
+        }
+    }
+
+    public function test_the_home_page_hides_nothing_on_a_narrow_screen(): void
+    {
+        $template = (string) file_get_contents(base_path('resources/views/public/home.blade.php'));
+
+        preg_match_all('/class="([^"]*)"/', $template, $matches);
+
+        self::assertNotSame([], $matches[1], 'HOME-SCENE-01: şablonda sınıf bulunamadı — ölçüm dayanaksız.');
+
+        foreach ($matches[1] as $classList) {
+            self::assertDoesNotMatchRegularExpression(
+                '/(^|\s)max-(sm|md|lg|xl|2xl):/',
+                $classList,
+                'HOME-SCENE-01: `max-*` bastırması bulundu: '.$classList
+            );
+
+            self::assertDoesNotMatchRegularExpression(
+                '/(^|\s)hidden(\s|$)/',
+                $classList,
+                'HOME-SCENE-01: "dar ekranda gizle" bulundu: '.$classList
+                .' — gizlenen şey yine indirilir, yine odaklanılabilir, yine bakım ister.'
+            );
+        }
+    }
+
+    // --- HOME-SCENE-03 : süsleme hiçbir şeyi örtemez ----------------------
+
+    /**
+     * Dekoratif hiçbir katman gezinmenin (20), çerez şeridinin (30) ya da
+     * atlama bağlantısının (50) üstüne çıkamaz.
+     *
+     * İKİ ÖLÇÜM, TEK İDDİA:
+     *
+     *   1. Sahnenin katman merdiveni `--layer-scene-*` jetonlarından gelir
+     *      (`site-shell.css`). Ham bir sayı yazan biri, o merdiveni
+     *      görmeden aşabilirdi.
+     *   2. Kurumsal yüzey dosyalarının hiçbiri POZİTİF ham bir `z-index`
+     *      icat etmiyor. Negatif değer serbesttir ve olmalıdır: `.site-field`
+     *      ışığı kendi kabının `isolation: isolate` bağlamında `-1`de
+     *      yaşıyor, yani içeriğin ÜSTÜNE hiçbir koşulda çıkamaz.
+     */
+    public function test_no_scene_layer_rises_above_the_content(): void
+    {
+        $shell = (string) file_get_contents(base_path('resources/css/site-shell.css'));
+
+        foreach (['back', 'mid', 'front'] as $depth) {
+            self::assertStringContainsString(
+                "z-index: var(--layer-scene-{$depth})",
+                $shell,
+                "HOME-SCENE-03: sahne katman merdiveninin [{$depth}] basamağı `--layer-scene-*` "
+                .'jetonundan gelmiyor.'
+            );
+        }
+
+        foreach ([
+            'resources/css/site-scene.css',
+            'resources/css/site-home.css',
+            'resources/css/site-pages.css',
+            'resources/css/site-identity.css',
+        ] as $relative) {
+            $css = (string) preg_replace('#/\*.*?\*/#s', '', (string) file_get_contents(base_path($relative)));
+
+            preg_match_all('/z-index\s*:\s*([^;}]+)/', $css, $matches);
+
+            foreach ($matches[1] as $value) {
+                $value = trim($value);
+
+                if (str_starts_with($value, 'var(--layer-') || preg_match('/^-\d+$/', $value) === 1) {
+                    continue;
+                }
+
+                self::fail(
+                    "HOME-SCENE-03: [{$relative}] ham bir yığın seviyesi icat ediyor: `{$value}` — "
+                    .'katman sırası `--layer-*` jetonlarından gelir; hiçbir dekoratif katman '
+                    .'gezinmeyi ya da hukuki bir seçimi örtemez.'
+                );
+            }
+        }
+    }
+
+    // --- HOME-SCENE-04 : dekor ekran okuyucuya okunmaz --------------------
+
+    /**
+     * Ölçüm ÇİZİLEN belge üzerinde, şablon metni üzerinde değil: bir Blade
+     * döngüsünün ürettiği katmanı da görür.
+     */
+    public function test_every_decorative_layer_is_invisible_to_a_screen_reader(): void
+    {
+        $xpath = $this->document();
+        $layers = $xpath->query('//*[contains(concat(" ", @class, " "), " site-stage-layer ")]');
+
+        self::assertNotFalse($layers);
+        self::assertGreaterThan(0, $layers->length, 'Sahne katmanı bulunamadı — ölçüm dayanaksız.');
+
+        foreach ($layers as $layer) {
+            if (! $layer instanceof DOMElement) {
+                continue;
+            }
+
+            self::assertSame(
+                'true',
+                $layer->getAttribute('aria-hidden'),
+                'HOME-SCENE-04: dekoratif katman ekran okuyucuya okunuyor: '
+                .$layer->getAttribute('class')
+                .' — boş bir kutu, sesli okunduğunda bir engeldir.'
+            );
+        }
+    }
+
+    // --- HOME-SCENE-05 : betiksiz sayfa EKSİKSİZ --------------------------
+
+    /**
+     * `docs/118` E8: taban HTML, tavan serbest. Betik hareketin ÜSTÜNE
+     * eklenir; hiçbir metni ve hiçbir hedefi o taşımaz.
+     *
+     * Ölçüm gerçekçidir: gövde, betik etiketleri atılmış hâlde taranır —
+     * arama motoru ve JavaScript çalıştırmayan bir bot için varsayılan gövde
+     * budur.
+     */
+    public function test_the_page_is_complete_without_any_script(): void
+    {
+        $withoutScripts = (string) preg_replace('#<script\b[^>]*>.*?</script>#is', '', $this->html());
+        $withoutScripts = (string) preg_replace('#<script\b[^>]*/?>#is', '', $withoutScripts);
+
+        $strings = app(SiteText::class)->all('en');
+
+        foreach ([
+            $strings['homeHeroHeading'],
+            $strings['homeChainHeading'],
+            $strings['homePartsHeading'],
+            $strings['homeLimitsHeading'],
+        ] as $heading) {
+            self::assertStringContainsString(
+                e($heading),
+                $withoutScripts,
+                "HOME-SCENE-05: betiksiz gövdede \"{$heading}\" yok."
+            );
+        }
+
+        foreach (['/register', '/app', '/pricing', '/contact'] as $target) {
+            self::assertStringContainsString(
+                'href="'.$target.'"',
+                $withoutScripts,
+                "HOME-SCENE-05: betiksiz gövdede {$target} hedefi yok."
+            );
+        }
+
+        /*
+            SORU-CEVAP KAPALIYKEN DE OKUNUR. `<details>` içeriği HTML'de
+            durur; bir arama motoru onu görür. Betiğe bağlı bir açılır bölme,
+            kapalıyken HİÇ var olmazdı.
+        */
+        self::assertStringContainsString(
+            e($strings['homeFaqPosAnswer']),
+            $withoutScripts,
+            'HOME-SCENE-05: kapalı bir soru-cevap bölmesinin cevabı betiksiz gövdede yok.'
+        );
+    }
+
+    // --- HOME-REAL-07 : iddia uydurulmaz, envantere bağlı ----------------
+
+    /**
+     * Ana sayfanın yetenek listesi, ürünün kendi genel bakış sayfasının
+     * (`/urun/`) envanteriyle **aynı sırada ve aynı terimlerle** durur.
+     *
+     * Bu, "sahte özellik listesi" sorununun kod düzeyindeki cevabı: bir
+     * yetenek üründen düşerse ya da adı değişirse, pazarlama sayfası eski
+     * iddiayı SESSİZCE taşımaya devam edemez. Bir pazarlama sayfasında bir
+     * satır silmeyi kimse hatırlamaz; kırmızı bir test hatırlatır.
+     */
+    public function test_every_capability_named_on_the_home_page_exists_in_the_product_inventory(): void
+    {
+        $this->assertMirrors(HomeStory::PARTS, BlockType::Capabilities, 'yetenek');
+    }
+
+    public function test_every_limit_named_on_the_home_page_exists_in_the_product_inventory(): void
+    {
+        $this->assertMirrors(HomeStory::LIMITS, BlockType::Limitations, 'sınır');
+    }
+
+    public function test_the_chain_on_the_home_page_is_the_products_own_order(): void
+    {
+        $this->assertMirrors(HomeStory::CHAIN, BlockType::HowItWorks, 'adım');
+    }
+
+    /**
+     * Her yetenek iddiasının arkasında ONU ÜRETEN bir dosya var.
+     *
+     * Envanterdeki `source` alanı bir yorum değil bir adres: dosya silinirse
+     * iddia dayanaksız kalır ve bu test onu bulur.
+     */
+    public function test_every_claim_points_at_a_file_that_exists(): void
+    {
+        $missing = [];
+
+        foreach ([BlockType::Capabilities, BlockType::HowItWorks, BlockType::Limitations] as $type) {
+            foreach ($this->block($type)->entries as $entry) {
+                if ($entry->source !== null && ! file_exists(base_path($entry->source))) {
+                    $missing[] = $entry->source;
+                }
+            }
+        }
+
+        self::assertSame(
+            [],
+            $missing,
+            'HOME-REAL-07: iddianın dayandığı dosya yok: '.implode(', ', $missing)
+        );
+    }
+
+    /**
+     * VE İDDİALAR GERÇEKTEN SAYFADA. Envanterle aynı olmak yetmez: liste
+     * çizilmezse kapı yine yeşil kalırdı ve sayfa iddiasını sessizce
+     * düşürebilirdi.
+     */
+    public function test_the_inventory_is_actually_drawn_on_the_page(): void
+    {
+        $html = $this->html();
+        $text = app(SiteText::class);
+
+        foreach ([HomeStory::CHAIN, HomeStory::PARTS, HomeStory::LIMITS] as $stems) {
+            foreach ($stems as $stem) {
+                $title = $text->get($stem.'.title', 'en');
+
+                self::assertStringContainsString(
+                    e($title),
+                    $html,
+                    "HOME-REAL-07: envanterde olan \"{$title}\" sayfada çizilmiyor."
+                );
+            }
+        }
+    }
+
+    // --- HOME-HONEST-08 : uydurma kanıt yok ------------------------------
+
+    public function test_the_page_invents_no_proof_it_does_not_have(): void
+    {
+        $html = strtolower($this->html());
+
+        foreach ([
+            'testimonial',
+            'trusted by',
+            'customers served',
+            'award',
+            'as seen in',
+            'coming soon',
+            'launching soon',
+            'join thousands',
+            'rated 5',
+            'money-back',
+        ] as $claim) {
+            self::assertStringNotContainsString(
+                $claim,
+                $html,
+                "HOME-HONEST-08: \"{$claim}\" — yatırımcıya hazırlık uydurmayla değil, "
+                .'yapılmış işi göstererek kurulur.'
+            );
+        }
+
+        /*
+            "1000+ restoran" ailesi. Ürünün bugün kaç müşterisi olduğu bu
+            depoda ÖLÇÜLEMEZ; ölçülemeyen bir sayıyı sayfaya yazmak, ilk
+            soruda çöken bir iddiadır.
+
+            Fiyat ve sürüm numaraları muaf değil ÇÜNKÜ desen artı işareti
+            arıyor: "1000+" kırar, "24,90 TRY" kırmaz.
+        */
+        self::assertDoesNotMatchRegularExpression(
+            '/\b\d[\d.,]*\s*\+\s*(restaurant|customer|business|user|venue|table)/i',
+            $html,
+            'HOME-HONEST-08: sayılmamış bir müşteri sayısı ilan ediliyor.'
+        );
+
+        /*
+            SAHTE LOGO DA BİR İDDİADIR. Sayfada tek bir dış görsel yok: her
+            piksel ya CSS'ten ya tuvalden doğuyor. Bir `<img>` etiketi
+            eklendiğinde bu kapı konuşur ve o gün birinin "bu logo kimin?"
+            diye sorması gerekir.
+        */
+        self::assertStringNotContainsString(
+            '<img',
+            $html,
+            'HOME-HONEST-08: ana sayfada bir görsel var — kaynağı ve iddiası sorulmadan '
+            .'bir logo, bir referans ya da bir ekran görüntüsü sayfaya giremez.'
+        );
+    }
+
+    /**
+     * EMEKLİYE AYRILAN KAPILARIN HESABI.
+     *
+     * Bu test bir şey ölçmüyor; SİLİNEN kapıların nereye gittiğini yazıya
+     * döküyor. Bir kapı sessizce kaybolabiliyorsa, kapılar bir sözleşme
+     * değil bir alışkanlıktır.
+     *
+     * · HOME-SCENE-01 (yükseklik maddesi) — TAŞINMADI. Eski kapı
+     *   *"hiçbir sahne görüntü alanı yüksekliği istemez"* diyordu ve
+     *   `\d+(vh|svh)` arıyordu. Sahne sürümünde kahraman bilerek
+     *   `clamp(21rem, 72svh, 44rem)` taşıyor: ORTA terim görüntü alanına
+     *   bağlı ama TABAN 21 rem ve o taban ölçülerek seçildi (320×480'de üst
+     *   çubuğun 65 pikseli düşüldükten sonra iki düğme de ilk ekranda
+     *   kalıyor). Yani kuralın koruduğu şey — "ilk ekran içeriği katlanmanın
+     *   altına itemez" — artık bir düzenli ifadeyle değil, GERÇEK bir tarayıcıda
+     *   320×480'de ölçülüyor (`scripts/mobile-ux-audit`). Bir düzenli ifade
+     *   burada yalnız doğru yazılmış bir kuralı kırardı.
+     *
+     * · HOME-SCENE-02 (hareket kapısı) — SAHNE-B3 tarafından AŞILDI ve daha
+     *   sıkı ölçülüyor: ayraç sayarak, bileşik medya sorgularını da görerek.
+     *
+     * · HOME-SCENE-02 (`data-motion='on'` ikinci kancası) — TAŞINMADI.
+     *   Eski kapı, hareket bloğundaki HER kuralın betiğin yazdığı kancayı
+     *   taşımasını şart koşuyordu. Sahne sürümünde bu artık bir kusur olurdu:
+     *   nebula, hüzme ve akan bant BETİKSİZ de yaşıyor ve bu bilerek böyle
+     *   (`site-scene.css` §3). `prefers-reduced-motion` kapısı tek başına
+     *   mutlaktır ve betik onu geri açamaz — koruma kaybolmadı, ikinci
+     *   kanca gereksizleşti.
+     *
+     * · HOME-SCENE-02 (`sayfada tek baskın sahne`) — TAŞINMADI. Eski kapı
+     *   `class="site-stage site-scene"` dizesini SAYIYORDU ve sahne sürümünde
+     *   o sınıf çifti hiç yok. Sahne sürümü bilerek üç derin bant taşıyor;
+     *   ölçülmemiş maliyeti olan şey bant değil TUVAL ve onu SAHNE-B7 sayıyor:
+     *   sayfa başına tam bir `canvas`.
+     *
+     * · HOME-FLUID-04 — TAŞINMADI çünkü hiç kaybolmadı: `PublicHomeContractTest`
+     *   içinde duruyor ve şablonu değil ÇİZİLEN HTML'i tarıyor.
+     */
+    public function test_the_retired_home_scene_gates_are_accounted_for(): void
+    {
+        self::assertFileDoesNotExist(
+            base_path('tests/Feature/PublicSite/HomeSceneContractTest.php'),
+            'Emekli kapı dosyası geri gelmiş: iki sözleşme aynı sayfayı ölçerse, ilk '
+            .'ayrıştıklarında hangisinin doğru olduğu belirsiz kalır.'
+        );
+
+        self::assertFileDoesNotExist(
+            base_path('resources/css/site-motion.css'),
+            'FF-233 hareket paketi geri gelmiş: sahne motoru aynı işi yapıyor ve iki '
+            .'hareket dili aynı sayfada iki ayrı ürün gibi okunur.'
+        );
+    }
+
     // --- Yardımcılar -------------------------------------------------------
+
+    /**
+     * @param  list<string>  $stems
+     */
+    private function assertMirrors(array $stems, BlockType $type, string $noun): void
+    {
+        $text = app(SiteText::class);
+        $inventory = array_values(array_map(
+            static fn ($entry): ?string => $entry->term,
+            $this->block($type)->entries,
+        ));
+
+        $onPage = array_map(
+            static fn (string $stem): string => $text->get($stem.'.title', 'en'),
+            $stems,
+        );
+
+        self::assertSame(
+            $inventory,
+            $onPage,
+            "HOME-REAL-07: ana sayfadaki {$noun} listesi ürünün kendi envanteriyle "
+            .'(`ProductOverviewPage`) ayrışmış. Ürüne bir parça eklendiğinde ya da bir '
+            .'parça düştüğünde bu liste onunla birlikte döner; ikinci bir gerçek kaynak '
+            .'doğamaz.'
+        );
+    }
+
+    private function block(BlockType $type): ContentBlock
+    {
+        foreach (ProductOverviewPage::content()->blocks as $block) {
+            if ($block->type === $type) {
+                return $block;
+            }
+        }
+
+        self::fail("`ProductOverviewPage` içinde {$type->value} bloğu yok — ölçüm dayanaksız.");
+    }
+
+    private function html(string $uri = '/'): string
+    {
+        return (string) $this->get($uri)->assertOk()->getContent();
+    }
 
     /**
      * Hareketin doğmasına izin verilen blokları ÇIKARIR; geriye kalan metin,
