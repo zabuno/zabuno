@@ -745,15 +745,21 @@
 
 /* 2026-09-08 owner direction: calm desktop pricing, fluid 320 foundation. */
 @media (min-width: 64rem) {
+    /* One gap after the hero; do not stack page gap and body padding.
+       Keep the first comparison row within a laptop's initial viewport. */
+    .site-pricing-page {
+        gap: 1.25rem;
+    }
+
     .site-pricing-page > .site-prologue {
-        min-block-size: 17rem;
+        min-block-size: 13.75rem;
         background: var(--site-desktop-ink);
     }
 
     .site-pricing-page .site-prologue-inner {
         align-items: center;
         text-align: center;
-        padding-block: 3rem;
+        padding-block: 1.5rem;
     }
 
     .site-pricing-page .site-prologue-text {
@@ -783,7 +789,11 @@
     }
 
     .site-pricing-page .site-page-body {
-        padding-block-start: 3rem;
+        padding-block-start: 0;
+    }
+
+    .site-pricing-page #pricing {
+        gap: 1.25rem;
     }
 
     .site-pricing-grid {
