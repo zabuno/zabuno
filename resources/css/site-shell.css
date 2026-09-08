@@ -17,16 +17,56 @@
     hedefi `--control-height` (44px) tabanının altına inmez, boşluk ise
     ölçeğin alt adımlarından beslenir.
 
-    ═══ İKON YOK (`docs/118` E6) ═══
+    ═══ İKON DİLİ: PHOSPHOR (`docs/118` E6 — DÜZELTİLDİ) ═══
 
-    Menünün açık/kapalı durumu iki çizgiyle anlatılıyor: kapalıyken artı,
-    açıkken eksi. Çizgi geometridir; kurumsal sitede ikon kütüphanesi yok.
+    Eski karar "kurumsal sitede ikon kullanılmayacaktır" diyordu ve menünün
+    açık/kapalı durumu iki çizgiyle (artı/eksi) anlatılıyordu. Sahip
+    2026-09-08'de düzeltti: *"hayır, Phosphor icon var, emoji yok."*
+
+    Kural artık iki yüzey için de aynı: **emoji yasak, Phosphor ilk.** Glifler
+    depodaki pakete karşı ölçülüyor (`PhosphorIconSourceTest`); elle çizilmiş
+    bir "benzeri" kapıyı kırar.
+
+    ═══ daisyUI (`docs/136`) ═══
+
+    Bileşen katmanı daisyUI'dir ve sınıfları `dz-` önekiyle gelir. Bu dosya
+    daisyUI'yi EZMEZ, yalnız iki şeyi ekler: dokunma geometrisi (44 piksel) ve
+    dar ekran ölçüleri. Kurallar katmansız yazıldığı için daisyUI'nin
+    `@layer utilities` kurallarına karşı zaten kazanırlar — `!important`
+    gerekmiyor ve kullanılmıyor.
 
     ═══ HAM DEĞER YOK (`docs/119` §18) ═══
 
     Renk, boşluk, yarıçap ve süre jetonlardan gelir. Bu dosyada sabit bir
     renk ya da uydurma bir boşluk yoktur.
 */
+
+/*
+    GÖVDE METNİ KÜÇÜLMEZ — ölçülmüş bir düzeltme (`docs/118` E3).
+
+    daisyUI'nin `.menu`, `.footer` ve `.btn` bileşenleri gövde boyutunu
+    14 pikselde (`.875rem`) sabitliyor. Bu, deponun kendi kararıyla doğrudan
+    çelişir: yoğunluk **fontu küçülterek değil**, dolgu ve hiyerarşiyle
+    sağlanır; gövde tabanı `--aep-text-body` = 1rem'dir.
+
+    Ölçülebilir sonucu şu olurdu: 320 pikselde bir kebapçı, gezinti ve
+    altbilgi metnini sayfanın geri kalanından iki punto küçük okurdu — ve
+    küçülen tek şey ölü alan değil, OKUNAN ŞEY olurdu.
+
+    `inherit` seçildi, sabit bir değer değil: gövde boyutu bir gün değişirse
+    kabuk onunla birlikte döner. daisyUI'nin düğme boyutu kendi
+    `--fontsize` değişkeninden geldiği için o da aynı satırla hizalanır.
+*/
+.site-header,
+.site-footer {
+    font-size: var(--aep-text-body);
+}
+
+.site-menu-toggle,
+.site-menu-group,
+.site-footer-grid {
+    font-size: inherit;
+}
 
 /* Kabuğun ortak içerik kolonu. Dolgu BİR kez uygulanır; iç kaplar kendi
    dolgusunu üstüne eklemez (`docs/117` K2: dolgu birikmesi 320 pikselde
@@ -104,20 +144,33 @@
     display: none;
 }
 
-/* Artı/eksi: iki çizgi. Kapalıyken dikey çizgi de var (artı), açıkken
-   yalnız yatay çizgi kalır (eksi). */
-.site-menu-toggle::after {
-    content: '';
+/*
+    İKON — Phosphor, `currentColor`, metinle aynı ölçek.
+
+    Boyut `--aep-icon-sm` (20px): jeton dosyasında ikon ölçüsü zaten tanımlı
+    ve ikinci bir sayı yazmak, bir gün ayrışacak ikinci bir kaynak olurdu.
+*/
+.site-icon {
     display: block;
-    width: 0.75rem;
-    height: 0.75rem;
-    background:
-        linear-gradient(currentColor, currentColor) center / 100% 2px no-repeat,
-        linear-gradient(currentColor, currentColor) center / 2px 100% no-repeat;
+    inline-size: var(--aep-icon-sm);
+    block-size: var(--aep-icon-sm);
+    flex: none;
 }
 
-.site-menu[open] > .site-menu-toggle::after {
-    background: linear-gradient(currentColor, currentColor) center / 100% 2px no-repeat;
+/*
+    AÇIK/KAPALI — iki ayrı glif, tek kod yolu.
+
+    Görünürlük `[open]` özniteliğinden çözülür; betik yok, medya sorgusu yok.
+    Gizlenen glif `display:none` ile tamamen çıkar: `opacity:0` bırakılsaydı
+    ekran okuyucu ve klavye için hâlâ orada olurdu.
+*/
+.site-menu-toggle .site-icon-open,
+.site-menu[open] > .site-menu-toggle .site-icon-closed {
+    display: none;
+}
+
+.site-menu[open] > .site-menu-toggle .site-icon-open {
+    display: block;
 }
 
 .site-menu-toggle:focus-visible {
@@ -144,13 +197,27 @@
     overflow-y: auto;
 }
 
+/*
+    daisyUI'nin `.dz-menu`si `width: fit-content` verir — bir açılır bölmede
+    doğru, TAM GENİŞLİKTE bir dokunma listesinde yanlış. Dar ekranda parmağın
+    ıskalamayacağı tek hedef, satırın tamamıdır.
+*/
 .site-menu-group {
     display: flex;
     flex-direction: column;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.site-menu-group > li {
+    display: flex;
 }
 
 .site-menu-link {
     display: flex;
+    width: 100%;
     align-items: center;
     /* Parmak imleç değildir: her satır tam genişlikte ve 44 piksel yüksek.
        Satırlar bitişik ama hedefler büyük olduğu için yanlış dokunma riski
@@ -205,23 +272,71 @@
     color: var(--fg);
 }
 
-.site-footer-group {
-    display: flex;
-    flex-direction: column;
-    flex: 0 1 auto;
-    min-width: 9rem;
+/*
+    GRUP IZGARASI — kırılma noktası YOK (`MP-05`).
+
+    daisyUI'nin kendi `footer-horizontal` / `footer-vertical` sınıfları bir
+    SEÇİM ister: ya hep tek sütun, ya hep yan yana. İkisi de yanlış — biri
+    geniş ekranda ekranın onda birini kullanır, öteki 320 pikselde sütunları
+    birbirinin içine sıkıştırır. Medya sorgusuyla ikisini takas etmek ise
+    yasak (`docs/118` E1: ikinci bir düzen değil, TEK akışkan düzen).
+
+    `auto-fit` + `minmax` o seçimi hiç yaptırmaz: 320 pikselde tek sütun,
+    ekran genişledikçe kendiliğinden çoğalır. Sayı yazılmaz, sığdığı kadar
+    sütun olur.
+
+    Boşluk daisyUI'nin varsayılanından (2.5rem) SIKI ölçeğe indirilir
+    (`docs/118` E3): hedefler büyük kalır, ölü alan küçülür.
+*/
+.site-footer-grid {
+    flex: 3 1 18rem;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: var(--space-5) var(--space-4);
+}
+
+/* Grup, sütununun tamamını kaplar — `place-items: start` yalnız hizalar,
+   genişlik vermez ve verilmediğinde her satır sözcüğü kadar daralır. */
+.site-footer-grid > nav {
+    width: 100%;
 }
 
 .site-footer-heading {
     display: flex;
     align-items: center;
     min-height: var(--control-height);
+    margin: 0;
+    font-size: inherit;
     font-weight: 600;
     color: var(--fg);
 }
 
+/*
+    SATIR TAM GENİŞLİKTE — ölçülmüş bir düzeltme.
+
+    daisyUI'nin `.footer > *` kuralı `place-items: start` verir; sonuç, liste
+    öğesinin İÇERİĞİ kadar daralmasıdır. Ölçüldü (2026-09-08,
+    `scripts/mobile-ux-audit --width 1280`): "Help" bağlantısı 30 piksel
+    genişliğe düşüyor ve komşusuyla arasında 0 piksel kalıyor —
+    `small-target` + `tight-gap`. Kısa bir sözcük, kısa bir hedef demek
+    DEĞİLDİR; parmak sözcüğü değil satırı arar.
+*/
+.site-footer-list {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.site-footer-list > li {
+    display: flex;
+    width: 100%;
+}
+
 .site-footer-link {
     display: flex;
+    width: 100%;
     align-items: center;
     min-height: var(--control-height);
     color: var(--fg-secondary);
@@ -234,6 +349,55 @@
 .site-footer-link:focus-visible {
     outline: 2px solid var(--fg);
     outline-offset: -2px;
+}
+
+/*
+    pSEO İÇERİK MENÜLERİ BANDI (FF-232).
+
+    KAPALI başlar ve bu bir dar ekran kararıdır (`docs/118` E1): kütükteki
+    sayfalar yayına alındıkça bu bant onlarca satıra çıkabilir ve altbilgi,
+    dar ekranda sayfanın en uzun parçası hâline gelir. Kapalı bir `<details>`
+    tek satırdır; içindeki her bağlantı yine HTML'dedir, yani arama motoru ve
+    betiksiz ziyaretçi hepsini görür (`SHELL-SINGLE-SOURCE-04`).
+
+    Geniş ekranda da kapalı başlar — tek kod yolu. İkinci bir davranış yazmak,
+    ölçülmemiş bir varsayımı (geniş ekranda yer boldur) kurala çevirmek olurdu.
+*/
+.site-footer-content {
+    border-top: 1px solid var(--border);
+    padding-block: var(--space-2);
+}
+
+.site-footer-content-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    min-height: var(--control-height);
+    padding-inline: var(--space-2);
+    border-radius: var(--radius-md);
+    color: var(--fg);
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+}
+
+.site-footer-content-toggle::-webkit-details-marker {
+    display: none;
+}
+
+.site-footer-content-toggle:focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: 2px;
+}
+
+/* Açıldığında ok yukarı bakar: durum RENKLE değil YÖNLE anlatılır. */
+.site-footer-content[open] > .site-footer-content-toggle .site-icon {
+    transform: rotate(180deg);
+}
+
+.site-footer-content > .site-footer-grid {
+    padding-block: var(--space-4);
 }
 
 /* --- Sayfa gövdesi ------------------------------------------------------ */
@@ -380,7 +544,109 @@
     outline-offset: 2px;
 }
 
-/* --- Hareket ------------------------------------------------------------ */
+/* --- Hareket: JETONLAR VE ZEMİN (`docs/136` §7) -------------------------- */
+
+/*
+    BU PAKET HAREKET DAĞARCIĞINI YAZMAZ — ONA YER AÇAR.
+
+    Sahibin isteği (2026-09-08): *"Yüksek kaliteli animasyonlar, 3D gibi
+    görünen 2D efektler, parallax ve sağlı sollu hareket eden landing pages,
+    particles vb. Bir uzay teknolojileri şirketi gibi, abartı dursun,
+    görünsün, hissettirsin."*
+
+    O abartı SAYFA GÖVDELERİNDE yaşayacak. Kabuk onu TAŞIR ama kendisi sakin
+    kalır, ve bu bir zevk tercihi değil bir ölçüm: üst çubuk her sayfada
+    aynıdır ve her gün görülür. Her açılışta kıpırdayan bir üst çubuk üçüncü
+    ziyarette gürültüdür; hareketin etkisi ise nadirliğinden gelir.
+
+    Aşağıdaki jetonlar bir SÖZLEŞMEDİR: hareket paketi kendi süresini,
+    yumuşatmasını ve mesafesini uydurmaz, buradan okur. Ham bir `0.6s` yazan
+    her efekt, sistemin dışında ikinci bir zamanlama dili kurar.
+*/
+:root {
+    /*
+        SÜRE. Kabuğun kendi süreleri AEP'nin `--duration-*` jetonlarıdır
+        (120–240ms): bir menünün açılması bir arayüz olayıdır. Sahne
+        hareketi ayrı bir ölçektir — bir parallax katmanı 240ms'de değil,
+        kaydırma boyunca yaşar.
+    */
+    --motion-scene-fast: 400ms;
+    --motion-scene-base: 700ms;
+    --motion-scene-slow: 1200ms;
+
+    /*
+        YUMUŞATMA. `--easing-inout` arayüz içindir. Sahne hareketi için iki
+        eğri: `emphasized` girişte hızlanıp yavaşça oturur, `drift` ise
+        neredeyse doğrusaldır ve sürekli hareket (parçacık, arka plan kayması)
+        içindir — doğrusala yakın olmayan bir sürekli hareket, döngünün
+        başladığı yeri ele verir.
+    */
+    --motion-emphasized: cubic-bezier(0.2, 0, 0, 1);
+    --motion-drift: cubic-bezier(0.4, 0, 0.6, 1);
+
+    /*
+        MESAFE. Parallax derinliği bir yüzde değil, bir MESAFE olarak
+        yazılır; yüzde, kapsayıcının boyuna bağlıdır ve aynı efekt iki
+        bölümde iki farklı hızda akar.
+    */
+    --motion-depth-near: 8px;
+    --motion-depth-mid: 24px;
+    --motion-depth-far: 56px;
+
+    /*
+        KATMAN SIRASI — TEK yer.
+
+        Kabukta bugün üç yığın var: menü bölmesi (20), çerez şeridi (30) ve
+        atlama bağlantısı (50). Sahne efektleri bunların ALTINA girer ve bu
+        sıra bir tercih değil bir kural: hiçbir dekoratif katman, ziyaretçinin
+        gezinmesini ya da bir hukuki seçimi ÖRTEMEZ.
+    */
+    --layer-scene-back: 0;
+    --layer-scene-mid: 1;
+    --layer-scene-front: 2;
+    --layer-content: 10;
+}
+
+/*
+    SAHNE KABI — efektlerin gireceği yer.
+
+    Bir efekt kendi `position` ve `overflow` kararını vermez; sahnenin
+    içine girer. Sebep ölçülebilir: `overflow: clip` olmadan yana kayan bir
+    katman sayfayı yatay olarak kaydırır ve `scripts/mobile-ux-audit` bunu
+    ilk kuralında kırar (yatay taşma). Kabı burada TEK kez doğru yazmak, her
+    efektin aynı hatayı ayrı ayrı yapmasını engeller.
+
+    `isolation: isolate`: sahnenin içindeki z-index'ler dışarı sızmaz, yani
+    bir efekt yanlışlıkla üst çubuğun üstüne çıkamaz.
+*/
+.site-stage {
+    position: relative;
+    isolation: isolate;
+    /* `clip`, `hidden`den farklı olarak yeni bir kaydırma kabı YARATMAZ:
+       sayfa içi çıpalar ve `position: sticky` çalışmaya devam eder. */
+    overflow: clip;
+}
+
+.site-stage > .site-stage-layer {
+    position: absolute;
+    inset: 0;
+    /* Dekoratif katman tıklanamaz: altındaki metin seçilebilir kalır. */
+    pointer-events: none;
+    z-index: var(--layer-scene-back);
+}
+
+.site-stage > .site-stage-layer[data-depth='mid'] {
+    z-index: var(--layer-scene-mid);
+}
+
+.site-stage > .site-stage-layer[data-depth='front'] {
+    z-index: var(--layer-scene-front);
+}
+
+.site-stage > .site-stage-content {
+    position: relative;
+    z-index: var(--layer-content);
+}
 
 /*
     HAREKET YALNIZ İSTENDİĞİNDE (`docs/118` E5 madde 5, `docs/119` §20).
@@ -390,17 +656,21 @@
     unutan bir satır sessizce hareket eder. Burada hareket, açıkça istenmiş
     olmadan hiç doğmaz.
 
-    Bu kabukta GSAP ya da başka bir animasyon kütüphanesi YOK ve bu bir
-    eksiklik değil bir ölçüm sonucudur: kabuğun tek hareketi bir bölmenin
-    açılmasıdır, onu CSS zaten yapıyor, ve kabuk betik çalışmadığında da tam
-    çalışmak ZORUNDA. Bir başlığın açılması için 70 KB indirmek, kurumsal
-    sayfaların bugünkü en güçlü özelliğini (sıfır React, sıfır kütüphane)
-    kaybetmek olurdu. GSAP kararı sayfa bazında, gerçekten hareket eden bir
-    bölüm yazıldığı gün verilir.
+    `data-motion="on"` KANCASI. Hareket paketi bu özniteliği kök öğeye yazar
+    ve yalnız o zaman sahne animasyonları çalışır. Kanca CSS'te, betikte
+    değil: `prefers-reduced-motion: reduce` diyen bir ziyaretçide betik
+    özniteliği yazsa BİLE hiçbir sahne kuralı doğmaz. Tek yönlü bir kapı —
+    betik bu kararı geri alamaz.
 */
 @media (prefers-reduced-motion: no-preference) {
     .site-menu[open] > .site-menu-panel {
         animation: site-menu-reveal var(--duration-base) var(--easing-inout);
+    }
+
+    :root[data-motion='on'] .site-stage-layer {
+        transition:
+            transform var(--motion-scene-base) var(--motion-emphasized),
+            opacity var(--motion-scene-fast) var(--motion-emphasized);
     }
 }
 

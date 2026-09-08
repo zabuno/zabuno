@@ -109,9 +109,44 @@ if (CHROME === undefined) {
     değil; portu Chrome'a bırakmak o olasılığı sıfırlar.
 */
 
-/** En dar desteklenen genişlik. Taban budur; geniş ekran zenginleştirmedir. */
-const WIDTH = 320;
-const HEIGHT = 568;
+/*
+    ÖLÇÜLEN GENİŞLİK — varsayılan 320, TABAN budur.
+
+    `--width` bayrağı 2026-09-08'de eklendi ve sırayı DEĞİŞTİRMEZ: dar ekran
+    hâlâ tabandır, geniş ekran hâlâ zenginleştirmedir, CI kapısı hâlâ 320'de
+    koşar (`.github/workflows/ci.yml`). Bayrak yalnız ikinci bir SORUYU
+    sorulabilir kılar: "aynı düzen geniş ekranda da ayakta mı?"
+
+    Sorunun gerekçesi ölçülmüş bir riskti: kırılma noktası kullanmayan akışkan
+    bir ızgara (`repeat(auto-fit, minmax(…))`) 320'de doğru olup 1280'de
+    dağılabilir — sütunlar gereğinden çok, hedefler gereğinden dar. 320'de
+    ölçüp geniş ekranı hiç açmamak, o dağılmayı sahibin ekranında keşfetmek
+    demekti.
+
+    Yükseklik genişlikle birlikte gelir: 320×568 bir telefon, 1280×800 bir
+    dizüstü. Yükseklik ayrı bir bayrak DEĞİL, çünkü ikisini bağımsız
+    seçmek "ölçtüğüm cihaz hangisi" sorusunu cevapsız bırakırdı.
+*/
+const widthFlag = process.argv.indexOf('--width');
+const WIDTH = widthFlag > -1 ? Number.parseInt(process.argv[widthFlag + 1] ?? '', 10) : 320;
+
+if (!Number.isInteger(WIDTH) || WIDTH < 320 || WIDTH > 3840) {
+    console.error(
+        `mobile-ux-audit: --width 320 ile 3840 arasında bir tam sayı olmalı (gelen: ${process.argv[widthFlag + 1]}).`,
+    );
+    process.exit(2);
+}
+
+/*
+    GİRİŞ KİPİ GENİŞLİKTEN TÜREMEZ AMA CİHAZ TÜRER (`docs/118` E2).
+
+    768'in altı bir telefon olarak emüle edilir (dokunma, `mobile: true`);
+    üstü bir işaretleyici cihazıdır. Bu, "medya sorgusuyla iki düzen" demek
+    DEĞİL — ölçülen ŞEYİN ne olduğunu söylemek: aynı tek düzen, iki farklı
+    giriş kipinde.
+*/
+const MOBILE = WIDTH < 768;
+const HEIGHT = MOBILE ? 568 : 800;
 
 /** Dokunma hedefinin asgarisi (CSS pikseli). */
 const MIN_TARGET = 44;
@@ -740,7 +775,7 @@ try {
         width: WIDTH,
         height: HEIGHT,
         deviceScaleFactor: 1,
-        mobile: true,
+        mobile: MOBILE,
     });
     await cdp(ws, 'Page.enable');
 

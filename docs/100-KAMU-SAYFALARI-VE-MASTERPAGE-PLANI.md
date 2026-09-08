@@ -66,6 +66,14 @@ yazılı.
 
 ## 2. Masterpage sözleşmesi — header / footer
 
+> **GÜNCELLENDİ (2026-09-08, FF-232).** Kabuğun TEKLİĞİ ve aşağıdaki MP-01…06
+> maddeleri aynen geçerli. Değişen şey içeriği ve görsel dili: kabuk artık
+> **daisyUI** üzerine yeniden yazıldı, ikon dili **Phosphor** (`docs/118` E6
+> düzeltildi) ve altbilgi **sayfa kütüğünden türeyen** bir pSEO katı taşıyor.
+> Aşağıdaki tablolarda "Header'daki gezinti / Footer" satırları o günün
+> ölçümüdür; bugünkü sözleşme **`docs/136`**tedir.
+
+
 Masterpage üç parçadır: `public/layout.blade.php` (belge iskeleti, `<head>`,
 atlama bağlantısı, `@yield`), `public/partials/header.blade.php`,
 `public/partials/footer.blade.php`. Sayfa şablonları yalnız `@section`
