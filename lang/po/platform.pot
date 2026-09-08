@@ -380,6 +380,10 @@ msgstr ""
 msgid "platform.auditLog.source.publication"
 msgstr ""
 
+#: platform:platform.auditLog.source.support-access
+msgid "platform.auditLog.source.support-access"
+msgstr ""
+
 #: platform:platform.auditLog.title
 msgid "platform.auditLog.title"
 msgstr ""
@@ -1146,6 +1150,242 @@ msgstr ""
 
 #: platform:platform.subscriptions.workspace.retry
 msgid "platform.subscriptions.workspace.retry"
+msgstr ""
+
+#: platform:platform.support.error
+msgid "platform.support.error"
+msgstr ""
+
+#: platform:platform.support.finding.location_has_no_menu
+msgid "platform.support.finding.location_has_no_menu"
+msgstr ""
+
+#: platform:platform.support.finding.location_has_no_qr
+msgid "platform.support.finding.location_has_no_qr"
+msgstr ""
+
+#: platform:platform.support.finding.no_location
+msgid "platform.support.finding.no_location"
+msgstr ""
+
+#: platform:platform.support.finding.qr_disabled
+msgid "platform.support.finding.qr_disabled"
+msgstr ""
+
+#: platform:platform.support.finding.qr_has_no_destination
+msgid "platform.support.finding.qr_has_no_destination"
+msgstr ""
+
+#: platform:platform.support.finding.qr_menu_never_published
+msgid "platform.support.finding.qr_menu_never_published"
+msgstr ""
+
+#: platform:platform.support.finding.subscription_not_active
+msgid "platform.support.finding.subscription_not_active"
+msgstr ""
+
+#: platform:platform.support.finding.workspace_not_serving
+msgid "platform.support.finding.workspace_not_serving"
+msgstr ""
+
+#: platform:platform.support.findings.none
+msgid "platform.support.findings.none"
+msgstr ""
+
+#: platform:platform.support.findings.scope
+msgid "platform.support.findings.scope"
+msgstr ""
+
+#: platform:platform.support.findings.title
+msgid "platform.support.findings.title"
+msgstr ""
+
+#: platform:platform.support.guest.locationMeta
+msgid "platform.support.guest.locationMeta"
+msgstr ""
+
+#: platform:platform.support.guest.noDestination
+msgid "platform.support.guest.noDestination"
+msgstr ""
+
+#: platform:platform.support.guest.noLocation
+msgid "platform.support.guest.noLocation"
+msgstr ""
+
+#: platform:platform.support.guest.noQr
+msgid "platform.support.guest.noQr"
+msgstr ""
+
+#: platform:platform.support.guest.notPublished
+msgid "platform.support.guest.notPublished"
+msgstr ""
+
+#: platform:platform.support.guest.orderingOff
+msgid "platform.support.guest.orderingOff"
+msgstr ""
+
+#: platform:platform.support.guest.orderingOn
+msgid "platform.support.guest.orderingOn"
+msgstr ""
+
+#: platform:platform.support.guest.published
+msgid "platform.support.guest.published"
+msgstr ""
+
+#: platform:platform.support.guest.title
+msgid "platform.support.guest.title"
+msgstr ""
+
+#: platform:platform.support.history.none
+msgid "platform.support.history.none"
+msgstr ""
+
+#: platform:platform.support.history.tenantSees
+msgid "platform.support.history.tenantSees"
+msgstr ""
+
+#: platform:platform.support.history.title
+msgid "platform.support.history.title"
+msgstr ""
+
+#: platform:platform.support.history.unknownActor
+msgid "platform.support.history.unknownActor"
+msgstr ""
+
+#: platform:platform.support.idle
+msgid "platform.support.idle"
+msgstr ""
+
+#: platform:platform.support.intro
+msgid "platform.support.intro"
+msgstr ""
+
+#: platform:platform.support.loading
+msgid "platform.support.loading"
+msgstr ""
+
+#: platform:platform.support.nav.label
+msgid "platform.support.nav.label"
+msgstr ""
+
+#: platform:platform.support.open.alreadyOpen
+msgid "platform.support.open.alreadyOpen"
+msgstr ""
+
+#: platform:platform.support.open.contract
+msgid "platform.support.open.contract"
+msgstr ""
+
+#: platform:platform.support.open.failed
+msgid "platform.support.open.failed"
+msgstr ""
+
+#: platform:platform.support.open.pickTenant
+msgid "platform.support.open.pickTenant"
+msgstr ""
+
+#: platform:platform.support.open.reason
+msgid "platform.support.open.reason"
+msgstr ""
+
+#: platform:platform.support.open.reasonHelp
+msgid "platform.support.open.reasonHelp"
+msgstr ""
+
+#: platform:platform.support.open.submit
+msgid "platform.support.open.submit"
+msgstr ""
+
+#: platform:platform.support.open.title
+msgid "platform.support.open.title"
+msgstr ""
+
+#: platform:platform.support.region.label
+msgid "platform.support.region.label"
+msgstr ""
+
+#: platform:platform.support.requests.none
+msgid "platform.support.requests.none"
+msgstr ""
+
+#: platform:platform.support.requests.title
+msgid "platform.support.requests.title"
+msgstr ""
+
+#: platform:platform.support.retry
+msgid "platform.support.retry"
+msgstr ""
+
+#: platform:platform.support.session.elsewhere
+msgid "platform.support.session.elsewhere"
+msgstr ""
+
+#: platform:platform.support.session.end
+msgid "platform.support.session.end"
+msgstr ""
+
+#: platform:platform.support.session.endFailed
+msgid "platform.support.session.endFailed"
+msgstr ""
+
+#: platform:platform.support.session.here
+msgid "platform.support.session.here"
+msgstr ""
+
+#: platform:platform.support.session.readOnly
+msgid "platform.support.session.readOnly"
+msgstr ""
+
+#: platform:platform.support.session.reason
+msgid "platform.support.session.reason"
+msgstr ""
+
+#: platform:platform.support.session.title
+msgid "platform.support.session.title"
+msgstr ""
+
+#: platform:platform.supportQueue.empty
+msgid "platform.supportQueue.empty"
+msgstr ""
+
+#: platform:platform.supportQueue.filter
+msgid "platform.supportQueue.filter"
+msgstr ""
+
+#: platform:platform.supportQueue.filter.all
+msgid "platform.supportQueue.filter.all"
+msgstr ""
+
+#: platform:platform.supportQueue.markAnswered
+msgid "platform.supportQueue.markAnswered"
+msgstr ""
+
+#: platform:platform.supportQueue.markClosed
+msgid "platform.supportQueue.markClosed"
+msgstr ""
+
+#: platform:platform.supportQueue.noAcknowledgement
+msgid "platform.supportQueue.noAcknowledgement"
+msgstr ""
+
+#: platform:platform.supportQueue.noReplySurface
+msgid "platform.supportQueue.noReplySurface"
+msgstr ""
+
+#: platform:platform.supportQueue.status.answered
+msgid "platform.supportQueue.status.answered"
+msgstr ""
+
+#: platform:platform.supportQueue.status.closed
+msgid "platform.supportQueue.status.closed"
+msgstr ""
+
+#: platform:platform.supportQueue.status.received
+msgid "platform.supportQueue.status.received"
+msgstr ""
+
+#: platform:platform.supportQueue.title
+msgid "platform.supportQueue.title"
 msgstr ""
 
 #: platform:platform.tenants.col.action

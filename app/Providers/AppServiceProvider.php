@@ -33,6 +33,8 @@ use App\Application\Entitlement\Port\EntitlementRepositoryPort;
 use App\Application\Ledger\Port\LedgerPort;
 use App\Application\Legal\Port\ConsentLedgerPort;
 use App\Application\Legal\Port\LegalLibraryPort;
+use App\Application\Legal\Port\SubprocessorRegistryPort;
+use App\Application\Legal\Port\ThirdPartyLicensePort;
 use App\Application\Localization\Port\TranslationPort;
 use App\Application\Mail\Port\MailTransportSelectorPort;
 use App\Application\Media\Port\MalwareScannerAvailabilityPort;
@@ -96,6 +98,8 @@ use App\Application\Security\Port\MediaBackupRestoreEvidenceRepositoryPort;
 use App\Application\Security\Port\SecurityEvidenceSnapshotPort;
 use App\Application\Security\Port\TenantIsolationEvidenceRepositoryPort;
 use App\Application\Security\Port\TenantIsolationSuiteRunnerPort;
+use App\Application\Support\Port\SupportAccessNotifierPort;
+use App\Application\Support\Port\SupportAccessPort;
 use App\Application\Support\Port\SupportNotifierPort;
 use App\Application\Support\Port\SupportReferenceGeneratorPort;
 use App\Application\Support\Port\SupportRequestRepositoryPort;
@@ -155,6 +159,8 @@ use App\Infrastructure\Entitlement\DatabaseEntitlementRepository;
 use App\Infrastructure\Ledger\DatabaseLedger;
 use App\Infrastructure\Legal\DatabaseConsentLedger;
 use App\Infrastructure\Legal\LegalLibrary;
+use App\Infrastructure\Legal\ManifestThirdPartyLicenses;
+use App\Infrastructure\Legal\MeasuredSubprocessors;
 use App\Infrastructure\Localization\MoFileTranslator;
 use App\Infrastructure\Localization\PseudoLocalizingTranslator;
 use App\Infrastructure\Mail\VaultMailTransportSelector;
@@ -220,7 +226,12 @@ use App\Infrastructure\Security\Persistence\BackupRestoreEvidenceRepository;
 use App\Infrastructure\Security\Persistence\MediaBackupRestoreEvidenceRepository;
 use App\Infrastructure\Security\Persistence\TenantIsolationEvidenceRepository;
 use App\Infrastructure\Security\Source\GitSecurityEvidenceSnapshot;
+use App\Infrastructure\Support\Authorization\SupportAccessAuthorization;
+use App\Infrastructure\Support\Authorization\SupportAccessScope;
+use App\Infrastructure\Support\Authorization\SupportAccessWorkspaceRepository;
+use App\Infrastructure\Support\Mail\MailSupportAccessNotifier;
 use App\Infrastructure\Support\Mail\MailSupportNotifier;
+use App\Infrastructure\Support\Persistence\EloquentSupportAccess;
 use App\Infrastructure\Support\Persistence\EloquentSupportRequestRepository;
 use App\Infrastructure\Support\Reference\RandomSupportReferenceGenerator;
 use App\Infrastructure\Team\Mail\MailTeamInvitationNotifier;
@@ -235,6 +246,7 @@ use App\Infrastructure\Workspace\EloquentSetupProgress;
 use App\Infrastructure\Workspace\EloquentWorkspaceAuditTrail;
 use App\Support\Localization\PseudoLocalizer;
 use App\Support\Localization\SiteText;
+use App\Support\Site\HomeStory;
 use App\Support\Site\SiteNavigation;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
@@ -274,12 +286,43 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->singleton(ContentLibraryPort::class, ProductPageLibrary::class);
         // Yasal belgeler ve onay defteri (FF-198, `docs/124`).
         $this->app->singleton(LegalLibraryPort::class, LegalLibrary::class);
+        /*
+            KURUMSAL SÖZLEŞMELERİN ÖLÇÜLEN GİRDİLERİ (FF-228, `docs/140`).
+
+            Alt işleyen listesi kimlik kasasından, lisans listesi manifest ve
+            kilit dosyalarından TÜRETİLİR; ikisi de elle yazılmaz, çünkü elle
+            yazılmış bir liste bir `composer require` ya da bir kasa kaydıyla
+            hiçbir uyarı vermeden eskir.
+
+            `bind`, `singleton` DEĞİL: ikisi de bir OLGUYU ölçüyor ve ölçüm
+            istek boyunca `LegalLibrary`nin kendi önbelleğinde zaten
+            tutuluyor. Tekil yapmak, uzun ömürlü bir süreçte (Octane) dünkü
+            kasayı bugünkü sözleşmeye yazdırırdı.
+        */
+        $this->app->bind(SubprocessorRegistryPort::class, MeasuredSubprocessors::class);
+        $this->app->bind(ThirdPartyLicensePort::class, ManifestThirdPartyLicenses::class);
         $this->app->bind(ConsentLedgerPort::class, DatabaseConsentLedger::class);
 
         $this->app->bind(EntitlementRepositoryPort::class, DatabaseEntitlementRepository::class);
-        $this->app->bind(WorkspaceRepositoryPort::class, EloquentWorkspaceRepository::class);
+        /*
+            KİRACI OLARAK BAKMA SARMALAYICILARI (`docs/122` Y7, `docs/133`).
+
+            İkisi de SARMALAYICIDIR, yerine geçen değil: gerçek karar önce
+            üyelikten sorulur ve ancak "hayır" çıktığında açık bir destek
+            oturumu varsa YALNIZ OKUMA izni eklenir. Sarmalama burada
+            yapılır, denetleyicilerde değil — yetki kararının iki farklı
+            yerde verilmesi, bir gün ekranın çizdiği ile sunucunun izin
+            verdiğinin ayrışması demektir.
+        */
+        $this->app->bind(WorkspaceRepositoryPort::class, fn ($app) => new SupportAccessWorkspaceRepository(
+            $app->make(EloquentWorkspaceRepository::class),
+            $app->make(SupportAccessScope::class),
+        ));
         $this->app->bind(WorkspaceContextSessionPort::class, SessionWorkspaceContext::class);
-        $this->app->bind(AuthorizationPort::class, EloquentAuthorizationDecisionPoint::class);
+        $this->app->bind(AuthorizationPort::class, fn ($app) => new SupportAccessAuthorization(
+            $app->make(EloquentAuthorizationDecisionPoint::class),
+            $app->make(SupportAccessScope::class),
+        ));
         $this->app->bind(BrandRepositoryPort::class, EloquentBrandRepository::class);
         $this->app->bind(LocationRepositoryPort::class, EloquentLocationRepository::class);
         $this->app->bind(MenuCatalogRepositoryPort::class, EloquentMenuCatalogRepository::class);
@@ -726,6 +769,8 @@ final class AppServiceProvider extends ServiceProvider
         // sebebi kayda geçer (`docs/110` P0-06).
         $this->app->bind(TeamInvitationNotifierPort::class, MailTeamInvitationNotifier::class);
         // Destek kanalı (FF-201, `docs/125`): kayıt, referans, iki e-posta.
+        $this->app->bind(SupportAccessPort::class, EloquentSupportAccess::class);
+        $this->app->bind(SupportAccessNotifierPort::class, MailSupportAccessNotifier::class);
         $this->app->bind(SupportRequestRepositoryPort::class, EloquentSupportRequestRepository::class);
         $this->app->bind(SupportReferenceGeneratorPort::class, RandomSupportReferenceGenerator::class);
         $this->app->bind(SupportNotifierPort::class, MailSupportNotifier::class);
@@ -814,6 +859,29 @@ final class AppServiceProvider extends ServiceProvider
             yapar ve onu her kimlik/panel görünümünde çalıştırmak, hiç
             kullanılmayacak bir sorgu ödemek olurdu.
         */
+        /*
+            ANA SAYFANIN ÜÇ LİSTESİ DE HER ZAMAN VAR (`docs/138`).
+
+            Aynı gerekçe, aynı desen: görünüm doğrudan çizildiğinde (tema
+            önyükleme sözleşmesi bunu tam olarak yapıyor) `$story`
+            geçirilmemiş olur ve sayfa `Undefined variable` ile çökerdi —
+            ölçüldü, iki test kırıldı. Çağıranın unutabileceği bir adım
+            bırakmamak, bu depoda zaten verilmiş bir karar.
+
+            Besteci YALNIZ ana sayfaya bağlı: fiyat, yardım ve yasal
+            sayfalarda bu listeler hiç çizilmiyor ve okunmayacak 25 maddeyi
+            her istekte çözmek, hiçbir şeyin görünmediği bir iş olurdu.
+
+            Elle verilen değer KAZANIR: denetleyici ziyaretçinin diline göre
+            çözülmüş hâlini geçiriyor (`getPreferredLanguage`), besteci ise
+            uygulamanın diline düşer.
+        */
+        View::composer('public.home', function ($view): void {
+            if (! array_key_exists('story', $view->getData())) {
+                $view->with('story', app(HomeStory::class)->lists());
+            }
+        });
+
         View::composer(['public.partials.header', 'public.partials.footer'], function ($view): void {
             $data = $view->getData();
 

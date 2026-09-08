@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\PlatformAdmin\ActivateManagedPlanController;
 use App\Http\Controllers\PlatformAdmin\DisableProviderCredentialController;
+use App\Http\Controllers\PlatformAdmin\EndSupportAccessController;
 use App\Http\Controllers\PlatformAdmin\ListCoreModulesController;
 use App\Http\Controllers\PlatformAdmin\ListManagedPlansController;
 use App\Http\Controllers\PlatformAdmin\ListManagedUsersController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\PlatformAdmin\ListManagedWorkspacesController;
 use App\Http\Controllers\PlatformAdmin\ListPlatformAuditLogController;
 use App\Http\Controllers\PlatformAdmin\ListProviderConnectionsController;
 use App\Http\Controllers\PlatformAdmin\ListProviderCredentialsController;
+use App\Http\Controllers\PlatformAdmin\OpenSupportAccessController;
 use App\Http\Controllers\PlatformAdmin\ProbeProviderConnectionController;
 use App\Http\Controllers\PlatformAdmin\RefundPaymentTransactionController;
 use App\Http\Controllers\PlatformAdmin\SetProviderConnectionStateController;
@@ -18,6 +20,8 @@ use App\Http\Controllers\PlatformAdmin\ShowAiAuditController;
 use App\Http\Controllers\PlatformAdmin\ShowBillingModeController;
 use App\Http\Controllers\PlatformAdmin\ShowManagedSubscriptionController;
 use App\Http\Controllers\PlatformAdmin\ShowManagedWorkspaceController;
+use App\Http\Controllers\PlatformAdmin\ShowSupportAccessController;
+use App\Http\Controllers\PlatformAdmin\ShowTenantSupportViewController;
 use App\Http\Controllers\PlatformAdmin\StoreManagedPlanController;
 use App\Http\Controllers\PlatformAdmin\StoreManualPaymentController;
 use App\Http\Controllers\PlatformAdmin\StoreProviderConnectionController;
@@ -37,10 +41,12 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/admin/workspaces', ListManagedWorkspacesController::class);
         /*
             Kiracı ayrıntısı (`docs/122` Y2). Liste vardı, satıra tıklayınca
-            hiçbir şey yoktu. SALT OKUNUR: bu ucun POST/PUT/DELETE eşi
-            bilerek yoktur ve kiracı olarak oturum açma (impersonation) Y7'ye
-            bırakılmıştır — `docs/122` §5 onu en tehlikeli süperadmin
-            yeteneği sayar ve zor olmasını şart koşar.
+            hiçbir şey yoktu. SALT OKUNUR ve öyle KALDI: bu ucun POST/PUT/
+            DELETE eşi bilerek yoktur. Kiracı olarak bakma Y7'de geldi ama
+            buraya BAĞLANMADI — kendi ucu, kendi sebebi ve kendi süresi var
+            (bu dosyanın sonu). Kiracı ayrıntısına bir "bakmaya başla"
+            düğmesi konsaydı, `docs/122` §5'in zorluk şartı sessizce iptal
+            edilmiş olurdu.
         */
         Route::get('/admin/workspaces/{workspace}', ShowManagedWorkspaceController::class)
             ->whereNumber('workspace');
@@ -108,5 +114,42 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::post('/admin/connections/{connection}/{state}', SetProviderConnectionStateController::class)
             ->whereIn('state', ['disable', 'enable'])
             ->middleware('throttle:20,1');
+
+        /*
+            DESTEK GÖRÜNÜMÜ VE KİRACI OLARAK BAKMA (`docs/122` Y7,
+            `docs/133`).
+
+            Y2 turunda bu dosyanın kendi yorumu şöyle diyordu: *"kiracı
+            olarak oturum açma (impersonation) Y7'ye bırakılmıştır."* O gün
+            bugündür ve kapı, `docs/122` §5'in şart koştuğu dört kilitle
+            birlikte açılıyor — sebep, süre, kiracının görebileceği kayıt,
+            ve salt-okunurluk.
+
+            SIRA KASITLI: önce SALT OKUNUR görünüm, sonra bakma ucu. Destek
+            çağrılarının çoğu `support-view` ile cevaplanır ve kiracının
+            gözüne girmeyi hiç gerektirmez; impersonation son çaredir.
+
+            `support-view` GET'tir ve hız sınırı taşımaz: salt okunur, tıpkı
+            kiracı ayrıntısı gibi. `support-access` POST'tur ve manuel
+            ödemeyle AYNI sınırı taşır (`throttle:5,1`) — bir kiracıya bakmak
+            en az bir ödeme kaydı kadar ağır bir fiildir.
+
+            BİTİRME UCU AYRI VE OTURUM KİMLİĞİ TAŞIMAZ: kim olduğu oturumdan
+            okunur, gövdeden değil, dolayısıyla başkasının oturumunu
+            kapatmanın yolu yoktur. Bu yol, salt-okunur kilidin iki
+            istisnasından biridir (`EnsureSupportAccessIsReadOnly`).
+
+            UZATMA UCU YOKTUR ve bu listede bir gün `PUT
+            /admin/support-access` ya da `.../extend` biçiminde bir satır
+            belirirse, o bir kapsam kararıdır ve `docs/122` §5'e aykırıdır:
+            uzatılabilir bir süre yalnız ertelenmiş bir süresizliktir.
+        */
+        Route::get('/admin/workspaces/{workspace}/support-view', ShowTenantSupportViewController::class)
+            ->whereNumber('workspace');
+        Route::get('/admin/support-access', ShowSupportAccessController::class);
+        Route::post('/admin/support-access/end', EndSupportAccessController::class)->middleware('throttle:20,1');
+        Route::post('/admin/workspaces/{workspace}/support-access', OpenSupportAccessController::class)
+            ->whereNumber('workspace')
+            ->middleware('throttle:5,1');
     });
 });

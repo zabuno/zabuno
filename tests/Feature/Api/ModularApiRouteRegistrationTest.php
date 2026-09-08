@@ -424,11 +424,12 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'GET|api/admin/workspaces||App\Http\Controllers\PlatformAdmin\ListManagedWorkspacesController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',
         /*
             SÜPERADMİNİN İLK GÜNÜ (`docs/122` Y2) — üçü de SALT OKUNUR.
-            Bu listede bir gün `POST|api/admin/workspaces/{workspace}/...`
-            biçiminde bir "kiracı olarak oturum aç" ucu belirirse, o bir
-            kapsam kararıdır ve `docs/122` Y7'ye aittir: impersonation
-            kasıtlı olarak en sona bırakılmıştır ve denetim kaydı ile zorluk
-            şartına bağlıdır (§5).
+            Bu satırlar Y2'de "kiracı olarak oturum aç ucu bir gün belirirse
+            o bir kapsam kararıdır" notunu taşıyordu. Karar Y7'de verildi:
+            uç listenin SONUNDA (`POST|api/admin/workspaces/{workspace}/
+            support-access`), dört kilidiyle birlikte. BU ÜÇ UÇ YİNE DE SALT
+            OKUNUR KALDI — kiracı ayrıntısı bir bakma kapısı taşımaz, bakma
+            kendi ucundan ve kendi sebebiyle açılır.
         */
         'GET|api/admin/workspaces/{workspace}||App\Http\Controllers\PlatformAdmin\ShowManagedWorkspaceController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',
         'GET|api/admin/workspaces/{workspace}/subscription||App\Http\Controllers\PlatformAdmin\ShowManagedSubscriptionController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',
@@ -464,6 +465,45 @@ final class ModularApiRouteRegistrationTest extends TestCase
         // çağrısı yaptığı için daha sıkı hız sınırı taşır.
         'POST|api/admin/connections/{connection}/probe||App\Http\Controllers\PlatformAdmin\ProbeProviderConnectionController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,throttle:10,1,verified',
         'POST|api/admin/connections/{connection}/{state}||App\Http\Controllers\PlatformAdmin\SetProviderConnectionStateController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,throttle:20,1,verified',
+        /*
+            DESTEK GÖRÜNÜMÜ VE KİRACI OLARAK BAKMA (`docs/122` Y7,
+            `docs/133`).
+
+            Y2 turunda bu listenin kendi yorumu şunu söylüyordu: *"bu listede
+            bir gün `POST|api/admin/workspaces/{workspace}/...` biçiminde bir
+            'kiracı olarak oturum aç' ucu belirirse, o bir kapsam kararıdır
+            ve `docs/122` Y7'ye aittir."* O gün bugündür; satır aşağıda ve
+            gerekçesi burada.
+
+            KAPSAM KARARI ŞUDUR: uç açıldı, ama `docs/122` §5'in dört şartı
+            koda bağlandı ve dördü de dondu.
+
+             - **Sebep zorunlu** (`OpenSupportAccessRequest`): kırpıldığında
+               boş kalan ya da tek kelimelik bir sebep 422 alır.
+             - **Süreli** (`SupportAccessWindow`): süre yapılandırmadan
+               gelir, tavanı vardır ve UZATMA UCU YOKTUR. Bu listede bir gün
+               `PUT|api/admin/support-access` ya da `.../extend` belirirse,
+               o §5'e aykırı bir kapsam kararıdır.
+             - **Kiracının görebileceği kayıt**: kayıt kiracının KENDİ
+               `GET|api/workspaces/{workspace}/audit-trail` ucundan okunur —
+               yeni bir kiracı ucu açılmadı, var olan uç kaydı taşımaya
+               başladı.
+             - **Salt okunur**: `EnsureSupportAccessIsReadOnly` `web` ve
+               `api` gruplarındadır. Rota imzaları DEĞİŞMEDİ, çünkü grup
+               ADI değişmedi — kilit her imzanın arkasında, hiçbirinin
+               içinde değil.
+
+            `support-view` GET ve hız sınırsız (salt okunur, kiracı
+            ayrıntısıyla aynı dil). `support-access` POST ve manuel ödemeyle
+            aynı sınırda (`throttle:5,1`). Bitirme ucu `throttle:20,1` —
+            diğer süperadmin yazma uçlarıyla aynı — ve gövdesinde oturum
+            kimliği TAŞIMAZ: kim olduğu oturumdan okunur, dolayısıyla
+            başkasının oturumunu kapatmanın yolu yoktur.
+        */
+        'GET|api/admin/workspaces/{workspace}/support-view||App\Http\Controllers\PlatformAdmin\ShowTenantSupportViewController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',
+        'GET|api/admin/support-access||App\Http\Controllers\PlatformAdmin\ShowSupportAccessController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',
+        'POST|api/admin/support-access/end||App\Http\Controllers\PlatformAdmin\EndSupportAccessController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,throttle:20,1,verified',
+        'POST|api/admin/workspaces/{workspace}/support-access||App\Http\Controllers\PlatformAdmin\OpenSupportAccessController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,throttle:5,1,verified',
         /*
             RESTORAN TARAFININ SİPARİŞ YOLLARI (FF-179, `docs/115` S4/S5/S6).
 

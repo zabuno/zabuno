@@ -198,6 +198,14 @@ manuel demo kaydı), tenant escape testi (AUTH-02), QR fiziksel scan testi
   tutmaz — bu bir dağıtım şartıdır, bir varsayım değil. p95 gecikme ve LCP
   gerçek bir dağıtım ölçümüdür ve **henüz yapılmamıştır**; hiçbir test bunu
   iddia etmez.
+  **Güncelleme (2026-09-08, `docs/143`):** JS bütçesinin KENDİSİ ölçüldü. Kapı
+  aynı commit'i iki ortamda farklı sayıyla ölçüyordu (200,065 / 199,771 KB) ve
+  fark derlemeden değil, testin `gzipSync` çağrısının bağlı olduğu zlib
+  gerçeklemesinden geliyordu. Kapının asıl eşiği artık BELİRLENİM olan **ham
+  bayttır** (`maxTotalRawKb`), gzip eşiği yanında durur. Aynı pakette
+  `tailwind-merge`in üç kopyası tek kopyaya indi ve masaüstü kapanışı
+  **199,65 → 188,53 KB gzip** oldu; gzip bütçesi **200'den 192'ye
+  DÜŞÜRÜLDÜ**.
 - i18n: altı katalog (en/tr/de/fr/ar/ru) scaffold'ı + text-domain wiring +
   PO→MO→JSON pipeline'ın tamamı hazır ve entegre; English kaynak katalog
   complete/default. tr/de/fr/ar/ru içerik-completeness'i (tam çeviri + plural/

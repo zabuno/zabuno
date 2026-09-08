@@ -147,6 +147,20 @@ final class TenantDataScope
                 erased: false,
                 retentionReason: 'Silme talebinin kendi kaydı; silinirse "kim ne zaman ne istedi" sorusunun cevabı da silinirdi.',
             ),
+
+            /*
+                HESABA KİM BAKTI (`docs/122` Y7). Platform ekibinin salt
+                okunur oturumları PLATFORMUN değil, KİRACININ kaydıdır:
+                kiracı onu kendi ekranında (Ayarlar → Denetim izi) görüyor,
+                dolayısıyla arşivine de girer — göremediği bir kaydı dışa
+                aktaramamak, kaydı yarım göstermek olurdu.
+
+                SİLİNİR, çünkü çalışma alanı yoksa "bu hesaba kim baktı"
+                sorusunu soracak kimse de yoktur; göçün kendisi de aynı
+                kararı veriyor (`cascadeOnDelete`). Saklama gerekçesi
+                yazılmadı çünkü saklanmıyor.
+            */
+            TenantTable::direct('support_access_sessions'),
         ];
     }
 

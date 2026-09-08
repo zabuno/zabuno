@@ -315,16 +315,28 @@ final class CorporateProductPageTest extends TestCase
         self::assertStringContainsString('SoftwareApplication', $html);
     }
 
-    public function test_the_corporate_page_draws_no_icons(): void
+    public function test_the_corporate_page_body_never_draws_its_own_icon(): void
     {
-        // `docs/118` E6: ikon yasağı KURUMSAL SİTE için korunuyor. Yerine
-        // metin, tipografi, boşluk ve çizgi.
+        /*
+            `docs/118` E6 — DÜZELTİLDİ (2026-09-08). Eski hâli "kurumsal sitede
+            ikon yasak" diyordu; sahibin düzeltmesi: *"hayır, Phosphor icon
+            var, emoji yok."*
+
+            Yasak kalkmadı, YER DEĞİŞTİRDİ: ikon yalnız `<x-phosphor>`
+            bileşeninden gelir ve kabukta yaşar. SAYFA GÖVDESİ kendi ikonunu
+            çizmez — bir gövde kendi SVG'sini çizmeye başladığı gün, ailenin
+            dışına çıkan ilk adım atılmış olur ve ikinci adımı kimse fark
+            etmez. Ölçüm bu yüzden `<main>` ile sınırlı: kabuğun kendi
+            glifleri (menü, ok) bu kuralın konusu değil ve
+            `ShellIconLanguageTest` tarafından ayrıca ölçülüyor.
+        */
         $this->publishedQrMenu();
 
         $html = (string) $this->get('/en/product/qr-menu/')->getContent();
-        $body = substr($html, (int) strpos($html, '<main'));
 
-        self::assertStringNotContainsString('<svg', $body);
-        self::assertStringNotContainsString('<i class', $body);
+        self::assertSame(1, preg_match('#<main\b.*?</main>#s', $html, $main));
+
+        self::assertStringNotContainsString('<svg', $main[0]);
+        self::assertStringNotContainsString('<i class', $main[0]);
     }
 }

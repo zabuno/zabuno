@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { LockKey } from '@phosphor-icons/react';
 
 import { t } from '../../../../i18n/workspace';
 import { trackEvent } from '../../../../lib/analytics';
@@ -24,27 +25,49 @@ type AuditEvent = {
     at: string | null;
 };
 
-type Status = 'loading' | 'error' | 'ready';
-
 /**
- * Kaynak adı bir ETİKETE çevrilir, bir if-else zincirine değil.
+ * Platform ekibinin bu hesaba bakışı — `docs/122` Y7, `docs/133` §3.
  *
- * Üçüncü kaynak (veri hakları, FF-226) eklendiğinde iki dallı üçlü işleç
- * artık okunmuyordu ve dördüncüsünde büsbütün okunmaz olurdu. Bilinmeyen
- * bir kaynak kendi adıyla görünür: kayıt gizlenmez, yalnız etiketi
- * çevrilmemiş kalır — sessizce "Yayınlama" demek, yanlış bir olay adı
- * göstermek olurdu.
+ * AYRI BİR ALAN, listenin ÜSTÜNDE. Aynı kayıt aşağıdaki zaman çizgisinde de
+ * var; ama yüz satırlık bir izin ortasına düşen bir satır "teknik olarak
+ * gösterildi" demektir, "sahibin gözüne çarptı" demek değil. `docs/122` §5
+ * kaydın kiracının GÖREBİLECEĞİ biçimde yazılmasını istiyor ve o iki cümle
+ * aynı cümle değil.
  */
-function sourceLabelKey(source: string): Parameters<typeof t>[0] {
-    if (source === 'media') return 'workspace.settings.audit.source.media';
-    if (source === 'data_rights') return 'workspace.settings.audit.source.dataRights';
+type SupportAccessEntry = {
+    id: number;
+    actor: string | null;
+    reason: string;
+    startedAt: string;
+    expiresAt: string;
+    active: boolean;
+};
 
-    return 'workspace.settings.audit.source.publication';
+const SOURCE_LABELS = {
+    media: 'workspace.settings.audit.source.media',
+    publication: 'workspace.settings.audit.source.publication',
+    'support-access': 'workspace.settings.audit.source.support-access',
+    data_rights: 'workspace.settings.audit.source.dataRights',
+} as const;
+
+type SourceKey = keyof typeof SOURCE_LABELS;
+
+function sourceLabel(source: string): string {
+    // Çevirisi olmayan kaynak ham adıyla yazılır: bilinmeyen bir olayı
+    // gizleyen bir iz, iz olmaktan çıkar.
+    if (!Object.prototype.hasOwnProperty.call(SOURCE_LABELS, source)) {
+        return source;
+    }
+
+    return t(SOURCE_LABELS[source as SourceKey]);
 }
+
+type Status = 'loading' | 'error' | 'ready';
 
 export function AuditTrailRegion({ workspaceId }: { workspaceId: number }) {
     const [status, setStatus] = useState<Status>('loading');
     const [events, setEvents] = useState<AuditEvent[]>([]);
+    const [supportAccess, setSupportAccess] = useState<SupportAccessEntry[]>([]);
 
     /*
         YÜKLEME ETKİNİN İÇİNDE (FF-132).
@@ -79,11 +102,15 @@ export function AuditTrailRegion({ workspaceId }: { workspaceId: number }) {
                     return;
                 }
 
-                const body = (await response.json()) as { data?: AuditEvent[] };
+                const body = (await response.json()) as {
+                    data?: AuditEvent[];
+                    supportAccess?: SupportAccessEntry[];
+                };
 
                 if (cancelled) return;
 
                 setEvents(body.data ?? []);
+                setSupportAccess(body.supportAccess ?? []);
                 setStatus('ready');
             } catch {
                 if (!cancelled) setStatus('error');
@@ -101,6 +128,55 @@ export function AuditTrailRegion({ workspaceId }: { workspaceId: number }) {
             className="flex flex-col gap-[var(--space-3)]"
         >
             <p className="text-body text-fg-secondary">{t('workspace.settings.audit.help')}</p>
+
+            {/*
+                EN ÜSTTE VE KENDİ KUTUSUNDA. Sahibin bilmesi gereken tek şey
+                bu ekranda menü olaylarıyla aynı ağırlıkta durmamalı: kendi
+                ekibinin yaptığı bir fiyat değişikliğiyle, dışarıdan birinin
+                hesabına bakması aynı önemde iki satır değildir.
+            */}
+            {supportAccess.length > 0 && (
+                <section
+                    aria-label={t('workspace.settings.audit.support.title')}
+                    className="flex flex-col gap-[var(--space-2)] rounded-[var(--radius-lg)] border border-border bg-surface px-[var(--density-padding-inline)] py-[var(--space-3)]"
+                >
+                    <h3 className="flex items-start gap-[var(--space-2)] text-body font-bold text-fg">
+                        <LockKey aria-hidden="true" size={18} className="mt-[2px] flex-none" />
+                        <span>{t('workspace.settings.audit.support.title')}</span>
+                    </h3>
+                    <p className="text-meta text-fg-secondary">
+                        {t('workspace.settings.audit.support.help')}
+                    </p>
+                    <ul className="flex flex-col gap-[var(--space-3)]">
+                        {supportAccess.map((entry) => (
+                            <li key={entry.id} className="flex flex-col gap-[var(--space-1)]">
+                                <span className="text-meta tabular-nums text-fg-muted">
+                                    {entry.active
+                                        ? t('workspace.settings.audit.support.open', {
+                                              expiresAt: entry.expiresAt,
+                                          })
+                                        : t('workspace.settings.audit.support.closed', {
+                                              startedAt: entry.startedAt,
+                                              expiresAt: entry.expiresAt,
+                                          })}
+                                </span>
+                                <span className="text-body text-fg">
+                                    {t('workspace.settings.audit.support.reason', {
+                                        reason: entry.reason,
+                                    })}
+                                </span>
+                                <span className="text-meta text-fg-muted">
+                                    {t('workspace.settings.audit.support.by', {
+                                        actor:
+                                            entry.actor ??
+                                            t('workspace.settings.audit.support.unknownActor'),
+                                    })}
+                                </span>
+                            </li>
+                        ))}
+                    </ul>
+                </section>
+            )}
 
             {status === 'loading' && (
                 <p role="status" className="text-body text-fg-muted">
@@ -158,9 +234,7 @@ export function AuditTrailRegion({ workspaceId }: { workspaceId: number }) {
                                 {event.at ?? ''}
                             </span>
 
-                            <span className="font-medium text-fg">
-                                {t(sourceLabelKey(event.source))}
-                            </span>
+                            <span className="font-medium text-fg">{sourceLabel(event.source)}</span>
 
                             <span>{event.action}</span>
 

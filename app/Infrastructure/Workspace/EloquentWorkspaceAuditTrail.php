@@ -20,12 +20,17 @@ use Illuminate\Support\Facades\DB;
  * tablonun sütunları farklı ve bir gün üçüncü bir kaynak eklendiğinde
  * (fatura, takım) SQL'i büyütmek yerine bir dizi daha eklenir.
  *
- * ÜÇÜNCÜ KAYNAK GELDİ (FF-226, `docs/138` §5): veri hakları defteri.
+ * ÜÇÜNCÜ KAYNAK EKLENDİ (`docs/122` Y7): platform ekibinin bu hesaba
+ * bakışı. Yukarıdaki "yarın üçüncü bir kaynak eklendiğinde" cümlesi bir
+ * varsayım değildi; bugün gerçekleşti ve tek satır maliyetle gerçekleşti.
+ *
+ * DÖRDÜNCÜ KAYNAK GELDİ (FF-226, `docs/138` §5): veri hakları defteri.
  * "Kim, ne zaman, hangi kapsamla dışa aktarma ya da silme istedi" sorusu
  * kiracının KENDİ görebileceği yerde durmak zorunda; platformun denetim
  * kaydında durması, kiracının kendi hakkını kendi ekranından
  * doğrulayamaması demekti. Yeni bir ekran açılmadı — sahip zaten
- * Ayarlar → Denetim izi ekranına bakıyor (`docs/133` deseni).
+ * Ayarlar → Denetim izi ekranına bakıyor (`docs/133` deseni). Maliyet yine
+ * tek satır oldu.
  *
  * Aktör E-POSTAYLA yazılır: bir ekipte iki "Mehmet" olabilir ve "Mehmet
  * sildi" cümlesi hiçbir soruyu kapatmaz. Kullanıcı silinmişse alan boş
@@ -39,6 +44,7 @@ final class EloquentWorkspaceAuditTrail implements WorkspaceAuditTrailPort
         $events = [
             ...$this->mediaEvents($workspaceId, $limit),
             ...$this->publicationEvents($workspaceId, $limit),
+            ...$this->supportAccessEvents($workspaceId, $limit),
             ...$this->dataRightsEvents($workspaceId, $limit),
         ];
 
@@ -55,6 +61,42 @@ final class EloquentWorkspaceAuditTrail implements WorkspaceAuditTrailPort
         });
 
         return array_slice($events, 0, $limit);
+    }
+
+    /**
+     * ÜÇÜNCÜ KAYNAK: platform ekibinin bu hesaba bakışı (`docs/122` Y7,
+     * `docs/133` §3).
+     *
+     * BU SATIRIN BURADA OLMASI PAKETİN ŞARTIDIR, süsü değil. `docs/122` §5
+     * kaydın "kiracının GÖREBİLECEĞİ biçimde" yazılmasını istiyor; yalnız
+     * süperadmin tarafında gösterilen bir kayıt denetim değil, bir günlük
+     * dosyasıdır. Kayıt bu porta eklendiği an sahibin kendi Ayarlar →
+     * Denetim izi ekranında, kendi menü ve medya olaylarının arasında,
+     * onlarla aynı zaman çizgisinde belirir.
+     *
+     * KONU SEBEPTİR. Diğer kaynaklarda konu bir dosya ya da bir menü adıdır;
+     * burada sahibin okuması gereken tek şey NEDEN bakıldığıdır. Sebebi
+     * kısaltmak ya da kod adına çevirmek, kaydı yine okunmaz kılardı.
+     *
+     * @return array<int, array{source:string, action:string, subject:?string, actor:?string, at:?string}>
+     */
+    private function supportAccessEvents(int $workspaceId, int $limit): array
+    {
+        $rows = DB::table('support_access_sessions as s')
+            ->leftJoin('users as u', 'u.id', '=', 's.actor_user_id')
+            ->where('s.workspace_id', $workspaceId)
+            ->orderByDesc('s.started_at')
+            ->orderByDesc('s.id')
+            ->limit($limit)
+            ->get(['s.reason', 's.started_at', 'u.email']);
+
+        return $rows->map(static fn (object $row): array => [
+            'source' => 'support-access',
+            'action' => 'support_access_opened',
+            'subject' => (string) $row->reason,
+            'actor' => $row->email === null ? null : (string) $row->email,
+            'at' => $row->started_at === null ? null : (string) $row->started_at,
+        ])->all();
     }
 
     /**

@@ -6300,6 +6300,38 @@ msgstr "Fotoğraf"
 msgid "workspace.settings.audit.source.publication"
 msgstr "Yayınlama"
 
+#: workspace:workspace.settings.audit.source.support-access
+msgid "workspace.settings.audit.source.support-access"
+msgstr ""
+
+#: workspace:workspace.settings.audit.support.by
+msgid "workspace.settings.audit.support.by"
+msgstr ""
+
+#: workspace:workspace.settings.audit.support.closed
+msgid "workspace.settings.audit.support.closed"
+msgstr ""
+
+#: workspace:workspace.settings.audit.support.help
+msgid "workspace.settings.audit.support.help"
+msgstr ""
+
+#: workspace:workspace.settings.audit.support.open
+msgid "workspace.settings.audit.support.open"
+msgstr ""
+
+#: workspace:workspace.settings.audit.support.reason
+msgid "workspace.settings.audit.support.reason"
+msgstr ""
+
+#: workspace:workspace.settings.audit.support.title
+msgid "workspace.settings.audit.support.title"
+msgstr ""
+
+#: workspace:workspace.settings.audit.support.unknownActor
+msgid "workspace.settings.audit.support.unknownActor"
+msgstr ""
+
 #: workspace:workspace.settings.audit.unknownActor
 msgid "workspace.settings.audit.unknownActor"
 msgstr "Bilinmiyor"

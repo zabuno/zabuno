@@ -148,6 +148,13 @@ return [
             aradığı iki sayfa o işletmenin menüsüyle gölgelenirdi.
         */
         'about', 'delivery',
+        /*
+            KURUMSAL SÖZLEŞMELER (FF-228, `docs/140`). Aynı kural: dördü de
+            üst düzey yoldur (URL-RESERVED-COVERS-ROUTES-13) ve bir işletme
+            `sla` slug'ını alırsa hizmet seviyesi sayfası o işletmenin
+            menüsüyle gölgelenirdi.
+        */
+        'acceptable-use', 'data-processing', 'sla', 'third-party-licenses',
         'en', 'menu', 'platform', 'engineering', 'pricing', 'restaurant', 'restoran',
         /*
             TASLAK ÖNİZLEMESİ (`/menu-preview/{workspace}/{menu}`, sahibin

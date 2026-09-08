@@ -137,14 +137,35 @@ bir şey.
 6. Sayfa başına en fazla bir baskın hareketli arka plan; aynı görüntü alanında
    ikinci bir WebGL yok (`docs/119` §17.5 korunuyor).
 
-### E6 — İkon yasağı: **korunuyor**, ama kapsamı yazıldı
+### E6 — İkon: **emoji yasak, Phosphor ilk** (2026-09-08'de DÜZELTİLDİ)
 
 **Yönerge §1 madde 10:** *"İkon kullanılmayacaktır."*
 
-**Karar: korunuyor — yalnız KURUMSAL SİTE için.** Ürün panelinde ikon
-kullanılıyor ve sahibin kendi kuralı bunu düzenliyor (emoji yasak, Phosphor
-ilk). İki yüzey iki ayrı görsel dil; kapsam yazılmadığı için bugüne kadar
-çelişki gibi görünüyordu.
+**Bu belge 2026-09-05'te o maddeyi "korunuyor — yalnız kurumsal site için"
+diye yazmıştı. YANLIŞ YAZILMIŞTI.** Sahibin düzeltmesi (2026-09-08):
+*"hayır, Phosphor icon var, emoji yok. Kararı güncelle."*
+
+**Yürürlükteki karar, İKİ YÜZEY İÇİN AYNI:**
+
+> **Emoji yasak. Phosphor ilk.**
+
+Panel `@phosphor-icons/react` kullanıyor. Kurumsal site React YÜKLEMEZ
+(`docs/38` §16) ve bu bir kazanç, kaybedilecek bir şey; bu yüzden aynı ikon
+ailesine **sunucu tarafından** erişir: `resources/views/components/phosphor.blade.php`
+paketin `regular` ağırlığındaki yol verisini bire bir taşır ve
+`ShellIconLanguageTest` (ICON-02) her glifi paketin kendi tanımıyla
+karşılaştırır. Elle çizilmiş bir "benzeri" kapıyı kırar.
+
+**Neden emoji ayrı bir yasak.** Emoji bir ikon değildir: işletim sistemine
+göre başka çizilir, ekran okuyucuda uzun bir cümle olarak okunur, yazı tipi
+yığınına bağlıdır ve marka jetonlarından hiç geçmez. ICON-01 kabuğun her
+dosyasını tarar.
+
+**Ne değişti kodda.** Üst çubuktaki açık/kapalı göstergesi bir "artı/eksi
+geometrisi"ydi ve gerekçesi `header.blade.php` içine *"İKON YOK"* diye
+yazılmıştı. O gerekçe bu düzeltmeyle birlikte kaldırıldı; yerine iki Phosphor
+glifi (`list` / `x`) geldi ve hangisinin görüneceğini CSS `[open]` seçer —
+betik gerekmiyor.
 
 ### E7 — Stok görsel kaynağı: **Unsplash değil**
 
@@ -157,6 +178,39 @@ Burst, StockSnap, Kaboompics, Life of Pix, Picjumbo, Reshot ve muadilleri.
 **Her görsel için kaydedilir:** kaynak, doğrudan adres, lisans adı, atıf
 gerekliliği, indirme tarihi. Lisansı doğrulanamayan görsel **kullanılmaz** —
 "muhtemelen serbest" bir lisans değildir.
+
+### E8 — "Kabukta betik yok" kuralı: **gevşetildi** (2026-09-08)
+
+**Eski kural** `header.blade.php` içinde yaşıyordu: kabuk JavaScript'e hiç
+dokunmayacaktı. Gerekçesi gerçekti — kurumsal sitenin en çok okunduğu an,
+betiklerin en çok engellendiği andır.
+
+**Sahibin düzeltmesi:** *"gibi bir sınır koymak yanlış."*
+
+**Yürürlükteki karar — taban HTML, tavan serbest:**
+
+> Her gezinti hedefi SUNUCU HTML'inde `<a href>` olarak **bulunur**.
+> JavaScript bunun **üstüne** serbestçe ekler.
+
+Yani mega menü, arama, hareket ve efekt serbesttir; hiçbiri o tabanı silemez.
+Ayrım, "betik yok" ile "betiksiz de çalışır" arasındaki farktır ve ikincisi
+ölçülebilir: `SHELL-SINGLE-SOURCE-04` sayfayı betik gövdeleri atılmış hâlde
+çizer ve her hedefi arar. Altbilginin pSEO katı da aynı kapıdan geçer
+(`FOOTER-CONTENT-05`) — bir arama motoru için "betiksiz gövde" varsayılan
+gövdedir.
+
+**Bu, `docs/119` §17.5'i ve `prefers-reduced-motion` kuralını GEVŞETMEZ.**
+Hareket hâlâ açıkça istenmiş olmadan doğmaz ve sayfa başına en fazla bir
+baskın hareketli arka plan kuralı yerinde durur.
+
+### E9 — Kurumsal sitenin bileşen kütüphanesi: **daisyUI** (2026-09-08)
+
+**Sahibin kararı:** *"daisyUI kullan, baştan yarat… bu kararım kesin."*
+
+Kurumsal kabuk daisyUI 5 üzerine yeniden yazıldı. Tema **marka jetonlarından
+türer** (bir tek renk elle yazılmaz), sınıflar `dz-` önekiyle gelir ve panel
+etkilenmez — panel `flowbite-react` + AEP üzerinde kalır (`docs/102`).
+Ayrıntı, ölçüm ve sonraki ajanlara talimat: **`docs/136`**.
 
 ## 2. Değişmeden korunan kararlar
 

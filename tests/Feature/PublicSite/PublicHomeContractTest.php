@@ -27,12 +27,30 @@ final class PublicHomeContractTest extends TestCase
 
     // --- HOME-SSR-01 -------------------------------------------------------
 
+    /**
+     * GÜNCELLENDİ (FF-233, `docs/138`).
+     *
+     * Ölçülen ŞART değişmedi: bir bot boş bir kabuk değil, sayfanın gerçek
+     * metnini almalı. Değişen, hangi cümlenin sondaj noktası olduğu.
+     *
+     * `Publication & stable QR` dört maddelik eski "Features" listesinden
+     * geliyordu. O liste, ürünün kendi envanterinden (`ProductOverviewPage`)
+     * bağımsız yazılmış dört genel başlıktı ve envanterle ayrışabilirdi —
+     * ayrışsa da hiçbir şey kırılmazdı. Yerine on iki parçalık gerçek
+     * envanter geldi ve `HOME-REAL-07` ikisinin aynı kalmasını donduruyor.
+     *
+     * Sondaj bu yüzden artık ENVANTERDEN seçilmiş bir terim: `QR menu`.
+     * Adı bir gün değişirse önce `HOME-REAL-07` konuşur, bu test değil.
+     */
     public function test_a_crawler_receives_the_actual_content_not_an_empty_shell(): void
     {
         $html = $this->html();
 
         self::assertStringContainsString('Run your restaurant', $html);
-        self::assertStringContainsString('Publication &amp; stable QR', $html);
+        self::assertStringContainsString('QR menu', $html);
+        // Ürünün NE OLMADIĞI da gövdededir: bir bot yalnız vaatleri değil,
+        // sınırları da görüyor.
+        self::assertStringContainsString('What Zabuno is not', $html);
         self::assertGreaterThan(
             5000,
             strlen($html),
