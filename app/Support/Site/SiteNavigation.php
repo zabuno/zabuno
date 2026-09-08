@@ -507,11 +507,24 @@ final class SiteNavigation
      *
      * ── Etiket nereden geliyor ────────────────────────────────────────────
      *
-     * Sayfanın KENDİ başlığından. Bir katalog anahtarı yazmak, her yeni
-     * sayfa için bir kod değişikliği ve bir çeviri borcu üretirdi; oysa bu
-     * katın bütün varlık sebebi, sahibin bir sayfayı yayına almasının
-     * altbilgiyi kendiliğinden zenginleştirmesi. Uydurma yok: başlık kütükte
-     * zaten yazılı olan dizedir.
+     * Sayfanın KENDİ YAZILMIŞ kısa adından (`breadcrumbTitle`) — kütüğün
+     * `title` alanından DEĞİL. Bir katalog anahtarı yazmak, her yeni sayfa
+     * için bir kod değişikliği ve bir çeviri borcu üretirdi; oysa bu katın
+     * bütün varlık sebebi, sahibin bir sayfayı yayına almasının altbilgiyi
+     * kendiliğinden zenginleştirmesi.
+     *
+     * Kaynak neden DEĞİŞTİ (ölçüldü, 2026-09-08): kütükteki `title`, site
+     * haritası BELGESİNDEN gelir ve o belge Türkçedir — kaynak dil satırları
+     * için bile (`ImportSiteMapCommand`, `docs/118` E4). Üstelik bir kısmı
+     * başlık bile değil, bir AÇIKLAMA cümlesidir: `/en/product/qr-menu/`
+     * satırının başlığı "QR, dijital, mobil ve temassız menü özelliklerini
+     * tek sayfada anlatır". On sekiz sayfa yayına alındığı gün İngilizce bir
+     * sitenin altbilgisi Türkçe cümlelerle dolacaktı.
+     *
+     * Uydurma da yok, çeviri de: kırıntı başlığı sayfanın kendi içeriğinde
+     * ZATEN yazılı ve ziyaretçi onu sayfanın içinde de görüyor. Metni
+     * olmayan bir satır zaten bu listeye giremiyor, dolayısıyla kısa ad her
+     * zaman var; yine de kütüğün başlığı son çare olarak duruyor.
      *
      * @return list<array{id: string, label: string, items: list<array{label: string, href: string, emphasis: bool}>}>
      */
@@ -542,12 +555,24 @@ final class SiteNavigation
 
         /** @var array<string, ContentPage> $linkable */
         $linkable = [];
+        /** @var array<string, string> $label Sayfanın kendi yazılmış kısa adı. */
+        $label = [];
 
         /** @var ContentPage $page */
         foreach ($pages as $page) {
-            if ($this->isLinkable($page, $environment)) {
-                $linkable[$page->page_key] = $page;
+            /*
+                Karar TEK KEZ sorulur. `isLinkable()` zaten `ResolvePageDelivery`
+                çağırıyordu ve etiketi ondan ayrı bir yerden okumak, aynı sayfa
+                için iki ayrı kaynak demekti — ikisi bir gün ayrışır.
+            */
+            $delivery = $this->delivery->for($page, $environment);
+
+            if (! $delivery->decision->isLinkable()) {
+                continue;
             }
+
+            $linkable[$page->page_key] = $page;
+            $label[$page->page_key] = $delivery->content?->metadata->breadcrumbTitle ?? (string) $page->title;
         }
 
         // Elle yazılmış gruplarda ZATEN duran adres burada tekrar edilmez:
@@ -572,7 +597,7 @@ final class SiteNavigation
         foreach ($grouped as $parentKey => $children) {
             $heading = $parentKey === ''
                 ? $this->siteText->get('site.nav.explore', $locale)
-                : (string) $linkable[$parentKey]->title;
+                : $label[$parentKey];
 
             $groups[] = [
                 'id' => 'content-'.($parentKey === '' ? 'explore' : str_replace('.', '-', $parentKey)),
@@ -583,7 +608,7 @@ final class SiteNavigation
                 'collapsed' => count($children) > self::OPEN_ITEM_CEILING,
                 'items' => array_map(
                     fn (ContentPage $page): array => [
-                        'label' => (string) $page->title,
+                        'label' => $label[$page->page_key],
                         'href' => $this->normalizer->normalize($page->canonical_path)->target(),
                         'emphasis' => false,
                     ],

@@ -125,9 +125,9 @@ if (CHROME === undefined) {
     ölçüp geniş ekranı hiç açmamak, o dağılmayı sahibin ekranında keşfetmek
     demekti.
 
-    Yükseklik genişlikle birlikte gelir: 320×568 bir telefon, 1280×800 bir
-    dizüstü. Yükseklik ayrı bir bayrak DEĞİL, çünkü ikisini bağımsız
-    seçmek "ölçtüğüm cihaz hangisi" sorusunu cevapsız bırakırdı.
+    Yükseklik genişlikten TÜRER: 320×568 bir telefon, 1280×800 bir dizüstü.
+    Türetilen değer varsayılandır ve varsayılan olarak kalır; `--height` onu
+    açıkça değiştirmek isteyene bir kapı açar (aşağıya bak).
 */
 const widthFlag = process.argv.indexOf('--width');
 const WIDTH = widthFlag > -1 ? Number.parseInt(process.argv[widthFlag + 1] ?? '', 10) : 320;
@@ -150,17 +150,25 @@ if (!Number.isInteger(WIDTH) || WIDTH < 320 || WIDTH > 3840) {
 const MOBILE = WIDTH < 768;
 
 /*
-    ÖLÇÜLEN YÜKSEKLİK — `--height`, FF-237'de eklendi.
+    YÜKSEKLİK — genişlikten TÜRER, ama `--height` ile açıkça söylenebilir.
 
-    Genişlik taşmayı ve hedef boyunu belirler; YÜKSEKLİK ise "ilk ekranda ne
-    var" sorusunun tek ölçüsüdür. Global kural (`TOUCH-FIRST-INTERFACE`)
-    tabanı 320×480'e indirdi ve o iki sayı ayrılamaz: 320 pikselde sığan bir
-    altbilgi, 480 piksel boyunda bir ekranda kaç ekran boyu yer kapladığını
-    söylemez.
+    2026-09-08'e kadar yükseklik yalnız türetiliyordu (320 → 568, geniş →
+    800) ve gerekçesi şuydu: ikisini bağımsız seçmek "ölçtüğüm cihaz
+    hangisi" sorusunu cevapsız bırakır. Gerekçe hâlâ doğru; eksik olan,
+    türetilen tek yüksekliğin bir SEÇİM olduğunu görmekti.
 
-    Varsayılan DEĞİŞMEDİ (telefonda 568, geniş ekranda 800): CI kapısı
-    aynı sayıyı ölçmeye devam ediyor. Bayrak yalnız ikinci bir soru sormayı
-    mümkün kılar.
+    568, iPhone SE'nin (2016) boyudur. Sahibin tabanı bir adım daha
+    dardır — *"iPhone 4 first"* — ve iPhone 4'ün görüntü alanı **320×480**.
+    Aradaki 88 piksel önemsiz değil: 480'de bir "hero" sahnesi ekranı
+    doldurup içeriği katlanmanın altına iterse, 568'de bunu yapmayabilir.
+    Yani ölçülmeyen bir yükseklikte kusur GÖRÜNMEZ, YOK olmaz.
+
+    Bayrak sırayı DEĞİŞTİRMEZ: 320×568 hâlâ türetilen taban, CI kapısı hâlâ
+    onu koşuyor. `--height` ikinci bir soruyu sorulabilir kılar: *aynı ilk
+    ekran, 88 piksel daha kısa bir telefonda da içerik gösteriyor mu?*
+
+    Ölçülen yükseklik raporun BAŞLIĞINDA ve JSON çıktısında zaten yazıyor;
+    "hangi cihaz" sorusu bu yüzden cevapsız kalmıyor.
 */
 const heightFlag = process.argv.indexOf('--height');
 const HEIGHT =
@@ -599,7 +607,8 @@ const targetDir = process.argv[2] ? resolve(process.argv[2]) : process.argv[2];
 if (!targetDir || !existsSync(targetDir)) {
     console.error(
         'kullanım: scripts/mobile-ux-audit <storybook-static-dizini|html-dizini> ' +
-            '[--json rapor.json] [--fail] [--baseline liste.json]',
+            '[--json rapor.json] [--fail] [--baseline liste.json] ' +
+            '[--width 320] [--height 480] [--direction ltr|rtl]',
     );
     process.exit(2);
 }
