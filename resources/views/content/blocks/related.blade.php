@@ -3,14 +3,19 @@
      Süzgeç denetleyicide çalıştı: yayınlanmamış bir sayfa hiçbir yerden iç
      bağlantı almaz (`docs/105` §2.2(3)). Süzgeçten hiçbir şey geçmediyse
      bölüm HİÇ çizilmez — boş bir başlık, sayfayı uzatıp hiçbir soruya cevap
-     vermeyen ince içeriktir. --}}
+     vermeyen ince içeriktir.
+
+     Bunlar cümle içindeki bağlantı değil, GEZİNTİ hedefi: her biri kendi
+     satırında, tam dokunma yüksekliğinde, kenarlıklı. Burada okunan bir
+     metin yok — dokunulacak bir hedef var ve hedefin sınırı görünür olmalı.
+     Geniş ekranda ızgara kendiliğinden çoğalır. --}}
 @if ($relatedLinks !== [])
-    <section class="flex flex-col gap-3 border-t border-border pt-6">
-        <h2 class="text-xl font-semibold text-fg">{{ $block->heading }}</h2>
-        <ul class="flex flex-col gap-2">
+    <section class="site-doc-block" data-block="related">
+        <h2 class="site-doc-heading">{{ $block->heading }}</h2>
+        <ul class="site-doc-related" role="list">
             @foreach ($relatedLinks as $link)
                 <li>
-                    <a href="{{ $link['path'] }}" class="inline-flex min-h-[44px] items-center text-fg-link underline">{{ $link['label'] }}</a>
+                    <a href="{{ $link['path'] }}" class="site-doc-related-link">{{ $link['label'] }}</a>
                 </li>
             @endforeach
         </ul>
