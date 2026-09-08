@@ -944,7 +944,7 @@
    ve ikinci bir renk tanımlamak, tema değiştiğinde ayrışacak ikinci bir
    kaynak olurdu.
 
-   ── OPAKLIK NEDEN 0.42 DEĞİL (WCAG döngü 1, 2026-09-08, docs/149) ──
+   ── OPAKLIK NEDEN 0.42 DEĞİL (WCAG döngü 1, 2026-09-08, docs/150) ──
 
    Ölçüldü, tahmin edilmedi. `axe-core`, `prefers-contrast: more` hâlinde
    bu şeridin 20 maddesini dört görünümde kusurlu bildirdi:
