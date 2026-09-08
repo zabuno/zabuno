@@ -77,10 +77,38 @@ final class ProductPageLibraryTest extends TestCase
         'urun.menu-yonetimi.stok-durumu',
     ];
 
+    /**
+     * DALGA 4 — FF-229.
+     *
+     * Ölçüm 2026-09-08 (`docs/137` §5): iki yetenek para karşılığı satılıyor
+     * ya da satın alma kararını taşıyor, ve ikisinin de sitede tek bir satırı
+     * yok.
+     *
+     * - **Masadan sipariş.** Uçtan uca çalışıyor (misafir gönderir, garson
+     *   onaylar, mutfak görür) ve `ordering.basic` hakkı bir kademede
+     *   SATILIYOR. Kütükte de, yazılmış içerikte de karşılığı yoktu: parası
+     *   alınan bir yetenek hiçbir yerde anlatılmıyordu.
+     * - **Yayın, sürümler ve geri alma.** Çalışıyor — önizleme, zamanlama,
+     *   sürüm geçmişi, geri alma — ama yalnız `/help` içinde bir paragraf
+     *   olarak geçiyordu. Oysa "yanlış listeyi yayınlarsam ne olur" bir
+     *   satın alma sorusudur.
+     *
+     * SİPARİŞ TEK SAYFA VE ANAHTARI `urun.siparis`. Kütükte bir de
+     * `urun.siparis.masaya-siparis` satırı var; alt sayfayı yazmak, ürünün
+     * yapmadığı gel-al/paket servis kardeşlerine bakan BOŞ bir ata hub'ı da
+     * yazmayı gerektirirdi — yani ebeveyni çocuğunun kopyası olan iki sayfa.
+     * Ürün masadan siparişten başkasını yapmıyor; o yüzden hub'ın kendisi
+     * masadan siparişi anlatır ve ötekilerin YOKLUĞUNU yazar.
+     */
+    private const FOURTH_WAVE = [
+        'urun.siparis',
+        'urun.menu-yonetimi.menu-versiyonlari',
+    ];
+
     /** @return list<string> */
     private static function everyPage(): array
     {
-        return array_merge(self::FIRST_FIVE, self::SECOND_WAVE, self::THIRD_WAVE);
+        return array_merge(self::FIRST_FIVE, self::SECOND_WAVE, self::THIRD_WAVE, self::FOURTH_WAVE);
     }
 
     private ProductPageLibrary $library;

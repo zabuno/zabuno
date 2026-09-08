@@ -14,7 +14,9 @@ use App\Infrastructure\Content\Pages\MenuCategoriesPage;
 use App\Infrastructure\Content\Pages\MenuDishesPage;
 use App\Infrastructure\Content\Pages\MenuManagementPage;
 use App\Infrastructure\Content\Pages\MenuPricesPage;
+use App\Infrastructure\Content\Pages\MenuVersionsPage;
 use App\Infrastructure\Content\Pages\MultipleBranchesPage;
+use App\Infrastructure\Content\Pages\OrderingPage;
 use App\Infrastructure\Content\Pages\PricingPage;
 use App\Infrastructure\Content\Pages\ProductOverviewPage;
 use App\Infrastructure\Content\Pages\QrMenuPage;
@@ -30,6 +32,12 @@ use App\Infrastructure\Content\Pages\ZabunoAiPage;
  * Dalga 2, kütüphanenin ürün sayfasına özel OLMADIĞINI ölçtü: çözümler girişi
  * ve fiyatlandırma `urun` türünde değil ve aynı blok modelinden çiziliyorlar.
  * Şablon dilden bağımsızdı; artık türden de bağımsız olduğu gösterildi.
+ *
+ * FF-229 (dalga 4) yazılmamış olmanın en pahalı hâlini kapattı: parası
+ * ALINAN ama hiçbir yerde ANLATILMAYAN yetenekler (`docs/137` §5). Masadan
+ * sipariş `ordering.basic` hakkıyla satılıyordu ve kütükte tek satırı yoktu;
+ * yayın/geri alma yalnız `/help` içinde bir paragraftı. İkisinin de sayfası
+ * artık burada.
  *
  * Dalga 3, kütüphanenin DERİNLİKTEN de bağımsız olduğunu ölçtü: ürün genel
  * bakışı (ata) ve menü yönetiminin dört alt sayfası (üç kademeli anahtar)
@@ -89,6 +97,8 @@ final class ProductPageLibrary implements ContentLibraryPort
             MenuDishesPage::content(),
             MenuPricesPage::content(),
             StockStatusPage::content(),
+            OrderingPage::content(),
+            MenuVersionsPage::content(),
         ] as $content) {
             $index[$content->locale.'|'.$content->pageKey] = $content;
         }

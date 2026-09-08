@@ -215,6 +215,10 @@ final class MenuManagementPage
                 new ContentBlock(BlockType::Related, 'Related pages', [
                     new BlockEntry(text: 'QR menu', pageKey: 'urun.qr-menu'),
                     new BlockEntry(text: 'Zabuno AI', pageKey: 'urun.zabuno-ai'),
+                    // FF-229: bu sayfa yayına TEK ADIMDA değiniyor; "yanlış
+                    // listeyi yayınlarsam ne olur" sorusunun kendi sayfası
+                    // artık var ve oraya buradan çıkılır.
+                    new BlockEntry(text: 'Versions and rollback', pageKey: 'urun.menu-yonetimi.menu-versiyonlari'),
                 ]),
             ],
         );
