@@ -624,6 +624,36 @@
     --motion-depth-far: 56px;
 
     /*
+        YATAY MESAFE — sahibin "sağlı sollu hareket eden landing page"i
+        (`docs/146` §9 madde 5).
+
+        Döngü 1'de yatay hareket YALNIZ iki akan şeritti: sayfanın kendisi
+        yerinde duruyordu. Bu üç jeton, kaydırma ilerledikçe katmanların
+        birbirinin TERSİNE yana süzülmesini ölçer. Dikey mesafelerden büyük
+        olmaları kasıtlı: yatay hareket dikey kaydırmayla YARIŞMAZ, onu
+        tamamlar — göz zaten aşağı gidiyorken yanal fark ancak belirgin
+        olduğunda okunur.
+
+        Dar ekranda küçülürler ve bu bir tercih değil bir zorunluluk: 320
+        pikselde 140 piksellik bir yanal öteleme, katmanı ekranın dışına
+        atardı. `clamp()` alt sınırı 320'de ölçüldü.
+    */
+    --motion-drift-near: clamp(10px, 2.2vw, 28px);
+    --motion-drift-mid: clamp(18px, 5vw, 72px);
+    --motion-drift-far: clamp(28px, 9vw, 150px);
+
+    /*
+        YÖN ÇARPANI. Yatay öteleme fiziksel bir eksendir; `translate3d`in
+        mantıksal karşılığı yoktur. Sağdan sola yazılan bir dilde kompozisyon
+        aynalanmalı, yoksa "dışarı açılan" katman "içeri kapanan" olur.
+    */
+    --scene-axis: 1;
+}
+
+[dir='rtl'] {
+    --scene-axis: -1;
+
+    /*
         KATMAN SIRASI — TEK yer.
 
         Kabukta bugün üç yığın var: menü bölmesi (20), çerez şeridi (30) ve
@@ -652,6 +682,15 @@
 .site-stage {
     position: relative;
     isolation: isolate;
+    /*
+        DOKUNMA KAMERASI KAYDIRMAYI ÇALMAZ (`docs/146` §9 madde 6).
+
+        Sahnenin üstünde başlayan bir sürükleme kamerayı çevirir
+        (`runtime.ts`), ama `pan-y` tarayıcıya dikey kaydırmanın HER ZAMAN
+        onun olduğunu söyler: betik `preventDefault()` çağırmaz, çağıramaz.
+        Bir sahne, sayfayı okumanın önüne geçemez.
+    */
+    touch-action: pan-y;
     /* `clip`, `hidden`den farklı olarak yeni bir kaydırma kabı YARATMAZ:
        sayfa içi çıpalar ve `position: sticky` çalışmaya devam eder. */
     overflow: clip;

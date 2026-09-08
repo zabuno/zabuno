@@ -114,6 +114,18 @@
 @import './site-home.css';
 
 /*
+    ÖTEKİ KURUMSAL SAYFALARIN DÜZENİ (`docs/146` §10, Döngü 2).
+
+    Bir üstteki bloğun kendi cümlesi bu dosyanın ne zaman doğacağını
+    söylüyordu: *"motor öteki kurumsal sayfalara yayıldığında her sayfa kendi
+    düzen dosyasını getirir, ama hepsi AYNI yüzey dilini ve AYNI hareket
+    sözleşmesini tüketir."* O gün geldi: önsöz bandı, fiyat ızgarası ve
+    iletişim formu artık burada ve üçü de `site-scene.css`in dağarcığını
+    tüketiyor, kendi hareketini uydurmuyor.
+*/
+@import './site-pages.css';
+
+/*
     AEP `base.css` her `<a>` etiketini MAVİ ve ALTI ÇİZİLİ yapar — bu, bir
     içerik sayfası için doğru, bir panel için değil. Teslim paketinin kendi
     panel HTML'i de aynı düzeltmeyi kendi `<style>` bloğunda yapıyor:

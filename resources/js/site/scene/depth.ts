@@ -138,15 +138,45 @@ export function createProgress(root: ParentNode): SceneEffect | null {
  * içeriğin tekrar silinmesini görmemeli; "yeniden animasyon" bir efekt
  * değil, bir engeldir.
  *
- * ── BAŞLANGIÇTA GİZLİ DEĞİL ──
+ * ── İLK EKRAN GİRİŞ ANİMASYONUNA GİRMEZ ──
  *
- * Gizleme kuralı CSS'te `:root[data-motion='on']` altında; yani betik
- * ayakta değilse hiçbir şey saklanmaz. Bu fonksiyon çağrıldığında betik
- * zaten ayakta ve gözlemci hemen ilk kesişimi bildirir — ekranda olan bir
- * bölüm bir kare bile gizli kalmaz.
+ * Gizleme kuralı CSS'te `:root[data-motion='on']` altında ve o öznitelik
+ * `runtime.start()` içinde, BU FONKSİYONDAN SONRA yazılır. Aradaki sıra
+ * kasıtlıdır: burada ilk ekranda duran her öğe daha öznitelik yazılmadan
+ * `data-revealed="true"` alır, yani hiçbir kare boyunca saydam olmaz ve
+ * hiçbir gecikme kuyruğuna girmez.
+ *
+ * Gerekçe ölçülmüş bir kusurdan değil, bir RİSKTEN geliyor ve Döngü 2'nin
+ * kapısı onu ölçüyor (`scene-perf-gate --first-screen`): giriş animasyonu
+ * `IntersectionObserver`in geri çağrımını beklerdi, o geri çağrım bir sonraki
+ * karede gelirdi, üstüne `--scene-order` gecikmesi binerdi. Yavaş bir cihazda
+ * ya da geç yüklenen bir betikte bu zincirin toplamı, ziyaretçinin karar
+ * verdiği ilk saniyeye düşer. GÖSTERİ, DÖNÜŞÜM EYLEMİNİ GECİKTİREMEZ:
+ * kahramandaki düğme bir animasyonun kuyruğunda bekleyemez.
+ *
+ * Aşağıdaki öğeler (ilk ekranın altındakiler) eskisi gibi kaydırınca doğar.
  */
-export function observeReveals(root: ParentNode): () => void {
-    const elements = Array.from(root.querySelectorAll<HTMLElement>('.scene-reveal'));
+export function observeReveals(root: ParentNode, view: Window = window): () => void {
+    const all = Array.from(root.querySelectorAll<HTMLElement>('.scene-reveal'));
+
+    /*
+        TEK BİR DÜZEN OKUMASI, AÇILIŞTA.
+
+        `getBoundingClientRect()` düzeni zorlar ve bu dosyanın kendi kuralı
+        onu KARE İÇİNDE yasaklıyor. Burası kare değil: bu okuma sahne
+        başlamadan önce, bir kez yapılır.
+    */
+    const fold = view.innerHeight || 0;
+    const elements: HTMLElement[] = [];
+
+    for (const element of all) {
+        if (element.getBoundingClientRect().top < fold) {
+            element.dataset.revealed = 'true';
+            continue;
+        }
+
+        elements.push(element);
+    }
 
     if (elements.length === 0 || typeof IntersectionObserver !== 'function') {
         for (const element of elements) {

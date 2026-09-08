@@ -1,5 +1,5 @@
 import type { SceneEffect, SceneFrame, SceneTier } from './contract';
-import { FrameGovernor, demote, estimateTier } from './tier';
+import { FrameGovernor, demote, estimateTier, promote } from './tier';
 
 /**
  * SAHNE ÇALIŞMA ZAMANI — sayfadaki TEK animasyon döngüsü.
@@ -151,6 +151,70 @@ export class SceneRuntime {
             this.targetY = (event.clientY / Math.max(this.height, 1)) * 2 - 1;
         };
 
+        /*
+            ── DOKUNMA KAMERASI (`docs/146` §9 madde 6) ──
+
+            Döngü 1'de dokunmalı cihazda kamera PASİFTİ: imleç yok, o yüzden
+            sahne yalnız kaydırmaya tepki veriyordu. Ama dokunmanın kendi
+            fiili var — SÜRÜKLEME — ve o fiil işaretleyicide pahalı, burada
+            bedava. Bu iki ayrı etkileşim modelinin ayrı kod yolu olmasının
+            karşılığı: aynı efektin taklidi değil, o kipin kendi hareketi.
+
+            ÜÇ KURAL, üçü de kaydırmayı KORUMAK için:
+
+            1. `preventDefault()` HİÇ ÇAĞRILMAZ. Tarayıcı dikey kaydırmayı
+               her zaman yapar; kamera onun yanında yaşar, yerine değil. Bir
+               sahne, sayfayı okumanın önüne geçemez.
+            2. YALNIZ YATAY bileşen okunur. Parmağın dikey hareketi zaten
+               kaydırmadır ve kaydırma kamerayı ayrıca ötelemektedir; ikisini
+               toplamak aynı hareketi iki kez saymak olurdu.
+            3. Parmak kalkınca hedef SIFIRA döner. Sahne bırakıldığı yerde
+               donmaz, yerine süzülür — dönüşü zaten karedeki üstel yumuşatma
+               yapar, ayrı bir animasyon yok.
+
+            Kazanç bir dokunuşta değil, bir sürüklemede doğar: kısa bir
+            dokunuş `dx` üretmez, yani bağlantıya dokunan biri sahneyi
+            kıpırdatmaz.
+        */
+        let dragging = false;
+        let dragFrom = 0;
+
+        const onDown = (event: PointerEvent) => {
+            const target = event.target as Element | null;
+
+            if (fine.matches || target === null || typeof target.closest !== 'function') {
+                return;
+            }
+
+            /* Sürükleme yalnız bir SAHNENİN üstünde başlar: bir formun ya da
+               menünün üstündeki parmak sahneyi çevirmez. */
+            if (target.closest('.site-stage') === null) {
+                return;
+            }
+
+            dragging = true;
+            dragFrom = event.clientX;
+        };
+
+        const onDrag = (event: PointerEvent) => {
+            if (!dragging) {
+                return;
+            }
+
+            /* Ekranın yarısı kadar sürükleme, kamerayı uçtan uca götürür. */
+            const reach = Math.max(this.width, 1) / 2;
+            this.targetX = Math.max(Math.min((event.clientX - dragFrom) / reach, 1), -1);
+        };
+
+        const onRelease = () => {
+            if (!dragging) {
+                return;
+            }
+
+            dragging = false;
+            this.targetX = 0;
+        };
+
         const onVisibility = () => {
             if (view.document.hidden) {
                 view.cancelAnimationFrame(this.handle);
@@ -169,12 +233,20 @@ export class SceneRuntime {
         view.addEventListener('scroll', onScroll, { passive: true });
         view.addEventListener('resize', onResize, { passive: true });
         view.addEventListener('pointermove', onPointer, { passive: true });
+        view.addEventListener('pointerdown', onDown, { passive: true });
+        view.addEventListener('pointermove', onDrag, { passive: true });
+        view.addEventListener('pointerup', onRelease, { passive: true });
+        view.addEventListener('pointercancel', onRelease, { passive: true });
         view.document.addEventListener('visibilitychange', onVisibility);
 
         this.listeners.push(
             () => view.removeEventListener('scroll', onScroll),
             () => view.removeEventListener('resize', onResize),
             () => view.removeEventListener('pointermove', onPointer),
+            () => view.removeEventListener('pointerdown', onDown),
+            () => view.removeEventListener('pointermove', onDrag),
+            () => view.removeEventListener('pointerup', onRelease),
+            () => view.removeEventListener('pointercancel', onRelease),
             () => view.document.removeEventListener('visibilitychange', onVisibility),
         );
     }
@@ -205,12 +277,26 @@ export class SceneRuntime {
         const delta = Math.min((now - this.previous) / 1000, 0.05);
         this.previous = now;
 
-        if (this.governor.observe(delta) && this.tier !== 'minimal') {
-            this.tier = demote(this.tier);
-            this.root.dataset.sceneTier = this.tier;
+        /*
+            MERDİVEN İKİ YÖNLÜ, AMA SİMETRİK DEĞİL (`tier.ts`).
 
-            for (const effect of this.effects) {
-                effect.measure?.(this.tier);
+            İnmek 30 kare, çıkmak 600 kare sürer ve her karardan sonra
+            gereken sakinlik ikiye katlanır. Yani bir cihaz kendini
+            toparladığında sahne zenginleşir, ama salınım kendi kendini
+            söndürür — ziyaretçi kılık değiştiren bir sahne görmez.
+        */
+        const move = this.governor.observe(delta);
+
+        if (move !== null) {
+            const next = move === 'demote' ? demote(this.tier) : promote(this.tier);
+
+            if (next !== this.tier) {
+                this.tier = next;
+                this.root.dataset.sceneTier = this.tier;
+
+                for (const effect of this.effects) {
+                    effect.measure?.(this.tier);
+                }
             }
         }
 

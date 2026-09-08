@@ -1,4 +1,4 @@
-# 146 — Sahne motoru: kurumsal sitenin hareketi (Döngü 1/3)
+# 146 — Sahne motoru: kurumsal sitenin hareketi (Döngü 2/3)
 
 **Sahibin emri (2026-09-08):**
 
@@ -10,9 +10,11 @@
 Ve: *"Kurallar mı engelliyor? Yeni kurallar yaz. React mı lazım? Ekle. Ne
 lazım? Ekle, çöz, yap."*
 
-Bu belge **Döngü 1**'in çıktısıdır: motor kuruldu ve ana sayfa onunla yeniden
-yazıldı. Döngü 2 bunu eleştirip yükseltecek, Döngü 3 cilalayıp öteki sayfalara
-yayacak. §9 **kasten eksik bırakılanları** sayar.
+§1–§8 **Döngü 1**'in çıktısıdır ve hâlâ geçerlidir: motor kuruldu, ana sayfa
+onunla yeniden yazıldı. §9 Döngü 1'in kendi eksik listesidir ve her maddesinin
+yanında bugünkü durumu yazıyor. **§10 Döngü 2'nin çıktısıdır:** sahne öteki
+sayfalara yayıldı, dağarcık büyüdü, dokunmada kamera açıldı ve iki yeni kapı
+kuruldu. §11 Döngü 3'e BIRAKILANLARI sayar.
 
 Ezilen kısıtların kaydı `docs/118` E11–E14'te. Renk paleti ve yüzey dili
 `docs/145`'te; bu belge onun üstüne **hareketi** koyuyor.
@@ -313,9 +315,25 @@ Yeni bir kurumsal sayfaya sahne eklemek için **motoru düzenlemeye gerek yok**:
 
 ---
 
-## 9. Döngü 2 için eksik bırakılanlar
+## 9. Döngü 1'in eksik listesi ve bugünkü durumu
 
-Bu bölüm **kasten** yazıldı: bir sonraki döngü buradan devam edecek.
+Bu bölüm Döngü 1'de **kasten** yazıldı. Aşağıda her maddenin yanında Döngü
+2'nin ne yaptığı duruyor; kapatılmayanların gerekçesi §11'de.
+
+| # | Madde | Durum |
+| --- | --- | --- |
+| 1 | Sahne yalnız ana sayfada | **kapandı** (kısmen) — `/pricing`, `/about`, `/contact` §10.1 |
+| 2 | Fiyat bölümü fakir | **kapandı** — §10.2 |
+| 3 | Üst çubuk 320'de 128 px | **ölçüldü, sayı YANLIŞMIŞ** — 65 px, `docs/118` E16 |
+| 4 | İkinci tuval ölçülmedi | **Döngü 3'e** — §11 |
+| 5 | Dağarcık dar, "sağlı sollu" iki şerit | **kapandı** — §10.4 |
+| 6 | Dokunmada kamera pasif | **kapandı** — §10.5 |
+| 7 | Ekran görüntüsü kapısı yok | **kapandı** — §10.6 |
+| 8 | Yüksek kontrast / zorlanmış renk görsel doğrulanmadı | **kapandı** — §10.6 |
+| 9 | iOS Safari doğrulanmadı | **Döngü 3'e** — §11 |
+| 10 | Merdiven geri kalkmıyor | **kapandı** — §10.7, `docs/118` E15 |
+
+Maddelerin özgün metni:
 
 1. **Sahne yalnız ana sayfada.** `/pricing`, `/about`, `/contact`, `/help`,
    yasal sayfalar ve kütükten çizilen 386 kurumsal sayfa bugünkü hâlleriyle
@@ -348,3 +366,269 @@ Bu bölüm **kasten** yazıldı: bir sonraki döngü buradan devam edecek.
 10. **Sahne bir kez düştüğünde geri kalkmıyor.** Merdiven tek yönlü ve bu
     bilinçli; ama sekme uzun süre arka planda kaldıktan sonra dönen bir
     kullanıcı, ısınma yüzünden inmiş bir dereceyle kalır. Karar Döngü 2'nin.
+
+---
+
+## 10. Döngü 2 — eleştiri ve yükseltme (2026-09-08)
+
+Sahibin emri değişmedi: *"abartı dursun, görünsün, hissettirsin."* Bu döngünün
+sorusu şuydu: **abartı nerede eksikti ve nerede dağınıktı.**
+
+### 10.1 Sahne öteki sayfalara yayıldı
+
+Yeni bir parça: `resources/views/public/partials/prologue.blade.php` — kurumsal
+sayfaların ortak **önsöz bandı**. `/pricing`, `/about` ve `/contact` bugün onu
+giyiyor; kapı `SAHNE-B7` üçünü de arıyor.
+
+Bandı her sayfaya elle yazmak yerine tek bir parçada toplamanın gerekçesi
+kabuğun kendi kuralıdır (`docs/100` §2): bir yerde değiştir, her yerde değişsin.
+Kabuğa (`layout.blade.php`) koymamanın gerekçesi ise ölçüm: orada durursa
+kütükten çizilen 386 sayfayı da bir anda giydirirdi ve o sayfaların
+kompozisyonu ölçülmedi.
+
+Band her sayfada **aynı değil**: `orbit` | `grid` | `conduit` yüzlerinden biri
+seçiliyor ve seçim sayfanın anlamından türüyor — fiyat bir ZEMİN sorusudur
+(`grid`), iletişim bir MESAJIN gidip gelmesidir (`conduit`), "satıcı kim" bir
+SİSTEM sorusudur (`orbit`). Aynı bandı üç kez görmek, bandın kendisini görünmez
+yapardı.
+
+**Yükseklik kahramandan kısa** ve bu ölçülmüş bir karar: ana sayfaya gelen
+keşfeder, iç sayfaya gelen ARAR. Önsöz `clamp(9rem, 34svh, 22rem)` — 320×480'de
+145 piksel, altındaki içeriğin ilk satırı hâlâ ilk ekranda.
+
+### 10.2 Fiyat bölümü kurumsal yüzey diline geçti
+
+Döngü 1'in kendi suçlaması: *"kutuları kurumsal yüzey dilini (`site-panel`) hiç
+kullanmıyor."* Doğruydu — kutular `rounded-lg border border-border p-4` ile,
+yani PANELİN yardımcı sınıflarıyla çiziliyordu. Aynı sayfada iki yüzey dili
+vardı: kahraman bir uzay sahnesi, fiyat bir yönetim paneli formu.
+
+Bugün planlar `site-panel site-lit` taşıyor, rakam `--zc-display-3` ölçeğinde
+ve ızgara 320'de tek sütuna, geniş ekranda dörde açılıyor. Ana sayfadaki kap da
+`site-measure-form`dan `site-measure-page`e çıktı: bir fiyat tablosu okunan bir
+paragraf değil, **karşılaştırılan** bir tablodur.
+
+**Sahne yine de susuyor.** Kurumsal YÜZEY dili ile HAREKET ayrı şeylerdir; bir
+fiyatın okunduğu yerde tuval, parallax ve akan bant yok ve olmayacak.
+
+İletişim formu da aynı geçişten geçti (`site-input`, `site-form-field`,
+`site-notice`) ve `.home-action` adı `.site-cta` oldu: aynı düğme üç sayfada
+kullanılınca adın "ana sayfa" demesi yanlıştı.
+
+### 10.3 İlk ekranda düğme gecikmiyor — ve artık bir kapı bunu şart koşuyor
+
+Bu madde Döngü 1'in listesinde YOKTU; dışarıdan geldi: *"kahraman düğmeleri ilk
+ekranda görünmüyor olabilir; ÖLÇ."*
+
+**Ölçüldü ve şikâyet ÜRETİLEMEDİ** — ama ölçüm bir güvence de vermiyordu.
+Zincir şuydu: betik `data-motion='on'` yazar → CSS `.scene-reveal`i saydamlaştırır
+→ `IntersectionObserver` bir sonraki karede geri döner → `--scene-order` gecikmesi
+biner → 700 ms geçiş başlar. Hızlı bir makinede bu zincir bir karede kapanıyordu;
+yavaş bir cihazda ya da geç yüklenen bir betikte **ilk saniyeye düşerdi**.
+
+İki değişiklik:
+
+1. **`observeReveals` ilk ekranı hiç gözlemciye vermiyor** (`depth.ts`). Açılışta
+   tek bir düzen okumasıyla görüntü alanının içindeki her `.scene-reveal`
+   doğrudan doğuyor — üstelik `data-motion` yazılmadan ÖNCE, yani o öğeler bir
+   kare bile saydam olmuyor. Aşağıdakiler eskisi gibi kaydırınca doğuyor.
+2. **Kapı** (`scene-perf-gate`, SAHNE-ILK-EKRAN): kahramandaki birincil eylem
+   1000 ms içinde hem tam opak hem `elementFromPoint` ile gerçekten tıklanabilir
+   olmalı ve ilk ekranın içinde durmalı.
+
+| Ölçüm (gerçek Chrome, CPU ×4) | Önce | Sonra |
+| --- | --- | --- |
+| 320×480 — tam opak | 186 ms | **167–224 ms** |
+| 320×480 — tıklanabilir | ölçülmüyordu | **171–227 ms** |
+| 1280×800 — tam opak | 244 ms (CPU ×6) | **213 ms** |
+| en düşük opaklık (4 sn boyunca) | ölçülmüyordu | **1,0** |
+| ilk ekranın içinde mi | ölçülmüyordu | **evet**, 320×480 → 1920×1080 |
+
+Gösteri, dönüşüm eylemini geciktiremez. Artık bu bir cümle değil, bir kapı.
+
+### 10.4 Dağarcık büyüdü — ve "sağlı sollu" gerçekten yatay oldu
+
+Dört yeni fikir, hepsi **saf CSS**, hiçbiri ikinci bir WebGL bağlamı açmıyor:
+
+| Ad | Ne anlatıyor | Nasıl |
+| --- | --- | --- |
+| `scene-orbit` | İŞ yapıldığını (yıldız yalnız UZAKLIK anlatır) | üç halka, `rotateX(72deg)`, biri ters yönde; uydu halkanın `::after`ı |
+| `scene-grid` | Sahnenin "yer"i — bakan bir yüzeyin üstünde duruyor | iki `repeating-linear-gradient`, tek `rotateX`, `background-position` akıyor |
+| `scene-conduit` | İŞLEM — çizgi durur, ışık akar | çizginin kendi zemininde giden tek bir paket; her hat farklı hızda |
+| `scene-morph` | Bölüm geçişinin ÜÇÜNCÜ yüzü: şeklin kendisi | `clip-path: ellipse()` `--scene-progress`i okuyor |
+
+Ve **yatay eksen**: `data-axis="x" | "x-" | "xy"`. Parallax efekti zaten her
+`[data-plane]` öğesine bir ilerleme yazıyordu; o ilerlemenin hangi eksende ve
+kaç piksel ettiğine karar vermek her zaman tasarım katmanının işiydi. Yani
+sahibin *"sağlı sollu hareket eden landing page"* isteği **betiğe tek bayt
+eklemeden** karşılandı — bugün kahramanın nebulası, "nasıl çalışır" bandı,
+kapanış bandı ve yeteneklerin başlığı ile ızgarası **zıt yönlerde** süzülüyor.
+
+Zıt yön bir süs değil kompozisyonun kendisi: iki katman aynı yöne kayarsa göz
+tek bir blok görür; zıt yönde kaydıklarında aralarında derinlik doğar. Kapı
+(`SAHNE-B1`) en az iki farklı eksen değeri arıyor.
+
+Akan şerit sayısı ikiden **üçe** çıktı. İki şerit bir ZITLIK kurar ama bir
+DERİNLİK kurmaz: göz iki hızı karşılaştırır ve orada durur. Üçüncüsü en yavaş ve
+en sönük olanıdır (74 saniyelik döngü, %42 opaklık) ve hızları bir sıraya dizer.
+İçeriği yine katalogdan ve yine gerçek: iki listenin birleşimi. **Tek bir yeni
+görünür dize yazılmadı** — `lang/untranslatable-debt.json` hâlâ sıfır.
+
+**Metin taşıyan katmanda `will-change` YOK.** Yatay düzlemler içerik öğelerine
+de bağlanınca `will-change: transform` bir kazanç değil bir risk oldu: öğeyi
+kendi katmanına alır ve bazı GPU'larda metni yeniden rasterleştirir. Kural artık
+`.site-stage-layer.scene-plane` — yani yalnız dekoratif katman.
+
+**Ölçülmüş iki düzeltme** (ikisi de ekran görüntüsüyle):
+
+- Yörünge `translate: -50% -50%` (ayrı özellik) ile ortalanıyordu ve
+  **uygulanmıyordu**: Tailwind aynı özelliği `*, ::before, ::after` üzerinde
+  tanımlıyor. Halkalar kahramanın sağ alt köşesinden başlıyor ve `overflow:
+  clip` onları tamamen yiyordu — ekranda hiç yoktular. Öteleme `transform`
+  zincirinin içine alındı.
+- Tel kafes ve yörünge **görünmüyordu**: `--zc-edge-lit` kendi %70 alfasını
+  taşıyor ve 0,16–0,22 opaklıkla çarpılınca 1 piksellik çizgiler seçilemez hâle
+  geliyordu. Değerler 0,34 ve 0,50'ye çıkarıldı. Görünmeyen bir katman bir
+  katman değil, bir maliyettir.
+
+### 10.5 Dokunmada kamera açıldı — kaydırmayı ÇALMADAN
+
+Döngü 1'de dokunmalı cihazda kamera pasifti: imleç yok, o yüzden sahne yalnız
+kaydırmaya tepki veriyordu. Ama dokunmanın kendi fiili var — **sürükleme** — ve
+o fiil işaretleyicide pahalı, burada bedava. Bu, iki giriş kipinin ayrı kod yolu
+olmasının karşılığı: aynı efektin taklidi değil, o kipin kendi hareketi.
+
+Üç kural, üçü de kaydırmayı korumak için:
+
+1. `preventDefault()` **hiç çağrılmıyor** — kapı `SAHNE-B8` sahne kaynağında o
+   kelimeyi arıyor (yorumlar çıkarılmış hâlde).
+2. Yalnız **yatay** bileşen okunuyor; dikey hareket zaten kaydırmadır ve kamerayı
+   ayrıca öteliyor.
+3. Parmak kalkınca hedef **sıfıra** dönüyor; dönüşü karedeki üstel yumuşatma
+   yapıyor, ayrı bir animasyon değil.
+
+Sürükleme yalnız bir `.site-stage` üstünde başlarsa sayılıyor: bir formun ya da
+menünün üstündeki parmak sahneyi çevirmiyor.
+
+**Ölçüldü** (`scene-perf-gate`, SAHNE-DOKUNMA, gerçek Chrome + dokunma taklidi,
+320×480):
+
+| Hareket | `scrollY` |
+| --- | --- |
+| başlangıç | 400 |
+| yatay sürükleme (72 px) sonrası | **400** — kaydırma çalınmadı |
+| dikey sürükleme sonrası | **528** — kaydırma hâlâ çalışıyor |
+
+İkinci satır olmadan birincisi bir şey söylemez: hiçbir şeyin çalışmadığı bir
+sayfada da "yatay sürükleme kaydırmadı" doğrudur.
+
+### 10.6 Görsel gerileme kapısı — ve erişilebilirlik hâlleri artık GÖRÜLDÜ
+
+`scripts/scene-visual-gate` (yeni). İki iddiayı aynı ekran görüntüleriyle
+ölçüyor:
+
+1. **DURAĞANLIK.** Sahnenin hareketsiz olması GEREKEN dört hâlinde — azaltılmış
+   hareket, `minimal` derece, `prefers-contrast: more`, `forced-colors: active` —
+   900 ms arayla alınan iki kare **bire bir aynı** olmalı. Bir `animation: none`
+   yazmayı unutan tek satır burada, CSS okunarak değil **boyanan pikselle**
+   yakalanır.
+2. **GERİLEME.** Aynı karelerin 16×12 hücrede ortalama parlaklık imzası
+   `scripts/scene-visual.baseline.json` ile karşılaştırılır; tolerans 8/255.
+
+Hareketli hâl **karşılaştırılmıyor** ve bu bilerek: yıldızlar sabit tohumlu, yani
+aynı GÖKYÜZÜ doğuyor — ama aynı ANDA yakalanamıyor. Hareketli kareyi "aynı
+olmalı" diye şart koşmak, her koşuda rastgele kırılan bir kapı olurdu ve gürültü
+üreten bir kapı kapatılır. Hareketli kare yine de `--png` ile yazılıyor: insan
+gözü için, kapı için değil.
+
+PNG çözücü elle yazıldı (`node:zlib` üstünde, ~50 satır). Bir kapı uğruna üretim
+paketine hiç girmeyecek bir bağımlılığı kilit dosyasına yazmak, taşınacak bir
+borç olurdu.
+
+**İlk koşu:** 16 durağan görünüm (4 sayfa × genişlik × 4 hâl), **hepsi bire bir
+sabit**, sıfır bulgu. Yani `docs/146` §9 madde 8'in cevabı artık bir CSS kuralı
+değil, bir ölçüm.
+
+### 10.7 Merdiven geri kalkıyor
+
+Ayrıntı ve tablo `docs/118` E15'te. Özet: inmek 30 kare, çıkmak 600 kare; eşik
+tavanın dörtte üçü; her karardan sonra gereken sakinlik ikiye katlanıyor; oturum
+başına en fazla üç yükseliş. Üçü de test edilmiş (`SAHNE-08`).
+
+### 10.8 Ağırlık
+
+| Ölçüt | Döngü 1 sonu | Döngü 2 sonu | Tavan |
+| --- | --- | --- | --- |
+| Kurumsal betik (gzip) | 4.417 | **4.700** (+283) | 6.144 |
+| Kurumsal stil (gzip) | 31.564 | **32.756** (+1.192) | 40.960 |
+
+Bütçe **yükseltilmedi** ve yükseltilmesi gerekmedi. Dört yeni görsel fikrin
+tamamı, üçüncü şerit, yatay eksen, önsöz bandı, fiyat ızgarası ve iletişim formu
+— hepsi 1.192 bayt gzip stil ve **283 bayt** betik. Sebep tek bir karar:
+dağarcığın tamamı CSS'te doğdu ve betik yalnız iki şey öğrendi (dokunma
+sürüklemesi ve iki yönlü merdiven).
+
+### 10.9 Kare süresi — yeniden ölçüldü
+
+Gerçek Chrome, kaydırırken (gidiş-dönüş), CPU kısmalı:
+
+| Görüntü alanı | CPU | p50 | p95 | maks | uzun kare | derece |
+| --- | --- | --- | --- | --- | --- | --- |
+| 320×480 | ×4 | 16,7 ms | 16,8 ms | 16,8 ms | 0 | full |
+| 320×568 | ×6 | 16,7 ms | 16,8 ms | 33,4 ms | 0 | full |
+| 1280×800 | ×4 | 16,7 ms | 16,8 ms | 16,8 ms | 0 | full |
+| 1920×1080 | ×4 | 16,7 ms | 16,7 ms | 16,8 ms | 0 | full |
+| `/pricing` 320×480 | ×4 | 16,7 ms | 16,7 ms | — | 0 | full |
+| `/about` 320×480 | ×4 | 16,7 ms | 16,8 ms | — | 0 | full |
+| `/contact` 320×480 | ×4 | 16,7 ms | 16,7 ms | — | 0 | full |
+
+Merdiven yine kanıtlandı: 2 çekirdek → `minimal` (tuval boyanmıyor), 4 çekirdek
+→ `reduced`.
+
+### 10.10 Kapının kendisi de düzeltildi
+
+`scene-perf-gate` azaltılmış hareket koşusunda **sabit bir eşik** arıyordu ("en
+az üç bölüm"). O sayı ana sayfaya göre yazılmıştı ve iki bölümlü fiyat
+sayfasında, hiçbir kusur yokken kırılıyordu. Artık iki koşunun içerik sayımı
+**karşılaştırılıyor**: bölüm, bağlantı ve başlık sayıları hareketli ve
+azaltılmış hâlde EŞİT olmalı. Sabit bir eşik ölçtüğü sayfayı varsayar;
+karşılaştırma hiçbir şey varsaymaz.
+
+Aynı düzeltme birincil eylem seçicisinde de: `main [data-emphasis]` iletişim
+sayfasında formun en altındaki gönder düğmesini ölçüyordu. Ölçülen şey artık
+yalnız bir **sahne bandının** içindeki eylem; sahnesinde eylem olmayan bir
+sayfada ölçüm YAPILMIYOR ve "geçti" de denmiyor.
+
+---
+
+## 11. Döngü 3'e bırakılanlar
+
+Üçü **bilerek** bırakıldı; hepsinin gerekçesi aynı cümlede toplanıyor:
+*ölçülemeyen bir şey yayına alınmaz.*
+
+1. **İkinci WebGL bağlamının maliyeti hâlâ ölçülmedi** (§9 madde 4). Döngü 2 bu
+   yüzden ikinci bağlam AÇMADI: dört yeni görsel fikrin tamamı saf CSS. Kapı
+   `SAHNE-B7` sayfa başına tuval sayısını **1**'de donduruyor, yani birisi
+   ölçmeden ikinci bağlam ekleyemez. Döngü 3 isterse ölçsün — `scene-perf-gate`
+   bunun için hazır ve karşılaştırma tabanı artık var.
+2. **iOS Safari doğrulanmadı** (§9 madde 9). Bütün ölçümler Chrome'da. `svh`,
+   `overflow: clip`, `clip-path`, `touch-action: pan-y` ve WebGL bağlam
+   sınırları orada farklı davranabilir. Bu makinede iOS Safari yok; **uydurma
+   yok** kuralı, "muhtemelen çalışır" demeyi de yasaklıyor.
+3. **Sahne hâlâ her kurumsal sayfada değil.** Bugün dört canlı yüzeyde: `/`,
+   `/pricing`, `/about`, `/contact`. Dışarıda kalanlar: yardım makaleleri
+   (`/help`), sekiz yasal belge ve kütükten çizilen 386 sayfa.
+   - Yasal belgelerde bandı denemeden koymak yanlış olurdu: sayfanın en üstünde
+     `role="alert"` taşıyan bir eksik-sözleşme bandı var ve bir uyarı, bir
+     dekorun arkasında duramaz. `/about` bunu çözdü (önsöz → uyarı → gövde) ama
+     yasal sayfada uyarının ÜSTÜNDE bir şey olması ayrıca ölçülmeli.
+   - Kütük sayfalarının kompozisyonu hiç ölçülmedi ve 386 sayfayı tek seferde
+     giydirmek, sahibin göreceği ilk kusuru üretirdi.
+
+Ve iki küçük borç:
+
+4. `scene-visual-gate` yalnız bu makinede koştu. Farklı bir rasterleştiricide
+   8/255 toleransının yetip yetmediği **bilinmiyor**; CI'da ilk koşuda görülecek.
+5. Önsöz bandının `orbit`/`grid`/`conduit` yüzleri **ekran görüntüsüyle**
+   seçildi, göz kararıyla değil — ama üçünün de dar ekranda (320) ne kadar
+   görünür kaldığı yalnız `motion` PNG'lerinde bakıldı, imzayla ölçülmedi.

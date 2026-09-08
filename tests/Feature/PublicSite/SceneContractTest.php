@@ -74,6 +74,21 @@ final class SceneContractTest extends TestCase
             'hüzme' => '//*[contains(concat(" ", @class, " "), " scene-beam ")]',
             'ufuk' => '//*[contains(concat(" ", @class, " "), " scene-horizon ")]',
             'giriş (reveal)' => '//*[contains(concat(" ", @class, " "), " scene-reveal ")]',
+            /*
+                DÖNGÜ 2'NİN EKLEDİĞİ DÖRT FİKİR (`docs/146` §9 madde 5).
+
+                Döngü 1 kendi eksik listesinde bunları adıyla sayıyordu:
+                *"Uzay şirketi dağarcığında henüz olmayanlar: yörünge
+                çizgileri, veri akış hatları, ızgara/tel-kafes zemin, …
+                bölümler arası gerçek MORPH geçişi."* Dördü de artık sayfada
+                ve dördü de burada donduruluyor — bir sonraki döngü birini
+                kaldırırsa karar sessizce değil kırmızı bir testle olur.
+            */
+            'yörünge' => '//*[contains(concat(" ", @class, " "), " scene-orbit ")]',
+            'tel kafes zemin' => '//*[contains(concat(" ", @class, " "), " scene-grid ")]',
+            'veri hattı' => '//*[contains(concat(" ", @class, " "), " scene-conduit ")]',
+            'bölüm morph\'u' => '//*[contains(concat(" ", @class, " "), " scene-morph ")]',
+            'yatay eksende düzlem' => '//*[@data-axis]',
         ];
 
         foreach ($expectations as $label => $query) {
@@ -108,6 +123,146 @@ final class SceneContractTest extends TestCase
 
         self::assertContains('start', $directions, 'SAHNE-B1: satır başına akan bant yok.');
         self::assertContains('end', $directions, 'SAHNE-B1: satır sonuna akan bant yok.');
+
+        /*
+            SAĞLI SOLLU, ÜÇ ŞERİTTE VE ÜÇ DÜZLEMDE.
+
+            Sahibin isteği birebir *"sağlı sollu hareket eden landing page"*
+            idi. İki şerit bir ZITLIK kurar ama bir DERİNLİK kurmaz: göz iki
+            hızı karşılaştırır ve orada durur. Üçüncü şerit hızları bir sıraya
+            dizer; yatay eksendeki düzlemler ise bandın KENDİSİNİ hareket
+            ettirir — Döngü 1'in kendi eksik listesindeki cümle buydu:
+            *"bölümlerin kendisi yatay hareket etmiyor."*
+        */
+        $lanes = $xpath->query('//*[contains(concat(" ", @class, " "), " scene-drift ")]');
+        self::assertNotFalse($lanes);
+        self::assertGreaterThanOrEqual(
+            3,
+            $lanes->length,
+            'SAHNE-B1: üçten az akan şerit var. İki şerit zıtlık kurar, derinlik kurmaz.'
+        );
+
+        $axes = [];
+
+        foreach ($xpath->query('//*[@data-axis]') as $node) {
+            if ($node instanceof DOMElement) {
+                $axes[] = $node->getAttribute('data-axis');
+            }
+        }
+
+        self::assertGreaterThanOrEqual(
+            2,
+            count(array_unique($axes)),
+            'SAHNE-B1: yatay düzlemlerin hepsi AYNI yöne akıyor. İki katman aynı yöne '
+            .'kayarsa göz tek bir blok görür; derinlik ZIT yönden doğar.'
+        );
+    }
+
+    // --- SAHNE-B7 ----------------------------------------------------------
+
+    public function test_the_scene_reaches_the_other_corporate_pages(): void
+    {
+        /*
+            SAHNE YALNIZ ANA SAYFADA DEĞİL (`docs/146` §9 madde 1).
+
+            Döngü 1'in eksik listesinin İLK maddesi buydu. Bu kapı, önsöz
+            bandının üç canlı kurumsal adreste de çizildiğini donduruyor —
+            ve bir sayfanın sahnesini sessizce kaybetmesini imkânsız kılıyor.
+
+            KALAN YÜZEYLER Döngü 3'e: yardım makaleleri, yasal belgeler ve
+            kütükten çizilen kurumsal sayfalar. Onların kompozisyonu ÖLÇÜLMEDİ
+            ve ölçülmemiş bir şeyi yayına almak, sahibin göreceği ilk kusuru
+            üretir.
+        */
+        foreach (['/pricing', '/about', '/contact'] as $uri) {
+            $xpath = $this->document($uri);
+
+            $prologue = $xpath->query('//*[contains(concat(" ", @class, " "), " site-prologue ")]');
+            self::assertNotFalse($prologue);
+            self::assertGreaterThan(
+                0,
+                $prologue->length,
+                "SAHNE-B7: [{$uri}] önsöz bandını çizmiyor — sayfa sitenin geri kalanından "
+                .'başka bir ürün gibi görünür.'
+            );
+
+            /*
+                SAYFA BAŞINA TEK TUVAL.
+
+                İkinci bir WebGL bağlamının maliyeti Döngü 1'de TAHMİN edildi,
+                ölçülmedi (`docs/146` §9 madde 4) ve Döngü 2 de ölçmedi.
+                Ölçülmemiş bir maliyeti ürüne sokmamanın tek yolu, onu bir
+                kapıya yazmaktır: yörünge, tel kafes ve veri hattı saf CSS'tir
+                ve bu sayı 1'de kalmalıdır.
+            */
+            $canvases = $xpath->query('//canvas[@data-scene="field"]');
+            self::assertNotFalse($canvases);
+            self::assertSame(
+                1,
+                $canvases->length,
+                "SAHNE-B7: [{$uri}] {$canvases->length} tuval taşıyor. İkinci bir WebGL "
+                .'bağlamının maliyeti henüz ÖLÇÜLMEDİ.'
+            );
+        }
+
+        /* Ana sayfa da aynı kurala tabi: üç derin bant var ama tuval BİR. */
+        $home = $this->document();
+        $homeCanvases = $home->query('//canvas[@data-scene="field"]');
+        self::assertNotFalse($homeCanvases);
+        self::assertSame(1, $homeCanvases->length, 'SAHNE-B7: ana sayfada birden çok tuval var.');
+    }
+
+    // --- SAHNE-B8 ----------------------------------------------------------
+
+    public function test_the_touch_camera_cannot_steal_the_scroll(): void
+    {
+        /*
+            DOKUNMA KAMERASI, KAYDIRMANIN YANINDA — YERİNE DEĞİL.
+
+            Sahne artık parmakla sürüklenebiliyor (`runtime.ts`, `docs/146` §9
+            madde 6). O sürükleme dikey kaydırmayı çalarsa sayfa okunamaz hâle
+            gelir; sözleşme iki katmanda birden yazılı ve bu kapı ikisini de
+            arıyor:
+
+              · CSS: `.site-stage` üzerinde `touch-action: pan-y` — tarayıcıya
+                dikey kaydırmanın HER ZAMAN onun olduğunu söyler.
+              · Betik: `preventDefault` sahne motorunun HİÇBİR yerinde geçmez.
+
+            Kaydırmanın gerçekten kaldığı ayrıca gerçek Chrome'da ölçülüyor
+            (`scripts/scene-perf-gate`, SAHNE-DOKUNMA).
+        */
+        $shell = (string) file_get_contents(base_path('resources/css/site-shell.css'));
+
+        self::assertMatchesRegularExpression(
+            '#\.site-stage\s*\{[^}]*touch-action:\s*pan-y#s',
+            $shell,
+            'SAHNE-B8: `.site-stage` üzerinde `touch-action: pan-y` yok — kamera '
+            .'sürüklemesi dikey kaydırmayı yutabilir.'
+        );
+
+        $offenders = [];
+
+        foreach ($this->sceneSources() as $path) {
+            /* Yorumlar ÇIKARILIR: bu dosyaların kendi gerekçe metinleri
+               `preventDefault`ı adıyla anıyor ve bir kapı, kendi gerekçesini
+               ihlal saymamalı. Aranan şey ÇAĞRIDIR. */
+            $code = (string) preg_replace(
+                ['#/\*.*?\*/#s', '#//[^\n]*#'],
+                '',
+                (string) file_get_contents($path)
+            );
+
+            if (str_contains($code, 'preventDefault')) {
+                $offenders[] = str_replace(base_path().'/', '', $path);
+            }
+        }
+
+        self::assertSame(
+            [],
+            $offenders,
+            'SAHNE-B8: sahne motoru `preventDefault` çağırıyor: '.implode(', ', $offenders)
+            .' — bir sahne, sayfayı okumanın önüne geçemez.'
+        );
     }
 
     // --- SAHNE-B2 ----------------------------------------------------------

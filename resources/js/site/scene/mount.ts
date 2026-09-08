@@ -63,7 +63,7 @@ export function mountScene(view: Window): SceneRuntime | null {
         runtime.add(progress);
     }
 
-    const releaseReveals = observeReveals(document);
+    const releaseReveals = observeReveals(document, view);
     const releaseTilt = bindTilt(document, view);
 
     runtime.start();

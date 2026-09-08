@@ -19,6 +19,17 @@
          değil, "yavaş cihazda hâlâ tam yük" bir kusurdur.
       3. AZALTILMIŞ HAREKET — tercih açıkken hiçbir hareket kancasının
          yazılmadığı. Bu bir sayı değil bir OLGU ve ölçülmeden iddia edilemez.
+      5. DOKUNMA KAMERASI (Döngü 2) — parmakla YATAY bir sürükleme sayfayı
+         kaydırıyor mu. Sahne kamerayı sürüklemeye bağlıyor (`runtime.ts`) ve
+         iddiası şu: `preventDefault()` HİÇ çağrılmıyor, yani dikey kaydırma
+         her zaman tarayıcının. Bu iddia ölçülmeden edilemez; kaydırmayı
+         çalan bir sahne, okunamayan bir sayfa demektir.
+      4. İLK EKRAN (Döngü 2) — kahramandaki BİRİNCİL EYLEM kaç milisaniyede
+         tam opak ve tıklanabilir oluyor. Gösteri, dönüşüm eylemini
+         geciktiremez: bir giriş animasyonunun kuyruğunda bekleyen düğme,
+         ziyaretçinin karar verdiği ilk saniyeyi harcar. Tavan 1000 ms ve
+         düğme İLK EKRANIN İÇİNDE olmak zorunda — ölçülmeyen bir "görünüyor"
+         iddiası, bir iddiadır.
 
     ═══ NEDEN CPU KISMA ═══
 
@@ -94,6 +105,13 @@ const BUDGET_MS = Number(flag('budget', '22'));
     ikiye düşürür; `--expect-tier minimal` ile birlikte kapı, merdivenin
     o cihazda gerçekten indiğini ŞART KOŞAR.
 */
+/*
+    İLK EKRAN TAVANI. 1000 ms, ziyaretçinin sayfa hakkında karar verdiği
+    saniyedir; bir eylem düğmesi o saniyenin içinde hem GÖRÜNÜR hem
+    TIKLANABİLİR olmalı. Ölçüm kısılmış bir CPU'da yapılıyor, yani tavan
+    gerçek bir cihazda geçilecek olandan sıkı.
+*/
+const FIRST_SCREEN_MS = Number(flag('first-screen-budget', '1000'));
 const CONCURRENCY = flag('concurrency', null);
 const EXPECT_TIER = flag('expect-tier', null);
 const JSON_OUT = flag('json', null);
@@ -167,6 +185,18 @@ async function evaluate(ws, expression) {
     animasyonları yalnız kaydırırken çalışır. Duran bir sayfada ölçülen
     kare süresi, sahnenin en ucuz hâlidir ve hiçbir şey kanıtlamaz.
 */
+/*
+    İÇERİK SAYIMI — iki koşuda da AYNI ifade.
+
+    Tek bir yerde durması şart: iki ayrı yere yazılmış iki sayım, ilk
+    ayrışmada birbirini ölçmeyi bırakır ve "eşit mi" sorusu anlamını yitirir.
+*/
+const CONTENT_CENSUS = `({
+    sections: document.querySelectorAll('main section').length,
+    links: document.querySelectorAll('main a[href]').length,
+    headings: document.querySelectorAll('main h1, main h2, main h3').length,
+})`;
+
 const sampler = (seconds) => `new Promise((resolve) => {
     const durationMs = ${Math.round(seconds * 1000)};
     const frames = [];
@@ -271,6 +301,70 @@ try {
         });
     }
 
+    /*
+        İLK EKRAN İZLEYİCİSİ — belge açılmadan ÖNCE kurulur.
+
+        Sonradan sorulan bir soru ("şu an opak mı?") yalnız o anı ölçer ve
+        aradaki en kötü kareyi kaçırır. Bu betik ilk kareden itibaren her
+        karede bakar: düğme ne zaman TAM OPAK oldu, ne zaman gerçekten
+        TIKLANABİLİR oldu (`elementFromPoint` ile: üstünü örten bir dekoratif
+        katman varsa "görünür" olması bir şey ifade etmez).
+    */
+    await cdp(ws, 'Page.addScriptToEvaluateOnNewDocument', {
+        source: `
+            window.__firstScreen = { opaqueAt: null, hitAt: null, minOpacity: 1, inFirstScreen: null };
+            const tick = () => {
+                /*
+                    ÖLÇÜLEN ŞEY SAHNENİN KENDİ EYLEMİ.
+
+                    Seçici "main [data-emphasis]" idi ve bu, iletişim
+                    sayfasında formun EN ALTINDAKİ gönder düğmesini ölçüyordu
+                    — "ilk ekranda değil" diye kırılıyordu, oysa bir form
+                    düğmesinin ilk ekranda olması ne beklenir ne istenir.
+                    Ölçülen şey artık yalnız bir SAHNE BANDININ içindeki
+                    birincil eylem; sahnesinde eylem olmayan bir sayfada
+                    ölçüm YAPILMAZ ve "geçti" de denmez.
+                */
+                const cta = document.querySelector('main .site-stage-content [data-emphasis="true"]');
+
+                if (cta !== null) {
+                    const box = cta.getBoundingClientRect();
+                    const probe = window.__firstScreen;
+                    /* Öğenin KENDİ opaklığı yetmez: giriş animasyonu ataya
+                       yazılır. Zincir yukarı doğru çarpılır. */
+                    let opacity = 1;
+
+                    for (let node = cta; node !== null && node !== document.documentElement; node = node.parentElement) {
+                        opacity *= Number(getComputedStyle(node).opacity);
+                    }
+
+                    if (box.width > 0) {
+                        probe.minOpacity = Math.min(probe.minOpacity, opacity);
+                        probe.inFirstScreen = box.top >= 0 && box.bottom <= window.innerHeight;
+
+                        if (opacity >= 0.99 && probe.opaqueAt === null) {
+                            probe.opaqueAt = Math.round(performance.now());
+                        }
+
+                        if (probe.hitAt === null && probe.inFirstScreen) {
+                            const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+
+                            if (hit !== null && (hit === cta || cta.contains(hit))) {
+                                probe.hitAt = Math.round(performance.now());
+                            }
+                        }
+                    }
+                }
+
+                if (performance.now() < 4000) {
+                    requestAnimationFrame(tick);
+                }
+            };
+
+            requestAnimationFrame(tick);
+        `,
+    });
+
     await cdp(ws, 'Page.navigate', { url: URL_UNDER_TEST });
     await evaluate(
         ws,
@@ -281,7 +375,46 @@ try {
         })`,
     );
 
+    report.firstScreen = await evaluate(ws, 'window.__firstScreen ?? null');
+
+    if (report.firstScreen !== null && report.firstScreen.inFirstScreen !== null) {
+        const { opaqueAt, hitAt, inFirstScreen, minOpacity } = report.firstScreen;
+
+        if (!inFirstScreen) {
+            findings.push(
+                `SAHNE-ILK-EKRAN: birincil eylem ${WIDTH}×${HEIGHT} ilk ekranın DIŞINDA. ` +
+                    'Çağırdığı eylemi göstermeyen bir kahraman, bir kahraman değil bir kapak resmidir.',
+            );
+        }
+
+        if (opaqueAt === null || opaqueAt > FIRST_SCREEN_MS) {
+            findings.push(
+                `SAHNE-ILK-EKRAN: birincil eylem ${opaqueAt ?? '>4000'} ms'de tam opak oldu ` +
+                    `— tavan ${FIRST_SCREEN_MS} ms (en düşük opaklık ${minOpacity}). ` +
+                    'GÖSTERİ, DÖNÜŞÜM EYLEMİNİ GECİKTİREMEZ.',
+            );
+        }
+
+        if (hitAt === null || hitAt > FIRST_SCREEN_MS) {
+            findings.push(
+                `SAHNE-ILK-EKRAN: birincil eylem ${hitAt ?? '>4000'} ms'de tıklanabilir oldu ` +
+                    `— tavan ${FIRST_SCREEN_MS} ms. Bir dekoratif katman onu örtüyor olabilir.`,
+            );
+        }
+    }
+
     report.motion = await evaluate(ws, sampler(SECONDS));
+
+    /*
+        İÇERİK SAYIMI, HAREKET AÇIKKEN.
+
+        Aşağıdaki azaltılmış hareket koşusu bunun EŞİTİNİ görmek zorunda.
+        Eski kapı sabit bir sayı arıyordu ("en az üç bölüm") ve o sayı ana
+        sayfaya göre yazılmıştı: iki bölümlü bir fiyat sayfasında kapı,
+        hiçbir kusur yokken kırılıyordu. Sabit bir eşik, ölçtüğü sayfayı
+        varsayar; KARŞILAŞTIRMA hiçbir şey varsaymaz.
+    */
+    report.motion.content = await evaluate(ws, CONTENT_CENSUS);
 
     if (report.motion.motion !== 'on') {
         findings.push(
@@ -305,7 +438,101 @@ try {
         );
     }
 
-    /* --- 2. Azaltılmış hareket ----------------------------------------- */
+    /* --- 2. Dokunma kamerası kaydırmayı çalmıyor ----------------------- */
+
+    /*
+        DOKUNMA TAKLİDİ ŞART.
+
+        Kamera sürüklemesi yalnız `(pointer: fine)` YANLIŞKEN bağlanır. Masaüstü
+        bir görüntü alanında dinleyici hiç kurulmaz ve ölçüm, ölçmediği bir şeye
+        "geçti" derdi — ölçülmeyen bir kapı, kapı değildir.
+    */
+    if (WIDTH < 768) {
+        await cdp(ws, 'Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
+        await cdp(ws, 'Page.navigate', { url: URL_UNDER_TEST });
+        await evaluate(
+            ws,
+            `new Promise((resolve) => {
+                const check = () => (document.readyState === 'complete' ? setTimeout(resolve, 500) : setTimeout(check, 100));
+                check();
+            })`,
+        );
+
+        /* Sayfanın ortasına in: yukarıdan aşağı kaydırma imkânı da, yukarı
+           kaydırma imkânı da açık olsun. Sayfanın tepesinde yapılan bir ölçüm,
+           "kaydırma çalınmadı" cevabını bedavaya verirdi. */
+        await evaluate(ws, 'new Promise((r) => { window.scrollTo(0, 400); setTimeout(r, 300); })');
+
+        const before = await evaluate(ws, 'window.scrollY');
+        const midY = Math.round(HEIGHT / 2);
+
+        await cdp(ws, 'Input.dispatchTouchEvent', {
+            type: 'touchStart',
+            touchPoints: [{ x: Math.round(WIDTH / 2), y: midY }],
+        });
+
+        for (let step = 1; step <= 6; step += 1) {
+            await cdp(ws, 'Input.dispatchTouchEvent', {
+                type: 'touchMove',
+                touchPoints: [{ x: Math.round(WIDTH / 2) - step * 12, y: midY }],
+            });
+        }
+
+        await cdp(ws, 'Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+        await evaluate(ws, 'new Promise((r) => setTimeout(r, 400))');
+
+        const after = await evaluate(ws, 'window.scrollY');
+
+        /*
+            VE ASIL SORU: DİKEY KAYDIRMA HÂLÂ ÇALIŞIYOR MU?
+
+            "Yatay sürükleme kaydırmadı" tek başına iyi bir haber değil —
+            hiçbir şeyin çalışmadığı bir sayfada da doğrudur. Ölçümün ikinci
+            yarısı, `touch-action: pan-y`nin dikey kaydırmayı SERBEST
+            bıraktığını kanıtlıyor. Kapı ancak ikisi birlikteyken bir şey söyler.
+        */
+        await cdp(ws, 'Input.dispatchTouchEvent', {
+            type: 'touchStart',
+            touchPoints: [{ x: Math.round(WIDTH / 2), y: midY + 90 }],
+        });
+
+        for (let step = 1; step <= 6; step += 1) {
+            await cdp(ws, 'Input.dispatchTouchEvent', {
+                type: 'touchMove',
+                touchPoints: [{ x: Math.round(WIDTH / 2), y: midY + 90 - step * 14 }],
+            });
+        }
+
+        await cdp(ws, 'Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+        await evaluate(ws, 'new Promise((r) => setTimeout(r, 500))');
+
+        const afterVertical = await evaluate(ws, 'window.scrollY');
+
+        report.touchCamera = {
+            scrollBefore: before,
+            afterHorizontalDrag: after,
+            afterVerticalDrag: afterVertical,
+        };
+
+        if (before !== after) {
+            findings.push(
+                `SAHNE-DOKUNMA: yatay bir sürükleme sayfayı ${before} → ${after} kaydırdı. ` +
+                    'Kamera sürüklemesi dikey kaydırmayı ÇALAMAZ; sahne, sayfayı okumanın ' +
+                    'önüne geçemez.',
+            );
+        }
+
+        if (afterVertical <= after) {
+            findings.push(
+                `SAHNE-DOKUNMA: dikey sürükleme sayfayı KAYDIRMADI (${after} → ` +
+                    `${afterVertical}). Kamera sürüklemesi kaydırmayı yutmuş olabilir.`,
+            );
+        }
+
+        await cdp(ws, 'Emulation.setTouchEmulationEnabled', { enabled: false });
+    }
+
+    /* --- 3. Azaltılmış hareket ----------------------------------------- */
 
     await cdp(ws, 'Emulation.setEmulatedMedia', {
         features: [{ name: 'prefers-reduced-motion', value: 'reduce' }],
@@ -324,12 +551,7 @@ try {
         `({
             motion: document.documentElement.dataset.motion ?? null,
             tier: document.documentElement.dataset.sceneTier ?? null,
-            /* İÇERİK SAYILIR: azaltılmış hareket bir "azaltılmış sürüm" değildir.
-               Sayfanın bütün bölümleri, bütün bağlantıları ve bütün metni
-               orada olmalı. */
-            sections: document.querySelectorAll('main section').length,
-            links: document.querySelectorAll('main a[href]').length,
-            headings: document.querySelectorAll('main h1, main h2, main h3').length,
+            ...${CONTENT_CENSUS},
             hiddenReveals: Array.from(document.querySelectorAll('.scene-reveal'))
                 .filter((el) => getComputedStyle(el).opacity === '0').length,
             animated: Array.from(document.querySelectorAll('main *'))
@@ -359,9 +581,28 @@ try {
         );
     }
 
-    if (report.reduced.sections < 3 || report.reduced.headings < 3) {
+    /*
+        AZALTILMIŞ HAREKET BİR "AZALTILMIŞ SÜRÜM" DEĞİLDİR.
+
+        Aynı bölümler, aynı bağlantılar, aynı başlıklar — yalnız kıpırdamıyor.
+        Karşılaştırma sabit bir eşikten üstün: hangi sayfada koşarsa koşsun
+        aynı iddiayı ölçer ve yeni bir sayfa eklendiğinde güncellenmesi
+        gerekmez.
+    */
+    for (const key of ['sections', 'links', 'headings']) {
+        if (report.reduced[key] !== report.motion.content[key]) {
+            findings.push(
+                `SAHNE-PERF: azaltılmış hareket açıkken [${key}] sayısı ` +
+                    `${report.reduced[key]} — hareketli hâlde ${report.motion.content[key]}. ` +
+                    'Azaltılmış hareket bir "azaltılmış sürüm" DEĞİLDİR.',
+            );
+        }
+    }
+
+    if (report.reduced.sections === 0 || report.reduced.headings === 0) {
         findings.push(
-            'SAHNE-PERF: azaltılmış hareket açıkken sayfa TAM DEĞİL — bölüm ya da başlık eksik.',
+            'SAHNE-PERF: azaltılmış hareket açıkken sayfada hiç bölüm ya da başlık yok — ' +
+                'ölçülen şey bir sayfa değil.',
         );
     }
 

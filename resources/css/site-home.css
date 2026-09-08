@@ -54,8 +54,10 @@
    ── ÖLÇÜLDÜ: 320×480'DE EYLEM EKRANDA KALMALI ──
 
    İlk değer 26 rem (416 px) idi ve 480 piksellik bir ekranda — üst çubuğun
-   128 pikseli düşüldükten sonra — birincil düğmeyi ilk ekranın DIŞINA
-   itiyordu. Bir kahraman, çağırdığı eylemi göstermiyorsa bir kahraman değil
+   65 pikseli düşüldükten sonra — birincil düğmeyi ilk ekranın DIŞINA
+   itiyordu. (Buradaki sayı Döngü 1'de "128 piksel" yazıyordu ve ÖLÇÜLMEMİŞTİ;
+   Döngü 2 gerçek Chrome'da 320×480'de ölçtü: `.site-header` 65 piksel —
+   `docs/118` E16.) Bir kahraman, çağırdığı eylemi göstermiyorsa bir kahraman değil
    bir kapak resmidir. 21 rem, `--zc-rhythm` dolgusuyla birlikte üç düğmeyi
    de 480 pikselin içinde bırakır.
 
@@ -108,33 +110,14 @@
     gap: var(--space-3);
 }
 
-.home-action {
-    border-radius: var(--zc-radius-pill);
-    padding-inline: var(--space-5);
-    font-weight: var(--zc-weight-strong);
-    border: 1px solid var(--zc-edge-lit);
-    color: inherit;
-    text-decoration: none;
-    /* Kalınlık hissi: üstten sönen parıltı (`site-identity.css` §6 ile aynı
-       dil, ama düğme ölçeğinde). */
-    background-image: linear-gradient(180deg, var(--zc-sheen) 0%, transparent 60%);
-}
+/*
+    DÜĞMENİN KENDİSİ BU DOSYADA DEĞİL (`site-pages.css` §5, Döngü 2).
 
-.home-action[data-emphasis='true'] {
-    background-color: var(--zc-action);
-    border-color: transparent;
-    color: var(--zc-on-action);
-    box-shadow: var(--zc-lift-2);
-}
-
-.home-action:hover {
-    text-decoration: underline;
-}
-
-.home-action:focus-visible {
-    outline: 2px solid var(--zc-focus);
-    outline-offset: 2px;
-}
+    `.home-action` ana sayfaya özgü sanılmıştı; Döngü 2'de iletişim formunun
+    gönder düğmesi ve önsöz bandının eylemi aynı geometriyi istedi. Bir
+    yüzeyi ikinci kez tanımlamak yerine adı doğrulandı: kurumsal eylem
+    düğmesi SİTENİN dilidir, ana sayfanın düzeni değil. Sınıf `.site-cta`.
+*/
 
 /* ── AKAN BANTLAR ───────────────────────────────────────────────────────── */
 

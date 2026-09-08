@@ -351,6 +351,52 @@ yatay kaydırıyorsa bu yine bir kusurdur.
 **Düzeltme sonrası ölçüm:** ana sayfada kullanılabilir genişlik 320 pikselde
 **308 piksel (%96,3)**.
 
+### E15 — "Derece merdiveni TEK YÖNLÜDÜR": **kalktı** (Döngü 2, 2026-09-08)
+
+**Ezilen madde:** Döngü 1'in kendi kararı (`docs/146` §6) — *"Merdiven tek
+yönlüdür: yükseltmek, cihaz bir an rahatladığında sahneyi ağırlaştırır ve
+ısınınca yine düşürür; kullanıcı sahnenin sürekli kılık değiştirdiğini görür.
+Daha az akıllı ama KARARLI."*
+
+**Gerekçesi doğruydu; bedeli ölçülmemişti.** Döngü 1 aynı belgenin eksik
+listesinde bunu kendisi yazdı (§9 madde 10): sekmeyi bir süre arka planda
+bırakıp dönen ya da başka bir uygulama yüzünden bir kez ısınan ziyaretçi,
+cihaz çoktan rahatlamışken **oturum boyunca** en sade sahnede kalıyordu.
+
+**Yeni karar:** merdiven iki yönlü, ama SİMETRİK DEĞİL. Yükselmek pahalıdır:
+
+| | inmek | çıkmak |
+| --- | --- | --- |
+| gereken ardışık kare | 30 | 600 (~10 saniye) |
+| eşik | tavan (22 ms) | tavanın dörtte üçü (16,5 ms) |
+| her karardan sonra | — | gereken sakinlik **ikiye katlanır** |
+| oturum başına üst sınır | yok | **3 yükseliş** |
+
+**Yerine gelen zorlayıcı karşılık:** kararın kendisi bir sayı değil, üç testtir
+(`scene.test.ts`, SAHNE-08). Sonuncusu tam olarak eski kararın korktuğu şeyi
+ölçüyor: 200 kare boyunca kusursuz koşan bir cihazda yükseliş sayısı **3'te
+kalıyor** — salınım kendi kendini söndürüyor.
+
+### E16 — "Üst çubuk 320'de 128 piksel": **ölçüldü, DOĞRU ÇIKMADI** (Döngü 2, 2026-09-08)
+
+Bu bir yönerge ezmesi değil, bir OLGU düzeltmesi; kaydı burada duruyor çünkü
+bir sonraki döngüyü yanlış bir işe gönderecekti.
+
+Döngü 1 eksik listesine *"Üst çubuk 320'de 128 piksel yüksek. Bu, ilk ekranın
+dörtte biri."* yazdı ve aynı sayı `site-home.css` içindeki bir gerekçe
+yorumuna da geçti. Döngü 2 ölçtü (gerçek Chrome, 320×480, mobil taklidi):
+`.site-header` yüksekliği **65 piksel** — ilk ekranın %13,5'i.
+
+Yapılacak bir iş yoktu ve **yapılmadı**: 65 piksel, 44 piksellik dokunma
+hedefi tabanının (`--control-height`) üstüne 1 piksel kenar ve iki kademe
+dolgu eklenince çıkan sayıdır. Onu küçültmek, kabuğun tek dokunma hedefini
+44 pikselin altına indirmek demekti — ve o sınır `docs/117` K1'de ölçülmüş
+bir sınırdır, bir tercih değil.
+
+**Ders, sayıdan büyük:** bir eksik listesine yazılan sayı da ölçülmüş
+olmalıdır. Ölçülmemiş bir kusur, bir sonraki döngünün bütçesini gerçek
+olmayan bir işe harcatır.
+
 ## 2. Değişmeden korunan kararlar
 
 Yönergenin şu maddeleri bugünkü kararlarla çelişmiyor ve aynen geçerli:

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { FrameGovernor, demote, estimateTier } from './tier';
+import { FrameGovernor, demote, estimateTier, promote } from './tier';
 import { createParallax, createProgress, observeReveals } from './depth';
 import { motionRequested } from './runtime';
 import { mountScene } from './mount';
@@ -146,10 +146,18 @@ describe('cihaz derecesi (SAHNE-03)', () => {
         expect(estimateTier(view(8, 8, 1440, 900, 1))).toBe('full');
     });
 
-    it('merdiven yalnız aşağı iner', () => {
+    it('merdiven aşağı iner ve TEK BASAMAK yukarı çıkar', () => {
         expect(demote('full')).toBe('reduced');
         expect(demote('reduced')).toBe('minimal');
         expect(demote('minimal')).toBe('minimal');
+
+        /*
+            Yükseliş tek basamak: `minimal`den doğrudan `full`e çıkmak,
+            cihazın kaldıramadığı yükü tek adımda geri yüklemek olurdu.
+        */
+        expect(promote('minimal')).toBe('reduced');
+        expect(promote('reduced')).toBe('full');
+        expect(promote('full')).toBe('full');
     });
 });
 
@@ -157,14 +165,14 @@ describe('kare süresi yöneticisi (SAHNE-04)', () => {
     it('tek bir uzun kare dereceyi düşürmez', () => {
         const governor = new FrameGovernor(22, 30);
 
-        expect(governor.observe(0.05)).toBe(false);
+        expect(governor.observe(0.05)).toBeNull();
     });
 
     it('sürekli aşım dereceyi düşürür', () => {
         const governor = new FrameGovernor(22, 5);
         const verdicts = [1, 2, 3, 4, 5].map(() => governor.observe(0.04));
 
-        expect(verdicts).toEqual([false, false, false, false, true]);
+        expect(verdicts).toEqual([null, null, null, null, 'demote']);
     });
 
     it('araya giren tek bir hızlı kare sayacı sıfırlar', () => {
@@ -173,14 +181,64 @@ describe('kare süresi yöneticisi (SAHNE-04)', () => {
         governor.observe(0.04);
         governor.observe(0.008);
 
-        expect(governor.observe(0.04)).toBe(false);
+        expect(governor.observe(0.04)).toBeNull();
     });
 
     it('arka plandaki sekmenin yavaş kareleri ölçüme girmez', () => {
         const governor = new FrameGovernor(22, 2);
         /* Sekme gizliyken tarayıcı kareleri saniyede bire düşürür. */
-        expect(governor.observe(1)).toBe(false);
-        expect(governor.observe(1)).toBe(false);
+        expect(governor.observe(1)).toBeNull();
+        expect(governor.observe(1)).toBeNull();
+    });
+});
+
+describe('merdiven iki yönlü ama SİMETRİK DEĞİL (SAHNE-08)', () => {
+    /*
+        Döngü 1'de merdiven tek yönlüydü ve bunun ölçülmemiş bir bedeli vardı:
+        bir kez ısınan cihaz, rahatladıktan sonra bile oturum boyunca en sade
+        sahnede kalıyordu (`docs/146` §9 madde 10). Döngü 2 yükselişi ekledi
+        ama PAHALI yaptı — aşağıdaki üç test tam olarak o pahalılığı ölçüyor.
+    */
+    it('sakin kareler dereceyi yükseltir, ama inişten ÇOK daha geç', () => {
+        const governor = new FrameGovernor(22, 3, 10);
+
+        /* Tavanın altında ama sakin eşiğinin (22 × 0,75 = 16,5 ms) üstünde
+           seyreden bir cihaz yükselmez: tam tavanda gezineni yükseltmek, onu
+           bir kare sonra yine indirmek olurdu. */
+        for (let i = 0; i < 40; i += 1) {
+            expect(governor.observe(0.02)).toBeNull();
+        }
+
+        const verdicts = Array.from({ length: 10 }, () => governor.observe(0.008));
+
+        expect(verdicts.slice(0, 9)).toEqual(Array(9).fill(null));
+        expect(verdicts[9]).toBe('promote');
+    });
+
+    it('her karardan sonra gereken sakinlik İKİYE KATLANIR', () => {
+        const governor = new FrameGovernor(22, 3, 4);
+
+        /* Birinci yükseliş: dört sakin kare. */
+        expect([1, 2, 3, 4].map(() => governor.observe(0.008)).at(-1)).toBe('promote');
+
+        /* İkincisi sekiz kare ister — dördüncüde HÂLÂ yükselmez. */
+        expect([1, 2, 3, 4].map(() => governor.observe(0.008)).at(-1)).toBeNull();
+        expect([1, 2, 3, 4].map(() => governor.observe(0.008)).at(-1)).toBe('promote');
+    });
+
+    it('üç yükselişten sonra merdiven yine tek yönlü olur', () => {
+        const governor = new FrameGovernor(22, 3, 1);
+        const moves: Array<string | null> = [];
+
+        for (let i = 0; i < 200; i += 1) {
+            moves.push(governor.observe(0.008));
+        }
+
+        expect(
+            moves.filter((move) => move === 'promote').length,
+            'SAHNE-08: salınım kendi kendini söndürmeli; sonsuz yükselen bir ' +
+                'merdiven, kılık değiştiren bir sahne demektir.',
+        ).toBe(3);
     });
 });
 
@@ -293,6 +351,178 @@ describe('derinlik (SAHNE-06)', () => {
         ).toBe('true');
 
         globalThis.IntersectionObserver = original;
+    });
+});
+
+describe('ilk ekran giriş animasyonuna girmez (SAHNE-09)', () => {
+    /*
+        GÖSTERİ, DÖNÜŞÜM EYLEMİNİ GECİKTİREMEZ.
+
+        Döngü 1'de ilk ekrandaki bir öğe de `IntersectionObserver`in geri
+        çağrımını bekliyordu; üstüne `--scene-order` gecikmesi biniyordu.
+        Zincirin toplamı, ziyaretçinin karar verdiği ilk saniyeye düşerdi.
+        Artık ilk ekrandaki öğeler `data-motion` yazılmadan ÖNCE doğuyor.
+    */
+    const box = (top: number) =>
+        ({ top, bottom: top + 40, left: 0, right: 100, width: 100, height: 40 }) as DOMRect;
+
+    it('ilk ekrandaki öğe gözlemciye HİÇ verilmez, anında doğar', () => {
+        document.body.innerHTML = '<div class="scene-reveal" id="ust"></div>';
+
+        const element = document.querySelector('#ust') as HTMLElement;
+        element.getBoundingClientRect = () => box(120);
+
+        const observe = vi.fn();
+        const original = globalThis.IntersectionObserver;
+
+        globalThis.IntersectionObserver = class {
+            observe = observe;
+            unobserve = () => {};
+            disconnect = () => {};
+        } as unknown as typeof IntersectionObserver;
+
+        observeReveals(document, { innerHeight: 480 } as Window);
+
+        expect(element.dataset.revealed).toBe('true');
+        expect(
+            observe,
+            'SAHNE-09: ilk ekrandaki bir öğe gözlemciye verilirse, doğuşu bir ' +
+                'sonraki kareye ve bir gecikme kuyruğuna düşer.',
+        ).not.toHaveBeenCalled();
+
+        globalThis.IntersectionObserver = original;
+    });
+
+    it('ilk ekranın ALTINDAKİ öğe eskisi gibi kaydırınca doğar', () => {
+        document.body.innerHTML = '<div class="scene-reveal" id="alt"></div>';
+
+        const element = document.querySelector('#alt') as HTMLElement;
+        element.getBoundingClientRect = () => box(2400);
+
+        const observe = vi.fn();
+        const original = globalThis.IntersectionObserver;
+
+        globalThis.IntersectionObserver = class {
+            observe = observe;
+            unobserve = () => {};
+            disconnect = () => {};
+        } as unknown as typeof IntersectionObserver;
+
+        observeReveals(document, { innerHeight: 480 } as Window);
+
+        expect(element.dataset.revealed).toBeUndefined();
+        expect(observe).toHaveBeenCalledTimes(1);
+
+        globalThis.IntersectionObserver = original;
+    });
+});
+
+describe('dokunma kamerası (SAHNE-10)', () => {
+    /*
+        Döngü 1'de dokunmalı cihazda kamera PASİFTİ (`docs/146` §9 madde 6):
+        imleç yok, o yüzden sahne yalnız kaydırmaya tepki veriyordu. Dokunmanın
+        kendi fiili SÜRÜKLEMEDİR ve aşağıdaki testler onun kameraya ULAŞTIĞINI
+        ölçüyor.
+
+        KAYDIRMAYI ÇALMADIĞI burada ölçülemez — jsdom kaydırmaz. O iddia
+        gerçek Chrome'da, `scripts/scene-perf-gate` içinde ölçülüyor.
+    */
+    function stage(): HTMLElement {
+        document.body.innerHTML =
+            '<div class="site-stage"><span data-plane="far" id="hedef"></span></div>';
+
+        return document.querySelector('.site-stage') as HTMLElement;
+    }
+
+    it('parmak sahneyi sürükleyince kamera hedefi değişir', async () => {
+        stubMatchMedia(window, {
+            '(pointer: fine)': false,
+            '(prefers-reduced-motion: reduce)': false,
+        });
+
+        const target = stage();
+        const runtime = mountScene(window);
+
+        /* Olay sahnenin İÇİNDEN doğuyor: pencereye yükselirken `target`
+           `.site-stage`in kendisi. */
+        target.dispatchEvent(new PointerEvent('pointerdown', { clientX: 40, bubbles: true }));
+        target.dispatchEvent(new PointerEvent('pointermove', { clientX: 200, bubbles: true }));
+
+        const frames: number[] = [];
+        runtime?.add({
+            frame: (scene) => frames.push(scene.pointerX),
+        });
+
+        await new Promise((resolve) => setTimeout(resolve, 120));
+
+        expect(
+            frames.some((value) => value !== 0),
+            'SAHNE-10: dokunmada kamera sürüklemeye tepki vermeli; yoksa dokunmalı ' +
+                'cihazda sahnenin tek girdisi kaydırmadır.',
+        ).toBe(true);
+
+        runtime?.stop();
+    });
+
+    it('parmak kalkınca kamera yerine döner', async () => {
+        stubMatchMedia(window, {
+            '(pointer: fine)': false,
+            '(prefers-reduced-motion: reduce)': false,
+        });
+
+        const target = stage();
+        const runtime = mountScene(window);
+        const frames: number[] = [];
+
+        runtime?.add({ frame: (scene) => frames.push(scene.pointerX) });
+
+        target.dispatchEvent(new PointerEvent('pointerdown', { clientX: 40, bubbles: true }));
+        target.dispatchEvent(new PointerEvent('pointermove', { clientX: 400, bubbles: true }));
+
+        await new Promise((resolve) => setTimeout(resolve, 120));
+
+        const peak = Math.max(...frames.map(Math.abs));
+
+        window.dispatchEvent(new PointerEvent('pointerup', { bubbles: true }));
+
+        await new Promise((resolve) => setTimeout(resolve, 200));
+
+        expect(
+            Math.abs(frames[frames.length - 1]),
+            'SAHNE-10: bırakılan sahne donduğu yerde kalmaz, yerine süzülür — ' +
+                'dönüşü karedeki üstel yumuşatma yapar, ayrı bir animasyon değil.',
+        ).toBeLessThan(peak);
+
+        runtime?.stop();
+    });
+
+    it('sahnenin DIŞINDA başlayan bir sürükleme kamerayı çevirmez', async () => {
+        stubMatchMedia(window, {
+            '(pointer: fine)': false,
+            '(prefers-reduced-motion: reduce)': false,
+        });
+
+        stage();
+
+        const outside = document.createElement('form');
+        document.body.append(outside);
+
+        const runtime = mountScene(window);
+        const frames: number[] = [];
+
+        runtime?.add({ frame: (scene) => frames.push(scene.pointerX) });
+
+        outside.dispatchEvent(new PointerEvent('pointerdown', { clientX: 10, bubbles: true }));
+        outside.dispatchEvent(new PointerEvent('pointermove', { clientX: 300, bubbles: true }));
+
+        await new Promise((resolve) => setTimeout(resolve, 120));
+
+        expect(
+            frames.every((value) => value === 0),
+            'SAHNE-10: bir formun ya da menünün üstündeki parmak sahneyi çevirmez.',
+        ).toBe(true);
+
+        runtime?.stop();
     });
 });
 
