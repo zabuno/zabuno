@@ -817,9 +817,15 @@ SONRA geldiğini doğruluyor — ve hiç uyarı çıkmadıysa "geçti" demiyor,
 derinliğinden türüyor — kök `orbit` (bir SİSTEM), ikinci seviye `grid` (o
 sistemin ZEMİNİ), daha derini `conduit` (bir İŞLEM). Rastgele bir dağıtım da
 üç yüzü karıştırırdı ama hiçbir şey ANLATMAZDI ve iki komşu sayfa aynı yüzü
-alabilirdi. Aynı geçişte sayfa gövdesi kurumsal ölçü kabına taşındı
-(`site-measure-prose`): 1280 pikselde satır 1200 piksele uzuyordu ve o
-uzunlukta göz satır başını kaybeder.
+alabilirdi.
+
+Bant bu sayfalarda **tam kanamalı değil, içeride** (`site-prologue-inset`) ve
+bu bir sıra kararının sonucu: paket yazılırken `docs/148` (#330) aynı şablonu
+kendi okuma sütununa (`site-main site-doc`) taşıdı ve o sütunun ölçüsü —
+kırıntı, başlık ölçeği, blok ritmi — ORADA ölçülmüştü. Bandı o sütunun dışına
+çıkarmak, ölçülmüş bir düzeni ölçülmemiş bir düzenle değiştirmek olurdu.
+İçeride duran bant köşesini yuvarlar; ekranın kenarına dayanmayan keskin bir
+dikdörtgen bir bant gibi değil bir kusur gibi okunur.
 
 Yeni kapılar `SAHNE-B9…B12` (`CalmSceneOnReadingSurfacesTest`, 30 test / 142
 iddia): her okuma yüzeyinde bant VAR ve SAKİN; tuval 0, düzlem 0; uyarı bantta
@@ -892,17 +898,26 @@ SONRA (36 sayfalık statik önizleme):
 
 ### 12.9 Ağırlık
 
-| Ölçüt | Döngü 2 sonu | Döngü 3 sonu | Tavan |
-| --- | --- | --- | --- |
-| Kurumsal betik (gzip) | 4.700 | **4.700** (+0) | 6.144 |
-| Kurumsal stil (gzip) | 32.756 | **34.105** | 40.960 |
+Bu paketin kendi payı, aynı anda main'e giren öteki paketlerden AYRI ölçüldü:
+aynı çalışma ağacında önce `origin/main`in `resources/` ağacı derlendi, sonra bu
+paketinki — ve ikisinin arasında `php artisan view:clear` koştu.
+
+| Ölçüt | `origin/main` | Bu paketle | Fark | Tavan |
+| --- | --- | --- | --- | --- |
+| Kurumsal betik (gzip) | 4.700 | **4.700** | **+0** | 6.144 |
+| Kurumsal stil (gzip) | 35.275 | **35.365** | **+90** | 40.960 |
 
 Betik hiç büyümedi ve bu tesadüf değil: Döngü 3 motora tek satır eklemedi.
-Sakin bant bir YOKLUKTUR — çizilmeyen katmanın kodu da yoktur. Stildeki artışın
-bir kısmı bu paketin değil, arada main'e giren zengin altbilgininki (Döngü 2
-kapanışında 32.756, bu paket başlarken 34.024); bu paketin kendi payı
-**+81 bayt** (`.site-prologue-calm`, `.site-prologue-inset`, `.scene-still`,
-`.site-inline-action`).
+Sakin bant bir YOKLUKTUR — çizilmeyen katmanın kodu da yoktur. Stildeki 90 bayt
+dört kuralın tamamı: `.site-prologue-calm`, `.site-prologue-inset`,
+`.scene-still`, `.site-inline-action`.
+
+**Ölçüm sırası önemli ve bu da bir borç kaydı:** kirli bir Blade önbelleğiyle
+alınan ilk ölçüm 38.039 bayt dedi — yani gerçeğin 2,7 KB üstünde. Tailwind
+derlerken `storage/framework/views` altındaki ESKİ derlenmiş şablonları da
+tarıyor ve orada artık kullanılmayan sınıflar duruyor. Bir bütçe ölçümünden
+önce `php artisan view:clear` şart; aksi hâlde tavan, olmayan bir yükle
+karşılaştırılır.
 
 ---
 
