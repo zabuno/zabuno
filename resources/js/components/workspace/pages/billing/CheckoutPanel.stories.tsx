@@ -53,6 +53,11 @@ const meta: Meta<typeof CheckoutPanel> = {
         latest: null,
         proceeding: false,
         proceedError: null,
+        /* İKİ ONAY, İKİSİ DE KAPALI (FF-216): hikâyenin varsayılanı ürünün
+           varsayılanıdır — önceden işaretli kutu onay değildir. */
+        consent: { agreements: false, immediatePerformance: false },
+        onConsentChange: () => undefined,
+        consentErrors: {},
         onProceed: () => undefined,
         onRetryLoad: () => undefined,
     },
@@ -90,4 +95,36 @@ export const LiveMode: Story = {
 /** Ödeme sayfası açılıyor. */
 export const Proceeding: Story = {
     args: { proceeding: true },
+};
+
+/** İki onay verilmiş: ödeme adımının kabul edilmiş hâli. */
+export const ConsentGiven: Story = {
+    args: { consent: { agreements: true, immediatePerformance: true } },
+};
+
+/**
+ * Onaysız "Proceed": eksik kutu kendi satırında sebebini yazar.
+ *
+ * 320 pikselde ÖLÇÜLEN en yoğun hâl: iki uzun onay metni, iki hata satırı
+ * ve dört belge bağlantısı aynı ekranda.
+ */
+export const ConsentMissing: Story = {
+    args: {
+        consentErrors: {
+            agreements:
+                'To continue, accept the Preliminary Information Form and the Distance Sales Agreement.',
+            immediatePerformance:
+                'To continue, confirm that the service should start as soon as the payment is confirmed.',
+        },
+    },
+};
+
+/** Satıcının yasal kimliği yayınlanmadan canlı tahsilat yapılamaz. */
+export const SellerIdentityMissing: Story = {
+    args: {
+        mode: 'live',
+        consent: { agreements: true, immediatePerformance: true },
+        proceedError:
+            'Payments cannot be taken yet: the seller has not published its legal identity, so a distance sales agreement cannot be concluded. Nothing was charged.',
+    },
 };

@@ -19,5 +19,5 @@ export const CustomLabel: Story = {
 
 export const RightToLeft: Story = {
     args: { onClick: () => {} },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };

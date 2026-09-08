@@ -299,13 +299,27 @@ final class SitemapRegistryTest extends TestCase
     public function test_the_living_addresses_are_still_listed(): void
     {
         /*
-            Ölçüldü (`docs/129` §4): bu dokuz yolun hiçbiri kütükte yok ve
-            olamaz — hiçbiri kurumsal kapıdan geçmiyor. Ana sayfa ve sekiz
-            yasal belge kendi rotalarıdır ve bugün 200 dönüyorlar.
+            Ölçüldü (`docs/129` §4): bu yolların hiçbiri kütükte yok ve
+            olamaz — hiçbiri kurumsal kapıdan geçmiyor. Ana sayfa ve yasal
+            belgeler kendi rotalarıdır ve bugün 200 dönüyorlar.
+
+            SATICI KİMLİĞİ BURADA DOLDURULUYOR (FF-216). Mesafeli satış, ön
+            bilgilendirme, teslimat ve hakkımızda sayfaları satıcının kimliği
+            girilmemişken sitemap'e GİRMEZ — eksik bir sözleşmeyi arama
+            motoruna sunmak, onu tam bir sözleşme gibi ilan etmektir. Bu
+            testin ölçtüğü şey o kural değil, kütükten gelmeyen adreslerin
+            yine de listelendiğidir; iki kuralı ayırmak için kimlik tam
+            kabul ediliyor. Eksik hâlin kendi ölçümü
+            `DistanceSellingCompletenessTest` içindedir.
         */
+        config(['legal.company' => array_fill_keys(
+            ['legal_name', 'address', 'mersis', 'tax_office', 'tax_number', 'email', 'phone'],
+            'ölçüm için dolu',
+        )]);
+
         $xml = $this->sitemap();
 
-        foreach (['/terms', '/privacy', '/kvkk', '/distance-sales', '/pre-information', '/refund-policy', '/cookies', '/marketing-consent'] as $path) {
+        foreach (['/terms', '/privacy', '/kvkk', '/distance-sales', '/pre-information', '/delivery', '/about', '/refund-policy', '/cookies', '/marketing-consent'] as $path) {
             self::assertStringContainsString('<loc>'.$this->url($path).'</loc>', $xml);
         }
 

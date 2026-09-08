@@ -126,6 +126,24 @@ describe('BillingPage — self-serve subscribe (SELF-SERVE-FRONTEND)', () => {
         document.cookie = 'XSRF-TOKEN=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     });
 
+    /**
+     * İKİ ONAY KUTUSU (FF-216) — hiçbiri önceden işaretli DEĞİL.
+     *
+     * Ödeme yolunu ölçen her testin bunları işaretlemesi gerekir; bu, ürünün
+     * gerçek yolunu ölçmek demektir: FF-216'dan önce ödeme adımında hiç onay
+     * yoktu ve testler de bu yüzden onaysız POST atıyordu.
+     */
+    async function acceptConsents(user: ReturnType<typeof userEvent.setup>) {
+        const boxes = within(region()).getAllByRole('checkbox');
+
+        for (const box of boxes) {
+            expect(box).not.toBeChecked();
+            await user.click(box);
+        }
+
+        expect(boxes).toHaveLength(2);
+    }
+
     function region() {
         return screen.getByRole('region', { name: /^subscribe$/i });
     }
@@ -194,6 +212,8 @@ describe('BillingPage — self-serve subscribe (SELF-SERVE-FRONTEND)', () => {
             expect(within(region()).getByText('Kadıköy Kebap Ltd.')).toBeInTheDocument();
         });
 
+        await acceptConsents(user);
+
         const proceed = within(region()).getByRole('button', { name: /proceed to payment/i });
         await waitFor(() => expect(proceed).toBeEnabled());
         await user.click(proceed);
@@ -210,7 +230,14 @@ describe('BillingPage — self-serve subscribe (SELF-SERVE-FRONTEND)', () => {
         expect(csrfIndex).toBeLessThan(postIndex);
 
         const body = JSON.parse(String(posted?.body)) as Record<string, unknown>;
-        expect(Object.keys(body).sort()).toEqual(['idempotency_key', 'plan_id']);
+        expect(Object.keys(body).sort()).toEqual([
+            'agreements_accepted',
+            'idempotency_key',
+            'immediate_performance_accepted',
+            'plan_id',
+        ]);
+        expect(body.agreements_accepted).toBe(true);
+        expect(body.immediate_performance_accepted).toBe(true);
         expect(body.plan_id).toBe(11);
         expect(String(body.idempotency_key)).toMatch(UUID_RE);
         expect(posted?.credentials).toBe('include');
@@ -275,6 +302,7 @@ describe('BillingPage — self-serve subscribe (SELF-SERVE-FRONTEND)', () => {
         const user = userEvent.setup();
 
         await user.click(await within(region()).findByRole('radio', { name: /pro/i }));
+        await acceptConsents(user);
         const proceed = within(region()).getByRole('button', { name: /proceed to payment/i });
         await waitFor(() => expect(proceed).toBeEnabled());
         await user.click(proceed);
@@ -347,5 +375,113 @@ describe('BillingPage — self-serve subscribe (SELF-SERVE-FRONTEND)', () => {
                 within(region()).getByRole('button', { name: /proceed to payment/i }),
             ).toBeEnabled();
         });
+    });
+    // --- SELF-SERVE-CONSENT-FRONTEND (FF-216) ----------------------------
+
+    it('refuses to POST while a consent box is empty and says which one', async () => {
+        let posted = false;
+
+        fetchSpy.mockImplementation(
+            baseRoutes({
+                [PROFILE]: async () => jsonResponse(200, completeProfile()),
+                [CSRF]: async () => jsonResponse(204, null),
+                [CHECKOUT]: async (init) => {
+                    if (init?.method === 'POST') {
+                        posted = true;
+                    }
+                    return jsonResponse(200, checkoutStatus({ profile_complete: true }));
+                },
+            }),
+        );
+
+        render(<BillingPage workspaceId={WORKSPACE_ID} navigateToPayment={vi.fn()} />);
+        const user = userEvent.setup();
+
+        await user.click(await within(region()).findByRole('radio', { name: /pro/i }));
+
+        // İki kutu, ikisi de KAPALI: önceden işaretli kutu onay değildir.
+        const boxes = within(region()).getAllByRole('checkbox');
+        expect(boxes).toHaveLength(2);
+        boxes.forEach((box) => expect(box).not.toBeChecked());
+
+        const proceed = within(region()).getByRole('button', { name: /proceed to payment/i });
+        await waitFor(() => expect(proceed).toBeEnabled());
+        await user.click(proceed);
+
+        await waitFor(() => {
+            expect(
+                within(region()).getByText(
+                    /^to continue, accept the preliminary information form/i,
+                ),
+            ).toBeInTheDocument();
+        });
+        expect(
+            within(region()).getByText(/^to continue, confirm that the service should start/i),
+        ).toBeInTheDocument();
+        expect(posted).toBe(false);
+
+        // Yalnız BİRİNİ işaretlemek de yetmez, ve düzelen alanın hatası kalkar.
+        await user.click(boxes[0]);
+        await user.click(proceed);
+
+        await waitFor(() => {
+            expect(
+                within(region()).queryByText(
+                    /^to continue, accept the preliminary information form/i,
+                ),
+            ).not.toBeInTheDocument();
+        });
+        expect(posted).toBe(false);
+    });
+
+    it('names the seller identity gap instead of showing a generic failure', async () => {
+        fetchSpy.mockImplementation(
+            baseRoutes({
+                [PROFILE]: async () => jsonResponse(200, completeProfile()),
+                [CSRF]: async () => jsonResponse(204, null),
+                [CHECKOUT]: async (init) => {
+                    if (init?.method === 'POST') {
+                        return jsonResponse(409, {
+                            message: 'This service cannot take payments yet.',
+                            reason: 'seller_identity_missing',
+                        });
+                    }
+                    return jsonResponse(200, checkoutStatus({ profile_complete: true }));
+                },
+            }),
+        );
+
+        render(<BillingPage workspaceId={WORKSPACE_ID} navigateToPayment={vi.fn()} />);
+        const user = userEvent.setup();
+
+        await user.click(await within(region()).findByRole('radio', { name: /pro/i }));
+        await acceptConsents(user);
+        await user.click(within(region()).getByRole('button', { name: /proceed to payment/i }));
+
+        await waitFor(() => {
+            expect(within(region()).getByRole('alert')).toHaveTextContent(
+                /the seller has not published its legal identity/i,
+            );
+        });
+    });
+
+    it('links every document that must be readable before paying', async () => {
+        fetchSpy.mockImplementation(
+            baseRoutes({ [PROFILE]: async () => jsonResponse(200, completeProfile()) }),
+        );
+
+        render(<BillingPage workspaceId={WORKSPACE_ID} />);
+
+        await waitFor(() => {
+            expect(within(region()).getAllByRole('checkbox')).toHaveLength(2);
+        });
+
+        for (const href of ['/pre-information', '/distance-sales', '/delivery', '/refund-policy']) {
+            expect(
+                within(region())
+                    .getAllByRole('link')
+                    .some((link) => link.getAttribute('href') === href),
+            ).toBe(true);
+        }
     });
 });

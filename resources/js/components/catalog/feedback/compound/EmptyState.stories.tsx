@@ -37,5 +37,5 @@ export const Loading: Story = {
 
 export const RightToLeft: Story = {
     args: { title: 'لا توجد عناصر قائمة بعد', description: 'أضف عنصرك الأول للبدء.' },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };

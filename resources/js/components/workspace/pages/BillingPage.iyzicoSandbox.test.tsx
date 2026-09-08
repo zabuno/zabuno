@@ -754,7 +754,14 @@ describe('BillingPage — Iyzico sandbox checkout (IYZICO_SANDBOX_FRONTEND_RED)'
             baseFetchImpl({
                 [SUBSCRIPTION_ENDPOINT]: async () => {
                     subscriptionCalls += 1;
-                    if (subscriptionCalls <= 2) {
+
+                    // İlk kurulumda aboneliği ÜÇ bileşen okur
+                    // (CurrentSubscriptionStatus, IyzicoSandboxCheckout ve
+                    // FF-219'dan beri SubscriptionLifecycle); üçü de
+                    // başarısız olmalı ki ölçülen şey gerçekten "Iyzico
+                    // bölgesi geçerli bir abonelik doğrulanmadan hiçbir
+                    // oturum açmaz" olsun.
+                    if (subscriptionCalls <= 3) {
                         throw new TypeError('Failed to fetch');
                     }
                     return jsonResponse(200, makeActiveSubscription());
@@ -778,8 +785,10 @@ describe('BillingPage — Iyzico sandbox checkout (IYZICO_SANDBOX_FRONTEND_RED)'
         const retryButton = within(iyzicoRegion()).getByRole('button', { name: /retry/i });
         await user.click(retryButton);
 
+        // Üç kurulum okuması başarısız oldu; Retry DÖRDÜNCÜYÜ atar ve o
+        // başarılıdır.
         await waitFor(() => {
-            expect(subscriptionCalls).toBe(3);
+            expect(subscriptionCalls).toBe(4);
         });
 
         await waitFor(() => {

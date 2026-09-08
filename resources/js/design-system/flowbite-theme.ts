@@ -474,8 +474,23 @@ export const tableTokenTheme = createTheme(
             shadow: 'absolute start-0 top-0 -z-10 h-full w-full rounded-lg bg-surface',
         },
         body: {
+            /*
+                KÖŞELER MANTIKSAL (`docs/121` Ö10).
+
+                Yukarı akış köşeleri FİZİKSEL adlandırıyordu (üst-sol,
+                üst-sağ) ve `first:`/`last:` ile eşliyordu. `first:` satırın
+                İLK hücresidir —
+                Arapçada bu, ekranın SAĞ ucundaki hücredir. Yani fiziksel
+                köşe adıyla birlikte tablo, sağdan sola bir dilde iki köşesi
+                yuvarlanmış, iki köşesi keskin çizilirdi: bozulma "yamuk bir
+                tablo" olarak görünür ama sebebi hiçbir yerde yazmaz.
+
+                `ss`/`se`/`es`/`ee` blok ve satır içi eksenleri adlandırır
+                (start-start, start-end, end-start, end-end); `first:` hangi
+                yönde olursa olsun doğru köşeyi alır.
+            */
             cell: {
-                base: 'px-[var(--space-5)] py-[var(--space-3)] group-first/body:group-first/row:first:rounded-tl-lg group-first/body:group-first/row:last:rounded-tr-lg group-last/body:group-last/row:first:rounded-bl-lg group-last/body:group-last/row:last:rounded-br-lg',
+                base: 'px-[var(--space-5)] py-[var(--space-3)] group-first/body:group-first/row:first:rounded-ss-lg group-first/body:group-first/row:last:rounded-se-lg group-last/body:group-last/row:first:rounded-es-lg group-last/body:group-last/row:last:rounded-ee-lg',
             },
         },
         head: {
@@ -483,7 +498,8 @@ export const tableTokenTheme = createTheme(
             // kurulur (`DS-NO-UPPERCASE-12`, `DS-TYPE-SCALE-01`).
             base: 'group/head text-meta font-bold text-fg-muted',
             cell: {
-                base: 'bg-surface-subtle px-[var(--space-5)] py-[var(--space-3)] group-first/head:first:rounded-tl-lg group-first/head:last:rounded-tr-lg',
+                // Köşeler mantıksal — gerekçe gövde hücresinde (yukarıda).
+                base: 'bg-surface-subtle px-[var(--space-5)] py-[var(--space-3)] group-first/head:first:rounded-ss-lg group-first/head:last:rounded-se-lg',
             },
         },
         row: {

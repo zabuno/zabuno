@@ -25,5 +25,5 @@ export const Disabled: Story = {
 
 export const RightToLeft: Story = {
     args: { icon: menuIcon, label: 'فتح قائمة التنقل' },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };

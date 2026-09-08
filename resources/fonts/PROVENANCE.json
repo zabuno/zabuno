@@ -1,43 +1,92 @@
 {
     "neden": "Yazı tipi depoda barındırılır. Üretimdeki CSP `font-src 'self' data:` diyor; bir CDN'den gelen yazı tipi tarayıcı tarafından ENGELLENİR. Barındırılmadığı sürece her cihaz kendi yedeğine düşer (macOS SF Pro, Linux DejaVu Sans, Windows Segoe UI) ve aynı ekran her cihazda farklı ölçüde çizilir.",
-    "aile": "Roboto",
-    "kaynakPaket": "@fontsource-variable/roboto",
-    "kaynakSurum": "5.3.0",
-    "tarballSha256": "03510ae8a8159543ebef8d35280cf6821099ef3f61d31858458ac8bf1a8e983e",
-    "yukariAkis": "https://github.com/google/fonts (Roboto v51, metadata lastModified 2026-02-19)",
-    "lisans": "OFL-1.1",
-    "lisansDosyasi": "LICENSE-Roboto.txt",
-    "lisansNotu": "Roboto Apache-2.0 DEĞİL. Paketin kendi metadata.json'u ve LICENSE dosyası SIL Open Font License 1.1 diyor. OFL yeniden dağıtıma izin verir; şartı, yazı tipinin tek başına satılmaması ve lisans metninin dosyalarla birlikte taşınmasıdır — bu yüzden LICENSE-Roboto.txt burada duruyor.",
-    "telifBildirimi": "Copyright 2011 The Roboto Project Authors (https://github.com/googlefonts/roboto-classic)",
-    "neyiAldik": "Yalnız `wght` ekseninin DİK (normal) kesimi ve yalnız üç alt küme.",
-    "dosyalar": [
+    "yapi": "FF-217'de bu kayıt TEK aileden ÇOK aileye çevrildi: Arap yazısı Roboto'da yok ve ayrı bir aileden geliyor. Kayıt biçimi değişti, Roboto'ya dair hiçbir olgu değişmedi.",
+    "aileler": [
         {
-            "dosya": "roboto-latin-wght-normal.woff2",
-            "bayt": 43136,
-            "sha256": "1404ca348bd75ef836f4dd8b6f2cc719458642d1237c368296b2fc652dca47dc",
-            "neden": "Her sayfanın ilk boyaması. `preload` edilen tek dosya."
+            "aile": "Roboto",
+            "yaziSistemi": "Latin + Kiril",
+            "kullananLocaleler": ["en", "tr", "de", "fr", "ru", "it", "ku"],
+            "kaynakPaket": "@fontsource-variable/roboto",
+            "kaynakSurum": "5.3.0",
+            "tarballSha256": "03510ae8a8159543ebef8d35280cf6821099ef3f61d31858458ac8bf1a8e983e",
+            "yukariAkis": "https://github.com/google/fonts (Roboto v51, metadata lastModified 2026-02-19)",
+            "lisans": "OFL-1.1",
+            "lisansDosyasi": "LICENSE-Roboto.txt",
+            "lisansNotu": "Roboto Apache-2.0 DEĞİL. Paketin kendi metadata.json'u ve LICENSE dosyası SIL Open Font License 1.1 diyor. OFL yeniden dağıtıma izin verir; şartı, yazı tipinin tek başına satılmaması ve lisans metninin dosyalarla birlikte taşınmasıdır — bu yüzden LICENSE-Roboto.txt burada duruyor.",
+            "telifBildirimi": "Copyright 2011 The Roboto Project Authors (https://github.com/googlefonts/roboto-classic)",
+            "neyiAldik": "Yalnız `wght` ekseninin DİK (normal) kesimi ve yalnız üç alt küme.",
+            "dosyalar": [
+                {
+                    "dosya": "roboto-latin-wght-normal.woff2",
+                    "bayt": 43136,
+                    "sha256": "1404ca348bd75ef836f4dd8b6f2cc719458642d1237c368296b2fc652dca47dc",
+                    "neden": "Her sayfanın ilk boyaması. `preload` edilen tek dosya."
+                },
+                {
+                    "dosya": "roboto-latin-ext-wght-normal.woff2",
+                    "bayt": 29392,
+                    "sha256": "cedb374b05a35034cf96db185db4eeb8f8ce49e1a56197673702ff11b5533d6e",
+                    "neden": "Türkçe ş/ğ/İ ve Almanca/Fransızca aksanları burada. `tr`/`de`/`fr` bu dosya olmadan yedeğe düşer."
+                },
+                {
+                    "dosya": "roboto-cyrillic-wght-normal.woff2",
+                    "bayt": 23664,
+                    "sha256": "481dd0c01e6bbb129fd147eb5d8571016193cba141c4627ca60ceabdb5a46ea8",
+                    "neden": "`ru` locale'i (config/app.php supported_locales)."
+                }
+            ],
+            "toplamBayt": 96192,
+            "almadiklarimiz": {
+                "italik": "Depoda tek bir `italic` kullanımı yok (ölçüldü). Almak, hiç indirilmeyecek 100 KB demekti.",
+                "greek/greek-ext/vietnamese": "Desteklenen locale listesinde yok.",
+                "math/symbols": "Matematik ve sembol blokları; panelde kullanılmıyor ve ikisi tek başına 140 KB'ın üstünde.",
+                "cyrillic-ext": "Rusça `cyrillic` alt kümesindedir; `cyrillic-ext` Ukraynaca/Sırpça genişletmeleri içindir ve desteklenen dil listesinde yok.",
+                "wdth-ekseni": "Genişlik ekseni kullanılmıyor; `wght` kesimi dosya başına yaklaşık 23 KB daha küçük.",
+                "arapca": "Roboto'da Arap yazısı YOK. FF-195'te bu KAYITLI bir boşluktu; FF-217'de ayrı bir aileyle (Vazirmatn) kapatıldı."
+            }
         },
         {
-            "dosya": "roboto-latin-ext-wght-normal.woff2",
-            "bayt": 29392,
-            "sha256": "cedb374b05a35034cf96db185db4eeb8f8ce49e1a56197673702ff11b5533d6e",
-            "neden": "Türkçe ş/ğ/İ ve Almanca/Fransızca aksanları burada. `tr`/`de`/`fr` bu dosya olmadan yedeğe düşer."
-        },
-        {
-            "dosya": "roboto-cyrillic-wght-normal.woff2",
-            "bayt": 23664,
-            "sha256": "481dd0c01e6bbb129fd147eb5d8571016193cba141c4627ca60ceabdb5a46ea8",
-            "neden": "`ru` locale'i (config/app.php supported_locales)."
+            "aile": "Vazirmatn",
+            "yaziSistemi": "Arap yazısı (Arapça + Farsça)",
+            "kullananLocaleler": ["ar", "fa"],
+            "kaynakPaket": "@fontsource-variable/vazirmatn",
+            "kaynakSurum": "5.3.0",
+            "tarballSha256": "94e5cbe1a433f86c79617ad462aa64d9bff8fd145b07b247dc747b8069aa3722",
+            "yukariAkis": "https://github.com/google/fonts (Vazirmatn v16, metadata lastModified 2025-09-10); özgün kaynak https://github.com/rastikerdar/vazirmatn",
+            "lisans": "OFL-1.1",
+            "lisansDosyasi": "LICENSE-Vazirmatn.txt",
+            "lisansNotu": "Lisans HAFIZADAN yazılmadı, DOSYADAN okundu: paketin LICENSE dosyasının ilk satırları ve metadata.json'u SIL Open Font License 1.1 diyor. Bu depoda bir kez yanlış lisans iddia edilip ölçümle düzeltilmişti (Roboto'nun Apache-2.0 sanılması); aynı hata tekrar edilmesin diye kaynak burada adıyla yazılıyor.",
+            "telifBildirimi": "Copyright 2015 The Vazirmatn Project Authors (https://github.com/rastikerdar/vazirmatn)",
+            "neyiAldik": "Yalnız `wght` ekseninin DİK (normal) kesimi ve yalnız `arabic` alt kümesi.",
+            "dosyalar": [
+                {
+                    "dosya": "vazirmatn-arabic-wght-normal.woff2",
+                    "bayt": 46308,
+                    "sha256": "84a382e46c30fb4f73d0e3800c16d0af15888e2731e57fa5f93e2c29a2c6a957",
+                    "neden": "`ar` ve `fa`. Arapça karakter geçmeyen bir sayfa `unicode-range` sayesinde bu dosyayı HİÇ istemez; `preload` EDİLMEZ."
+                }
+            ],
+            "toplamBayt": 46308,
+            "nedenBuAile": "Dört aday ölçüldü (2026-09-07, hepsi OFL-1.1, hepsi `arabic` alt kümesi): Noto Sans Arabic 165.960 bayt, Noto Kufi Arabic 123.688 bayt, Vazirmatn 46.308 bayt, Cairo 30.896 bayt. Cairo en küçüğüydü ama ölçümde İKİ eksik çıktı (U+06C0 ۀ ve U+FDFC ﷼); Vazirmatn ölçülen her ölçütte Noto ile aynı sonucu verdi ve Noto'nun dörtte birinden küçük.",
+            "olculenKapsam": {
+                "arapca28TemelHarf": "TAM",
+                "harekeler": "TAM (fetha, kesra, damma, şedde, sukun, hançerli elif)",
+                "farscaEkHarfler": "TAM (پ U+067E, چ U+0686, ژ U+0698, گ U+06AF, ی U+06CC, ک U+06A9, ۀ U+06C0)",
+                "urducaEkHarfler": "TAM (ٹ ڈ ڑ ں ھ ے)",
+                "rakamlar": "TAM — hem Arap-Hint (٠-٩ U+0660-0669) hem Fars-Hint (۰-۹ U+06F0-06F9)",
+                "noktalama": "TAM (، ؛ ؟ ٪ ٫ ٬ ٭ ـ)",
+                "paraBirimi": "TAM (﷼ U+FDFC)",
+                "bitisikBicimler": "TAM (lam-elif U+FEF5-FEFC, ﷲ U+FDF2) + GSUB/GPOS tabloları mevcut, yani şekillendirme yazı tipinin kendisinden geliyor"
+            },
+            "kapsanmayanlar": {
+                "latin/rakam/kiril": "BİLEREK yok. Latin metin Roboto'dan gelir; Vazirmatn'ın latin alt kümesi alınmadı çünkü ikinci bir latin yüzü, aynı ekranda iki farklı latin ölçüsü demektir.",
+                "kuranIsaretleri": "Arap bloğunun (U+0600-06FF) 256 kod noktasından 142'si var. Eksik olanlar Kur'an tilavet işaretleri (U+06D6-06ED) ve Afrika/Orta Asya ortografileri için genişletilmiş harflerdir. Bu ürünün yüzeyi bir restoran panelidir; o karakterler bir kiracı içeriğinde geçerse tarayıcı yığındaki bir SONRAKİ aileye düşer — boş kutu değil, işletim sisteminin yüzü çıkar.",
+                "arabicExtendedA": "U+08A0-08FF hiç yok (0/96). Aynı gerekçe.",
+                "presentationFormsA": "U+FB50-FDFF'nin 688 kod noktasından 72'si var. Bunlar eski, önceden birleştirilmiş biçimlerdir; modern metin taban harf + şekillendirme kullanır ve şekillendirme GSUB'dan gelir.",
+                "U+200F": "Sağdan sola işareti (RLM). Ne Vazirmatn'da ne Noto Sans Arabic'te var — GÖRÜNMEZ bir kontrol karakteri olduğu için çizilecek bir şekli de yok. Kapsam eksiği değil, kapsam DIŞI."
+            }
         }
     ],
-    "toplamBayt": 96192,
-    "almadiklarimiz": {
-        "italik": "Depoda tek bir `italic` kullanımı yok (ölçüldü). Almak, hiç indirilmeyecek 100 KB demekti.",
-        "greek/greek-ext/vietnamese": "Desteklenen locale listesinde yok.",
-        "math/symbols": "Matematik ve sembol blokları; panelde kullanılmıyor ve ikisi tek başına 140 KB'ın üstünde.",
-        "cyrillic-ext": "Rusça `cyrillic` alt kümesindedir; `cyrillic-ext` Ukraynaca/Sırpça genişletmeleri içindir ve desteklenen dil listesinde yok.",
-        "wdth-ekseni": "Genişlik ekseni kullanılmıyor; `wght` kesimi dosya başına yaklaşık 23 KB daha küçük.",
-        "arapca": "Roboto'da Arap yazısı YOK. `ar` locale'i bu yüzden işletim sisteminin kendi Arap yüzüne düşer — kayıtlı bir boşluk, bu paketin kapsamı dışında."
-    },
-    "nasilGuncellenir": "npm pack @fontsource-variable/roboto@<sürüm> → package/files/ altından aynı üç dosyayı ve LICENSE'ı kopyala, bayt/sha değerlerini burada güncelle. `resources/js/design-system/font-hosting.test.ts` bütçeyi ve kaydı doğrular."
+    "toplamBayt": 142500,
+    "nasilGuncellenir": "npm pack <paket>@<sürüm> → package/files/ altından aynı dosyaları ve LICENSE'ı kopyala, bayt/sha değerlerini burada güncelle. `resources/js/design-system/font-hosting.test.ts` bütçeyi ve kaydı doğrular."
 }

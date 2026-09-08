@@ -13,6 +13,8 @@ use App\Application\Billing\Exception\PaymentTransactionNotFoundException;
 use App\Application\Billing\Exception\PlanNotPurchasableException;
 use App\Application\Billing\Exception\RefundNotAllowedException;
 use App\Application\Billing\Exception\RefundRejectedException;
+use App\Application\Billing\Exception\SellerIdentityMissingException;
+use App\Application\Billing\Exception\SubscriptionActionNotAllowedException;
 use App\Application\Billing\Port\BillingModePort;
 use App\Application\Billing\Port\BillingProfileRepositoryPort;
 use App\Application\Billing\Port\PaymentGatewaySelectorPort;
@@ -22,6 +24,8 @@ use App\Application\Ledger\Port\LedgerPort;
 use App\Application\Platform\Port\CredentialResolverPort;
 use App\Application\Platform\Port\PlatformAuditPort;
 use App\Domain\Billing\BillingMode;
+use App\Domain\Billing\SubscriptionPhase;
+use App\Domain\Legal\CompanyProfile;
 use App\Domain\Money\LedgerEntry;
 use App\Domain\Money\Money;
 use App\Domain\Platform\Credential\CredentialProvider;
@@ -73,6 +77,7 @@ final class ManageCheckout
     /**
      * @throws PlanNotPurchasableException
      * @throws BillingProfileMissingException
+     * @throws SellerIdentityMissingException
      * @throws CheckoutConflictException
      * @throws PaymentGatewayUnavailableException
      * @throws PaymentGatewayBadGatewayException
@@ -85,6 +90,8 @@ final class ManageCheckout
             throw new PlanNotPurchasableException('Plan is not active or has no price.');
         }
 
+        $this->refuseSilentDowngrade($workspaceId, $planId, $plan['amount_minor']);
+
         // Alıcı bilgisi UYDURULMAZ: profil yoksa sağlayıcı hiç çağrılmaz.
         $profile = $this->profiles->find($workspaceId);
 
@@ -93,6 +100,26 @@ final class ManageCheckout
         }
 
         $mode = $this->mode->effective();
+
+        /*
+            SATICISI OLMAYAN SÖZLEŞME KURULMAZ (FF-216).
+
+            Alıcının bilgisi zorunlu (`BillingProfileMissingException`) ama
+            SATICININ bilgisi bugüne kadar hiç sorulmuyordu: şirket alanları
+            `.env`'de boşken mesafeli satış sözleşmesi tarafını sekiz yerde
+            "not yet provided" diye yazıyor ve o metin ödeme adımında kabul
+            ediliyordu. Bir sözleşmenin iki tarafı vardır; birini uydurmamak
+            yetmez, eksik bırakıldığında da satış yapılmamalıdır.
+
+            YALNIZ CANLI KİPTE. Sandbox bir provadır ve prova, sahip henüz
+            şirketini kurmamışken de yapılabilmeli — kapıyı oraya da koymak,
+            ürünün denenmesini sahibin noter işine bağlamak olurdu. Etkin
+            kip zaten üç kapılıdır (`docs/123`): canlı kipteyiz demek, gerçek
+            para hareket edecek demektir.
+        */
+        if ($mode === BillingMode::Live && ! CompanyProfile::fromConfig()->isComplete()) {
+            throw new SellerIdentityMissingException('The seller\'s legal identity is not published; a distance sales agreement cannot be concluded.');
+        }
         $conversationId = (string) Str::uuid();
 
         $claimed = $this->transactions->claim(
@@ -325,6 +352,40 @@ final class ManageCheckout
     }
 
     // --- iç yardımcılar ---------------------------------------------------
+
+    /**
+     * ÖDENMİŞ DÖNEMİN ORTASINDA UCUZ PLANI SATIN ALMAK, SESSİZ BİR DÜŞÜRMEDİR.
+     *
+     * `extendFromPayment` ödenen planı geçerli plan yapar. Bu, yükseltmede
+     * doğrudur ve istenen şeydir; düşürmede ise sahip PARA ÖDER ve karşılığında
+     * o anda bir yetenek KAYBEDER — üstelik ödediği Pro döneminin günleri hâlâ
+     * dururken. Ürünün bu ailedeki tek kusuru buydu (`docs/134` §2).
+     *
+     * Düşürmenin tek yolu zamanlanmış düşürmedir: dönem sonunda yürürlüğe
+     * girer, hiçbir gün eksilmez, iade doğmaz. Dönem BİTMİŞSE (ödemesiz süre
+     * ya da askı) korunacak bir dönem yoktur ve ucuz plan doğrudan satın
+     * alınabilir — o zaten yeni bir başlangıçtır.
+     *
+     * @throws SubscriptionActionNotAllowedException
+     */
+    private function refuseSilentDowngrade(int $workspaceId, int $planId, int $amountMinor): void
+    {
+        $subscription = $this->subscriptions->currentSubscription($workspaceId);
+
+        if ($subscription->planId === null || $subscription->planId === $planId) {
+            return;
+        }
+
+        if ($subscription->phase !== SubscriptionPhase::Active && $subscription->phase !== SubscriptionPhase::Cancelling) {
+            return;
+        }
+
+        $currentAmount = $this->transactions->purchasablePlan($subscription->planId)['amount_minor'] ?? null;
+
+        if ($currentAmount !== null && $amountMinor < $currentAmount) {
+            throw SubscriptionActionNotAllowedException::downgradeRequiresSchedule();
+        }
+    }
 
     /** @param array<string, mixed> $result */
     private function resultMatches(array $result, PaymentTransaction $transaction): bool

@@ -400,6 +400,46 @@ msgstr "Paz"
 msgid "workspace.billing.changePlan.button"
 msgstr "Planı değiştir"
 
+#: workspace:workspace.billing.checkout.consent.agreements
+msgid "workspace.billing.checkout.consent.agreements"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.consent.agreements.error
+msgid "workspace.billing.checkout.consent.agreements.error"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.consent.immediate
+msgid "workspace.billing.checkout.consent.immediate"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.consent.immediate.error
+msgid "workspace.billing.checkout.consent.immediate.error"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.consent.legend
+msgid "workspace.billing.checkout.consent.legend"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.consent.links
+msgid "workspace.billing.checkout.consent.links"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.consent.read.delivery
+msgid "workspace.billing.checkout.consent.read.delivery"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.consent.read.distanceSales
+msgid "workspace.billing.checkout.consent.read.distanceSales"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.consent.read.preInformation
+msgid "workspace.billing.checkout.consent.read.preInformation"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.consent.read.refundPolicy
+msgid "workspace.billing.checkout.consent.read.refundPolicy"
+msgstr ""
+
 #: workspace:workspace.billing.checkout.description
 msgid "workspace.billing.checkout.description"
 msgstr ""
@@ -510,6 +550,10 @@ msgstr ""
 
 #: workspace:workspace.billing.checkout.retry
 msgid "workspace.billing.checkout.retry"
+msgstr ""
+
+#: workspace:workspace.billing.checkout.sellerIdentityMissing
+msgid "workspace.billing.checkout.sellerIdentityMissing"
 msgstr ""
 
 #: workspace:workspace.billing.checkout.status.error
@@ -755,6 +799,142 @@ msgstr "Muhasebe defteri"
 #: workspace:workspace.billing.ledger.retry
 msgid "workspace.billing.ledger.retry"
 msgstr "Tekrar dene"
+
+#: workspace:workspace.billing.lifecycle.active
+msgid "workspace.billing.lifecycle.active"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.cancel
+msgid "workspace.billing.lifecycle.cancel"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.cancel.confirm
+msgid "workspace.billing.lifecycle.cancel.confirm"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.cancel.confirmBody
+msgid "workspace.billing.lifecycle.cancel.confirmBody"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.cancel.confirmHeading
+msgid "workspace.billing.lifecycle.cancel.confirmHeading"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.cancel.dismiss
+msgid "workspace.billing.lifecycle.cancel.dismiss"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.cancel.error
+msgid "workspace.billing.lifecycle.cancel.error"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.cancelled
+msgid "workspace.billing.lifecycle.cancelled"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.change.effective
+msgid "workspace.billing.lifecycle.change.effective"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.change.empty
+msgid "workspace.billing.lifecycle.change.empty"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.change.error
+msgid "workspace.billing.lifecycle.change.error"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.change.guestWarning
+msgid "workspace.billing.lifecycle.change.guestWarning"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.change.heading
+msgid "workspace.billing.lifecycle.change.heading"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.change.legend
+msgid "workspace.billing.lifecycle.change.legend"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.change.losing
+msgid "workspace.billing.lifecycle.change.losing"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.change.losingNothing
+msgid "workspace.billing.lifecycle.change.losingNothing"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.change.previewError
+msgid "workspace.billing.lifecycle.change.previewError"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.change.submit
+msgid "workspace.billing.lifecycle.change.submit"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.change.upgradeHint
+msgid "workspace.billing.lifecycle.change.upgradeHint"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.ended
+msgid "workspace.billing.lifecycle.ended"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.error
+msgid "workspace.billing.lifecycle.error"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.grace
+msgid "workspace.billing.lifecycle.grace"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.guestUnaffected
+msgid "workspace.billing.lifecycle.guestUnaffected"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.loading
+msgid "workspace.billing.lifecycle.loading"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.none
+msgid "workspace.billing.lifecycle.none"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.region
+msgid "workspace.billing.lifecycle.region"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.resume
+msgid "workspace.billing.lifecycle.resume"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.resume.error
+msgid "workspace.billing.lifecycle.resume.error"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.resume.hint
+msgid "workspace.billing.lifecycle.resume.hint"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.retry
+msgid "workspace.billing.lifecycle.retry"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.scheduled
+msgid "workspace.billing.lifecycle.scheduled"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.scheduled.error
+msgid "workspace.billing.lifecycle.scheduled.error"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.scheduled.withdraw
+msgid "workspace.billing.lifecycle.scheduled.withdraw"
+msgstr ""
+
+#: workspace:workspace.billing.lifecycle.suspended
+msgid "workspace.billing.lifecycle.suspended"
+msgstr ""
 
 #: workspace:workspace.billing.manualPayment.empty
 msgid "workspace.billing.manualPayment.empty"
@@ -3379,6 +3559,18 @@ msgstr "Özel dosyalar için imzalı bağlantı"
 #: workspace:workspace.media.settings.security.signedLink.on
 msgid "workspace.media.settings.security.signedLink.on"
 msgstr "Aslın herkese açık bir adresi yoktur. İndirmek için, on dakika sonra çalışmayı bırakan imzalı bir bağlantı gerekir."
+
+#: workspace:workspace.media.settings.security.state.on
+msgid "workspace.media.settings.security.state.on"
+msgstr ""
+
+#: workspace:workspace.media.settings.security.state.partial
+msgid "workspace.media.settings.security.state.partial"
+msgstr ""
+
+#: workspace:workspace.media.settings.security.state.unavailable
+msgid "workspace.media.settings.security.state.unavailable"
+msgstr ""
 
 #: workspace:workspace.media.settings.security.virusScan
 msgid "workspace.media.settings.security.virusScan"

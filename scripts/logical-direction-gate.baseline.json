@@ -1,0 +1,31 @@
+{
+    "neden": "Fiziksel yön taşıyan ve BİLEREK öyle bırakılan yerler. Bu liste bir BORÇ listesi değil (mobile-ux-audit.baseline.json öyledir), bir GEREKÇE listesidir: buradaki satırlar kapanmayı beklemez, kararı taşır. Listede olmayan her fiziksel yön kullanımı kapıyı kırar. Gerekçesi 20 karakterden kısa olan bir satır da kırar — gerekçesiz bir istisna, kapının kendisini sessizce kaldırır.",
+    "istisnalar": {
+        "resources/js/components/catalog/overlays/compound/DrawerPanel.side.test.tsx": {
+            "left-0": "Bir sınıf ADI, bir stil değil: test Flowbite'ın kendi `Drawer`'ının hangi kenardan girdiğini ölçüyor ve o sınıfı kütüphane yazıyor (`node_modules/flowbite-react`), bu depo değil. Sınıfı burada `start-0` diye yazmak testi kütüphaneden koparır — ölçtüğünü sandığı şeyi ölçmez olur. Çekmecenin Arapçada hâlâ fiziksel soldan girmesi GERÇEK bir borçtur ve `docs/132` §3'te kayıtlıdır; yeri bu test değil.",
+            "right-0": "Aynı gerekçe: denetçi panelinin sağdan girdiğini doğrulayan iddia, Flowbite'ın ürettiği sınıf adını okur. Sınıfın sahibi kütüphanedir."
+        },
+        "resources/js/components/workspace/chrome/MobileChrome.side.test.tsx": {
+            "left-0": "Aynı gerekçe: telefon kabuğunun çekmecesi soldan girer ve bu iddia Flowbite'ın ürettiği sınıf adına bakar. Kütüphanenin yazdığı bir adı bu depoda mantıksallaştırmak testi gerçeklikten koparırdı."
+        },
+        "resources/js/components/workspace/location/OpeningHoursFields.test.tsx": {
+            "text-left": "Bir DÜZENLİ İFADE içinde geçiyor: test tam da fiziksel yön sınıflarının YOKLUĞUNU ölçüyor. Yasaklanan şeyin adını yazmadan yasağı sınamak mümkün değil.",
+            "text-right": "Aynı düzenli ifadenin öteki yarısı."
+        },
+        "resources/js/components/workspace/pages/dashboard/DashboardHomeV3.test.tsx": {
+            "text-left": "Bir düzenli ifade içinde: bu test de fiziksel yön sınıflarının yokluğunu ölçüyor ve yasağı sınamak için yasaklanan adı yazmak zorunda.",
+            "text-right": "Aynı düzenli ifadenin öteki yarısı."
+        },
+        "resources/js/components/workspace/pages/locations/LocationCard.test.tsx": {
+            "text-left": "Bir düzenli ifade içinde: kart işaretlemesinde fiziksel yön sınıfı olmadığını ölçen iddia.",
+            "text-right": "Aynı düzenli ifadenin öteki yarısı."
+        },
+        "resources/js/components/workspace/pages/publication/PublishStepper.test.tsx": {
+            "text-left": "Bir düzenli ifade içinde: yayın adımlayıcısında fiziksel yön sınıfı olmadığını ölçen iddia.",
+            "text-right": "Aynı düzenli ifadenin öteki yarısı."
+        },
+        "resources/js/components/workspace/pages/media/ImageCropField.tsx": {
+            "origin-top-left": "GERÇEKTEN fizikseldir. Bu bir metin hizası değil, bir FOTOĞRAFIN kırpma karesi: kullanıcının seçtiği kare görüntünün sol üst köşesinden ölçülür ve bir fotoğraf, okuyanın dili değişti diye aynalanmaz. `transform-origin`'in ayrıca mantıksal bir karşılığı da yoktur — CSS'te `transform-origin` fiziksel eksenlerle tanımlıdır. Kırpma çerçevesinin sağdan sola bir dilde gerçekten doğru çizilip çizilmediği ÖLÇÜLMEDİ (`docs/132` §5)."
+        }
+    }
+}

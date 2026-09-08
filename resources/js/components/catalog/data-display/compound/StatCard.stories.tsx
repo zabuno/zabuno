@@ -24,5 +24,5 @@ export const WithIcon: Story = {
 
 export const RightToLeft: Story = {
     args: { label: 'الطلبات اليوم', value: '١٬٢٠٤', trend: 'up' },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };

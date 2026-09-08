@@ -72,5 +72,5 @@ export const RightToLeft: Story = {
             ],
         },
     },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };

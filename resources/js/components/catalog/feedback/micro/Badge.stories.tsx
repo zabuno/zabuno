@@ -16,5 +16,5 @@ export const Error: Story = { args: { status: 'error', children: 'Error' } };
 
 export const RightToLeft: Story = {
     args: { status: 'info', children: 'معلومة' },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };

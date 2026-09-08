@@ -41,6 +41,8 @@ final class LegalDocumentPagesTest extends TestCase
             ['/kvkk', 'kvkk'],
             ['/distance-sales', 'distance-sales'],
             ['/pre-information', 'pre-information'],
+            // Teslimat/ifa AYRI bir belge (FF-216).
+            ['/delivery', 'delivery'],
             ['/refund-policy', 'refund-policy'],
             ['/cookies', 'cookies'],
             ['/marketing-consent', 'marketing-consent'],
@@ -170,6 +172,8 @@ final class LegalDocumentPagesTest extends TestCase
     #[DataProvider('legalPages')]
     public function test_legal_pages_stay_indexable_and_declare_their_measurement_identity(string $path, string $key): void
     {
+        // ŞİRKET BİLGİSİ TAM: dokuz belgenin dokuzu da indekslenir.
+        $this->withCompany();
         config(['analytics.gtm_container_id' => 'GTM-TEST123']);
 
         $response = $this->withCookie('zabuno_measurement_consent', 'granted')->get($path);
@@ -177,6 +181,82 @@ final class LegalDocumentPagesTest extends TestCase
         $response->assertOk();
         self::assertNull($response->headers->get('X-Robots-Tag'), "LEGAL-PAGES-05: [{$path}] noindex taşıyor.");
         $response->assertSee('"zabuno_page":"legal_'.str_replace('-', '_', $key).'"', false);
+    }
+
+    // --- LEGAL-PAGES-09: eksik sözleşme "tamam" görünmez (FF-216) --------
+
+    /**
+     * Satıcının kimliğini SÖYLEMEK zorunda olan belgeler, şirket bilgisi
+     * girilmemişken üç şeyi birden yapar: bandı çizer, alanları adıyla
+     * sayar, arama motoruna kapanır.
+     *
+     * @return list<array{0:string}>
+     */
+    public static function sellerIdentityPages(): array
+    {
+        return [['/distance-sales'], ['/pre-information'], ['/delivery']];
+    }
+
+    #[DataProvider('sellerIdentityPages')]
+    public function test_a_contract_without_a_seller_says_so_loudly_and_is_not_indexed(string $path): void
+    {
+        $this->withoutCompany();
+
+        $response = $this->get($path)->assertOk();
+        $html = (string) $response->getContent();
+
+        self::assertSame('noindex, nofollow', $response->headers->get('X-Robots-Tag'),
+            "LEGAL-PAGES-09: [{$path}] eksikken arama motoruna sunuluyor.");
+        self::assertStringContainsString('data-legal-incomplete="seller-identity"', $html);
+        self::assertStringContainsString('data-legal-alert="seller-identity"', $html);
+        self::assertStringContainsString('This document is not complete yet.', $html);
+
+        // Eksik alanlar ADIYLA sayılır: "bir şeyler eksik" bir bilgi değildir.
+        foreach (['Registered name', 'Registered address', 'MERSIS number', 'Tax office', 'Tax number'] as $label) {
+            self::assertStringContainsString($label, $html, "LEGAL-PAGES-09: [{$path}] [{$label}] eksik listesinde yok.");
+        }
+    }
+
+    #[DataProvider('sellerIdentityPages')]
+    public function test_the_band_disappears_when_the_seller_is_published(string $path): void
+    {
+        $this->withCompany();
+
+        $response = $this->get($path)->assertOk();
+
+        self::assertNull($response->headers->get('X-Robots-Tag'));
+        $response->assertDontSee('data-legal-incomplete', false);
+        $response->assertDontSee('data-legal-alert="seller-identity"', false);
+    }
+
+    /**
+     * Bir sözleşme metni değil, bir BİLGİLENDİRME metni eksik şirket
+     * bilgisiyle de indekslenir: `/terms` ve `/privacy` bir satış
+     * sözleşmesi değildir ve tarafını "not yet provided" yazmaları onları
+     * yanlış yapmaz.
+     */
+    public function test_pages_that_do_not_conclude_a_sale_stay_indexable_while_the_company_is_empty(): void
+    {
+        $this->withoutCompany();
+
+        foreach (['/terms', '/privacy', '/kvkk', '/cookies', '/refund-policy', '/marketing-consent'] as $path) {
+            $response = $this->get($path)->assertOk();
+
+            self::assertNull($response->headers->get('X-Robots-Tag'), "LEGAL-PAGES-09: [{$path}] gereksiz yere noindex.");
+            $response->assertDontSee('data-legal-incomplete', false);
+        }
+    }
+
+    // --- LEGAL-PAGES-10: belge kendi dilini söyler (`docs/121` Ö11) -------
+
+    #[DataProvider('legalPages')]
+    public function test_every_document_declares_its_own_language(string $path, string $key): void
+    {
+        $document = app(LegalLibraryPort::class)->find($key);
+
+        self::assertNotNull($document);
+        self::assertSame('en', $document->language, "LEGAL-PAGES-10: [{$key}] bugün İngilizce kaynak metindir.");
+        $this->get($path)->assertOk()->assertSee('lang="'.$document->language.'"', false);
     }
 
     // --- LEGAL-PAGES-06: altbilgi bağlantıları TEK kaynaktan --------------
@@ -188,7 +268,7 @@ final class LegalDocumentPagesTest extends TestCase
 
         preg_match('#<footer\b.*?</footer>#s', $html, $footer);
 
-        foreach (['/distance-sales', '/pre-information', '/refund-policy', '/cookies'] as $path) {
+        foreach (['/about', '/distance-sales', '/pre-information', '/delivery', '/refund-policy', '/cookies'] as $path) {
             self::assertContains($path, $targets, "LEGAL-PAGES-06: [{$path}] gezinti kaynağında yok.");
             self::assertStringContainsString('href="'.$path.'"', $footer[0] ?? '', "LEGAL-PAGES-06: [{$path}] altbilgide yok.");
         }
@@ -196,11 +276,35 @@ final class LegalDocumentPagesTest extends TestCase
 
     public function test_the_sitemap_carries_the_new_legal_pages(): void
     {
+        $this->withCompany();
+
         $xml = (string) $this->get('/sitemap.xml')->assertOk()->getContent();
 
-        foreach (['/distance-sales', '/pre-information', '/refund-policy', '/cookies'] as $path) {
+        foreach (['/about', '/distance-sales', '/pre-information', '/delivery', '/refund-policy', '/cookies'] as $path) {
             self::assertStringContainsString($path.'</loc>', $xml, "LEGAL-PAGES-06: [{$path}] sitemap'te yok.");
         }
+    }
+
+    /**
+     * SİTEMAP VE SAYFA AYNI CEVABI VERİR (FF-216).
+     *
+     * Bu sınıfın iki pazarlığa kapalı kuralından biri buydu; eksik bir
+     * sözleşme sayfası `noindex` dönerken sitemap'in onu ilan etmeye devam
+     * etmesi, arama motoruna çelişkili bir sinyal göndermek olurdu.
+     */
+    public function test_the_sitemap_drops_the_contract_pages_while_the_seller_is_missing(): void
+    {
+        $this->withoutCompany();
+
+        $xml = (string) $this->get('/sitemap.xml')->assertOk()->getContent();
+
+        foreach (['/about', '/distance-sales', '/pre-information', '/delivery'] as $path) {
+            self::assertStringNotContainsString($path.'</loc>', $xml, "LEGAL-PAGES-06: [{$path}] eksikken sitemap'te ilan ediliyor.");
+        }
+
+        // Sözleşme olmayanlar yerinde kalır.
+        self::assertStringContainsString('/terms</loc>', $xml);
+        self::assertStringContainsString('/refund-policy</loc>', $xml);
     }
 
     // --- LEGAL-PAGES-07: hesap verisi talebi yalnız veri sayfasında ------
@@ -220,7 +324,7 @@ final class LegalDocumentPagesTest extends TestCase
         try {
             $this->artisan('site:export-static', ['--out' => $out])->assertSuccessful();
 
-            foreach (['cookies', 'distance-sales', 'pre-information', 'refund-policy'] as $dir) {
+            foreach (['cookies', 'distance-sales', 'pre-information', 'delivery', 'refund-policy', 'about'] as $dir) {
                 self::assertFileExists($out.'/'.$dir.'/index.html', "LEGAL-PAGES-08: [{$dir}] statik önizlemede yok.");
             }
         } finally {
@@ -230,7 +334,7 @@ final class LegalDocumentPagesTest extends TestCase
 
     // --- Kütüphane sözleşmesi ---------------------------------------------
 
-    public function test_the_library_knows_exactly_the_eight_documents_and_every_text_is_english_source(): void
+    public function test_the_library_knows_exactly_the_nine_documents_and_every_text_is_english_source(): void
     {
         $library = app(LegalLibraryPort::class);
         $keys = array_map(static fn ($document) => $document->key, $library->all());
@@ -238,7 +342,7 @@ final class LegalDocumentPagesTest extends TestCase
         sort($keys);
 
         self::assertSame(
-            ['cookies', 'distance-sales', 'kvkk', 'marketing-consent', 'pre-information', 'privacy', 'refund-policy', 'terms'],
+            ['cookies', 'delivery', 'distance-sales', 'kvkk', 'marketing-consent', 'pre-information', 'privacy', 'refund-policy', 'terms'],
             $keys,
         );
 

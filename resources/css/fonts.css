@@ -42,21 +42,42 @@
     43 KB, Türkçe bir panel 72 KB indirir; Kiril dosyası `ru` dışında hiç
     istenmez.
 
-    ═══ ARAP YAZISI ═══
+    ═══ ARAP YAZISI — ARTIK BARINDIRILIYOR (FF-217) ═══
 
-    Roboto'da Arap yazısı YOKTUR ve `ar` desteklenen bir locale'dir
-    (`config/app.php`). Bu dosya `ar` için hiçbir şey vaat etmez: Arapça
-    metin, yığının sonundaki `sans-serif` üzerinden işletim sisteminin kendi
-    Arap yüzüne düşer. Bu, bugünkü davranışın aynısıdır — yani gerileme
-    değil, KAYITLI bir boşluktur ve kapatmanın yolu bellidir: Noto Sans
-    Arabic'in `arabic` alt kümesini aynı biçimde barındırmak (yaklaşık
-    +30 KB, yalnız `ar` sayfalarında indirilir). Bu paket onu kapsamıyor,
-    çünkü `ar` bugün `scaffold` durumunda (`resources/js/i18n/locales.ts`)
-    ve barındırılan bir yazı tipi, çevirisi olmayan bir arayüzü okunur
-    yapmaz.
+    Roboto'da Arap yazısı YOKTUR ve dokuz dilin ikisi Arap yazısı kullanır
+    (`ar`, `fa` — `docs/120` §2). FF-195 bu boşluğu KAYITLI bırakmıştı ve
+    kapatma yolunu "Noto Sans Arabic, yaklaşık +30 KB" diye yazmıştı. İki
+    şey de ölçülünce değişti (`docs/132` §4):
+
+      · Noto Sans Arabic'in `arabic` alt kümesi (değişken `wght`)
+        165.960 bayt — yazılan tahminin BEŞ katından fazla.
+      · Vazirmatn'ın aynı alt kümesi 46.308 bayt ve ölçülen kapsamı bu
+        ürün için Noto ile AYNI: 28 Arap harfi, bütün harekeler, Farsçanın
+        dört ek harfi (پ چ ژ گ), Fars/Arap-Hint rakamları, Arapça
+        noktalama, lam-elif bitişik biçimleri. İkisinin de taşımadığı tek
+        şey U+200F (görünmez bir yön işareti; çizilecek bir şekli yok).
+
+    ═══ ARAP YAZISI NEDEN GEREKLİ — ÖLÇÜLDÜ ═══
+
+    Barındırılmadığı sürece Arapça metin işletim sisteminin yüzüne düşer ve
+    o yüzler BİRBİRİNDEN ÇOK FARKLI genişlikte çizer. Ölçüm (2026-09-07,
+    aynı Chrome, 16 piksel gövde): tek bir Arapça cümle Al Bayan'da
+    166,19 px, Geeza Pro'da 222,48 px — 56,29 px fark. 320 piksellik bir
+    ekranda bu, görüntü alanının %17,6'sıdır; yani aynı cümle bir cihazda
+    tek satır, ötekinde iki satırdır. FF-195'in latin için kaldırdığı
+    oynaklık, `ar`/`fa` için aynen duruyordu.
+
+    ═══ MALİYETİ KİM ÖDÜYOR ═══
+
+    Kimse — Arapça karakter geçmeyen bir sayfa bu dosyayı HİÇ istemez.
+    `unicode-range` alt kümeyi Arap yazısıyla sınırlar; İngilizce bir panel
+    yine 43 KB indirir. Bu yüzden dosya `preload` da EDİLMEZ: preload
+    edilseydi dokuz dilin sekizine hiç kullanmayacakları 45 KB indirilirdi.
 
     Kaynak, sürüm, sha256 ve lisans kaydı: `resources/fonts/PROVENANCE.json`.
-    Lisans metni: `resources/fonts/LICENSE-Roboto.txt` (OFL-1.1).
+    Lisans metinleri: `resources/fonts/LICENSE-Roboto.txt` ve
+    `resources/fonts/LICENSE-Vazirmatn.txt` (ikisi de OFL-1.1, dosyadan
+    okunarak doğrulandı).
 */
 
 /*
@@ -117,4 +138,33 @@
     font-display: swap;
     src: url('../fonts/roboto-cyrillic-wght-normal.woff2') format('woff2-variations');
     unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+/*
+    `ar` ve `fa` — Arap yazısı (FF-217).
+
+    AYRI BİR AİLE ADI ('Vazirmatn'), Roboto'nun İÇİNE takma bir alt küme
+    olarak DEĞİL. Gerekçe ölçülebilir: iki yazı tipinin x-yüksekliği ve
+    dikey ölçüsü aynı değil ve aynı aile adı altında birleştirmek, hangi
+    dosyanın hangi metrikle çizdiğini gizler. Ayrı ad, yığında görünür bir
+    karar bırakır.
+
+    `unicode-range` yukarı akış paketinden (`@fontsource-variable/vazirmatn`)
+    AYNEN alınmıştır. Vazirmatn bu aralığın tamamını taşımıyor (Arap
+    bloğunun 256 kod noktasından 142'si; eksikler Kur'an işaretleri ve
+    Afrika/Orta Asya ortografileri için genişletilmiş harfler) — o
+    karakterler tarayıcı tarafından yığındaki bir SONRAKİ aileye devredilir,
+    yani boş kutu değil, işletim sisteminin yüzü çıkar. Aralığı elle
+    daraltmak, bir gün eklenen bir glifin sessizce yedeğe düşmesi demektir.
+*/
+@font-face {
+    font-family: 'Vazirmatn';
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url('../fonts/vazirmatn-arabic-wght-normal.woff2') format('woff2-variations');
+    unicode-range:
+        U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E,
+        U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC, U+102E0-102FB,
+        U+10E60-10E7E, U+10EC2-10EC4, U+10EFC-10EFF;
 }

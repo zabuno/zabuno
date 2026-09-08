@@ -53,5 +53,5 @@ export const RightToLeft: Story = {
         title: 'تصفية عناصر القائمة',
         children: 'عناصر التحكم في التصفية هنا.',
     },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };

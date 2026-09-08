@@ -1,0 +1,523 @@
+#!/usr/bin/env node
+/*
+    MANTIKSAL YÖN KAPISI — `docs/121` Ö10.
+
+    ═══ NEDEN VAR ═══
+
+    Dokuz dilin İKİSİ sağdan sola yazılır (`ar`, `fa` — `docs/120` §2).
+    Fiziksel yön taşıyan her kural o iki dilde TERS çalışır: `padding-left`
+    Arapçada metnin başına değil SONUNA boşluk koyar, `text-align: left`
+    cümleyi okunmaya başlandığı kenardan koparır, `rounded-tl` bir tablonun
+    ilk hücresine yanlış köşeyi yuvarlar.
+
+    Bunlar bir Arapça çeviri geldiği gün fark edilmez — hepsi o günden aylar
+    önce yazılmış CSS'tir. `docs/121` Ö10'un cümlesi birebir bu: *"Sonradan
+    taramak yüzlerce dosya demektir."*
+
+    Bu kapı, o taramayı bugün bir kez yapar ve bir daha gerekmemesini sağlar.
+
+    ═══ VAR OLAN İKİ KAPININ BOŞLUĞU ═══
+
+    Kural yeni değil; kapsamı eksikti ve eksiklik ÖLÇÜLDÜ (2026-09-07):
+
+      · `DS-LOGICAL-DIRECTION-06` (`design-system.guard.test.ts`)
+        `resources/js` altını tarıyor ama yalnız `m[lr]-`, `p[lr]-` ve
+        `text-left|right` desenine bakıyor. `rounded-tl-`, `border-l-`,
+        `left-0`, `float-left`, `origin-top-left` deseninde YOK — altı
+        fiziksel köşe sınıfı `flowbite-theme.ts` içinde tam bu yüzden
+        görünmeden duruyordu.
+      · `I18N-LOGICAL-BLADE-20` (`LogicalDirectionScanTest.php`)
+        `resources/views` ve `resources/css` tarıyor; `resources/help` hiç
+        taranmıyordu ve aynı `pl-5` orada altı kez daha duruyordu.
+
+    Bu kapı iki boşluğu da kapatır. İkisi de KALDIRILMADI: `php artisan test`
+    koşan bir geliştirici bu Node kapısını çalıştırmayabilir. Kapılar
+    birbirinin yerine değil, üstüne durur.
+
+    ═══ NE ÖLÇÜYOR ═══
+
+    Depodaki kaynak dosyalarda üç aile:
+
+    1. FİZİKSEL TAILWIND SINIFI — `ml-4`, `pr-2`, `left-0`, `text-right`,
+       `border-l-2`, `rounded-tl-lg`, `float-left`, `origin-top-left`…
+       Mantıksal karşılıkları var ve Tailwind v4 hepsini taşıyor:
+       `ms-`/`me-`, `ps-`/`pe-`, `start-`/`end-`, `text-start`/`text-end`,
+       `border-s`/`border-e`, `rounded-ss`/`rounded-se`/`rounded-es`/
+       `rounded-ee`.
+    2. HAM CSS FİZİKSEL ÖZELLİĞİ — `margin-left:`, `padding-right:`,
+       `left:`, `border-right-width:`, `text-align: left`, `float: right`…
+    3. JSX/İÇ STİL FİZİKSEL ANAHTARI — `marginLeft`, `paddingRight`,
+       `textAlign: 'left'`, `style="left: …"`…
+
+    ═══ NEYİ ÖLÇMÜYOR ═══
+
+    · `node_modules`. Flowbite'ın kendi `Drawer`'ı `left-0`/`right-0`
+      yazıyor ve bu kapı onu değiştiremez. Bu bir boşluktur ve
+      `docs/132` §3'te KAYITLIDIR — kapının sessizce geçtiği bir şey değil.
+    · Ekranın gerçekten kırılıp kırılmadığı. Onu ölçen şey bu kapı değil,
+      `scripts/mobile-ux-audit --direction rtl`'dir: bu kapı KAYNAĞI okur,
+      o gerçek bir düzen motorunda ÖLÇER. İkisi ayrı sorulardır ve biri
+      diğerinin yerine geçmez.
+    · Fiziksel olması DOĞRU olan şeyler. Bir fotoğrafın kırpma karesi
+      okuma yönüne göre yer değiştirmez; bir simgeyi kutunun fiziksel
+      sağına sabitleyen bir çizim haklı olabilir. Bu yüzden kapının bir
+      İSTİSNA LİSTESİ var — ama gerekçesiz bir istisna kabul edilmez
+      (aşağıya bak).
+
+    ═══ İSTİSNA LİSTESİ ═══
+
+    `scripts/logical-direction-gate.baseline.json`. `mobile-ux-audit`'in
+    dondurulmuş borç listesiyle AYNI fikir, tek farkla: orada liste bir
+    BORÇTUR (kapanacak), burada bir GEREKÇEDİR (kapanmayacak). Bu yüzden
+    her satır `neden` alanı taşır ve `neden`i olmayan bir satır kapıyı
+    kırar — gerekçesiz bir istisna, kapının kendisini sessizce kaldırır.
+
+    Listede OLMAYAN her ihlal kapıyı kırar. Listede olup artık bulunmayan
+    bir satır raporlanır ama kırmaz: bir dosyayı düzelten paketi "listeyi
+    de güncellemedin" diye kırmızıya düşürmek iyileştirmeyi cezalandırır
+    (`scripts/mobile-ux-audit` ile aynı karar, aynı gerekçe).
+
+    ═══ `rtl:` / `ltr:` VARYANTI İHLAL DEĞİLDİR ═══
+
+    `rtl:-scale-x-100` bir kaçamak değil, yönü BİLEN bir kuraldır: yazan
+    kişi iki yönü de düşünmüş ve farkı açıkça yazmıştır. Kapının
+    yakalamaya çalıştığı şey yönü hiç düşünmemiş kuraldır.
+
+    ═══ KULLANIM ═══
+
+        node scripts/logical-direction-gate
+        node scripts/logical-direction-gate --baseline <yol>
+        node scripts/logical-direction-gate --json rapor.json
+        node scripts/logical-direction-gate --root <dizin>   # öz-test için
+
+    `--root` verilmezse deponun kendisi taranır ve dosya listesi
+    `git ls-files`'dan gelir: izlenmeyen bir dosya üretim değildir.
+    `--root` verilirse o dizin ham olarak gezilir — kapının kendi testi
+    (`scripts/logical-direction-gate.test.sh`) sentetik bir ağaç kurar ve
+    orada Git yoktur.
+*/
+
+import { execFileSync } from 'node:child_process';
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const DEFAULT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+
+/**
+ * Taranan ağaçlar.
+ *
+ * `resources/` arayüzün kendisi, `app/` sunucuda üretilen işaretleme
+ * (`Infrastructure/Content` sayfaları HTML taşır), `config/` ve `routes/`
+ * ise nadiren ama taşıyabilir. `storybook-static/`, `public/build/` ve
+ * `vendor/` TÜRETİLMİŞ çıktıdır: orada bulunan bir ihlal kaynakta zaten
+ * bulunur, iki kez raporlamak listeyi şişirir.
+ */
+const SCANNED_ROOTS = ['app/', 'config/', 'resources/', 'routes/'];
+
+const SCANNED_EXTENSIONS = /\.(tsx|ts|jsx|js|mjs|cjs|css|php|html|blade\.php)$/;
+
+/*
+    DEĞER ALAN FİZİKSEL SINIFLAR.
+
+    Değer ZORUNLUDUR (`ml-4`, `left-0`, `border-l-2`). Değersiz bir `ml`
+    ya da `left` İngilizce bir kelimedir ve bu depodaki PHP yorumlarında
+    yüzlerce kez geçer; onları ihlal saymak, listeyi okunamaz yapıp kapıyı
+    işe yaramaz hâle getirirdi.
+*/
+const VALUED_PREFIXES = [
+    'ml',
+    'mr',
+    'pl',
+    'pr',
+    'left',
+    'right',
+    'border-l',
+    'border-r',
+    'rounded-l',
+    'rounded-r',
+    'rounded-tl',
+    'rounded-tr',
+    'rounded-bl',
+    'rounded-br',
+    'scroll-ml',
+    'scroll-mr',
+    'scroll-pl',
+    'scroll-pr',
+];
+
+/*
+    DEĞER ALMAYAN FİZİKSEL SINIFLAR — kendi başlarına tam bir utility.
+*/
+const STANDALONE = [
+    'text-left',
+    'text-right',
+    'float-left',
+    'float-right',
+    'clear-left',
+    'clear-right',
+    'origin-left',
+    'origin-right',
+    'origin-top-left',
+    'origin-top-right',
+    'origin-bottom-left',
+    'origin-bottom-right',
+    'border-l',
+    'border-r',
+    'rounded-l',
+    'rounded-r',
+    'rounded-tl',
+    'rounded-tr',
+    'rounded-bl',
+    'rounded-br',
+];
+
+/*
+    Değer kısmı: köşeli parantezli keyfi değer (`left-[3px]`,
+    `start-[var(--space-4)]`) ya da düz jeton (`4`, `0.5`, `lg`, `full`,
+    `1/2`). Parantez SADECE köşeli parantezin içinde kabul edilir; aksi
+    hâlde bir test dosyasındaki `/left-0(\s|$)/` düzenli ifadesinden
+    `left-0(` diye bir jeton türerdi ve istisna listesi okunamaz olurdu.
+*/
+const VALUE = String.raw`(?:\[[^\]\s]*\]|[a-z0-9]+(?:[./][a-z0-9]+)*)`;
+
+const VARIANT = String.raw`(?:[a-z0-9@\[\]().<>%_/-]+:)*`;
+
+const CLASS_PATTERN = new RegExp(
+    String.raw`(?<![\w-])(${VARIANT})(-?)(?:(?:${VALUED_PREFIXES.join('|')})-${VALUE}` +
+        String.raw`|(?:${STANDALONE.join('|')}))(?![\w-])`,
+    'g',
+);
+
+/*
+    HAM CSS FİZİKSEL ÖZELLİKLERİ.
+
+    `text-align`, `float` ve `clear` yalnız DEĞERİ yönlüyse ihlaldir:
+    `text-align: center` mantıksal bir sorun değildir.
+*/
+const CSS_DIRECTIONAL_PROPS = [
+    'margin-left',
+    'margin-right',
+    'padding-left',
+    'padding-right',
+    'border-left',
+    'border-right',
+    'border-left-width',
+    'border-right-width',
+    'border-left-color',
+    'border-right-color',
+    'border-left-style',
+    'border-right-style',
+    'border-top-left-radius',
+    'border-top-right-radius',
+    'border-bottom-left-radius',
+    'border-bottom-right-radius',
+    'left',
+    'right',
+];
+
+const CSS_VALUE_DEPENDENT_PROPS = ['text-align', 'float', 'clear'];
+
+const CSS_PATTERN = new RegExp(
+    String.raw`(?<![\w-])(${[...CSS_DIRECTIONAL_PROPS, ...CSS_VALUE_DEPENDENT_PROPS].join('|')})\s*:\s*([^;{}\n]*)`,
+    'g',
+);
+
+/*
+    JSX / DOM stil nesnesi anahtarları. `style={{ marginLeft: … }}` bir
+    Tailwind sınıfı değildir ve sınıf tarayıcısına hiç görünmez; ama
+    tarayıcıya tam olarak `margin-left` diye ulaşır.
+*/
+const INLINE_STYLE_PATTERN =
+    /(?<![\w$])(marginLeft|marginRight|paddingLeft|paddingRight|borderLeft|borderRight|borderLeftWidth|borderRightWidth|borderLeftColor|borderRightColor|borderTopLeftRadius|borderTopRightRadius|borderBottomLeftRadius|borderBottomRightRadius|scrollMarginLeft|scrollMarginRight|scrollPaddingLeft|scrollPaddingRight)(?![\w])/g;
+
+const INLINE_ALIGN_PATTERN = /(?<![\w$])(textAlign|float|clear)\s*:\s*['"`](left|right)['"`]/g;
+
+/** Mantıksal karşılık — rapor okunur olsun diye; kapı bunu zorunlu tutmaz. */
+const SUGGESTION = {
+    ml: 'ms-',
+    mr: 'me-',
+    pl: 'ps-',
+    pr: 'pe-',
+    left: 'start-',
+    right: 'end-',
+    'border-l': 'border-s',
+    'border-r': 'border-e',
+    'rounded-l': 'rounded-s',
+    'rounded-r': 'rounded-e',
+    'rounded-tl': 'rounded-ss',
+    'rounded-tr': 'rounded-se',
+    'rounded-bl': 'rounded-es',
+    'rounded-br': 'rounded-ee',
+    'text-left': 'text-start',
+    'text-right': 'text-end',
+    'margin-left': 'margin-inline-start',
+    'margin-right': 'margin-inline-end',
+    'padding-left': 'padding-inline-start',
+    'padding-right': 'padding-inline-end',
+    left_css: 'inset-inline-start',
+    right_css: 'inset-inline-end',
+    marginLeft: 'marginInlineStart',
+    marginRight: 'marginInlineEnd',
+    paddingLeft: 'paddingInlineStart',
+    paddingRight: 'paddingInlineEnd',
+};
+
+function trackedFiles(root) {
+    const output = execFileSync('git', ['-C', root, 'ls-files', '-z'], {
+        encoding: 'utf8',
+        maxBuffer: 64 * 1024 * 1024,
+    });
+
+    return output
+        .split('\0')
+        .filter((path) => path !== '')
+        .filter((path) => SCANNED_ROOTS.some((prefix) => path.startsWith(prefix)))
+        .filter((path) => SCANNED_EXTENSIONS.test(path));
+}
+
+/** `--root` kipi: Git yok, dizin ham gezilir. */
+function walkedFiles(root) {
+    const found = [];
+
+    const walk = (dir, prefix) => {
+        for (const entry of readdirSync(dir, { withFileTypes: true })) {
+            const relative = prefix === '' ? entry.name : `${prefix}/${entry.name}`;
+
+            if (entry.isDirectory()) {
+                walk(join(dir, entry.name), relative);
+            } else if (SCANNED_EXTENSIONS.test(entry.name)) {
+                found.push(relative);
+            }
+        }
+    };
+
+    walk(root, '');
+
+    return found.sort();
+}
+
+/**
+ * Bir eşleşmeden istisna listesinin anahtarladığı JETONU çıkarır.
+ *
+ * Varyantlar (`hover:`, `group-first/row:first:`) atılır: aynı fiziksel
+ * sınıf on farklı varyantla yazılabilir ve istisna listesinin onları ayrı
+ * satırlar olarak taşıması, listeyi gerekçeden çok gürültü yapardı.
+ */
+function bareToken(match) {
+    const variants = match[1] ?? '';
+    return match[0].slice(variants.length);
+}
+
+function scanFile(root, path) {
+    const source = readFileSync(join(root, path), 'utf8');
+    const isCss = path.endsWith('.css');
+    const findings = [];
+
+    source.split('\n').forEach((line, index) => {
+        const lineNumber = index + 1;
+
+        for (const match of line.matchAll(CLASS_PATTERN)) {
+            const variants = match[1] ?? '';
+
+            /*
+                `rtl:`/`ltr:` taşıyan bir kural yönü BİLİYOR. Kapının
+                aradığı şey yönü hiç düşünmemiş kuraldır.
+            */
+            if (/(^|:)(rtl|ltr):/.test(variants)) {
+                continue;
+            }
+
+            findings.push({
+                kind: 'utility',
+                token: bareToken(match),
+                line: lineNumber,
+                context: line.trim().slice(0, 160),
+            });
+        }
+
+        if (isCss) {
+            for (const match of line.matchAll(CSS_PATTERN)) {
+                const property = match[1];
+                const value = (match[2] ?? '').trim();
+
+                if (
+                    CSS_VALUE_DEPENDENT_PROPS.includes(property) &&
+                    !/^(left|right)\b/.test(value)
+                ) {
+                    continue;
+                }
+
+                findings.push({
+                    kind: 'css',
+                    token: `${property}:`,
+                    line: lineNumber,
+                    context: line.trim().slice(0, 160),
+                });
+            }
+        }
+
+        for (const match of line.matchAll(INLINE_STYLE_PATTERN)) {
+            findings.push({
+                kind: 'inline-style',
+                token: match[1],
+                line: lineNumber,
+                context: line.trim().slice(0, 160),
+            });
+        }
+
+        for (const match of line.matchAll(INLINE_ALIGN_PATTERN)) {
+            findings.push({
+                kind: 'inline-style',
+                token: `${match[1]}:${match[2]}`,
+                line: lineNumber,
+                context: line.trim().slice(0, 160),
+            });
+        }
+    });
+
+    return findings;
+}
+
+const args = process.argv.slice(2);
+const rootFlag = args.indexOf('--root');
+const scanRoot =
+    rootFlag > -1 && args[rootFlag + 1] !== undefined ? resolve(args[rootFlag + 1]) : DEFAULT_ROOT;
+const baselineFlag = args.indexOf('--baseline');
+const baselinePath = resolve(
+    baselineFlag > -1 && args[baselineFlag + 1] !== undefined
+        ? args[baselineFlag + 1]
+        : join(DEFAULT_ROOT, 'scripts/logical-direction-gate.baseline.json'),
+);
+const jsonFlag = args.indexOf('--json');
+const jsonOut = jsonFlag > -1 ? args[jsonFlag + 1] : null;
+
+if (!existsSync(baselinePath)) {
+    console.error(`logical-direction-gate: istisna listesi bulunamadı: ${baselinePath}`);
+    process.exit(2);
+}
+
+/**
+ * @type {{istisnalar: Record<string, Record<string, string>>}}
+ */
+const baselineDocument = JSON.parse(readFileSync(baselinePath, 'utf8'));
+const allowed = baselineDocument.istisnalar ?? {};
+
+/*
+    GEREKÇESİZ İSTİSNA KAPIYI KIRAR.
+
+    Boş bir `neden` alanı, istisnayı bir karara değil bir susturmaya
+    çevirir; bir yıl sonra kimse o satırın neden orada olduğunu bilemez ve
+    kaldırmaya da cesaret edemez. Kapı, kendi listesini de denetler.
+*/
+const undocumented = [];
+
+for (const [path, tokens] of Object.entries(allowed)) {
+    for (const [token, reason] of Object.entries(tokens)) {
+        if (typeof reason !== 'string' || reason.trim().length < 20) {
+            undocumented.push(`${path} → ${token}`);
+        }
+    }
+}
+
+const files = rootFlag > -1 ? walkedFiles(scanRoot) : trackedFiles(scanRoot);
+const report = [];
+
+for (const path of files) {
+    const findings = scanFile(scanRoot, path);
+    if (findings.length > 0) {
+        report.push({ path, findings });
+    }
+}
+
+const violations = [];
+const usedExceptions = new Set();
+
+for (const { path, findings } of report) {
+    for (const finding of findings) {
+        const reason = allowed[path]?.[finding.token];
+
+        if (reason === undefined) {
+            violations.push({ ...finding, path });
+            continue;
+        }
+
+        usedExceptions.add(`${path} ${finding.token}`);
+    }
+}
+
+const stale = [];
+
+for (const [path, tokens] of Object.entries(allowed)) {
+    for (const token of Object.keys(tokens)) {
+        if (!usedExceptions.has(`${path} ${token}`)) {
+            stale.push(`${path} → ${token}`);
+        }
+    }
+}
+
+const totalFindings = report.reduce((sum, entry) => sum + entry.findings.length, 0);
+const exceptionCount = Object.values(allowed).reduce(
+    (sum, tokens) => sum + Object.keys(tokens).length,
+    0,
+);
+
+console.log(`logical-direction-gate · ${files.length} dosya tarandı`);
+console.log(
+    `fiziksel yön kullanımı: ${totalFindings} · gerekçeli istisna: ${exceptionCount} · yeni ihlal: ${violations.length}`,
+);
+
+for (const violation of violations) {
+    const prefix = violation.token.replace(/-(?:\[[^\]]*\]|[a-z0-9]+(?:[./][a-z0-9]+)*)$/, '');
+    const hint = SUGGESTION[prefix] ?? SUGGESTION[violation.token] ?? null;
+
+    console.log(
+        `    ${violation.path}:${violation.line} — ${violation.token}` +
+            (hint === null ? '' : ` (mantıksal karşılığı: ${hint})`),
+    );
+    console.log(`        ${violation.context}`);
+}
+
+if (stale.length > 0) {
+    console.log('');
+    console.log(`artık bulunmayan istisna: ${stale.length} — listeden SİLİNMELİ`);
+    for (const line of stale) console.log(`    ${line}`);
+    console.log('(Kapı bunun için kırılmaz: düzelme bir kusur değildir.)');
+}
+
+if (jsonOut !== null) {
+    writeFileSync(
+        jsonOut,
+        JSON.stringify({ files: files.length, report, violations, stale }, null, 2),
+    );
+    console.log(`ayrıntılı rapor: ${jsonOut}`);
+}
+
+/*
+    SON SATIR TEK BİR KARARDIR.
+
+    Kapının kendi testi (`scripts/logical-direction-gate.test.sh`) çıktının
+    son satırını okur. İnsan için yazılmış bir rapor metnini ayrıştırmak, bir
+    gün cümle değiştiğinde testi sessizce yalancı yapardı.
+*/
+if (undocumented.length > 0) {
+    console.log('');
+    console.log(`GEREKÇESİZ İSTİSNA: ${undocumented.length}`);
+    for (const line of undocumented) console.log(`    ${line}`);
+    console.log('Her istisna en az bir cümlelik `neden` taşır.');
+    console.log('UNDOCUMENTED_EXCEPTION');
+    process.exit(1);
+}
+
+if (violations.length > 0) {
+    console.log('');
+    console.log(
+        'Yeni fiziksel yön kullanımı DÜZELTİLİR — mantıksal karşılığı yazılır.\n' +
+            'Gerçekten fiziksel olması gereken bir çizimse, gerekçesiyle birlikte\n' +
+            'scripts/logical-direction-gate.baseline.json içine yazılır.',
+    );
+    console.log('PHYSICAL_DIRECTION_FOUND');
+    process.exit(1);
+}
+
+console.log('PASS');

@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { t } from '../../../../i18n/workspace';
 import { formatMoneyOr } from '../../../../money/format';
 import { Button } from '../../../catalog/forms/micro/Button';
+import { CheckboxField } from '../../../catalog/forms/compound/CheckboxField';
 
 export type PurchasablePlan = {
     id: number;
@@ -35,6 +36,31 @@ export type LatestTransaction = {
     redirect_url: string | null;
 };
 
+/**
+ * Ödeme öncesi İKİ onay — ayrı ayrı (FF-216).
+ *
+ * `agreements`: Ön Bilgilendirme Formu + Mesafeli Satış Sözleşmesi.
+ * `immediatePerformance`: ifaya derhâl başlanması ve bunun cayma hakkı
+ * üzerindeki sonucu.
+ */
+export type CheckoutConsentState = {
+    agreements: boolean;
+    immediatePerformance: boolean;
+};
+
+/** Ödemeden önce okunacak belgeler — adres ve etiket anahtarı bir arada. */
+const CONSENT_DOCUMENTS = [
+    {
+        href: '/pre-information',
+        labelKey: 'workspace.billing.checkout.consent.read.preInformation',
+    },
+    { href: '/distance-sales', labelKey: 'workspace.billing.checkout.consent.read.distanceSales' },
+    { href: '/delivery', labelKey: 'workspace.billing.checkout.consent.read.delivery' },
+    { href: '/refund-policy', labelKey: 'workspace.billing.checkout.consent.read.refundPolicy' },
+] as const;
+
+const DOCUMENT_LINK_CLASS = 'inline-flex min-h-11 items-center text-body text-fg-link underline';
+
 export type CheckoutPanelProps = {
     /** Sunucunun söylediği etkin kip; henüz okunmadıysa null. */
     mode: 'sandbox' | 'live' | null;
@@ -51,6 +77,11 @@ export type CheckoutPanelProps = {
     latest: LatestTransaction | null;
     proceeding: boolean;
     proceedError: string | null;
+    /** İki onayın o anki hâli; ikisi de varsayılan olarak KAPALI. */
+    consent: CheckoutConsentState;
+    onConsentChange: (next: CheckoutConsentState) => void;
+    /** Kutu boşken düğmeye basılırsa gösterilen alan hatası. */
+    consentErrors: Partial<Record<keyof CheckoutConsentState, string>>;
     onProceed: () => void;
     onRetryLoad: () => void;
 };
@@ -95,9 +126,22 @@ export function CheckoutPanel({
     latest,
     proceeding,
     proceedError,
+    consent,
+    onConsentChange,
+    consentErrors,
     onProceed,
     onRetryLoad,
 }: CheckoutPanelProps) {
+    /*
+        ONAY KUTULARI DÜĞMEYİ KİLİTLEMEZ, HATA GÖSTERİR.
+
+        Önceden işaretli kutu onay değildir ve boş kutuyla ödeme başlamaz —
+        ama bunu sessizce kararmış bir düğmeyle söylemek, kullanıcıya neyin
+        eksik olduğunu HİÇ söylememektir. Düğmeye basılır, eksik kutu kendi
+        satırında sebebini yazar (`consentErrors`) ve istek gitmez. Sunucu
+        aynı kuralı ayrıca uygular (`StoreCheckoutController`, `accepted`);
+        kayıt ekranındaki zorunlu onayla aynı desen.
+    */
     const canProceed =
         selectedPlanId !== null &&
         profile.state === 'complete' &&
@@ -289,6 +333,50 @@ export function CheckoutPanel({
                 )}
                 {profileFormOpen && profileForm}
             </div>
+
+            <fieldset className="m-0 flex flex-col gap-3 border-0 p-0">
+                <legend className="mb-1 text-body font-bold text-fg">
+                    {t('workspace.billing.checkout.consent.legend')}
+                </legend>
+
+                {/* Belgeler kutuların ÜSTÜNDE: onaylamadan önce okunacak
+                    şeyin, onay kutusundan sonra gelmesi tuhaf olurdu. Her
+                    bağlantı kendi satırında ve 44 piksel. */}
+                <nav
+                    aria-label={t('workspace.billing.checkout.consent.links')}
+                    className="flex flex-col"
+                >
+                    {CONSENT_DOCUMENTS.map((document) => (
+                        <a key={document.href} href={document.href} className={DOCUMENT_LINK_CLASS}>
+                            {t(document.labelKey)}
+                        </a>
+                    ))}
+                </nav>
+
+                <CheckboxField
+                    id="checkout-consent-agreements"
+                    name="agreements_accepted"
+                    required
+                    checked={consent.agreements}
+                    onChange={(event) =>
+                        onConsentChange({ ...consent, agreements: event.target.checked })
+                    }
+                    label={t('workspace.billing.checkout.consent.agreements')}
+                    errorText={consentErrors.agreements}
+                />
+
+                <CheckboxField
+                    id="checkout-consent-immediate"
+                    name="immediate_performance_accepted"
+                    required
+                    checked={consent.immediatePerformance}
+                    onChange={(event) =>
+                        onConsentChange({ ...consent, immediatePerformance: event.target.checked })
+                    }
+                    label={t('workspace.billing.checkout.consent.immediate')}
+                    errorText={consentErrors.immediatePerformance}
+                />
+            </fieldset>
 
             {proceedError && (
                 <p role="alert" className="text-body font-medium text-fg-danger">

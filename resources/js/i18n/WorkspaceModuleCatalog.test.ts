@@ -37,7 +37,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1660;
+const FROZEN_LEGACY_KEY_COUNT = 1708;
 
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
@@ -186,6 +186,23 @@ const FROZEN_LEGACY_KEY_COUNT = 1660;
 // fatura kesildi" cümlesi (fatura yolu bu pakette yok — docs/107 Faz 1.4).
 // "Test mode" cümlesi sandbox kipinde okunur: prova gerçek yolun aynısıdır
 // ve sahip hangi kipte olduğunu tahmin etmek zorunda kalmaz.
+// FF-216: 1618 → 1629, on bir anahtar — ödeme adımının İKİ ONAYI ve
+// satıcının eksik kimliği (docs/107 Faz 1.2, docs/131). İkisi onay kutusunun
+// cümlesi, ikisi kutu boşken yazılan sebep, biri bölümün başlığı, biri belge
+// listesinin adı, dördü okunacak belgelerin bağlantı etiketi (ön
+// bilgilendirme, mesafeli satış, teslimat/ifa, iptal-iade), biri de canlı
+// kipte satıcının yasal kimliği yayınlanmadan tahsilat yapılamadığını
+// söyleyen cümle.
+//
+// İKİ AYRI ONAY ANAHTARI, çünkü iki ayrı hukuki olgu: sözleşmeyi kabul etmek
+// ile cayma süresi dolmadan ifaya başlanmasını AÇIKÇA istemek aynı şey
+// değildir. Tek bir "kabul ediyorum" anahtarı, defterde hangisine evet
+// dendiğini ayırt edilemez hâle getirirdi.
+//
+// BİLEREK ANAHTARSIZ: bir kart ya da banka markası (hangi kartların kabul
+// edildiği ödeme sağlayıcısının yapılandırmasından türer, bu depoda öyle bir
+// liste yok) ve bir "cayma süresi şu kadar gün" cümlesi (süre kanundan gelir
+// ve belge metninde, katalogda değil).
 // main ile birleştikten SONRA yeniden hesaplandı (ratings.ts + support.ts).
 // FF-201: 1576 → 1599, yirmi üç anahtar ve ON ÜÇÜNCÜ modül dosyası
 // (`support.ts`). Destek ekranı (`docs/125`): başlık ve açıklama, yardım
@@ -219,8 +236,29 @@ const FROZEN_LEGACY_KEY_COUNT = 1660;
 // yerelleştirme bu üç metnin dönüşmediğini gösterdi (`docs/121` §4).
 // ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
 // msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
+// FF-219: 1660 → 1694, otuz dört anahtar — ABONELİĞİN EKSİK YARISI
+// (docs/107 Faz 1.3, docs/134). İptal, iptalden cayma, plan düşürme,
+// ödemesiz süre ve askı. Bu grubun ayırt edici yanı, cümlelerin bir DURUM
+// değil bir TARİH ve bir SONUÇ söylemesidir: "aboneliğiniz güncellendi"
+// diye bir anahtar yok; "X tarihine kadar kullanmaya devam edeceksiniz",
+// "X tarihinde şunları kaybedeceksiniz", "X tarihinden beri kapalı" var.
+// İki cümle bilerek MİSAFİRİ anlatıyor — sahibin en çok korktuğu şey,
+// ödeme sorununun masadaki müşterisine yansımasıdır ve cevabı ("yansımaz")
+// ekranda yazılı.
+// ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
+// msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
+// FF-225: Medya > Ayarlar'daki güvenlik önlemleri ANAHTAR olmaktan çıktı
+// (sahibin kararı, 2026-09-08: "switch butonlar saçma, UI hatası"). Anahtar
+// hem "değiştirebilirsin" diyordu hem de altında "kapatılamaz" yazıyordu;
+// kullanıcı dokunuyor, hiçbir şey olmuyordu. Anahtarın tek bakışta
+// cevapladığı soru ("açık mı?") kaybolmasın diye hâl artık KELİMEDİR ve üç
+// anahtar bunun için doğdu: "On", "Partly on", "Not running here". Dördüncü
+// bir "Off" anahtarı YOK — bu dört önlemin kapalı diye bir hâli yok; olmayan
+// bir durumu adlandırmak, bir gün onu mümkün sanmaya yol açardı.
+// ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
+// msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '19c22ffc0a0d9258c5842418fa1097ef4562695087eeebdf4711b6d34c9a299d';
+    '24db22f5da187496f576245ddfbd7fbf0903db144e73b391f7b4ca7ae97d0b77';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

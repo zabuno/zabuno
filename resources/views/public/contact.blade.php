@@ -23,6 +23,16 @@
 
         <p class="text-fg-secondary">{{ $st['contactLead'] }}</p>
 
+        {{-- SATICININ GERÇEK İLETİŞİM BİLGİSİ (FF-216). Form tek başına bir
+             iletişim yolu değildir; adres, telefon ve e-posta `/about` ile
+             AYNI kaynaktan gelir ve girilmemişse öyle yazar. --}}
+        <section aria-labelledby="contact-identity-heading" class="flex flex-col gap-3">
+            <h2 id="contact-identity-heading" class="text-xl font-bold">{{ $st['contactIdentityHeading'] }}</h2>
+            @include('public.partials.company-identity')
+        </section>
+
+        <h2 class="text-xl font-bold">{{ $st['contactFormHeading'] }}</h2>
+
         @if ($commitment !== null)
             {{-- Yalnız yapılandırılmışsa (`docs/125` §3). Boşken bu satır
                  YOKTUR; yedek bir "en kısa sürede" cümlesi de yoktur. --}}

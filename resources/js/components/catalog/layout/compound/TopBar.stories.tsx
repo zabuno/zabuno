@@ -35,5 +35,5 @@ export const WithEndSlot: Story = {
 
 export const RightToLeft: Story = {
     args: { brand: { name: 'زابونو', href: '#' }, onToggleMenu: () => {} },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };

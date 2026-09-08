@@ -48,5 +48,5 @@ export const RightToLeft: Story = {
             { id: 2, label: 'Beşiktaş', value: 511, percent: 41.9 },
         ],
     },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };

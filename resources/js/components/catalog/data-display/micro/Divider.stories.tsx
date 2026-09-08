@@ -24,5 +24,5 @@ export const Vertical: Story = {
 
 export const RightToLeft: Story = {
     args: { orientation: 'horizontal' },
-    parameters: { direction: 'rtl' },
+    globals: { direction: 'rtl' },
 };
