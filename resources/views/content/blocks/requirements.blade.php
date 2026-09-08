@@ -2,20 +2,28 @@
 
      Gerçek bir `table`, biçimlendirilmiş bir liste değil: "neye ihtiyacım
      var" sorusunun cevabı iki sütunludur ve cevap sistemleri de tabloyu
-     tablo olarak okur. Dar ekranda kendi içinde kayar; sayfa gövdesi yatay
-     kaymaz. --}}
-<section class="flex flex-col gap-3">
-    <h2 class="text-xl font-semibold text-fg">{{ $block->heading }}</h2>
-    <div class="overflow-x-auto">
-        <table class="w-full border-collapse text-start">
-            <tbody>
-                @foreach ($block->entries as $entry)
-                    <tr class="border-t border-border align-top">
-                        <th scope="row" class="py-3 pe-4 text-start font-semibold text-fg">{{ $entry->term }}</th>
-                        <td class="py-3 leading-relaxed text-fg-secondary">{{ $entry->text }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
+     tablo olarak okur.
+
+     ÇİZİM DEĞİŞTİ, ANLAM DEĞİŞMEDİ. Ölçüldü (320×568): iki kolon olarak
+     çizildiğinde etiket 110, değer 170 piksele düşüyordu — satır başına ~19
+     karakter. Satır artık bir ızgara ve dar ekranda etiket değerin ÜSTÜNE
+     geçiyor; ikisi de ekranın tamamını kullanıyor. Yatay kaydırma kabı da
+     kalktı, çünkü kaydıracak bir şey kalmadı.
+
+     Roller AÇIKÇA yazılı: `display` değiştiği an tarayıcı tablo rollerini
+     düşürür ve bunu fark etmek zordur, çünkü ekranda hiçbir şey olmaz.
+     Yazmasaydık yukarıdaki "tabloyu tablo olarak okur" cümlesi sessizce
+     yalan olurdu (CONTENT-TEMPLATE-04). --}}
+<section class="site-doc-block" data-block="requirements">
+    <h2 class="site-doc-heading">{{ $block->heading }}</h2>
+    <table class="site-doc-table" role="table">
+        <tbody role="rowgroup">
+            @foreach ($block->entries as $entry)
+                <tr class="site-doc-table-row" role="row">
+                    <th scope="row" role="rowheader" class="site-doc-table-term">{{ $entry->term }}</th>
+                    <td role="cell" class="site-doc-table-text">{{ $entry->text }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
 </section>

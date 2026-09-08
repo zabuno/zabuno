@@ -1,0 +1,745 @@
+/*
+    KURUMSAL İÇERİK SAYFASININ ŞABLONU — on sekiz sayfanın TEK çizimi.
+
+    ═══ NEDEN AYRI BİR DOSYA ═══
+
+    `site-shell.css` kabuğun dosyasıdır: üst çubuk, menü, altbilgi, servis
+    fişi ve yasal belgeler. Bu dosya KÜTÜKTEN çizilen içerik sayfalarının
+    gövdesidir (`resources/views/content/`). İkisini ayırmak bir düzen
+    tercihi değil, bir sahiplik kararı: kabuk her kurumsal adreste aynıdır ve
+    başka bir paketin konusudur; gövde ise yalnız içerik sayfalarına aittir
+    ve on sekizini birden değiştirir.
+
+    ═══ NE ÇİZİYOR ═══
+
+    On blok türü (`App\Domain\Content\Block\BlockType`). Hepsi aynı sayfada,
+    hepsi farklı bir OKUMA İŞİ yapıyor — ve bu yüzden aynı görünmüyorlar.
+    Hangi türün hangi işi yaptığı ve neden öyle çizildiği `docs/146`da
+    yazılı; burada yalnız kararın kendisi duruyor.
+
+    Kanca sınıf adı değil, blok türünün KENDİSİ: her blok en dış öğesinde
+    `data-block="<tür>"` taşır. Bir gün `BlockType` büyürse kancası olmayan
+    tür `CorporatePageTemplateTest`te görünür, ekranda değil.
+
+    ═══ 320 PİKSEL TABAN (`docs/118` E1, E3) ═══
+
+    Bütün ölçüler en dar ekrana göre yazıldı ve geniş ekranda AYNI kalıyor.
+    Kırılma noktası YOK (`MP-05`): çok sütunlu her yerleşim
+    `repeat(auto-fit, minmax(…))` ile kendiliğinden çoğalır. Bileşim sahibin
+    tarif ettiği gibi — BÜYÜK HEDEF, SIKI BOŞLUK: dokunulan her şey
+    `--control-height` tabanında, boşluk ölçeğin alt adımlarında.
+
+    Kutu neredeyse hiç yok, RAY çok var. Sebebi ölçülebilir: 320 pikselde
+    bir kart iki yanından 32 piksel yer alır, bir ray 14 piksel. Ayrımı ray
+    da kuruyor; farkı okuyan kişi ödemiyor.
+
+    ═══ HAM DEĞER YOK ═══
+
+    Renk, boşluk, yarıçap, süre ve yumuşatma jetonlardan gelir. Bu dosyada
+    bir tek ham renk, bir tek `!important` ve bir tek ham süre yoktur — ve
+    bu iddia ölçülüyor (CONTENT-TEMPLATE-10). Renk paleti ayrı bir pakette
+    yenileniyor; buradaki hiçbir satır o pakete iş çıkarmamalı.
+*/
+
+/*
+    SAYFANIN KOLONU.
+
+    `.site-main` 64 rem'de duruyor ve bu bir KABUK ölçüsüdür — altbilgi
+    ızgarası için doğru. Uzun düzyazı için değil: 1024 piksel genişliğinde
+    bir paragraf satır başına ~140 karakter taşır ve göz satır sonundan
+    satır başına dönerken yerini kaybeder.
+
+    İki ölçü var ve ikisi de aynı kenardan başlar:
+      · `--doc-column` — sayfanın kabı; ızgaralar, paneller, tablo.
+      · `--doc-prose`  — düzyazının durduğu yer; karakter cinsinden, çünkü
+                         okunabilirlik piksele değil harfe bağlıdır.
+
+    320 pikselde ikisi de %100'dür; ayrım yalnız geniş ekranda doğar.
+*/
+.site-doc {
+    --doc-column: 56rem;
+    --doc-prose: min(100%, 66ch);
+
+    /* Bölümler arası nefes. Akışkan: dar ekranda 16, geniş ekranda 40 px. */
+    --doc-rhythm: var(--space-fluid-lg);
+
+    /* Adım numarasının kutusu. 320'de metin sütunundan 44 piksel alır —
+       bir dokunma hedefi kadar, ve o yüzden bundan büyük olamaz. */
+    --doc-step-marker: 1.75rem;
+
+    /*
+        UZUN METNİN SATIR ARALIĞI.
+
+        Rol jetonları (`--text-body--line-height` = 1.5) arayüz içindir:
+        etiket, düğme, tablo hücresi. Telefonda okunan beş cümlelik bir
+        paragraf daha fazlasını ister — dar ekranda satır kısadır ve göz
+        sık sık geri döner; aradaki boşluk geri dönüşün nereye ineceğini
+        söyler.
+    */
+    --doc-leading: 1.65;
+
+    max-inline-size: var(--doc-column);
+}
+
+/*
+    RİTİM TEK DEĞİLDİR.
+
+    Eşit aralıklarla dizilmiş on bölüm bir liste gibi okunur: hepsi aynı
+    ağırlıkta, hiçbiri ötekiyle ilişkili değil. Oysa sayfada üç farklı
+    yakınlık var ve boşluk onu söylemeli:
+
+      · giriş cümlesi BAŞLIĞA aittir       → en dar aralık
+      · çözüm PROBLEMİN cevabıdır          → orta aralık
+      · geri kalan her bölüm bağımsızdır   → tam aralık
+*/
+.site-doc > * + * {
+    margin-block-start: var(--doc-rhythm);
+}
+
+/*
+    Başlık kırıntıya yapışır, bölüm aralığı almaz: kırıntı başlığın adresi,
+    ayrı bir bölüm değil. Geniş ekranda `--doc-rhythm` 40 piksele çıkıyor ve
+    ikisinin arası bir boşluk çukuruna dönüşüyordu.
+*/
+.site-doc-title {
+    margin-block: var(--space-4) 0;
+    margin-inline: 0;
+    font-size: var(--text-title);
+    line-height: var(--text-title--line-height);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--fg);
+    text-wrap: balance;
+}
+
+/* --- Ekmek kırıntısı ---------------------------------------------------- */
+
+/*
+    İKİ KURAL AYNI ANDA.
+
+    (1) Bir bağlantı 44 pikselden kısa olamaz (`docs/117` K1) ve kırıntı
+        bağlantıları ölçüldüğünde 112×20 idi — yarısından az.
+    (2) Kırıntı ilk ekranı içerikten önce dolduramaz
+        (`TOUCH-FIRST-INTERFACE` madde 3).
+
+    İkisini birden tutmanın tek yolu SARMAMAK. Sarsaydı üç basamak 320
+    pikselde üç satıra çıkardı: 132 piksel, yani başlığın yarısı ekranın
+    dışında. Tek satır kalıyor, sığmazsa kendi içinde kayıyor — sayfa
+    gövdesi yatay kaymıyor.
+
+    Kayan şey en fazla SON basamaktır ve o basamak zaten bağlantı değil:
+    bulunduğun sayfanın adı, bir satır aşağıdaki H1'de tekrar yazıyor.
+*/
+.site-doc-trail {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    align-items: center;
+    gap: var(--space-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overscroll-behavior-x: contain;
+}
+
+.site-doc-trail > li {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+.site-doc-trail-link {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--control-height);
+    color: var(--fg-secondary);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    white-space: nowrap;
+}
+
+.site-doc-trail-link:hover {
+    color: var(--fg);
+}
+
+/*
+    Yayınlanmamış ata ve bulunduğun sayfa BAĞLANTI DEĞİLDİR; dokunma hedefi
+    de gerekmez. Onları da 44 piksele büyütmek, tıklanamayan bir şeye
+    tıklanabilir görüntüsü vermek olurdu.
+*/
+.site-doc-trail-step {
+    display: inline-flex;
+    align-items: center;
+    color: var(--fg-secondary);
+    white-space: nowrap;
+}
+
+.site-doc-trail-current {
+    color: var(--fg);
+}
+
+/* Ayıraç görseldir; anlamı `BreadcrumbList` taşıyor. */
+.site-doc-trail-separator {
+    color: var(--fg-subtle);
+}
+
+/* --- Giriş cümlesi (doğrudan cevap) ------------------------------------- */
+
+/*
+    SAYFANIN İLK EKRANDA VERDİĞİ CEVAP.
+
+    Başlığa aittir, bu yüzden ona yapışır: aralık `--space-4`, bölüm aralığı
+    değil. Ayrımı BOYUT ve MÜREKKEP kuruyor — bölüm başlıklarıyla aynı
+    ölçekte ama ince, yani sayfada başlıktan sonra en büyük DÜZYAZI.
+
+    Başlangıç kenarındaki ray marka rengidir ve bu, markanın metin önplanı
+    olarak KULLANILMADIĞI tek doğru yerdir (`docs/06` §11): sarı yapısal
+    vurgudur — ray, kenarlık, gösterge. Cümlenin kendisi tam mürekkep.
+*/
+.site-doc-lede {
+    max-inline-size: var(--doc-prose);
+    margin-block-start: var(--space-4);
+    border-inline-start: 2px solid var(--color-brand);
+    padding-inline-start: var(--space-4);
+    font-size: var(--text-section);
+    line-height: var(--doc-leading);
+    color: var(--fg);
+    text-wrap: pretty;
+}
+
+/* --- Bölümlerin ortak iskeleti ------------------------------------------ */
+
+.site-doc-block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.site-doc-heading {
+    margin: 0;
+    font-size: var(--text-section);
+    line-height: var(--text-section--line-height);
+    font-weight: 600;
+    color: var(--fg);
+    text-wrap: balance;
+}
+
+.site-doc-prose {
+    max-inline-size: var(--doc-prose);
+}
+
+.site-doc-paragraph {
+    margin: 0;
+    line-height: var(--doc-leading);
+    color: var(--fg-secondary);
+    text-wrap: pretty;
+}
+
+/* --- Problem → çözüm: sayfanın tek anlatı dönüşü ------------------------ */
+
+/*
+    İKİ BÖLÜM, TEK CÜMLE.
+
+    "Problem" ile "çözüm" ayrı iki bölüm değil, bir cümlenin iki yarısıdır.
+    Bugüne kadar ikisi de birebir aynı çiziliyordu ve okuyan kişi
+    aralarındaki ilişkiyi yalnız METİNDEN çıkarabiliyordu.
+
+    Ayrım KUTUYLA değil TONLA kuruluyor — dar ekranda bir kutu 32 piksel
+    yer, bir ton sıfır:
+
+      · problem, misafirin BUGÜNKÜ dünyasıdır; sessiz anlatılır, başlığı da
+        ikincil mürekkeple durur.
+      · çözüm ürünün cevabıdır; tam mürekkep, ve başlığının altında kısa bir
+        marka çizgisi — sayfada "burada bir şey değişiyor" diyen tek işaret.
+
+    İkisi arasındaki boşluk da dar: `--space-fluid-md`, bölüm aralığı değil.
+    Birbirine yakın duran iki şey, aynı şeyin parçası olarak okunur.
+*/
+.site-doc-block[data-block='problem'] > .site-doc-heading {
+    color: var(--fg-secondary);
+    font-weight: 600;
+}
+
+.site-doc-block[data-block='solution'] {
+    margin-block-start: var(--space-fluid-md);
+}
+
+.site-doc-block[data-block='solution'] > .site-doc-heading::after {
+    content: '';
+    display: block;
+    inline-size: var(--space-6);
+    block-size: 2px;
+    margin-block-start: var(--space-2);
+    background: var(--color-brand);
+}
+
+.site-doc-block[data-block='solution'] .site-doc-paragraph {
+    color: var(--fg);
+}
+
+/* --- Nasıl çalışır: numaralı omurga -------------------------------------- */
+
+/*
+    ADIMLAR BİR SÜREÇTİR, BİR LİSTE DEĞİL.
+
+    Numara CSS SAYACINDAN gelir: elle yazılmış bir "3." listeyi yeniden
+    sıralayan kişinin güncellemeyi unutmasına açıktır, ve o gün numara ile
+    sıra birbirini yalanlar.
+
+    Numaraları ince bir çizgi birleştiriyor — süreç, kopuk beş satır değil
+    bir zincir. Çizgi `absolute` ve `pointer-events` taşımaz; metnin
+    sütununa hiç girmez.
+
+    `list-style: none` verildiği anda Safari `ol`u listelikten çıkarır ve
+    ekran okuyucu "beş öğeli liste" demez olur; `role="list"` bunu geri
+    verir. Öznitelik işaretlemede, çünkü kural tarayıcının değil belgenin
+    kararıdır.
+*/
+.site-doc-steps {
+    counter-reset: site-doc-step;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    max-inline-size: var(--doc-prose);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.site-doc-step {
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--doc-step-marker) 1fr;
+    column-gap: var(--space-3);
+    align-items: start;
+}
+
+.site-doc-step::before {
+    counter-increment: site-doc-step;
+    content: counter(site-doc-step);
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--doc-step-marker);
+    block-size: var(--doc-step-marker);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-pill);
+    font-size: var(--text-meta);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    color: var(--fg);
+}
+
+/* Zincir: son adımdan sonra devam etmez — süreç orada biter. */
+.site-doc-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    inset-block-start: var(--doc-step-marker);
+    inset-block-end: calc(var(--space-4) * -1);
+    inset-inline-start: calc(var(--doc-step-marker) / 2);
+    border-inline-start: 1px solid var(--border);
+}
+
+.site-doc-step-term {
+    grid-column: 2;
+    align-self: center;
+    min-block-size: var(--doc-step-marker);
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    color: var(--fg);
+}
+
+.site-doc-step-text {
+    grid-column: 2;
+    margin-block-start: var(--space-1);
+    line-height: var(--doc-leading);
+    color: var(--fg-secondary);
+}
+
+/* --- Yetenekler: taranan ızgara ----------------------------------------- */
+
+/*
+    BU BÖLÜM OKUNMAZ, TARANIR.
+
+    Sekiz yetenek düzyazı değildir; okuyan kişi aradığını arar. Bu yüzden
+    tek uzun sütun yerine akışkan bir ızgara: 320 pikselde tek sütun,
+    ekran genişledikçe kendiliğinden çoğalır. Kırılma noktası yok.
+
+    Her satır bir KUTU değil bir RAY taşıyor. Kutu, 320 pikselde iki yanından
+    32 piksel yerdi ve sekiz kutu sayfayı bir kart tarlasına çevirirdi;
+    ray 14 piksel yer ve aynı ayrımı kurar.
+
+    `dl` korunuyor: ad ile açıklama arasındaki ilişki görsel değil anlamsal.
+*/
+.site-doc-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: var(--space-4);
+    margin: 0;
+}
+
+.site-doc-card {
+    border-inline-start: 2px solid var(--border);
+    padding-inline-start: var(--space-3);
+}
+
+.site-doc-card-term {
+    font-weight: 600;
+    color: var(--fg);
+}
+
+.site-doc-card-text {
+    margin: 0;
+    margin-block-start: var(--space-1);
+    line-height: var(--doc-leading);
+    color: var(--fg-secondary);
+}
+
+/* --- Gereksinimler: tablo kalır, çizim değişir --------------------------- */
+
+/*
+    ÖLÇÜLMÜŞ BİR KUSUR (2026-09-08, 320×568).
+
+    Tablo iki kolon olarak çiziliyordu ve dar ekranda etiket 110, değer 170
+    piksele düşüyordu: değer sütunu satır başına ~19 karakter taşıyordu.
+    Yani tablo "okunuyordu" ama okunmuyordu.
+
+    Satır artık bir ızgara: 320'de etiket değerin ÜSTÜNE geçer ve ikisi de
+    288 pikselin tamamını kullanır; kap genişledikçe yan yana gelirler.
+    Kırılma noktası yok, `auto-fit` var.
+
+    ANLAMI DEĞİŞMEDİ. `display` değiştiği an tarayıcı tablo rollerini
+    düşürür — bu belgelenmiş bir davranıştır ve fark edilmesi zordur, çünkü
+    ekranda hiçbir şey olmaz. Roller bu yüzden işaretlemede AÇIKÇA yazılı;
+    aksi hâlde "cevap sistemleri tabloyu tablo olarak okur" cümlesi sessizce
+    yalan olurdu.
+
+    Yatay kaydırma kabı da KALKTI: kaydıracak bir şey kalmadı.
+*/
+.site-doc-table {
+    inline-size: 100%;
+    border-collapse: collapse;
+    text-align: start;
+}
+
+.site-doc-table-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+    gap: var(--space-1) var(--space-5);
+    border-block-start: 1px solid var(--border);
+    padding-block: var(--space-3);
+}
+
+.site-doc-table-term {
+    text-align: start;
+    font-weight: 600;
+    color: var(--fg);
+}
+
+.site-doc-table-text {
+    line-height: var(--doc-leading);
+    color: var(--fg-secondary);
+}
+
+/* --- Sınırlar: sayfanın dürüstlük imzası --------------------------------- */
+
+/*
+    GÖRÜNSÜN, AMA KORKUTMASIN.
+
+    Bu bölüm ürünün BUGÜN yapmadığı işleri sayar (`BlockType::Limitations`)
+    ve sayfanın en değerli bölümüdür: okuyan kişi eksik olanı zaten sorar;
+    cevabı sayfada bulamazsa varsayar, ve genellikle yanlış varsayar.
+
+    İki kolay hata var ve ikisinden de kaçınıldı:
+
+    (1) GİZLEMEK. Katlanabilir bir kutuya konmadı, sayfanın sonuna
+        sürülmedi, küçük punto verilmedi. Bir tık ardına konan dürüstlük,
+        dürüstlük değildir — ve bunu bir test tutuyor (CONTENT-TEMPLATE-05).
+
+    (2) ALARM ÇALMAK. Kırmızı bir kutu ziyaretçiye "burada bir arıza var"
+        der; oysa burada yazan şey ürünün BİLİNÇLİ kapsamıdır. Bölüm bu
+        yüzden hata/uyarı jetonlarına hiç dokunmaz — bu da ölçülüyor
+        (CONTENT-TEMPLATE-06). Ayrımını çukur yüzey ve kenarlık kuruyor:
+        sayfadaki tek "içeri gömülü" alan, yani göz onu ayırıyor ama
+        irkilmiyor.
+
+    Her satırın başındaki kısa çizgi CSS ile çiziliyor. Bir ikon değil, bir
+    ARİTMETİK işareti: burada bir şey çıkarılıyor. Gövde kendi ikonunu
+    çizmez (`docs/136` §4, ICON-04).
+
+    Dolgu akışkan: 320 pikselde 12 piksel, yani içerik hâlâ ekranın
+    %85'ini kullanıyor. Sabit 24 piksel yazsaydık dar ekranda panelin
+    dolgusu sayfanın dolgusuna EKLENİRDİ (`docs/117` K2).
+*/
+.site-doc-limits {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface-subtle);
+    padding: var(--space-fluid-md);
+}
+
+.site-doc-limits-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.site-doc-limits-item {
+    display: grid;
+    grid-template-columns: var(--space-4) 1fr;
+    column-gap: var(--space-3);
+}
+
+.site-doc-limits-item::before {
+    content: '';
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    inline-size: var(--space-4);
+    block-size: 2px;
+    margin-block-start: 0.7em;
+    background: var(--border-strong);
+}
+
+.site-doc-limits-term {
+    grid-column: 2;
+    font-weight: 600;
+    color: var(--fg);
+}
+
+.site-doc-limits-text {
+    grid-column: 2;
+    margin-block-start: var(--space-1);
+    line-height: var(--doc-leading);
+    color: var(--fg-secondary);
+}
+
+/* --- SSS: betiksiz katlanır ---------------------------------------------- */
+
+/*
+    ALTI SORU, SAYFANIN SONUNDA, TELEFONDA.
+
+    Açık hâlde bu bölüm 320 pikselde ~1400 piksel yer tutuyordu: eylem
+    çağrısına ulaşmak için altı cevabın tamamını kaydırmak gerekiyordu — ve
+    onları okumayan kişi için o kaydırma tamamen boşa.
+
+    `details`/`summary` tarayıcının KENDİ açılır kapanır düğmesidir:
+    klavyeyle çalışır, durumunu ekran okuyucuya söyler, betik olmadan açılır
+    (`docs/118` E8) ve kabuk zaten aynı ilkeyi kullanıyor.
+
+    KATLANAN ŞEY YALNIZ GÖRÜNÜM. Cevap ilk HTML yanıtında zaten var; betik
+    çalıştırmayan bir bot onu okuyor ve `FAQPage` işaretlemesi görünmeyen
+    bir bilgi ilan etmiyor (§14). Soru da gizlenmiyor — o hâlâ görünür bir
+    H3, yani ekran okuyucu kullanıcısının başlıkla gezinmesi bozulmuyor.
+
+    İşaret ARTI'dır, ok değil. İki sebep: artı "burada daha fazlası var"
+    demenin en kısa yoludur, ve bir ok sağdan sola yazılan bir dilde
+    aynalanmak zorundadır — artının yönü yoktur. Çizim `background`
+    gradyanıyla, yani tek bir sözde-öğeyle yapılıyor; gövdeye SVG girmiyor.
+*/
+.site-doc-faq {
+    display: flex;
+    flex-direction: column;
+    max-inline-size: var(--doc-prose);
+}
+
+.site-doc-faq-item {
+    border-block-start: 1px solid var(--border);
+}
+
+.site-doc-faq-item:last-child {
+    border-block-end: 1px solid var(--border);
+}
+
+.site-doc-faq-question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    min-block-size: var(--control-height);
+    padding-block: var(--space-2);
+    cursor: pointer;
+    list-style: none;
+}
+
+.site-doc-faq-question::-webkit-details-marker {
+    display: none;
+}
+
+.site-doc-faq-question:hover {
+    background: var(--surface-hover);
+}
+
+.site-doc-faq-question:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: -2px;
+}
+
+.site-doc-faq-title {
+    margin: 0;
+    font-size: var(--text-body);
+    font-weight: 600;
+    line-height: var(--text-body--line-height);
+    color: var(--fg);
+}
+
+/*
+    ARTI → EKSİ. İki çizgi, tek sözde-öğe, iki gradyan katmanı: yatay çizgi
+    her zaman durur, dikey olan açıkken genişliğini kaybeder.
+*/
+.site-doc-faq-question::after {
+    content: '';
+    flex: none;
+    inline-size: var(--aep-icon-sm);
+    block-size: var(--aep-icon-sm);
+    background-image:
+        linear-gradient(currentcolor, currentcolor), linear-gradient(currentcolor, currentcolor);
+    background-size:
+        100% 2px,
+        2px 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: var(--fg-secondary);
+}
+
+.site-doc-faq-item[open] > .site-doc-faq-question::after {
+    background-size:
+        100% 2px,
+        0 100%;
+}
+
+.site-doc-faq-answer {
+    margin: 0;
+    padding-block-end: var(--space-4);
+    line-height: var(--doc-leading);
+    color: var(--fg-secondary);
+}
+
+/* --- Eylem çağrısı: sayfanın kapanışı ------------------------------------ */
+
+/*
+    TEK BİRİNCİL EYLEM. İkinci bir eşit ağırlıklı düğme kararı böler.
+
+    Üstündeki marka çizgisi bir süs değil, bir NOKTALAMA: sayfanın metni
+    burada bitiyor, geriye yalnız bir seçim kalıyor. Giriş cümlesindeki
+    dikey rayla aynı renk, aynı kalınlık — açan ve kapatan işaret aynı.
+*/
+.site-doc-cta {
+    align-items: start;
+    border-block-start: 2px solid var(--color-brand);
+    padding-block-start: var(--space-fluid-md);
+}
+
+/*
+    Düğme daisyUI'nin `dz-btn`i (`docs/136`), geometrisi buranın: yükseklik
+    dokunma tabanından gelir ve daisyUI'nin 14 piksellik gövde boyutu
+    ezilir — yoğunluk fontu küçülterek sağlanmaz (`docs/118` E3).
+*/
+.site-doc-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-block-size: var(--control-height);
+    padding-inline: var(--space-5);
+    border: 0;
+    border-radius: var(--radius-lg);
+    background: var(--color-action);
+    color: var(--color-action-fg);
+    font-size: var(--text-body);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.site-doc-action:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+}
+
+/* --- İlgili sayfalar ----------------------------------------------------- */
+
+/*
+    Bunlar cümle içindeki bağlantı değil, GEZİNTİ hedefi: her biri kendi
+    satırında, tam dokunma yüksekliğinde, kenarlıklı. Ray değil kutu, çünkü
+    burada okunan bir metin yok — dokunulacak bir hedef var, ve hedefin
+    sınırı görünür olmalı.
+
+    Süzgeç denetleyicide çalıştı: yayınlanmamış sayfa hiçbir yerden iç
+    bağlantı almaz. Süzgeçten hiçbir şey geçmediyse bölüm hiç çizilmez.
+*/
+.site-doc-related {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.site-doc-related-link {
+    display: flex;
+    align-items: center;
+    min-block-size: var(--control-height);
+    padding-inline: var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--fg);
+    text-decoration: none;
+}
+
+.site-doc-related-link:hover {
+    background: var(--surface-hover);
+    border-color: var(--border-strong);
+}
+
+.site-doc-related-link:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+}
+
+/* --- Odak ---------------------------------------------------------------- */
+
+/*
+    Klavye kullanıcısı sayfayı bağlantı bağlantı geziyor ve nerede olduğunu
+    yalnız buradan görüyor. Halka İÇERİ değil DIŞARI çiziliyor: metnin
+    üstüne binen bir halka, okunacak şeyin kendisini örter.
+*/
+.site-doc a:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+
+/* --- Hareket ------------------------------------------------------------- */
+
+/*
+    HAREKET YALNIZ İSTENDİĞİNDE DOĞAR (`docs/136` §7.3).
+
+    Kural `no-preference` üzerinden yazıldı, `reduce` üzerinden değil:
+    ikinci biçimde animasyon önce tanımlanır sonra iptal edilir ve iptali
+    yazmayı unutan bir satır sessizce hareket eder.
+
+    Burada hareket yalnız arayüz ölçeğindedir — SSS işaretinin artıdan
+    eksiye dönmesi ve hedeflerin renk geçişi. Sahne hareketi (parallax,
+    parçacık, derinlik) bu paketin işi değil; onun jetonları
+    `site-shell.css`te hazır bekliyor.
+*/
+@media (prefers-reduced-motion: no-preference) {
+    .site-doc-faq-question::after {
+        transition: background-size var(--duration-base) var(--easing-inout);
+    }
+
+    .site-doc-related-link,
+    .site-doc-trail-link {
+        transition:
+            background-color var(--duration-base) var(--easing-inout),
+            border-color var(--duration-base) var(--easing-inout),
+            color var(--duration-base) var(--easing-inout);
+    }
+}
