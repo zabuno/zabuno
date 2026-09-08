@@ -75,21 +75,67 @@
 
 .home-hero-inner {
     display: flex;
-    flex-direction: column;
-    align-items: start;
-    /* Dar ekranda boşluk SIKI, geniş ekranda cömert (`docs/118` E3). Sabit
-       bir `--space-5` (24 px) 320 pikselde ölçüldü ve pahalıydı. */
-    gap: clamp(1rem, 0.6rem + 1.6vw, 1.75rem);
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--zc-rhythm-tight);
     padding-block: clamp(1rem, 0.5rem + 2.5vw, 5rem);
 }
 
-/*
-    Kahraman metni sahnenin TAMAMINI kaplamaz.
+.home-hero-copy {
+    flex: 1 1 32rem;
+    min-inline-size: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: clamp(1rem, 0.6rem + 1.6vw, 1.75rem);
+}
 
-    `.site-measure-stage` 110 rem'e kadar açılır ve bir başlık orada okunmaz.
-    Metin bloğu kendi ölçüsünü taşır; sahnenin geri kalanı YILDIZLARINDIR ve
-    bu, kompozisyonun kendisi: solda söz, sağda boşluk, boşlukta derinlik.
-*/
+.home-product-map {
+    flex: 1 1 24rem;
+    min-inline-size: 0;
+    padding: clamp(1rem, 2vw, 2rem);
+    border-radius: var(--zc-radius-xl);
+    border-block-start: 2px solid var(--zc-deep-accent);
+}
+
+.home-product-map-heading {
+    margin: 0;
+    font-size: var(--zc-display-3);
+    font-weight: var(--zc-weight-display);
+    line-height: 1.2;
+}
+
+.home-product-map-flow {
+    list-style: none;
+    margin: var(--space-5) 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+    gap: var(--space-4);
+}
+
+.home-product-map-flow li {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    border-inline-start: 1px solid var(--zc-edge-lit);
+    padding-inline-start: var(--space-3);
+    font-weight: var(--zc-weight-strong);
+    overflow-wrap: anywhere;
+}
+
+.home-product-map-index {
+    font-size: var(--zc-eyebrow);
+    font-variant-numeric: tabular-nums;
+    color: var(--zc-deep-accent);
+}
+
+.home-product-map-link {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+}
+
+/* Metin ve ürün akışı kendi okunabilir ölçülerinde kalır. */
 .home-hero-text {
     display: flex;
     flex-direction: column;
@@ -197,77 +243,14 @@
     margin: 0;
 }
 
-/* ── ZİNCİR ŞERİDİ (`home-rail`) ──────────────────────────────────────────
-
-   Altı adım YATAY bir şeritte. Dokunmada yana kaydırma ucuz bir harekettir;
-   altı adımı 320 pikselde dikey dizmek, ilk ekranı zincirin BİR adımına
-   ayırmak demekti.
-
-   ═══ GENİŞ EKRAN HİZASI — sahibin şikâyeti (2026-09-08, 1560 px) ═══
-
-   *"bu niye sığmamış? sığsın"*: şeridin ilk kartının sol kenarı, üstündeki
-   başlığın sol kenarıyla aynı pikselde değildi.
-
-   ÖLÇÜLDÜ (2026-09-08, gerçek Chrome, 1560×900). Başlık `.site-measure-page`
-   içinde duruyor — genişliği `min(100%, 82rem)`, ortalanmış, dolgusu
-   `--zc-gutter` (o genişlikte 39,2 px). Şerit ise tam genişlikte durup
-   dolgusunu doğrudan `--zc-gutter`den alıyordu, yani kendini GÖRÜNTÜ
-   ALANININ kenarına hizalıyordu. Fark: ilk kartın sol kenarı başlığınkinden
-   **124 piksel** solda.
-
-   Aynı ölçüm bu kuralla birlikte tekrarlandı: başlık 163,19 px, ilk kart
-   163,19 px, fark **0 piksel**; sayfanın yatay taşması 0. 320×480'de dolgu
-   14,39 pikselde (yani `--zc-gutter`) kalıyor, fark yine 0 ve bir sonraki
-   kartın 40 pikseli görünür duruyor.
-
-   ═══ ÇÖZÜM BİR MEDYA SORGUSU DEĞİL ═══
-
-   Dolgu kabın kendisinden TÜRETİLİYOR:
-
-       max(--zc-gutter, (100% - 82rem) / 2 + --zc-gutter)
-
-   `100%` bir dolgu yüzdesidir, yani şeridin KABININ genişliği. Kap 82 rem'in
-   altındayken `min(100%, 82rem)` `100%`e çözülür, fark sıfırlanır ve dolgu
-   `--zc-gutter`de kalır — 320 pikselde tabanla BİRE BİR aynı. Kap 82 rem'i
-   aştığındaysa fark, ölçü kabının sol boşluğunu tam olarak geri verir.
-
-   Yani taban kural koşulsuz yazıldı, geniş ekran onun ÜSTÜNE eklendi. Hiçbir
-   şey bastırılmadı, hiçbir genişlik eşiği yazılmadı (HOME-SCENE-01).
-
-   Şeridin KENDİSİ tam genişlikte kalır: dokunmada kenardan kenara kaydırma
-   korunur ve son kart ekranın sağ kenarına kadar gidebilir.
-
-   ═══ KAYDIRILABİLİRLİK HOVER İLE ANLATILMAZ ═══
-
-   Dokunmada `hover` yoktur (`TOUCH-FIRST-INTERFACE` §2). Kart genişliği
-   `min(78vw, 18rem)`: 320 pikselde bir sonraki kartın kenarı görünür kalır
-   ve şeridin devam ettiğini her giriş kipinde aynı biçimde söyler.
-*/
+/* Altı gerçek adım, dar ekranda tek sütun; genişlik elverdikçe sarılır. */
 .home-rail {
-    --home-rail-gutter: max(
-        var(--zc-gutter),
-        calc((100% - var(--zc-measure-page)) / 2 + var(--zc-gutter))
-    );
     list-style: none;
-    margin: 0;
+    margin-block: 0;
     display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: min(78vw, 18rem);
-    gap: var(--space-4);
-    padding-inline: var(--home-rail-gutter);
-    /* Dikey dolgu panelin gölgesine ve odak halkasına yer bırakır: sıfır
-       olsaydı kaydırma kabı ikisini de kırpardı. */
-    padding-block: var(--space-2);
-    overflow-x: auto;
-    /* Yatay kaydırma ŞERİDİN İŞİ: sayfa yana kaymaz. */
-    overscroll-behavior-inline: contain;
-    scroll-snap-type: inline proximity;
-    scroll-padding-inline: var(--home-rail-gutter);
-}
-
-.home-rail:focus-visible {
-    outline: 2px solid var(--zc-focus);
-    outline-offset: 2px;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    gap: var(--space-5);
+    padding-block: var(--space-4) var(--zc-rhythm);
 }
 
 .home-rail-card {
@@ -276,7 +259,6 @@
     gap: var(--space-2);
     padding: var(--space-4);
     border-radius: var(--zc-radius-lg);
-    scroll-snap-align: start;
 }
 
 .home-step-index {
@@ -369,4 +351,42 @@
     align-items: start;
     gap: var(--space-4);
     padding-block: var(--zc-rhythm);
+}
+
+/* Ana yetenek sahnenin odağı; kalan envanter aynı sırada, daha sessiz. */
+.home-feature[data-featured] {
+    grid-column: 1 / -1;
+}
+
+.home-feature[data-featured] .home-card {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    align-items: center;
+    gap: var(--space-5);
+    padding: clamp(1rem, 3vw, 3rem);
+    border-block-start: 2px solid var(--zc-accent);
+}
+
+.home-feature[data-featured] h3 {
+    font-size: var(--zc-display-2);
+}
+
+.home-limits {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.home-limit {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    gap: var(--space-3) var(--space-5);
+    padding-block: var(--space-5);
+    border-block-start: 1px solid var(--zc-edge-lit);
+}
+
+.home-limit h3 {
+    margin: 0;
+    font-size: var(--zc-lede);
+    font-weight: var(--zc-weight-strong);
 }
