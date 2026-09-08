@@ -7,7 +7,6 @@ namespace App\Http\Controllers\PublicSite;
 use App\Domain\Legal\CompanyProfile;
 use App\Http\Controllers\Controller;
 use App\Support\Contact\ResponseCommitment;
-use App\Support\Localization\SiteText;
 use App\Support\Site\CompanyIdentity;
 use App\Support\Site\SiteShell;
 use Illuminate\Http\Request;
@@ -41,8 +40,14 @@ final class ShowContactFormController extends Controller
         $shell = $this->shell->context($request, 'contact', '/contact');
         $company = CompanyProfile::fromConfig();
 
-        // Taahhüt cümlesi kabuğun seçtiği dille aynı dilde kurulur.
-        $locale = SiteText::pick($request->getPreferredLanguage(['en', 'tr']));
+        /*
+            Taahhüt cümlesi kabuğun SEÇTİĞİ dille aynı dilde kurulur — ve o
+            seçim burada TEKRARLANMAZ (FF-249). Bu satır kendi
+            `getPreferredLanguage(['en', 'tr'])` pazarlığını yapıyordu; sunulan
+            tek dil `en` iken Türkçe bir tarayıcıya Türkçe bir taahhüt cümlesi
+            veriyor, aynı sayfadaki gezintiyi İngilizce bırakıyordu.
+        */
+        $locale = $shell['lang']->ui;
 
         $reference = $request->session()->get('contact.reference');
         $reference = is_string($reference) && $reference !== '' ? $reference : null;

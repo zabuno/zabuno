@@ -19,7 +19,7 @@
      doldurmaz. Bu bir ALTBİLGİ DEĞİLDİR (`aside`) — kabuğun tek altbilgisi var
      (SHELL-SINGLE-SOURCE-01). İKON YOK (`docs/118` E6). --}}
 @if ($zabunoConsentConfigured && ! $zabunoConsentDecision->isDecided() && ! ($hideConsentBanner ?? false))
-<aside class="site-consent" data-consent-banner aria-label="{{ $st['consentLabel'] }}">
+<aside class="site-consent" data-consent-banner aria-label="{{ $st['consentLabel'] }}"{!! $lang->chromeAttributes() !!}>
     <form method="post" action="/consent/measurement" class="site-shell-inner site-consent-inner">
         @csrf
         <input type="hidden" name="return_to" value="{{ request()->getRequestUri() }}">
