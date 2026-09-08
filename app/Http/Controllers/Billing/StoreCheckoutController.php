@@ -11,6 +11,7 @@ use App\Application\Billing\Exception\PaymentGatewayBadGatewayException;
 use App\Application\Billing\Exception\PaymentGatewayUnavailableException;
 use App\Application\Billing\Exception\PlanNotPurchasableException;
 use App\Application\Billing\Exception\SellerIdentityMissingException;
+use App\Application\Billing\Exception\SubscriptionActionNotAllowedException;
 use App\Application\Billing\UseCase\ManageCheckout;
 use App\Application\Legal\ConsentRecorder;
 use App\Domain\Authorization\Permission;
@@ -84,6 +85,8 @@ final class StoreCheckoutController extends Controller
             $transaction = $this->checkout->checkout($workspace, $userId, (int) $validated['plan_id'], (string) $validated['idempotency_key']);
         } catch (PlanNotPurchasableException) {
             return response()->json(['message' => 'This plan cannot be purchased.', 'reason' => 'plan_not_purchasable'], 422);
+        } catch (SubscriptionActionNotAllowedException $exception) {
+            return response()->json(['message' => $exception->getMessage(), 'reason' => $exception->reason], 422);
         } catch (BillingProfileMissingException) {
             return response()->json(['message' => 'Billing details are missing.', 'reason' => 'billing_profile_missing'], 422);
         } catch (SellerIdentityMissingException) {

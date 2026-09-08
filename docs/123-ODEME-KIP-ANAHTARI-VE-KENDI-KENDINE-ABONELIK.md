@@ -102,7 +102,8 @@ eski yüzey dondurulmuş ve ayrı iş olarak emekliye ayrılacak (aşağıda K10
 üstüne, geçmişte kaldıysa bugünden itibaren bir dönem
 (`billing.subscription.period_days`). Erken ödeyen sahip gün kaybetmez.
 Ödenen plan aboneliğin planı olur; kalan süre korunur. Plan düşürmede
-fark iadesi YOK (docs/107 1.3'te açık madde).
+fark iadesi YOK — bu karar FF-219'da uygulandı ve gerekçesiyle birlikte
+`docs/134` K6'da sahiplenildi (düşürme dönem sonunda yürürlüğe girer).
 
 Genişletme koşullu geçişten sonra ve YALNIZ bir kez: webhook ile callback
 aynı anda gelse bile `markSucceeded` yalnız birine `true` döner; abonelik ve

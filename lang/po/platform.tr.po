@@ -488,6 +488,14 @@ msgstr "Müşteri anahtarı yalnız o tek çalışma alanına hizmet eder. Başk
 msgid "platform.connections.workspace.label"
 msgstr "Çalışma alanı kimliği"
 
+#: platform:platform.credentials.choice.off
+msgid "platform.credentials.choice.off"
+msgstr ""
+
+#: platform:platform.credentials.choice.on
+msgid "platform.credentials.choice.on"
+msgstr ""
+
 #: platform:platform.credentials.disable
 msgid "platform.credentials.disable"
 msgstr "Devre dışı bırak"
@@ -504,6 +512,10 @@ msgstr "API anahtarı"
 msgid "platform.credentials.field.base_url"
 msgstr "Temel adres"
 
+#: platform:platform.credentials.field.container_id
+msgid "platform.credentials.field.container_id"
+msgstr ""
+
 #: platform:platform.credentials.field.domain
 msgid "platform.credentials.field.domain"
 msgstr "Alan adı"
@@ -511,6 +523,14 @@ msgstr "Alan adı"
 #: platform:platform.credentials.field.endpoint
 msgid "platform.credentials.field.endpoint"
 msgstr "Uç nokta"
+
+#: platform:platform.credentials.field.ga4
+msgid "platform.credentials.field.ga4"
+msgstr ""
+
+#: platform:platform.credentials.field.hotjar
+msgid "platform.credentials.field.hotjar"
+msgstr ""
 
 #: platform:platform.credentials.field.organization
 msgid "platform.credentials.field.organization"
@@ -527,6 +547,10 @@ msgstr "Gizli anahtar / API anahtarı"
 #: platform:platform.credentials.field.secret_key
 msgid "platform.credentials.field.secret_key"
 msgstr "Gizli anahtar"
+
+#: platform:platform.credentials.field.yandex_metrica
+msgid "platform.credentials.field.yandex_metrica"
+msgstr ""
 
 #: platform:platform.credentials.intro
 msgid "platform.credentials.intro"
@@ -555,6 +579,10 @@ msgstr "Özel uç nokta (OpenAI uyumlu)"
 #: platform:platform.credentials.provider.gemini
 msgid "platform.credentials.provider.gemini"
 msgstr "Gemini (Google)"
+
+#: platform:platform.credentials.provider.google_tag_manager
+msgid "platform.credentials.provider.google_tag_manager"
+msgstr ""
 
 #: platform:platform.credentials.provider.iyzico
 msgid "platform.credentials.provider.iyzico"

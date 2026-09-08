@@ -286,6 +286,13 @@ const en = {
     'platform.credentials.provider.anthropic': 'Anthropic (Claude)',
     'platform.credentials.provider.kimi': 'Kimi (Moonshot)',
     'platform.credentials.provider.custom_endpoint': 'Custom endpoint (OpenAI-compatible)',
+    /*
+        ÖLÇÜM KİMLİĞİ (FF-220, `docs/135`). Etiket "measurement" diyor,
+        "analytics" değil: sahip bu ekrana ölçümü açmak için gelir, ve
+        panelde başka bir yerde "Analytics" başlıklı, tamamen farklı bir
+        şey (kendi raporları) var.
+    */
+    'platform.credentials.provider.google_tag_manager': 'Google Tag Manager (measurement)',
 
     // ÇOK-BAĞLANTI PANELİ — `docs/95` Faz 3. Etiket zorunludur çünkü sır
     // görünmediği için aynı sağlayıcının iki kartını ayırt eden tek şey odur.
@@ -335,6 +342,23 @@ const en = {
     'platform.credentials.field.base_url': 'Base URL',
     'platform.credentials.field.organization': 'Organization',
     'platform.credentials.field.project': 'Project',
+
+    /*
+        GTM ALANLARI. Hedef etiketleri neyi yaptıklarını SÖYLER: bunlar
+        GTM'i değil tarayıcı güvenlik politikasını (CSP) yapılandırır ve bir
+        hedefi açmadan GTM'de etiket kurmak İŞE YARAMAZ (`docs/126` §3).
+        Etiket yalnız "Google Analytics 4" deseydi, sahip bunu GA4'ü kuran
+        düğme sanırdı.
+    */
+    'platform.credentials.field.container_id': 'Container ID (GTM-…)',
+    'platform.credentials.field.ga4': 'Allow Google Analytics 4',
+    'platform.credentials.field.yandex_metrica': 'Allow Yandex Metrica',
+    'platform.credentials.field.hotjar': 'Allow Hotjar',
+
+    // Kapalı uçlu alanın seçenekleri. Depolanan değer (`on`/`off`) makine
+    // sözleşmesidir; buradaki metin yalnız onun okunan hâlidir.
+    'platform.credentials.choice.off': 'Off',
+    'platform.credentials.choice.on': 'On',
 
     /*
         SÜPERADMİNİN İLK GÜNÜ (`docs/122` Y2). Üç ekran, üçü de yalnız

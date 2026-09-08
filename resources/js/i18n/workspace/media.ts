@@ -541,9 +541,19 @@ export const media = {
     'workspace.media.settings.security.heading': 'Security and privacy',
     /*
         Sahibin kararı (2026-09-05): kapatılabilir bir güvenlik anahtarı,
-        kapatıldığı gün bir güvenlik açığıdır. Anahtar GÖRÜNÜR — durumu
-        okunsun diye — ama çevrilemez.
+        kapatıldığı gün bir güvenlik açığıdır. Durum GÖRÜNÜR — okunsun diye —
+        ama değiştirilemez.
+
+        İKİNCİ KARAR (2026-09-08): o durum bir ANAHTAR olarak çiziliyordu ve
+        anahtar çevrilemiyordu. "Değiştirebilirsin" diyen bir biçimin altına
+        "değiştiremezsin" yazmak, kullanıcıya ancak deneyerek öğreneceği bir
+        şey söylemektir. Anahtar kalktı; hâl artık KELİMEDİR — anlamı metin
+        taşır, renk yalnız pekiştirir.
     */
+    'workspace.media.settings.security.state.on': 'On',
+    'workspace.media.settings.security.state.partial': 'Partly on',
+    // "Kapalı" değil: bu bir ORTAM gerçeği, bir kullanıcı kararı değil.
+    'workspace.media.settings.security.state.unavailable': 'Not running here',
     'workspace.media.settings.security.locked': 'Cannot be switched off',
     'workspace.media.settings.security.virusScan': 'Virus scan',
     'workspace.media.settings.security.virusScan.on':

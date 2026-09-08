@@ -177,6 +177,57 @@ export const billing = {
         '{count} collected payment(s) have no document, because no billing details were recorded when they were collected.',
     'workspace.billing.invoices.earchiveNotConfigured':
         'No e-Arşiv / e-Fatura provider is connected, so these records have not been sent to any tax authority.',
+    // ABONELİĞİN EKSİK YARISI (FF-219, docs/107 Faz 1.3, docs/134): iptal,
+    // iptalden cayma, plan düşürme, ödemesiz süre ve askı. Metinler TARİHİ ve
+    // SONUCU söyler; "aboneliğiniz güncellendi" gibi hiçbir şey anlatmayan bir
+    // cümle yoktur.
+    'workspace.billing.lifecycle.region': 'Subscription',
+    'workspace.billing.lifecycle.loading': 'Loading your subscription…',
+    'workspace.billing.lifecycle.error': 'Your subscription could not be loaded.',
+    'workspace.billing.lifecycle.retry': 'Retry',
+    'workspace.billing.lifecycle.none':
+        'You have no paid subscription. The free journey — menu, publishing and QR codes — keeps working.',
+    'workspace.billing.lifecycle.active': 'Your {plan} plan runs until {date}.',
+    'workspace.billing.lifecycle.cancelled':
+        'You cancelled. You keep using {plan} until {date}, and it will not renew.',
+    'workspace.billing.lifecycle.grace':
+        'Your paid period ended on {date} and no payment has arrived. Your {plan} features stay on until {graceDate}. Pay below to continue.',
+    'workspace.billing.lifecycle.suspended':
+        'Your {plan} features have been off since {graceDate} because the period was not paid for. Your published menus are still online and your data is untouched — a payment turns the features back on.',
+    'workspace.billing.lifecycle.ended':
+        'Your subscription ended on {date}. Your published menus are still online and your data is untouched.',
+    'workspace.billing.lifecycle.guestUnaffected':
+        'Your guests are not told about any of this: the menu behind a printed QR code keeps showing exactly what you published.',
+    'workspace.billing.lifecycle.cancel': 'Cancel subscription',
+    'workspace.billing.lifecycle.cancel.confirmHeading': 'Cancel your subscription?',
+    'workspace.billing.lifecycle.cancel.confirmBody':
+        'Your plan stays active until {date}. Nothing is refunded for the period you have already paid for, and you can undo this before {date}.',
+    'workspace.billing.lifecycle.cancel.confirm': 'Yes, cancel',
+    'workspace.billing.lifecycle.cancel.dismiss': 'Keep my subscription',
+    'workspace.billing.lifecycle.cancel.error': 'The subscription could not be cancelled.',
+    'workspace.billing.lifecycle.resume': 'Undo the cancellation',
+    'workspace.billing.lifecycle.resume.hint': 'You will not be asked to pay again.',
+    'workspace.billing.lifecycle.resume.error': 'The cancellation could not be undone.',
+    'workspace.billing.lifecycle.change.heading': 'Change plan',
+    'workspace.billing.lifecycle.change.legend': 'Move to a cheaper plan',
+    'workspace.billing.lifecycle.change.empty': 'There is no cheaper plan to move to.',
+    'workspace.billing.lifecycle.change.upgradeHint':
+        'To move up a plan, pay for it below — the higher plan starts as soon as the payment succeeds.',
+    'workspace.billing.lifecycle.change.previewError':
+        'We could not work out what this change would do.',
+    'workspace.billing.lifecycle.change.effective':
+        'Takes effect on {date}. Nothing is refunded for the current period.',
+    'workspace.billing.lifecycle.change.losing': 'You will lose on {date}:',
+    'workspace.billing.lifecycle.change.losingNothing':
+        'Nothing you use today goes away; only the price changes.',
+    'workspace.billing.lifecycle.change.guestWarning':
+        'Guests see the difference only in your next publication — the menu behind a QR code you have already printed does not change.',
+    'workspace.billing.lifecycle.change.submit': 'Schedule the change',
+    'workspace.billing.lifecycle.change.error': 'The plan change could not be scheduled.',
+    'workspace.billing.lifecycle.scheduled':
+        'On {date} your plan becomes {plan}. Until then nothing changes.',
+    'workspace.billing.lifecycle.scheduled.withdraw': 'Keep my current plan',
+    'workspace.billing.lifecycle.scheduled.error': 'The scheduled change could not be withdrawn.',
 } as const;
 
 declare module '../workspace' {
