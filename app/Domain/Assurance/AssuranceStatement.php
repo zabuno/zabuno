@@ -33,6 +33,7 @@ final readonly class AssuranceStatement
         public string $title,
         public string $summary,
         public array $sections,
+        public string $language = 'en',
     ) {
         foreach (['key' => $key, 'title' => $title, 'summary' => $summary] as $field => $value) {
             if (trim($value) === '') {
