@@ -291,6 +291,136 @@ export const siteTranslations = {
     // (`docs/122` Y6, `GuestRichMediaTest`).
     'site.plan.richMedia': 'Photographs of your dishes on the guest menu',
 
+    /*
+        ═══ KİME UYGUN — FF-239 (`docs/139`, `docs/107` Faz 2.7) ═══
+
+        "Pro" bir şey anlatmaz. Kademenin ADI, telefonundan bakan bir restoran
+        sahibine hangisini alacağını söylemez; ölçüt onun KENDİ durumudur.
+
+        ÜÇ CÜMLE DE UYDURULMADI, `PlanCatalogueSeeder`'ın kendi gerekçesinden
+        türetildi (`docs/90`): ücretsiz kademe "zaten ücretsiz olan"ı
+        adlandırır; `restaurant` "kırk masalık, sahip-işletmeli bir salonun ilk
+        gün ihtiyacı"dır; `team` "sahibin menüyü tek başına yönetmediği yer".
+        Yani sayfada okunan cümle, kademenin var olma sebebinin kendisidir —
+        pazarlama için sonradan yazılmış ikinci bir gerekçe değil.
+
+        Cümleler hakları TEKRAR SAYMAZ: "Adds" listesi zaten onu yapıyor ve
+        aynı şeyi iki kez yazmak, dar ekranda kartın yarısını harcardı.
+
+        Anahtar plan KODUNA bağlıdır ve tanınmayan bir kod hiç cümle üretmez
+        (`SiteText::planAudienceLabel`) — sahibin panelden açtığı dördüncü bir
+        plana uydurulmuş bir kitle yakıştırmak, tam olarak bu bölümün
+        engellemek için var olduğu şey olurdu.
+    */
+    /*
+        BÖLÜM BAŞLIKLARI. Fiyat sayfası artık dört bölümlü ve her bölümün
+        görünür bir başlığı var: gizli bir başlık, ekran okuyucuya verilen
+        hizmeti gören kullanıcıya vermez ve dar ekranda kaydıran birine
+        nerede olduğunu söyleyen tek şey odur.
+    */
+    'site.pricing.plans.heading': 'The plans',
+    'site.pricing.terms.heading': 'Paying, and stopping',
+    'site.pricing.audience': 'Who it is for',
+    'site.plan.audience.starter':
+        'You are putting your menu behind a QR code for the first time, you look after it yourself, and you would rather not pay to find out whether it works.',
+    'site.plan.audience.restaurant':
+        'You run a room of tables yourself, and you want the page the guest reads to look like your restaurant rather than like a form.',
+    'site.plan.audience.team':
+        'You are not the only one who touches the menu: a manager, a waiter or an accountant needs an account of their own instead of yours.',
+
+    /*
+        ═══ NE DAHİL DEĞİL — HİÇBİR PLANDA ═══
+
+        Bir fiyat sayfasının en pahalı sessizliği burasıdır. Tik dolu bir
+        tablo, pahalı sütunun NEYE SAHİP olduğunu söyler; parasını ödedikten
+        sonra masada hâlâ olmayacak şeyi söylemez.
+
+        Altı satırın altısı da ölçülmüş bir yokluktur ve DİLİ ödünç alınmıştır,
+        yeniden icat edilmemiştir: dördü sipariş sayfasının "What it does not
+        do" bloğundan (`OrderingPage`), ikisi kurumsal fiyat sayfasının
+        "What this page does not offer" bloğundan (`PricingPage`). Aynı
+        yokluğu iki yüzeyde iki ayrı cümleyle anlatmak, ikisinden hangisinin
+        doğru olduğunu bir gün bilinmez yapardı (`docs/137` §2a).
+
+        Başlık "hiçbir plan" der, "ucuz plan" değil: bunlar bir kademe farkı
+        değil, ürünün bugünkü sınırıdır.
+    */
+    'site.pricing.excluded.heading': 'What no plan includes',
+    'site.pricing.excluded.lead':
+        'These are missing from every plan, not only from the cheap one. They are written here rather than found out after paying.',
+    'site.pricing.excluded.payment':
+        'Guests do not pay through Zabuno. An order carries no card step and no bill; the money is still handled at the table, exactly as it is today.',
+    'site.pricing.excluded.pos':
+        'There is no connection to a till, a point-of-sale system or an accounting package. An order lives in Zabuno and is read on a Zabuno screen.',
+    'site.pricing.excluded.delivery':
+        'There is no takeaway, no delivery, no collection and no ordering before arriving. The one way to send an order is to scan the code on a table.',
+    'site.pricing.excluded.kitchenHardware':
+        'Nothing prints and nothing beeps. Orders appear on a screen that refreshes itself, so somebody has to be able to see that screen.',
+    'site.pricing.excluded.campaign':
+        'There is no trial period, no introductory rate, no annual discount and no campaign. A plan is a name, an amount and a set of rights.',
+    'site.pricing.excluded.currency':
+        'Prices are in Turkish lira only. There is no second currency and no conversion at the payment step.',
+
+    /*
+        ═══ SSS — SORULAR UYDURULMADI ═══
+
+        Kaynak üç yerdir ve her sorunun karşılığı depoda ölçülebilir:
+
+          · YARDIM MAKALESİ (`resources/help/en/first-15-minutes.blade.php`) —
+            basılı kodun ölmemesi oradan gelir.
+          · ÜRÜNÜN "NE DEĞİLDİR" LİSTELERİ (`PricingPage`, `OrderingPage`) —
+            deneme süresi, şube başına fiyat, kişi başına fiyat.
+          · YAYINLANMIŞ YASAL METİN (`RefundPolicy`, `docs/134`) — iptal, ne
+            zaman yürürlüğe girdiği, iade, plan değiştirme, ödemesiz süre.
+
+        DESTEK TALEBİ YÜZEYİ BİLEREK KULLANILMADI ve sebebi ölçüldü:
+        `support_requests` bir konu taksonomisi taşımıyor (`workspace.support`
+        kataloğunda tek bir serbest metin alanı var) ve depoda gerçek bir
+        talep kütüğü yok. Oradan soru "türetmek", uydurmanın kaynak göstermiş
+        hâli olurdu.
+
+        Cevaplar ürünün BUGÜNKÜ davranışını anlatır; hiçbiri süre, oran ya da
+        garanti sözü vermez. Ödemesiz sürenin gün sayısı da burada YAZMAZ —
+        o bir yapılandırmadır (`billing.subscription.grace_days`) ve metne
+        kopyalansaydı ilk değişiklikte ayrışırdı (`RefundPolicy` ile aynı
+        gerekçe).
+    */
+    'site.pricing.faq.heading': 'Questions people ask before paying',
+    'site.pricing.faq.stop.question': 'What happens to my menu if I stop paying?',
+    'site.pricing.faq.stop.answer':
+        'It keeps working. Writing the menu, publishing it, the printed codes and the page your guests read never needed a plan. When a paid period ends without a payment, the plan features stay on for a further period shown on your Billing screen, then switch off; your workspace, your menus and your published pages stay exactly as they are.',
+    'site.pricing.faq.cancel.question': 'Can I cancel it myself?',
+    'site.pricing.faq.cancel.answer':
+        'Yes, from the Billing screen of your workspace. Cancelling stops the renewal: the plan stays active until the end of the period you have already paid for, and you can undo the cancellation from the same screen before that date without paying again.',
+    'site.pricing.faq.refund.question':
+        'Do I get money back if I cancel in the middle of a period?',
+    'site.pricing.faq.refund.answer':
+        'No. A period that has already started is not refunded, and you keep everything it included until it ends. The exceptions are a consumer exercising the statutory right of withdrawal, and us ending or reducing the service before a paid period is over; the Cancellation and Refund Policy states them.',
+    'site.pricing.faq.change.question': 'How do I move to a bigger or a smaller plan?',
+    'site.pricing.faq.change.answer':
+        'From the same Billing screen. Moving up takes effect as soon as its payment succeeds. Moving down is scheduled for the end of the period you have paid for, and before you confirm it the screen names the capabilities the cheaper plan does not include.',
+    'site.pricing.faq.trial.question': 'Is the free plan a trial that runs out?',
+    'site.pricing.faq.trial.answer':
+        'No, and there is no trial on the paid plans either. The free plan is the part of the product that never needed a plan, named rather than hidden: you can write the whole menu, publish it and print codes before deciding anything.',
+    'site.pricing.faq.branch.question': 'Does a second branch or another waiter cost more?',
+    'site.pricing.faq.branch.answer':
+        'No. A plan carries one amount for the whole workspace, whatever it holds. Accounts for your team are a right the top plan opens, not a price per person.',
+    'site.pricing.faq.reprint.question':
+        'Do I have to reprint the codes if I change my prices or my plan?',
+    'site.pricing.faq.reprint.answer':
+        'No. Print once. You can change prices, reorganise the menu, publish a wrong list and go back to the previous one, or move where a code points; the paper on the table keeps working.',
+
+    /*
+        İPTAL VE İADE, FİYATIN YANINDA — ödeme yönteminin yanında (FF-216 ile
+        aynı gerekçe). "Nasıl çıkarım?" sorusu tam burada sorulur; cevabını
+        yalnız sözleşmenin içinde bırakmak, onu ödeme adımından SONRA
+        öğrenmek demekti. Yasal metin `/refund-policy` adresinde yaşıyor ve
+        bu satır onun yerine geçmez, ona götürür.
+    */
+    'site.pricing.cancellation':
+        'You cancel from your own workspace, and the plan runs to the end of the period you paid for.',
+    'site.pricing.cancellation.cta': 'Read the Cancellation and Refund Policy',
+
     // --- İletişim --------------------------------------------------------
     'site.contact.heading': 'Contact',
     'site.contact.lead':

@@ -177,6 +177,42 @@ final class SiteText
             'free' => 'site.pricing.free',
             'perMonth' => 'site.pricing.perMonth',
             'adds' => 'site.pricing.adds',
+            /*
+                FİYAT SAYFASININ GÖVDESİ (FF-239, `docs/139`).
+
+                Kime uygun, ne dahil değil, SSS ve iptal yolu. Hepsi burada,
+                çünkü fiyat sayfasının kendi şablonunda tek bir sabit dize
+                yok (I18N-SSR-RATCHET-16) ve olmamalı: bunlar bir gün
+                çevrilecek metinlerin en önemlileri.
+            */
+            'pricingPlansHeading' => 'site.pricing.plans.heading',
+            'pricingTermsHeading' => 'site.pricing.terms.heading',
+            'audienceLabel' => 'site.pricing.audience',
+            'excludedHeading' => 'site.pricing.excluded.heading',
+            'excludedLead' => 'site.pricing.excluded.lead',
+            'excludedPayment' => 'site.pricing.excluded.payment',
+            'excludedPos' => 'site.pricing.excluded.pos',
+            'excludedDelivery' => 'site.pricing.excluded.delivery',
+            'excludedKitchenHardware' => 'site.pricing.excluded.kitchenHardware',
+            'excludedCampaign' => 'site.pricing.excluded.campaign',
+            'excludedCurrency' => 'site.pricing.excluded.currency',
+            'pricingFaqHeading' => 'site.pricing.faq.heading',
+            'pricingFaqStopQuestion' => 'site.pricing.faq.stop.question',
+            'pricingFaqStopAnswer' => 'site.pricing.faq.stop.answer',
+            'pricingFaqCancelQuestion' => 'site.pricing.faq.cancel.question',
+            'pricingFaqCancelAnswer' => 'site.pricing.faq.cancel.answer',
+            'pricingFaqRefundQuestion' => 'site.pricing.faq.refund.question',
+            'pricingFaqRefundAnswer' => 'site.pricing.faq.refund.answer',
+            'pricingFaqChangeQuestion' => 'site.pricing.faq.change.question',
+            'pricingFaqChangeAnswer' => 'site.pricing.faq.change.answer',
+            'pricingFaqTrialQuestion' => 'site.pricing.faq.trial.question',
+            'pricingFaqTrialAnswer' => 'site.pricing.faq.trial.answer',
+            'pricingFaqBranchQuestion' => 'site.pricing.faq.branch.question',
+            'pricingFaqBranchAnswer' => 'site.pricing.faq.branch.answer',
+            'pricingFaqReprintQuestion' => 'site.pricing.faq.reprint.question',
+            'pricingFaqReprintAnswer' => 'site.pricing.faq.reprint.answer',
+            'cancellation' => 'site.pricing.cancellation',
+            'cancellationCta' => 'site.pricing.cancellation.cta',
             'contactHeading' => 'site.contact.heading',
             'contactLead' => 'site.contact.lead',
             'contactSent' => 'site.contact.sent',
@@ -374,6 +410,34 @@ final class SiteText
         ];
 
         return isset($map[$key]) ? $this->get($map[$key], $locale) : null;
+    }
+
+    /**
+     * Bir plan kademesinin KİME UYGUN olduğu — FF-239 (`docs/139`).
+     *
+     * "Pro" bir şey anlatmaz: telefonundan bakan bir restoran sahibi kademe
+     * adından hangisini alacağını çıkaramaz. Ölçüt kademenin adı değil, onun
+     * kendi durumudur ve cümleler `PlanCatalogueSeeder`'ın kendi
+     * gerekçesinden türetildi (`docs/90`) — pazarlama için sonradan yazılmış
+     * ikinci bir gerekçe değil.
+     *
+     * `entitlementLabel()` ile AYNI DAVRANIŞ: tanınmayan bir kod `null`
+     * döner ve sayfa o plan için hiçbir cümle çizmez. Sahibin panelden açtığı
+     * dördüncü bir plana uydurulmuş bir kitle yakıştırmak, bu bölümün
+     * engellemek için var olduğu şeyin tam kendisi olurdu. Kademe eklendiği
+     * gün burası bilinçli olarak güncellenir ve
+     * `PricingPageContentTest` kataloğun her kodunun burada karşılığı
+     * olmasını ölçer — sessiz düşüş bir kapıya çarpar.
+     */
+    public function planAudienceLabel(string $code, ?string $locale = null): ?string
+    {
+        $map = [
+            'starter' => 'site.plan.audience.starter',
+            'restaurant' => 'site.plan.audience.restaurant',
+            'team' => 'site.plan.audience.team',
+        ];
+
+        return isset($map[$code]) ? $this->get($map[$code], $locale) : null;
     }
 
     /**
