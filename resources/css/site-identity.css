@@ -705,6 +705,28 @@ body.site-shell {
     --color-fg-secondary: var(--zc-deep-text-soft);
     --border: var(--zc-deep-edge);
     --color-border: var(--zc-deep-edge);
+    /*
+        BANDIN İÇİNE KONAN YÜZEY DE DERİNDİR.
+
+        Üstteki satırlar bandın MÜREKKEBİNİ yeniliyordu ama ZEMİNİNİ değil:
+        `.site-panel` zeminini `--zc-raised`ten alır ve o jeton banttan
+        habersizdi. Açık kipte sonuç ölçüldü (2026-09-08, gerçek Chrome,
+        `prefers-color-scheme: light`): kart BEYAZ boyanıyor, başlığı ise
+        bandın açık mürekkebini miras alıyordu — `rgb(237,235,247)` üzerine
+        `rgb(255,255,255)`, yani **1,18:1**. WCAG 2.2 AA büyük metin için
+        3:1, normal metin için 4,5:1 ister; 1,18 okunmaz demektir ve sahibin
+        "yazılar okunmuyor" şikâyeti tam olarak buydu.
+
+        Koyu kipte kusur GÖRÜNMÜYORDU: orada `--zc-raised` zaten koyu.
+        Sahne koyu kipte tasarlandı ve yalnız orada ölçüldü; açık kip hiç
+        bakılmamış bir yüzeydi.
+
+        Kenar da yenileniyor: koyu bir kartın üstünde açık kipin açık
+        kenarı, kartı zemininden değil bandından ayırırdı.
+    */
+    --zc-raised: var(--zc-deep-raised);
+    --zc-edge: var(--zc-deep-edge);
+    --zc-edge-strong: var(--zc-deep-edge);
     /* Derin bantta ışıma her zaman koyu kip gücündedir. */
     --zc-glow-action: color-mix(in oklab, var(--zc-pulse-400) 34%, transparent);
     --zc-glow-beam: color-mix(in oklab, var(--zc-beam-300) 22%, transparent);
