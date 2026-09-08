@@ -91,4 +91,24 @@ return [
     'urun.menu-yonetimi.urunler' => '/en/product/menu-management/dishes/',
     'urun.menu-yonetimi.urun-fiyatlari' => '/en/product/menu-management/prices/',
     'urun.menu-yonetimi.stok-durumu' => '/en/product/menu-management/stock-status/',
+
+    /*
+        DALGA 4 (FF-229). Aynı kural, aynı yol: hiçbiri çeviri değil, ikisi de
+        sayfanın KENDİ İngilizce `breadcrumbTitle` alanından slug'a indirildi —
+        "Ordering", "Versions and rollback".
+
+        İKİSİNİN DE KÜTÜKTE TÜRKÇE SATIRI ZATEN VARDI ve bugüne kadar hiçbir
+        metni yoktu (`/tr/urun/siparis/`, `/tr/urun/menu-yonetimi/menu-versiyonlari/`).
+        Yani burada açılan şey yeni bir sayfa değil, `docs/137` §5'in
+        "satılan ama anlatılmayan" diye ölçtüğü iki yeteneğin kaynak dildeki
+        ADRESİ: masadan sipariş para karşılığı satılıyordu ve sitede tek bir
+        satırı yoktu.
+
+        `urun.siparis` HUB'IN KENDİSİDİR ve alt sayfası yazılmadı. Kütükteki
+        altı kardeşin (gel-al, paket servis, ön sipariş, çoklu satıcı, açık
+        hesap) hiçbiri depoda yok; hub'ı boş bırakıp yalnız `masaya-siparis`
+        yazmak, ebeveyni çocuğunun kopyası olan iki sayfa üretirdi.
+    */
+    'urun.siparis' => '/en/product/ordering/',
+    'urun.menu-yonetimi.menu-versiyonlari' => '/en/product/menu-management/versions-and-rollback/',
 ];
