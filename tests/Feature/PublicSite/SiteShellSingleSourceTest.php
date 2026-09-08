@@ -112,6 +112,7 @@ final class SiteShellSingleSourceTest extends TestCase
 
     public function test_a_planned_registry_page_wears_the_same_shell_as_a_live_page(): void
     {
+        config(['i18n.shipped_locales' => ['en']]);
         $this->registryPage('/tr/urun/qr-menu/', PagePublicationStatus::Planned);
 
         /*
