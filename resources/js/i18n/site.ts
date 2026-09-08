@@ -385,6 +385,33 @@ export const siteTranslations = {
     // kutuya cevap yazdırmak, hiç cevap istememekten kötü.
     'site.support.ack.reply': 'You can reply to this email to add more detail.',
 
+    /*
+        VERİ HAKKI BİLDİRİMİ (FF-226, `docs/138` §6).
+
+        Cümleler KATALOGDA, Mailable'da değil: bu e-postada ne yazdığı
+        sorusunun cevabı tek yerde durmalı ve sahibi onu bir gün PO
+        dosyasından çevirebilmeli (`site.support.ack.*` ile aynı desen).
+
+        E-POSTA BİR SÜRE TAAHHÜDÜ VERMEZ. "Şu kadar günde silinir" değil,
+        "şu tarihte silinecek" der ve tarih kayıttan gelir.
+    */
+    'site.dataRights.greeting': 'Hello,',
+
+    'site.dataRights.export.subject': 'Zabuno — your data archive is ready',
+    'site.dataRights.export.body':
+        'The archive you asked for is ready. It carries everything your workspace holds, in a machine readable form and as spreadsheet files a person can open.',
+    'site.dataRights.export.detail': 'The link below stops working on {date}.',
+    'site.dataRights.export.action': 'Download it here:',
+    'site.dataRights.export.note':
+        'If the link has expired, open Settings in your workspace and prepare a new archive.',
+
+    'site.dataRights.erasure.subject': 'Zabuno — an erasure was requested for your workspace',
+    'site.dataRights.erasure.body':
+        'Someone with owner access asked for the data of your workspace to be erased. Nothing has been removed yet, and the workspace keeps working until the date below.',
+    'site.dataRights.erasure.detail': 'The erasure will run on {date}.',
+    'site.dataRights.erasure.note':
+        'If this was not intended, open Settings in your workspace and take the request back. Records we must keep by law — issued invoices, the accounting entries behind them, the payments they rest on and the record of consents given — are not removed by an erasure; that screen lists each of them.',
+
     // --- Ana sayfadaki iki yeni cümle ------------------------------------
     // --- Ana sayfa gövdesi (`docs/100` Faz 2) -----------------------------
     /*

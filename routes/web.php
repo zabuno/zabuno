@@ -31,6 +31,7 @@ use App\Http\Controllers\Rating\StoreGuestRatingController;
 use App\Http\Controllers\Seo\ShowRobotsController;
 use App\Http\Controllers\Seo\ShowSitemapController;
 use App\Http\Controllers\Team\ShowTeamInvitationController;
+use App\Http\Controllers\Workspace\DownloadWorkspaceDataExportController;
 use App\Http\Controllers\WorkspaceAppController;
 use App\Http\Middleware\EnsurePlatformSuperAdmin;
 use App\Http\Responses\GuestDeadEnd;
@@ -202,6 +203,26 @@ Route::get('/media/r/{rendition}-{fingerprint}.{format}', ServeRenditionControll
     // veriyor (`ServeRenditionController`).
     ->where('format', '(webp|png|jpeg|svg)')
     ->name('media.rendition');
+
+/*
+    VERİ DIŞA AKTARMA ARŞİVİ (FF-226, `docs/138`) — imzalı adres.
+
+    `media.original` ile aynı desen ve aynı gerekçe: dosya özel diskte
+    durur, herkese açık bir adresi yoktur ve imza yetkidir. Oturum
+    İSTENMEZ, çünkü bağlantı e-postayla da gider ve sahip onu başka bir
+    cihazda açabilmeli.
+
+    ADRES `/workspaces/...` DEĞİL `/data-export/...`: her üst düzey yol
+    rezerve edilmek zorunda (URL-RESERVED-COVERS-ROUTES-13) ve `workspaces`
+    gibi geniş bir sözcüğü bir işletmenin slug'ı olmaktan çıkarmak, bu
+    paketin isteyeceğinden çok daha büyük bir karardı. Taslak önizlemesi
+    (`/menu-preview/{workspace}/{menu}`) aynı sorunu aynı biçimde çözüyor.
+*/
+Route::get('/data-export/{workspace}/{request}', DownloadWorkspaceDataExportController::class)
+    ->where('workspace', '[0-9]+')
+    ->where('request', '[0-9]+')
+    ->middleware('signed')
+    ->name('workspace.data-export.download');
 
 // Aslın İMZALI adresi (`docs/49` Faz 6 madde 2): 10 dakikalık imza,
 // kiracı + varlık; süresi dolunca 403. Oturum gerekmez — imza yetkidir.
@@ -403,6 +424,57 @@ Route::get('/platform', PlatformAdminAppController::class)
     ->middleware(['auth:web', 'verified', EnsurePlatformSuperAdmin::class])
     ->name('platform.admin');
 
+/*
+    Mühendislik kabuğu (`docs/98` FF-66): release readiness, güvenlik
+    kanıtı, AI denetim izi. Platform (plan/ödeme/anahtar) kabuğundan AYRI —
+    aynı kişi olabilir, aynı iş değil. Yetki aynı: superadmin, aynı
+    enumeration-safe 404.
+
+    ADRES `/platform` ALTINDA (FF-248). Sahibin sorusu şuydu: *"'/platform'
+    haricinde '/engineering' sayfası var. '/platform/engineering' olsa, fena
+    mı olurdu?"* Fena olmazdı. İki kabuk da bu üç ara katmandan geçiyor;
+    yetki tek bir kapıysa adres de tek bir kök olmalı. Kök seviyesinde duran
+    `/engineering` kendini üçüncü bir uygulama gibi gösteriyor, `docs/38`'in
+    her yeni köke bir rezerve kelime ve bir noindex satırı yazdıran kuralına
+    ikinci bir kalem ekliyordu. Kabuk hâlâ AYRI — ayrılan iş, adres değil.
+
+    SIRALAMA BURADA ANLAMLIDIR ve tesadüf değildir. Aşağıdaki
+    `/platform/{section}` deseni `engineering` kelimesiyle de eşleşir;
+    Laravel ilk eşleşen rotayı çalıştırır. Bu iki satır oraya kayarsa istek
+    sessizce PLATFORM kabuğuna düşer: durum kodu yine 200 olur, ekran yanlış
+    olur ve hiçbir kapı bunu yakalamaz. Bu yüzden gövdeyi okuyan bir test
+    var (`EngineeringAddressMoveTest`).
+*/
+Route::get('/platform/engineering', EngineeringAppController::class)
+    ->middleware(['auth:web', 'verified', EnsurePlatformSuperAdmin::class])
+    ->name('engineering');
+Route::get('/platform/engineering/{section}', EngineeringAppController::class)
+    ->where('section', '[a-z0-9]+(?:-[a-z0-9]+)*')
+    ->middleware(['auth:web', 'verified', EnsurePlatformSuperAdmin::class])
+    ->name('engineering.section');
+
+/*
+    ESKİ ADRES KALICI OLARAK YENİSİNE GİDER (FF-248).
+
+    Bir adres bir kez paylaşıldığında onu geri almak bizim elimizde değildir
+    (`config/url-policy.php` girişindeki sözleşme). `/engineering` bir yer
+    iminde, bir ekran görüntüsünde, bir iç wiki satırında yaşıyor olabilir;
+    taşımanın bedelini o bağlantıyı tıklayan kişiye ödetmeyiz.
+
+    301, 302 DEĞİL: taşıma kalıcıdır ve tarayıcı ile ara katmanların eski
+    adresi unutmasını istiyoruz. 302 olsaydı her tıklamada iki istek daha
+    doğardı ve hiçbir istemci eski adresi bırakmazdı.
+
+    Yönlendirme KAPI DEĞİLDİR — kimlik doğrulaması yok, çünkü bir adres
+    tercümesi kimseyi içeri almaz: kapı hedeftedir ve orada yetkisiz
+    kullanıcıya yine çıplak 404 verir. Kimliğe bağlasaydık, çıkış yapmış
+    birinin yer imi çalışmaz, giriş yapmışınki çalışırdı — aynı basılı
+    bağlantı iki farklı sonuç verirdi.
+*/
+Route::permanentRedirect('/engineering', '/platform/engineering');
+Route::permanentRedirect('/engineering/{section}', '/platform/engineering/{section}')
+    ->where('section', '[a-z0-9]+(?:-[a-z0-9]+)*(?:/[a-z0-9]+(?:-[a-z0-9]+)*)*');
+
 /**
  * The same panel addressed by section. The section name is deliberately NOT
  * validated here: the client owns the section list, and a second list on the
@@ -413,20 +485,6 @@ Route::get('/platform/{section}', PlatformAdminAppController::class)
     ->where('section', '[a-z0-9]+(?:-[a-z0-9]+)*')
     ->middleware(['auth:web', 'verified', EnsurePlatformSuperAdmin::class])
     ->name('platform.admin.section');
-
-/*
-    Mühendislik kabuğu (`docs/98` FF-66): release readiness, güvenlik
-    kanıtı, AI denetim izi. Platform (plan/ödeme/anahtar) kabuğundan AYRI —
-    aynı kişi olabilir, aynı iş değil. Yetki aynı: superadmin, aynı
-    enumeration-safe 404.
-*/
-Route::get('/engineering', EngineeringAppController::class)
-    ->middleware(['auth:web', 'verified', EnsurePlatformSuperAdmin::class])
-    ->name('engineering');
-Route::get('/engineering/{section}', EngineeringAppController::class)
-    ->where('section', '[a-z0-9]+(?:-[a-z0-9]+)*')
-    ->middleware(['auth:web', 'verified', EnsurePlatformSuperAdmin::class])
-    ->name('engineering.section');
 
 /**
  * Shadows Fortify's default GET /email/verify/{id}/{hash} (registered

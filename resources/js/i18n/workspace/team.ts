@@ -152,6 +152,64 @@ export const team = {
     // Kaynağın davet kartındaki son satır. Sahiplik ayrı bir akıştır ve
     // sonucu geri alınamaz; davet listesinde aramak boşuna olurdu.
     'workspace.team.invite.ownership.note': 'Ownership is transferred, not given by invitation.',
+
+    /*
+        ROLÜN AYRINTISI (`docs/139` §5).
+
+        Yukarıdaki beş cümle rolün TARİFİDİR ve elle yazılmıştır — bir tarif
+        gerekir, liste onun yerine geçmez. Ama tarif tek başına bırakıldığında
+        bir role izin eklendiği gün sessizce eskiyordu ve hiçbir kapı bunu
+        görmüyordu. Aşağıdaki etiketler o boşluğu kapatan listelerin
+        kelimeleridir: hangi rolün hangisini taşıdığı BURADA YAZMAZ, koddan
+        üretilen matristen gelir (`role-permission-matrix.json`).
+
+        Yani bu blokta bir yetki iddiası yoktur; yalnız yeteneklerin ADLARI
+        vardır. Bir yetenek adsız kalırsa ya da olmayan bir yeteneğin adı
+        burada unutulursa ön uç kapısı kırılır
+        (`TeamRoleGuide.matrix.test.tsx`).
+    */
+    'workspace.team.roleGuide.detail.show': 'See exactly what this role can and cannot do',
+    'workspace.team.roleGuide.detail.can': 'Can',
+    'workspace.team.roleGuide.detail.cannot': 'Cannot',
+    // Listenin nereden geldiğini söylemek, ona güvenilip güvenilmeyeceğini
+    // söyler. Elle yazılmış bir özet olsaydı bu cümle kurulamazdı.
+    'workspace.team.roleGuide.detail.source':
+        'These two lists come from the same rules the product enforces when someone taps a button.',
+
+    'workspace.team.roleGuide.ability.workspace.view': 'Open this workspace',
+    'workspace.team.roleGuide.ability.workspace.manage': 'Change brand and branch settings',
+    'workspace.team.roleGuide.ability.menu.view': 'See the menus',
+    'workspace.team.roleGuide.ability.menu.manage': 'Add and edit dishes, prices and categories',
+    'workspace.team.roleGuide.ability.menu.publish': 'Publish the menu guests see',
+    'workspace.team.roleGuide.ability.menu.allergens.manage': 'Mark allergens on a dish',
+    'workspace.team.roleGuide.ability.menu.stock.manage': 'Mark a dish sold out for today',
+    'workspace.team.roleGuide.ability.qr.view': 'See the QR codes',
+    'workspace.team.roleGuide.ability.qr.create': 'Create QR codes for tables',
+    'workspace.team.roleGuide.ability.qr.disable': 'Turn a QR code off',
+    'workspace.team.roleGuide.ability.qr.design.manage': 'Change how printed QR codes look',
+    'workspace.team.roleGuide.ability.analytics.view': 'See visit and scan numbers',
+    'workspace.team.roleGuide.ability.billing.view': 'See the plan and the invoices',
+    'workspace.team.roleGuide.ability.billing.manage': 'Change the plan and pay for it',
+    'workspace.team.roleGuide.ability.security.evidence.view':
+        'See the backup and data separation records',
+    'workspace.team.roleGuide.ability.media.manage': 'Upload, replace and delete photos',
+    'workspace.team.roleGuide.ability.media.download_original': 'Download the original photo file',
+    'workspace.team.roleGuide.ability.order.view': 'See the orders coming from tables',
+    'workspace.team.roleGuide.ability.order.confirm': 'Confirm an order from a table',
+    'workspace.team.roleGuide.ability.order.kitchen': 'Move an order through the kitchen',
+    'workspace.team.roleGuide.ability.order.settings': 'Turn table ordering on and off',
+    /*
+        VERİ HAKLARI İKİ AYRI YETENEKTİR (FF-226, `docs/138`). Kopya almak
+        ile silmek tek satırda anlatılsaydı, rol rehberini okuyan sahip
+        "arşiv indirmek" ile "her şeyi silmek" arasındaki farkı ekranda
+        göremezdi; ikisi de yalnız sahibindir ve ikisi de adıyla yazılıdır.
+    */
+    'workspace.team.roleGuide.ability.workspace.data.export':
+        'Take a copy of everything this workspace holds',
+    'workspace.team.roleGuide.ability.workspace.data.erase':
+        'Ask for this workspace data to be erased',
+    'workspace.team.roleGuide.ability.rating.view': 'See what guests rated',
+    'workspace.team.roleGuide.ability.rating.reply': 'Reply to a guest in the menu',
 } as const;
 
 declare module '../workspace' {

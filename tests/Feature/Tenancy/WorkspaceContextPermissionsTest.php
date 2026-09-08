@@ -70,7 +70,14 @@ final class WorkspaceContextPermissionsTest extends TestCase
         // kaybolması demektir.
         // 21 → 23: puan ekseni (`docs/116` §4). Sahip puanları görür ve
         // yanıtlar; SİLMEZ — ve listede silecek bir izin hiç yoktur.
-        self::assertCount(23, $body['permissions']);
+        // 23 → 25: veri hakları ekseni (FF-226, `docs/138`). Sahip kendi
+        // verisinin kopyasını alabilir ve silinmesini isteyebilir; ikisi
+        // ayrı izindir, çünkü biri geri alınabilir diğeri alınamaz. Panel
+        // yetkisiz eylemi hiç çizmediği için, bu iki satır eksik
+        // gönderilseydi tehlikeli bölge sahibin ekranında hiç görünmezdi.
+        self::assertCount(25, $body['permissions']);
+        self::assertContains('workspace.data.export', $body['permissions']);
+        self::assertContains('workspace.data.erase', $body['permissions']);
         self::assertContains('billing.manage', $body['permissions']);
         self::assertContains('media.manage', $body['permissions']);
         self::assertContains('menu.allergens.manage', $body['permissions']);

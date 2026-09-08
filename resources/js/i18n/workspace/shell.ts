@@ -114,6 +114,68 @@ export const shell = {
     'workspace.settings.audit.unknownActor': 'Unknown',
     'workspace.settings.audit.source.media': 'Photo',
     'workspace.settings.audit.source.publication': 'Publishing',
+    // FF-226 (`docs/138`): izin üçüncü kaynağı — dışa aktarma ve silme
+    // talepleri kiracının KENDİ ekranında görünür.
+    'workspace.settings.audit.source.dataRights': 'Data request',
+
+    /*
+        VERİ HAKLARI (FF-226, `docs/107` Faz 3.3, `docs/138`).
+
+        Ayarlar > Çalışma alanı sekmesinin tehlikeli bölgesi.
+        `WorkspaceIdentityRegion` bu bölümü "doğduğunda buraya gelir" diye
+        bekletiyordu; doğdu.
+
+        METİN "HER ŞEY SİLİNİR" DEMEZ. Saklananların listesi sunucudan
+        gelir ve ekranda adıyla sayılır; buradaki dizeler yalnız o listenin
+        etrafındaki cümlelerdir.
+    */
+    'workspace.settings.dataRights.region': 'Your data',
+    'workspace.settings.dataRights.loading': 'Loading…',
+    'workspace.settings.dataRights.error': 'This section could not be loaded.',
+    'workspace.settings.dataRights.retry': 'Try again',
+    /*
+        YETKİSİ OLMAYAN BİR HATA GÖRMEZ. Yönetici rolü bu ekranı açabilir
+        ama bu bölümü göremez; kırmızı bir "yüklenemedi" satırı ona bir
+        ARIZA gibi görünür ve destek talebine dönüşürdü. Kapalı olan şey
+        arıza değil, izin.
+    */
+    'workspace.settings.dataRights.forbidden':
+        'Only the workspace owner can copy or erase this data.',
+    'workspace.settings.dataRights.hosting':
+        'The servers are run by {provider} in {country}, so your data is stored outside Turkey. Backups are kept on the same servers.',
+
+    'workspace.settings.dataRights.export.heading': 'Take a copy',
+    'workspace.settings.dataRights.export.help':
+        'One archive with everything this workspace holds, twice over: machine readable files for moving to another system, and spreadsheet files a person can open. Uploaded files themselves are not inside — their details are, and originals download one by one from Media.',
+    'workspace.settings.dataRights.export.sections': 'Sections: {count}',
+    'workspace.settings.dataRights.export.request': 'Prepare an archive',
+    'workspace.settings.dataRights.export.working':
+        'Preparing the archive. You can leave this page.',
+    'workspace.settings.dataRights.export.ready': 'The archive is ready.',
+    'workspace.settings.dataRights.export.download': 'Download the archive',
+    'workspace.settings.dataRights.export.availableUntil': 'Link works until {date}.',
+    'workspace.settings.dataRights.export.expired': 'That archive expired. Prepare a new one.',
+    'workspace.settings.dataRights.export.failed': 'The archive could not be prepared. Try again.',
+    'workspace.settings.dataRights.export.notified': 'We e-mailed you when it was ready.',
+    'workspace.settings.dataRights.export.notNotified':
+        'No e-mail was sent: sending is not configured. The archive is here either way.',
+
+    'workspace.settings.dataRights.erasure.heading': 'Erase this workspace data',
+    'workspace.settings.dataRights.erasure.help':
+        'Erasing is not switching the workspace off, and it cannot be undone. The request waits {days} days, one button takes it back, and the workspace keeps working until then.',
+    'workspace.settings.dataRights.erasure.keptHeading': 'What is not removed, and why',
+    'workspace.settings.dataRights.erasure.request': 'Ask for erasure',
+    'workspace.settings.dataRights.erasure.confirmLabel': 'Type the workspace name to confirm',
+    'workspace.settings.dataRights.erasure.confirmHelp':
+        'A tick box is ticked without looking. The name makes you check where you are.',
+    'workspace.settings.dataRights.erasure.mismatch': 'That is not this workspace name.',
+    'workspace.settings.dataRights.erasure.scheduled': 'Erasure is scheduled for {date}.',
+    'workspace.settings.dataRights.erasure.cancel': 'Take the request back',
+    'workspace.settings.dataRights.erasure.legalHold':
+        'Erasure cannot start: {count} file(s) are held for a dispute. Release the hold in Media first.',
+
+    'workspace.settings.dataRights.history': 'Requests so far',
+    'workspace.settings.dataRights.history.empty': 'Nothing requested yet.',
     /*
         KİRACI OLARAK BAKMA (`docs/122` Y7, `docs/133`). Bu satırların
         BURADA olması paketin şartıdır, süsü değil: `docs/122` §5, platform

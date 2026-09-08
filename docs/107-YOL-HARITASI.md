@@ -99,15 +99,21 @@ sorduğunda, cevap bir sayfada hazır durur.*
 | --- | --- | --- |
 | 3.1 | **Güven merkezi**: güvenlik yaklaşımı, altyapı ve süreklilik, yedekleme politikası, olay yönetimi, alt işleyen listesi, uyum, sorumlu açıklama. | ❌ Kütükte planlı. |
 | 3.2 | **Sözleşmeler**: DPA (veri işleme), SLA (hizmet seviyesi), kabul edilebilir kullanım, üçüncü taraf lisansları. | ◐ **Dört belge yayında** (FF-228, `docs/140`): `/data-processing`, `/sla`, `/acceptable-use`, `/third-party-licenses` — mevcut yasal belge sistemine eklendi (kütüphane 9 → 13), sürüm ve "pending legal review" notuyla. Alt işleyen listesi kasadan ve ölçüm yapılandırmasından **ölçülüyor** (bugün 1 kayıt: netcup GmbH, Karlsruhe); lisans listesi kilit dosyalarından **türetiliyor** (13 + 7 doğrudan, 100 + 494 dolaylı). **SLA'da hiçbir rakam yok ve olamaz**: çalışma süresi ölçülmüyor (3.4 ❌) — dört `SLA_*` değeri sahibin kararını bekliyor. Kalan: hukukçu incelemesi ve altbilgi bağlantısı. |
-| 3.3 | **KVKK hakları ürün içinde**: kiracı verisini dışa aktarma ve silme, denetim kaydı. | ◐ Medya denetim kaydı var; hesap düzeyinde yok. |
+| 3.3 | **KVKK hakları ürün içinde**: kiracı verisini dışa aktarma ve silme, denetim kaydı. | ✅ Ayarlar → Çalışma alanı: 50 bölümlük arşiv (JSON + CSV + README), gecikmeli ve geri alınabilir silme, silinen satırlar sayılıyor; kayıt Ayarlar → Denetim izi'nde. Yedi tablo yasal saklama gerekçesiyle silinmiyor ve ekran onları adıyla sayıyor (`docs/138`). Kişisel hesabın silinmesi hâlâ iletişim formunda. |
 | 3.4 | **Durum sayfası** ve olay geçmişi. | ❌ `status.zabuno.com` planlı. |
 | 3.5 | **Erişilebilirlik beyanı** ve WCAG 2.2 AA denetimi. | ◐ Kurallar kodda ve testlerde; beyan ve dış denetim yok. |
-| 3.6 | **Rol ve yetki matrisi** belgesi; müşteri onu okuyup kendi ekibini kurabilsin. | ◐ İzinler kodda; belge yok. |
+| 3.6 | **Rol ve yetki matrisi** belgesi; müşteri onu okuyup kendi ekibini kurabilsin. | ◐ **Belge var ve KODDAN üretiliyor** (`docs/139`, FF-227). 23 izin × 5 kiracı rolü; her rolün yapabildikleri kadar YAPAMADIKLARI da listeli; süperadmin ayrı satır (izin listesi taşımaz, `EnsurePlatformSuperAdmin` kapısının arkasındaki 16 okuma + 13 yazma ucudur) ve destek penceresi ayrı satır (tek kiracıya çivili; kiracı ayrıntısı ve aboneliği salt okunur, aynı önekteki iki yazma ucu ödeme defterine yazar ve dondurulmuş listededir; kiracı kimliğine bürünme ucu 0). Üretici `php artisan authorization:matrix`; kod ile belgenin ayrıştığı gün `AuthorizationMatrixArtifactTest` kırılır. Ürün içinde de okunur: Ekip ekranındaki rol kartı aynı üretilmiş veriden "yapabilir/yapamaz" listelerini çizer (320 pikselde ölçüldü, bulgu sıfır). **Eksik:** şubeye özel rol yok (Faz 4) ve müşteri kendi rolünü tanımlayamaz; "bu izin hangi ekranı açar" haritası yok — matris dosya sayısıyla ölçüm verir, ekran adıyla değil. |
 | 3.7 | **Teklif → sözleşme → fatura** akışı. | ❌ |
 
 **Bitti ne demek:** Bir zincirin hukukçusu "veri nerede tutuluyor, kim
 erişebiliyor, silmek istersek ne oluyor" diye sorduğunda üç bağlantı
 gönderebiliriz.
+
+**Bugün üçüncü sorunun cevabı bir ekran** (`docs/138`, 2026-09-08). Aynı
+paket birinci sorunun eksik cevabını da düzeltti: yasal metinler artık
+verinin Almanya'da barındırıldığını ve yedeklerin aynı sunucuda tutulduğunu
+söylüyor — önce yalnız "sağlayıcı yurt dışında olabilir" yazıyordu. İkinci
+soru (kim erişebiliyor) hâlâ 3.6'ya bağlı: izinler kodda, belge yok.
 
 ---
 

@@ -568,6 +568,22 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'POST|api/workspaces/{workspace}/support-requests||App\Http\Controllers\Support\StoreWorkspaceSupportRequestController|api,auth:sanctum,throttle:5,1,verified',
         'GET|api/admin/support-requests||App\Http\Controllers\PlatformAdmin\ListSupportRequestsController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',
         'PUT|api/admin/support-requests/{supportRequest}/status||App\Http\Controllers\PlatformAdmin\UpdateSupportRequestStatusController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,throttle:20,1,verified',
+        /*
+            VERİ HAKLARI (FF-226, `docs/138`) — dört uç, listenin sonunda.
+
+            OKUMA HIZ SINIRSIZ, YAZMA SINIRLI (`throttle:10,1`): ekran her
+            açılışta durumu okur, ama dışa aktarma bir çalışma alanının
+            bütün tablolarını tarar ve arka arkaya basılan bir düğme
+            kuyruğu tek bir kiracıyla doldurabilirdi.
+
+            İNDİRME BURADA DEĞİL: arşiv `web` tarafında, imzalı ve
+            oturumsuz bir adresten iner (`workspace.data-export.download`,
+            `media.original` ile aynı desen).
+        */
+        'GET|api/workspaces/{workspace}/data-rights||App\Http\Controllers\Workspace\ShowWorkspaceDataRightsController|api,auth:sanctum,verified',
+        'POST|api/workspaces/{workspace}/data-rights/exports||App\Http\Controllers\Workspace\RequestWorkspaceDataExportController|api,auth:sanctum,throttle:10,1,verified',
+        'POST|api/workspaces/{workspace}/data-rights/erasure||App\Http\Controllers\Workspace\RequestWorkspaceErasureController|api,auth:sanctum,throttle:10,1,verified',
+        'DELETE|api/workspaces/{workspace}/data-rights/erasure/{dataRequest}||App\Http\Controllers\Workspace\CancelWorkspaceErasureController|api,auth:sanctum,throttle:10,1,verified',
     ];
 
     /**
@@ -614,6 +630,13 @@ final class ModularApiRouteRegistrationTest extends TestCase
             yolu gölgelemiyor.
         */
         'routes/api/support.php',
+        /*
+            VERİ HAKLARI (FF-226, `docs/107` Faz 3.3, `docs/138`). Aynı
+            gerekçeyle sonda: dışa aktarma ve silme uçları hiçbir mevcut
+            yolu gölgelemiyor ve sona eklemek dondurulmuş imza listesini
+            ortasından kaydırmıyor.
+        */
+        'routes/api/workspace-data-rights.php',
     ];
 
     #[Test]

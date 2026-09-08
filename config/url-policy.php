@@ -72,6 +72,13 @@ return [
         'kvkk',
         'app',
         'platform',
+        /*
+            Kabuk `/platform/engineering` adresine taşındı (FF-248) ve ilk
+            segmenti artık `platform`. `engineering` yine de BURADA KALIR:
+            kökte duran 301 yönlendirmesi hâlâ yaşıyor ve `/Engineering`
+            yazan biri önce küçük harfe katlanıp sonra yeni adrese
+            gitmelidir. Yönlendirme kaldırıldığı gün bu satır da kalkar.
+        */
         'engineering',
         'login',
         'register',
@@ -155,6 +162,9 @@ return [
             menüsüyle gölgelenirdi.
         */
         'acceptable-use', 'data-processing', 'sla', 'third-party-licenses',
+        // `engineering` REZERVE KALIR: kökte yaşayan 301 yönlendirmesi
+        // orada duruyor, bir kiracı o slug'ı alırsa kendi sayfası ile
+        // yönlendirme aynı adresi paylaşırdı (FF-248).
         'en', 'menu', 'platform', 'engineering', 'pricing', 'restaurant', 'restoran',
         /*
             TASLAK ÖNİZLEMESİ (`/menu-preview/{workspace}/{menu}`, sahibin
@@ -164,6 +174,14 @@ return [
             gereken yayınlanmamış fiyatları taşıyor.
         */
         'menu-preview',
+        /*
+            VERİ DIŞA AKTARMA ARŞİVİ (`/data-export/{workspace}/{request}`,
+            FF-226, `docs/138`). Taslak önizlemesiyle aynı gerekçe ve daha
+            ağırı: bu kök, bir çalışma alanının BÜTÜN verisini taşıyan bir
+            arşive götürüyor. Bir işletme bu slug'ı alabilseydi, kendi
+            menüsü ile o arşivin adresi aynı kökü paylaşırdı.
+        */
+        'data-export',
         'privacy', 'q', 'register', 'reset-password', 'robots.txt', 'sanctum',
         /*
             DİL DİZİNLERİ — DOKUZUNUN HEPSİ rezerve.
@@ -193,7 +211,12 @@ return [
      */
     'noindex_prefixes' => [
         'app',
+        // Bir çalışma alanının bütün verisini taşıyan imzalı arşiv
+        // (FF-226). İmza zaten kapıdır; bu, ikinci hattır.
+        'data-export',
         'platform',
+        // Yeni adres `platform` önekinden zaten kapalı; bu satır kökteki
+        // 301 yönlendirmesinin kendisini kapatır (FF-248).
         'engineering',
         'api',
         'q',
@@ -222,7 +245,10 @@ return [
      */
     'disallow_prefixes' => [
         'app',
+        'data-export',
         'platform',
+        // FF-248 sonrası yalnız 301 yönlendirmesini kapatır; kabuğun kendisi
+        // `platform` önekinin altındadır.
         'engineering',
         'api',
         'invitations',

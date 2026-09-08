@@ -115,19 +115,47 @@ final class SiteShellSingleSourceTest extends TestCase
         $this->registryPage('/tr/urun/qr-menu/', PagePublicationStatus::Planned);
 
         /*
-            Karşılaştırma AYNI DİLDE yapılır. `/tr/…` sayfasının dili
-            adresindedir (`docs/118` E4) ve Türkçedir; `/pricing` tarayıcıyla
-            pazarlık eder. İkisini farklı dillerde karşılaştırmak, doğru
-            davranışı "farklı kabuk" diye bildirmek olurdu.
+            KABUK AYNI, BELGE FARKLI (FF-249, 2026-09-08).
+
+            `/tr/…` sayfasının dili adresindedir (`docs/118` E4) ve Türkçedir;
+            orası Türkçe YAZILMIŞ bir belgedir. `/pricing` ise ürünün kendi
+            etiketlerinden ibarettir ve onlar yalnız SUNULAN dilde çizilir
+            (`i18n.shipped_locales`).
+
+            Bu yüzden Türkçe bir belgenin içindeki kabuk kendi dilini ilan
+            eder (`lang="en"`), yaşayan sayfada ise ilan edecek bir fark
+            yoktur ve hiçbir şey yazılmaz. Tek gerçek fark budur — ve
+            aşağıda hem ayıklanıyor hem de VARLIĞI ölçülüyor; sessizce
+            silinseydi, kusurun küçültülmüş hâli geri gelirdi.
 
             Hazırlanıyor ekranı bir 404 GÖVDESİDİR (`docs/105` §8); gövdenin
             404 olması, ziyaretçinin çıkış yolu olmaması demek değildir.
         */
+        $live = $this->chrome($this->body('/pricing', 200, ['Accept-Language' => 'tr']));
+        $registry = $this->chrome($this->body('/tr/urun/qr-menu/', 404));
+
+        self::assertStringContainsString(
+            'lang="en"',
+            $registry,
+            'SHELL-SINGLE-SOURCE-03: Türkçe bir belgenin içindeki İngilizce kabuk kendi dilini ilan etmiyor.'
+        );
+
         self::assertSame(
-            $this->chrome($this->body('/pricing', 200, ['Accept-Language' => 'tr'])),
-            $this->chrome($this->body('/tr/urun/qr-menu/', 404)),
+            $live,
+            $this->withoutChromeLanguage($registry),
             'SHELL-SINGLE-SOURCE-03: kütükten çizilen sayfa başka bir kabuk giyiyor.'
         );
+    }
+
+    /**
+     * Kabuğun kendi dil ilanını ayıklar.
+     *
+     * Yalnız BU öznitelik ayıklanır; kabuğun geri kalanındaki tek bir
+     * karakterlik fark bile testi kırmaya devam eder.
+     */
+    private function withoutChromeLanguage(string $chrome): string
+    {
+        return (string) preg_replace('# lang="[a-zA-Z-]+" dir="(?:ltr|rtl)"#', '', $chrome);
     }
 
     public function test_a_published_registry_page_wears_the_same_shell_as_a_live_page(): void

@@ -19,7 +19,8 @@ use Tests\TestCase;
  * still-missing platform admin shell view/asset wiring.
  *
  * Frozen contract:
- * - GET /engineering sits behind the same guard convention as GET /app:
+ * - GET /platform/engineering (FF-248 taşımasından önce GET /engineering)
+ *   sits behind the same guard convention as GET /app:
  *   guest -> redirect/401 (never a bare unauthenticated 404-with-no-route),
  *   authenticated-but-unverified -> redirect/403 (existing "verified"
  *   convention), never a route-missing crash for either.
@@ -38,7 +39,7 @@ final class EngineeringShellJourneyTest extends TestCase
 {
     use RefreshDatabase;
 
-    private const PLATFORM_URI = '/engineering';
+    private const PLATFORM_URI = '/platform/engineering';
 
     private function jsonHeaders(): array
     {
@@ -90,8 +91,8 @@ final class EngineeringShellJourneyTest extends TestCase
     {
         $response = $this->withHeaders($this->jsonHeaders())->get(self::PLATFORM_URI);
 
-        self::assertNotSame(404, $response->getStatusCode(), 'GET /engineering: rota var olmalı; 404 kabul edilmez.');
-        self::assertContains($response->getStatusCode(), [302, 401], 'GET /engineering: kimliksiz istek 302 (login redirect) veya 401 ile reddedilmeli.');
+        self::assertNotSame(404, $response->getStatusCode(), 'GET /platform/engineering: rota var olmalı; 404 kabul edilmez.');
+        self::assertContains($response->getStatusCode(), [302, 401], 'GET /platform/engineering: kimliksiz istek 302 (login redirect) veya 401 ile reddedilmeli.');
     }
 
     public function test_unverified_authenticated_user_is_rejected_from_platform_route(): void
@@ -100,8 +101,8 @@ final class EngineeringShellJourneyTest extends TestCase
 
         $response = $this->actingAs($user)->withHeaders($this->jsonHeaders())->get(self::PLATFORM_URI);
 
-        self::assertNotSame(404, $response->getStatusCode(), 'GET /engineering: rota var olmalı; 404 kabul edilmez.');
-        self::assertContains($response->getStatusCode(), [302, 403], 'GET /engineering: doğrulanmamış kullanıcı 302 (verify-notice redirect) veya 403 ile reddedilmeli.');
+        self::assertNotSame(404, $response->getStatusCode(), 'GET /platform/engineering: rota var olmalı; 404 kabul edilmez.');
+        self::assertContains($response->getStatusCode(), [302, 403], 'GET /platform/engineering: doğrulanmamış kullanıcı 302 (verify-notice redirect) veya 403 ile reddedilmeli.');
     }
 
     // --- authorization boundary -------------------------------------------

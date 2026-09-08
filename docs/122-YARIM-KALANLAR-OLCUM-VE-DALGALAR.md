@@ -17,7 +17,7 @@ Bu belge tahmin taşımaz. Her satır depodan **ölçüldü**.
 > fiyat sayfasında hiç yazmayan `branding.custom`'ın kaybını da kapattı.
 >
 > **Y3 — modüller ekranı.** `docs/111` adım 1 ve 2 zaten FF-168'de
-> uygulanmıştı: `GET /api/admin/modules` ve `/engineering/modules` ekranı
+> uygulanmıştı: `GET /api/admin/modules` ve `/platform/engineering/modules` ekranı
 > bugün ayakta, 8 Feature + 10 bileşen testiyle. Bu belgenin §3 ve §4'ünde
 > "ekran yok" yazıyordu; cümle bir zamanlar doğruydu, altındaki gerçek
 > değişti — `docs/109` §8.7'nin kusur ailesinin ta kendisi. Satırlar
@@ -90,7 +90,7 @@ kasası, entegrasyonlar, planlar, abonelikler). Ekran katmanı **105 satır**.
 | Planlar (liste, oluştur, etkinleştir) | 3 | Var |
 | Kimlik bilgileri kasası | 3 | Var |
 | Bağlantılar (liste, ekle, sonda, durum) | 4 | Var |
-| Modüller | 1 | **Var** — `/engineering/modules` (`docs/111` adım 1–2, FF-168) |
+| Modüller | 1 | **Var** — `/platform/engineering/modules` (`docs/111` adım 1–2, FF-168) |
 | AI denetimi | 1 | Kısmen |
 | Sürüm tasdikleri | 1 | Kısmen |
 
@@ -109,7 +109,7 @@ kasası, entegrasyonlar, planlar, abonelikler). Ekran katmanı **105 satır**.
    gerek duymaz ve son çare olması gereken şey ilk görülen şey olmamalı.
 4. **Sağlık ve olay görünümü yok.** Kuyruk, hata, dağıtım, dış sağlayıcı
    durumu tek yerde değil.
-5. ~~**Modüller ekranı yok**~~ — **KAPANDI.** Ekran `/engineering/modules`
+5. ~~**Modüller ekranı yok**~~ — **KAPANDI.** Ekran `/platform/engineering/modules`
    altındadır, `/platform` altında değil: modül envanteri para değil
    **mühendislik kanıtıdır** (`docs/111` §2). Salt okunur; hiçbir anahtar
    çizmez ve `modules/*.md`'nin "PLANNING ONLY" iddiasını okumaz. `docs/111`
@@ -122,7 +122,7 @@ kasası, entegrasyonlar, planlar, abonelikler). Ekran katmanı **105 satır**.
 | --- | --- | --- | --- |
 | ~~Y1~~ | **BİTTİ** — Plan kataloğu: `ordering.basic` + `menu.rich-media` | Süperadmin + fiyat | **Çalışan bir yetenek satılamıyordu.** Kod değil katalog işiydi, en ucuz ve en yüksek etki |
 | Y2 | Süperadmin: kiracı ayrıntısı, kullanıcı yönetimi, denetim günlüğü | `/platform` | Süperadminin ilk gün ihtiyacı; hepsi mevcut veriyi OKUYOR, yeni veri üretmiyor |
-| ~~Y3~~ | **BİTTİ** — Süperadmin: modüller ekranı (`docs/111` adım 1–2) | `/engineering` | Plan hazırdı, veri hazırdı; ekran FF-168'de inmişti, bu belge geç fark etti |
+| ~~Y3~~ | **BİTTİ** — Süperadmin: modüller ekranı (`docs/111` adım 1–2) | `/platform/engineering` | Plan hazırdı, veri hazırdı; ekran FF-168'de inmişti, bu belge geç fark etti |
 | Y4 | Panel: puanlama ekranı | Restoran paneli | Uç var, ekran yok — en kısa yol |
 | Y5 | Misafir: Dalga 3 favoriler (cihazda) | Misafir menüsü | Küçük, kararı verilmiş |
 | ~~Y6~~ | **BİTTİ** — Misafir: Dalga 6 zengin görsel yüzeyi | Misafir | Satılabilen bir hakkın ürünü yoktu; yüzey indi, fiyat sayfası eşlemesi aynı turda eklendi |

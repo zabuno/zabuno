@@ -99,7 +99,7 @@ describe('PlatformApp — standalone platform admin shell (PLATFORM_SHELL_FRONTE
         expect(screen.getByText(/platform administration/i)).toBeInTheDocument();
         expect(screen.getByRole('link', { name: /engineering/i })).toHaveAttribute(
             'href',
-            '/engineering',
+            '/platform/engineering',
         );
 
         const plansNavItem = await screen.findByRole('link', { name: /plans/i });

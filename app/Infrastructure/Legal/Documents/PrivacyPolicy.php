@@ -16,6 +16,20 @@ use App\Domain\Legal\LegalSection;
  * (`VaultMailTransportSelector` → Mailgun), ödeme sağlayıcısı
  * (`IyzipaySandboxGateway` → Iyzico), AI sağlayıcıları
  * (`CredentialProvider`). Olmayan bir işlem yazılmadı.
+ *
+ * SÜRÜM 0.2 (FF-226, `docs/138` §7). Metin bir SÖZ VERİYORDU — "When you
+ * ask us to delete your account we remove the data we are not legally
+ * required to keep" — ve o sözün ürün içinde hiçbir karşılığı yoktu; tek
+ * yol iletişim formuydu. Bu sürümde üç şey düzeltildi:
+ *
+ * 1. Silme ve dışa aktarma artık ÜRÜNDE, Ayarlar altında; metin yolu adıyla
+ *    söylüyor.
+ * 2. "Yasal olarak saklamak zorunda olduklarımız" belirsiz bir ifadeydi;
+ *    artık NE olduğu sayılıyor (fatura, defter, tahsilat kaydı, onay
+ *    defteri) ve ekranın aynı listeyi gösterdiği yazılıyor.
+ * 3. Verinin NEREDE durduğu hiç yazılı değildi. Sunucu Almanya'da
+ *    (2026-09-08 ölçüldü) ve yedekler aynı sunucuda; ikisi de artık
+ *    metinde.
  */
 final class PrivacyPolicy
 {
@@ -23,8 +37,8 @@ final class PrivacyPolicy
     {
         return new LegalDocument(
             key: 'privacy',
-            version: '0.1',
-            effectiveDate: '2026-09-06',
+            version: '0.2',
+            effectiveDate: '2026-09-08',
             title: 'Privacy Policy',
             summary: 'What personal data Zabuno collects, why it is collected, who receives it and how long it is kept.',
             sections: [
@@ -60,16 +74,22 @@ final class PrivacyPolicy
                 new LegalSection('Who receives data', [
                     'We use service providers that process data on our behalf and under our instructions: an e-mail delivery provider (Mailgun) for verification, invitation and notification e-mails; the payment service provider Iyzico when you pay for a plan, where card details are entered on the provider\'s own systems and never reach us; and, where AI-assisted features are enabled, the AI provider configured for the service, which receives the menu text or images you submit for that feature.',
                     'Measurement tools loaded through Google Tag Manager receive data only after you accept them; which tools are active is listed in the Cookie Policy.',
+                    'The service itself runs on servers rented from a hosting provider in Germany, so the data described here is stored outside Turkey. Backup copies are kept on the same servers.',
                     'We do not sell personal data and we do not pass it to third parties for their own purposes. We disclose data to authorities only where the law requires it.',
                 ]),
                 new LegalSection('How long we keep data', [
-                    'Account and workspace data are kept while the account exists. When you ask us to delete your account we remove the data we are not legally required to keep.',
+                    'Account and workspace data are kept while the account exists. When the owner of a workspace asks for its data to be erased, we remove the data we are not legally required to keep.',
+                    'That request is not carried out on the same day. It waits for a grace period so that it can be taken back; the workspace settings show the exact date it will run, and a single button cancels it until then. Asking for erasure does not switch the workspace off in the meantime.',
+                    'What we do not remove, and why: the invoices issued to the workspace and the accounting entries behind them, because they are commercial and tax records; the payment records those invoices rest on, for the same reason; and the record of the consents that were given, because we must be able to prove them. The workspace settings list each of these by name and say why it is kept, so nobody has to take the word "everything" on trust.',
+                    'A copy of erased data can remain in backup copies for a period after the erasure, until those backups are themselves replaced.',
                     'Consent records are kept for as long as the law requires us to be able to prove that consent was given.',
                     'Pseudonymous guest events and server logs are kept for operating and improving the service and are not linked back to a person.',
                 ]),
                 new LegalSection('Your rights', [
                     'You can ask what data we hold about you, ask for it to be corrected or deleted, object to processing based on our legitimate interest, and withdraw a consent you have given. Withdrawing consent does not affect processing that took place before.',
-                    'You can download your menu as a CSV file from your workspace at any time; you do not need to ask us for it. For everything else, write to us through the contact form or at {company.email}.',
+                    'You can download your menu as a CSV file from your workspace at any time; you do not need to ask us for it.',
+                    'If you own a workspace you can also, under Settings, download everything that workspace holds as a single archive. It carries the same rows twice: once in a machine readable form for moving them to another system, and once as spreadsheet files a person can open and read. It also carries a plain text note saying what is inside, what is not, and why. Uploaded files themselves are not in the archive because of its size; their details are, and the originals can be downloaded one by one from the Media screen.',
+                    'The same screen is where you ask for the workspace data to be erased, and where you see what happened to every such request. For everything else, write to us through the contact form or at {company.email}.',
                 ]),
                 new LegalSection('Security', [
                     'Passwords are hashed, connections are encrypted, uploaded files are scanned before they are published, and access inside a workspace is controlled by roles. No method of storage or transmission is perfectly secure; if you notice a problem, tell us.',

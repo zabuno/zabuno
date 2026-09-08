@@ -232,6 +232,9 @@ const FROZEN_MODULE_FILENAMES = [
 // birleştiriliyordu, artık ADLI yer tutuculu tek bir anahtar.
 // Sayının büyümesi burada bir yüzey büyümesi değil, GÖRÜNÜRLÜK: sahte-
 // yerelleştirme bu üç metnin dönüşmediğini gösterdi (`docs/121` §4).
+// FF-226: veri hakları bölümü — arşiv almanın ve silme istemenin ekrandaki
+// cümleleri. "Her şey silinir" DEMEYEN bir metin bilerek yazıldı: saklanan
+// tabloların listesi sunucudan gelir ve ekranda adıyla sayılır.
 // ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
 // msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
 // FF-218 (`docs/122` Y7, `docs/133`): SEKİZ anahtar ve hepsi TEK bir
@@ -278,7 +281,7 @@ const FROZEN_MODULE_FILENAMES = [
 // msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
 
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '1a3d3949921752221f378ac762edf52e905098b1bb830ea0abe495a38ef941b6';
+    'f9101db45b20e19291508407806f3bd47e235a69b9fc01bf6de31e29271d934e';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
@@ -286,7 +289,7 @@ function normalizedHash(entries: Record<string, string>): string {
     return createHash('sha256').update(normalized, 'utf8').digest('hex');
 }
 
-const FROZEN_LEGACY_KEY_COUNT = 1718;
+const FROZEN_LEGACY_KEY_COUNT = 1778;
 
 describe('workspace i18n modular catalog contract', () => {
     // Başlıktaki SAYI kaldırıldı ve bir daha yazılmayacak: liste zaten

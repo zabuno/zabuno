@@ -25,6 +25,10 @@ use App\Application\Billing\Port\PlanManagementRepositoryPort;
 use App\Application\Billing\Port\SandboxPaymentGatewayPort;
 use App\Application\Billing\Port\SubscriptionRepositoryPort;
 use App\Application\Content\Port\ContentLibraryPort;
+use App\Application\DataRights\Port\DataRequestRepositoryPort;
+use App\Application\DataRights\Port\DataRightsNotifierPort;
+use App\Application\DataRights\Port\WorkspaceDataEraserPort;
+use App\Application\DataRights\Port\WorkspaceDataExporterPort;
 use App\Application\Entitlement\Port\EntitlementRepositoryPort;
 use App\Application\Ledger\Port\LedgerPort;
 use App\Application\Legal\Port\ConsentLedgerPort;
@@ -148,6 +152,10 @@ use App\Infrastructure\Billing\Provider\IyzipaySandboxModeGateway;
 use App\Infrastructure\Billing\Provider\UnconfiguredEArchiveGateway;
 use App\Infrastructure\Billing\Rendering\MpdfInvoiceDocumentAdapter;
 use App\Infrastructure\Content\ProductPageLibrary;
+use App\Infrastructure\DataRights\Erasure\DatabaseWorkspaceDataEraser;
+use App\Infrastructure\DataRights\Export\ZipWorkspaceDataExporter;
+use App\Infrastructure\DataRights\Mail\MailDataRightsNotifier;
+use App\Infrastructure\DataRights\Persistence\EloquentDataRequestRepository;
 use App\Infrastructure\Entitlement\DatabaseEntitlementRepository;
 use App\Infrastructure\Ledger\DatabaseLedger;
 use App\Infrastructure\Legal\DatabaseConsentLedger;
@@ -237,6 +245,7 @@ use App\Infrastructure\Tenancy\Profile\Persistence\EloquentBrandRepository;
 use App\Infrastructure\Tenancy\Profile\Persistence\EloquentLocationRepository;
 use App\Infrastructure\Workspace\EloquentSetupProgress;
 use App\Infrastructure\Workspace\EloquentWorkspaceAuditTrail;
+use App\Support\Localization\PageLanguage;
 use App\Support\Localization\PseudoLocalizer;
 use App\Support\Localization\SiteText;
 use App\Support\Site\CompanyIdentity;
@@ -618,6 +627,16 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(MediaConversionPort::class, EloquentMediaConversion::class);
         $this->app->bind(MediaFormatSupportPort::class, RuntimeMediaFormatSupport::class);
         $this->app->bind(WorkspaceAuditTrailPort::class, EloquentWorkspaceAuditTrail::class);
+        /*
+            VERİ HAKLARI (FF-226, `docs/138`). Dördü de port arkasında:
+            defterin nerede durduğu, arşivin hangi biçimde üretildiği,
+            silmenin nasıl yürüdüğü ve haberin nasıl gittiği ayrı altyapı
+            kararlarıdır ve biri değişince diğerleri değişmemeli.
+        */
+        $this->app->bind(DataRequestRepositoryPort::class, EloquentDataRequestRepository::class);
+        $this->app->bind(WorkspaceDataExporterPort::class, ZipWorkspaceDataExporter::class);
+        $this->app->bind(WorkspaceDataEraserPort::class, DatabaseWorkspaceDataEraser::class);
+        $this->app->bind(DataRightsNotifierPort::class, MailDataRightsNotifier::class);
         // KURULUM İLERLEMESİ (`docs/107` 1.7): beş adım + ilk yayına kadar geçen
         // dakika, var olan damgalardan; yeni tablo yok.
         $this->app->bind(SetupProgressPort::class, EloquentSetupProgress::class);
@@ -824,6 +843,29 @@ final class AppServiceProvider extends ServiceProvider
 
             if (! array_key_exists('st', $data)) {
                 $view->with('st', app(SiteText::class)->all());
+            }
+
+            /*
+                SAYFANIN DİLİ DE HER ZAMAN VAR — aynı gerekçe, aynı desen
+                (FF-249).
+
+                Kabuk `<html lang>`i tek bir nesneden yazar ve o nesne
+                geçirilmediğinde sayfa `Undefined variable $lang` ile çökerdi
+                — ölçüldü, görünümü doğrudan çizen tema önyükleme sözleşmesi
+                dört testte kırıldı.
+
+                VARSAYILAN, KUSURU GERİ GETİRMEZ: içerik dili verilmediğinde
+                `PageLanguage` belge dilini arayüzün diline EŞİTLER. Yani
+                varsayılan hâlde ayrışma diye bir şey yoktur; eskiden buradaki
+                boşluk `DocumentLocale::tag()`e düşülerek kapatılıyordu ve
+                kusur tam olarak oradaydı.
+
+                Elle verilen değer KAZANIR: `SiteShell` yazılmış bir metnin
+                dilini (yardım makalesi, `/tr/…` kurumsal sayfa) zaten
+                geçirmiştir.
+            */
+            if (! array_key_exists('lang', $data)) {
+                $view->with('lang', PageLanguage::for());
             }
 
             if (! array_key_exists('plans', $data)) {

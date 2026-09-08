@@ -94,6 +94,24 @@ enum Permission: string
         karşılığıdır: silmeyi kimseye VERMEMEK için önce silmeyi bir
         yetenek olarak ADLANDIRMAMAK gerekir.
     */
+    /*
+        VERİ HAKLARI EKSENİ (`docs/107` Faz 3.3, `docs/138`) — altıncı soru:
+        "kiracının kendi verisi karşısında kim ne yapabilir?"
+
+        İKİ AYRI İZİN, çünkü iki ayrı sonuç: dışa aktarma verinin bir
+        KOPYASINI üretir ve geri alınabilir; silme veriyi YOK EDER ve geri
+        alınamaz. Tek izin olsaydı, "kopyasını alabilsin ama sildiremesin"
+        cümlesi bu depoda söylenemezdi — ve o cümle, bir zincirin merkez
+        ofisinin şube yöneticisine vereceği tam yetkidir.
+
+        `workspace.manage` yetmez ve bilerek yetmiyor: Yönetici rolü
+        `workspace.manage` taşır, ama bir çalışma alanının bütün verisini
+        indirmek ya da sildirmek bir işletme kararı değil bir SAHİPLİK
+        kararıdır. Bugün ikisi de yalnız Sahip'tedir.
+    */
+    case WorkspaceDataExport = 'workspace.data.export';
+    case WorkspaceDataErase = 'workspace.data.erase';
+
     case RatingView = 'rating.view';
     case RatingReply = 'rating.reply';
 }
