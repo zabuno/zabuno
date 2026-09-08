@@ -21,10 +21,31 @@ COPY lang ./lang
 COPY scripts ./scripts
 COPY vite.config.ts tsconfig.json ./
 
+# VARLIKLAR HANGİ COMMIT'TEN DERLENDİ? — `docs/142`.
+#
+# 2026-09-08'de canlı sitede PHP tarafı bir noktaya kadar güncelken
+# derlenmiş CSS bir önceki tasarımdan geliyordu, ve bunu DIŞARIDAN
+# söyleyebilecek hiçbir şey yoktu: sürüm etiketi yalnız uygulamayı anlatır.
+# Kimliksiz bir varlık paketi, bayatladığında hiçbir iz bırakmaz.
+#
+# İSİM BİLEREK `ZABUNO_BUILD_REVISION` DEĞİL. Derleme argümanları `RUN`
+# içinde ortam değişkeni olarak görünür ve `vite.config.ts` o adı okuyup
+# değeri PAKETİN İÇİNE gömer; o zaman her dağıtımda JavaScript parça
+# özetleri değişir ve ziyaretçi hiç değişmemiş paketleri yeniden indirir.
+# Kimlik pakette değil, YANINDA duruyor.
+ARG ZABUNO_RELEASE_SHA=""
+
 # Çeviri projeksiyonları derleme zamanında üretilir. `docs/40` bunun
 # çalışma zamanına taşınmasını planlıyor; o gelene kadar imaj, katalogları
 # içinde dondurur ve PO değişikliği yeni imaj gerektirir.
-RUN npm run i18n:build && npm run build
+#
+# Damga AYNI KOMUTTA yazılır, ayrı bir `RUN` ile değil: böylece varlıklar
+# ile kimlikleri tek katmanda doğar ve önbellek birini tazeleyip ötekini
+# bırakamaz. Bedeli, argüman her commit'te değiştiği için bu katmanın her
+# derlemede yeniden koşmasıdır — ölçüldü, vite derlemesi 1,5 saniye.
+# Bağımlılık katmanı (`npm ci`) argümanın ÜSTÜNDE kaldığı için etkilenmez.
+RUN npm run i18n:build && npm run build \
+    && printf '%s' "$ZABUNO_RELEASE_SHA" > public/build/revision.txt
 
 # --- 2) Ortak PHP tabanı ---------------------------------------------------
 # Eklentiler TEK yerde kurulur ve hem bağımlılık çözümü hem çalışma zamanı
