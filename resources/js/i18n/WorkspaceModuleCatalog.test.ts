@@ -245,6 +245,19 @@ const FROZEN_MODULE_FILENAMES = [
 // ekranda yazılı.
 // ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
 // msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
+// FF-224: 1705 → 1706, TEK anahtar ve yeni bir yüzey değil — ADI OLMAYAN
+// BİR YUVANIN adı. `menuImportSource`, yükleme sihirbazının açılır
+// listesinde ZATEN duruyordu (uç nokta onu döndürüyor, çünkü sihirbazın
+// seçtirebildiği biçimleri taşıyor) ama etiketi hiç yazılmamıştı: `t()`
+// eksik anahtarı KENDİSİ olarak döndürür, yani sahip listede
+// "workspace.media.upload.field.assetSlot.menuImportSource" okuyordu.
+// Bunu asıl pahalı yapan, ürünün BAŞKA bir ekranda o yuvayı adıyla
+// istemesiydi ("önce Medya sayfasından yükleyin — yuva: Import source"):
+// tarif edilen yol, tarif edildiği hâliyle yürünemiyordu. Sayı bir ekran
+// büyüdüğü için değil, var olan bir seçeneğin okunabilir olması için arttı;
+// `SlotNameIsReadableTest` bundan sonra adsız yuvayı hiç doğurtmuyor.
+// ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
+// msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
 // FF-225: Medya > Ayarlar'daki güvenlik önlemleri ANAHTAR olmaktan çıktı
 // (sahibin kararı, 2026-09-08: "switch butonlar saçma, UI hatası"). Anahtar
 // hem "değiştirebilirsin" diyordu hem de altında "kapatılamaz" yazıyordu;
@@ -257,7 +270,7 @@ const FROZEN_MODULE_FILENAMES = [
 // msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
 
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'e794e7a930499eec1cbd40e1cf1e894275a07545a62cbdae6fcc95ebdb92aab4';
+    '6281dda1edc1cdcccb6097af87c8e4571f00e9e11529005f318db188f9cff6de';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
@@ -265,7 +278,7 @@ function normalizedHash(entries: Record<string, string>): string {
     return createHash('sha256').update(normalized, 'utf8').digest('hex');
 }
 
-const FROZEN_LEGACY_KEY_COUNT = 1735;
+const FROZEN_LEGACY_KEY_COUNT = 1736;
 
 describe('workspace i18n modular catalog contract', () => {
     // Başlıktaki SAYI kaldırıldı ve bir daha yazılmayacak: liste zaten

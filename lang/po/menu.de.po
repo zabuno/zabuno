@@ -320,10 +320,6 @@ msgstr ""
 msgid "menu.item.ai.import.fallback"
 msgstr ""
 
-#: menu:menu.item.ai.import.media.empty
-msgid "menu.item.ai.import.media.empty"
-msgstr ""
-
 #: menu:menu.item.ai.import.media.label
 msgid "menu.item.ai.import.media.label"
 msgstr ""
@@ -422,10 +418,6 @@ msgstr ""
 
 #: menu:menu.item.description.label
 msgid "menu.item.description.label"
-msgstr ""
-
-#: menu:menu.item.image.empty
-msgid "menu.item.image.empty"
 msgstr ""
 
 #: menu:menu.item.image.label
@@ -538,6 +530,34 @@ msgstr ""
 
 #: menu:menu.loading
 msgid "menu.loading"
+msgstr ""
+
+#: menu:menu.media.empty
+msgid "menu.media.empty"
+msgstr ""
+
+#: menu:menu.media.empty.readOnly
+msgid "menu.media.empty.readOnly"
+msgstr ""
+
+#: menu:menu.media.link
+msgid "menu.media.link"
+msgstr ""
+
+#: menu:menu.media.requirement
+msgid "menu.media.requirement"
+msgstr ""
+
+#: menu:menu.media.requirement.noAspect
+msgid "menu.media.requirement.noAspect"
+msgstr ""
+
+#: menu:menu.media.slot.itemImage
+msgid "menu.media.slot.itemImage"
+msgstr ""
+
+#: menu:menu.media.slot.menuImportSource
+msgid "menu.media.slot.menuImportSource"
 msgstr ""
 
 #: menu:menu.move.down
