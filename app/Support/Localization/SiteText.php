@@ -199,31 +199,31 @@ final class SiteText
             // Gönderim sonrası REFERANS (FF-201, `docs/125`): denetleyici
             // `{reference}` yer tutucusunu doldurur, şablon yalnız yazar.
             'contactSentReference' => 'site.contact.sentReference',
-            // Ana sayfa gövdesi (`docs/100` Faz 2): 29 dize Blade'den katalog'a.
+            /*
+                ANA SAYFA GÖVDESİ (`docs/100` Faz 2, `docs/138`).
+
+                Metin katalogda; OLGU ürünün kendi genel bakış sayfasında
+                (`ProductOverviewPage`). Aşağıdaki `parts` ve `limits`
+                başlıkları o sayfanın terimleriyle BİREBİR aynıdır ve
+                `HomeSceneContractTest` (HOME-REAL-07) ayrışmayı kırar:
+                pazarlama metni ile ürün envanteri arasında ikinci bir
+                gerçek kaynak doğamaz.
+            */
             'homeMetaTitle' => 'site.home.meta.title',
             'homeMetaDescription' => 'site.home.meta.description',
             'homeHeroHeading' => 'site.home.hero.heading',
             'homeHeroLead' => 'site.home.hero.lead',
             'homeHeroActionsLabel' => 'site.home.hero.actions.label',
             'homeOpenApp' => 'site.home.hero.openApp',
-            'homeFeaturesHeading' => 'site.home.features.heading',
-            'homeFeatureWorkspaceTitle' => 'site.home.features.workspace.title',
-            'homeFeatureWorkspaceBody' => 'site.home.features.workspace.body',
-            'homeFeatureMenuTitle' => 'site.home.features.menu.title',
-            'homeFeatureMenuBody' => 'site.home.features.menu.body',
-            'homeFeaturePublicationTitle' => 'site.home.features.publication.title',
-            'homeFeaturePublicationBody' => 'site.home.features.publication.body',
-            'homeFeatureMediaTitle' => 'site.home.features.media.title',
-            'homeFeatureMediaBody' => 'site.home.features.media.body',
-            'homeHowItWorksHeading' => 'site.home.howItWorks.heading',
-            'homeStepSetupTitle' => 'site.home.howItWorks.setup.title',
-            'homeStepSetupBody' => 'site.home.howItWorks.setup.body',
-            'homeStepBuildTitle' => 'site.home.howItWorks.build.title',
-            'homeStepBuildBody' => 'site.home.howItWorks.build.body',
-            'homeStepPublishTitle' => 'site.home.howItWorks.publish.title',
-            'homeStepPublishBody' => 'site.home.howItWorks.publish.body',
-            'homeStepUpdateTitle' => 'site.home.howItWorks.update.title',
-            'homeStepUpdateBody' => 'site.home.howItWorks.update.body',
+            'homeHeroRegister' => 'site.home.hero.register',
+            'homeHeroNote' => 'site.home.hero.note',
+            'homeChainHeading' => 'site.home.chain.heading',
+            'homeChainLead' => 'site.home.chain.lead',
+            'homeChainLabel' => 'site.home.chain.label',
+            'homePartsHeading' => 'site.home.parts.heading',
+            'homePartsLead' => 'site.home.parts.lead',
+            'homeLimitsHeading' => 'site.home.limits.heading',
+            'homeLimitsLead' => 'site.home.limits.lead',
             'homeFaqHeading' => 'site.home.faq.heading',
             'homeFaqWhatQuestion' => 'site.home.faq.what.question',
             'homeFaqWhatAnswer' => 'site.home.faq.what.answer',
@@ -231,6 +231,10 @@ final class SiteText
             'homeFaqAccountAnswer' => 'site.home.faq.account.answer',
             'faqCostQuestion' => 'site.home.faq.cost.question',
             'faqCostAnswer' => 'site.home.faq.cost.answer',
+            'homeFaqInstallQuestion' => 'site.home.faq.install.question',
+            'homeFaqInstallAnswer' => 'site.home.faq.install.answer',
+            'homeFaqPosQuestion' => 'site.home.faq.pos.question',
+            'homeFaqPosAnswer' => 'site.home.faq.pos.answer',
             'homeContactLead' => 'site.home.contact.lead',
             'homeContactCta' => 'site.home.contact.cta',
         ];
