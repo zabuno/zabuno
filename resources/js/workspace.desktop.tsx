@@ -54,7 +54,7 @@ void readyForRender().then(() => {
                         */
                         renderKitchenMonitor={desktopKitchenSurface}
                         /*
-                            MASAÜSTÜNÜN KENDİ SAYFALARI (`docs/149`).
+                            MASAÜSTÜNÜN KENDİ SAYFALARI (`docs/153`).
 
                             Panellerle (`inspectors`) ve mutfak monitörüyle
                             aynı desen, bir kademe yukarısı: orada bölümün

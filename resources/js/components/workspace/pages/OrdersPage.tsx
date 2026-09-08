@@ -37,7 +37,7 @@ export type OrdersPageProps = {
     renderKitchenMonitor?: KitchenSurfaceRenderer;
     /**
      * Garson kuyruğunu çizen işlev — YALNIZ masaüstü paketinde doludur
-     * (`docs/149`).
+     * (`docs/153`).
      *
      * `undefined` telefonun NORMAL hâlidir ve bir eksiklik anlatmaz: kuyruk
      * o pakette bugünkü dokunmatik kart listesiyle çizilir. Mutfak
@@ -47,7 +47,7 @@ export type OrdersPageProps = {
      *
      * Bayrak değil ÇİZİCİ geçilir: `deviceClass === 'desktop'` diye bir dal
      * kodu yalnız GİZLERDİ — masaüstü kuyruğu telefon paketine yine iner,
-     * ayrıştırılır ve bakım ister (`docs/149` §3).
+     * ayrıştırılır ve bakım ister (`docs/153` §3).
      */
     renderQueue?: OrderQueueSurfaceRenderer;
 };
@@ -219,7 +219,7 @@ export function OrdersPage({
 
             {tab === 'queue'
                 ? /*
-                      KUYRUK: aynı gerçek, İKİ GİRİŞ KİPİ (`docs/149`).
+                      KUYRUK: aynı gerçek, İKİ GİRİŞ KİPİ (`docs/153`).
 
                       Bağlam BİR KEZ kurulur ve iki yüzeye de aynısı verilir.
                       Ayrı ayrı kurulsaydı masaüstü kuyruğu, plan kapısını ya
