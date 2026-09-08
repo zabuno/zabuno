@@ -181,7 +181,21 @@
     color: var(--fg-muted);
 }
 
-.site-pricing-entitlements {
+/*
+    İMLEÇ GERİ GELİYOR — ölçülmüş bir kayıp.
+
+    Tailwind'in preflight'ı her `ul` için `list-style: none` yazar. Kendi
+    sınıfına geçen bir liste onu sessizce kaybeder ve 320 pikselde altı tane
+    madde imsiz cümle, bir liste değil bir paragraf yığını gibi okunur. Gözün
+    "bunlar ayrı maddeler" demesini sağlayan tek şey odur.
+
+    İKİ LİSTE TEK KURAL: haklar (`-entitlements`) ve yokluklar (`-absences`)
+    aynı biçimde çizilir. Ayrı yazılsalardı biri gün gelir ötekinden ayrışır
+    ve aynı sayfada iki liste dili doğardı — oysa ikisi de "planın içinde ne
+    var, ne yok" sorusunun aynı cümlesidir.
+*/
+.site-pricing-entitlements,
+.site-pricing-absences {
     display: flex;
     flex-direction: column;
     gap: var(--space-1);
@@ -204,15 +218,73 @@
     bağlantı dar ekranda 18-42 piksel yüksekliğinde kalıyor ve parmakla
     ıskalanıyor (`docs/117` K1).
 */
-.site-pricing-payment {
+/*
+    ÖDEME (bölümde) ve ÇIKIŞ YOLU (`/pricing` gövdesinde) AYNI kalıptır:
+    bir cümle, altında kendi satırında duran bir bağlantı. İkisi ayrı
+    yazılsaydı "nasıl öderim" ile "nasıl çıkarım" iki farklı ağırlıkta
+    okunurdu — oysa satın alma kararında ikisi de aynı sorunun yarısı.
+*/
+.site-pricing-payment,
+.site-pricing-exit {
     display: flex;
     flex-direction: column;
     gap: var(--space-1);
     color: var(--fg-muted);
 }
 
-.site-pricing-payment p {
+.site-pricing-payment p,
+.site-pricing-exit p {
     margin: 0;
+}
+
+/*
+    SSS — TEK SÜTUN ve `<details>`.
+
+    Izgara değil: yedi soru iki sütuna dizilince göz hangi cevabın hangi
+    soruya ait olduğunu kaybeder ve açılan bir bölme yanındaki sütunu aşağı
+    iter. Kapalı başlamak 480 piksellik bir ekranda okuyucuya hangi soruyu
+    açacağını SEÇTİRİR; yedisi birden açık olsaydı fiyatın altı bir duvar
+    olurdu.
+
+    Kap `site-panel`: kurumsal yüzey dili. `site-lit` YOK — ışıma bir
+    VURGUDUR ve vurgu plan kartlarının hakkı; her yerde olan bir vurgu vurgu
+    değildir (`site-identity.css` §7).
+*/
+.site-pricing-faq {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin: 0;
+}
+
+.site-pricing-faq-item {
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--zc-radius-lg);
+}
+
+/*
+    ÖZET BİR DOKUNMA HEDEFİDİR (`docs/117` K1): 44 pikselin altına inmez.
+    `list-style` kapatılmıyor — tarayıcının kendi üçgeni durumu (açık/kapalı)
+    renk olmadan da anlatır ve bu, rengi göremeyen okuyucunun tek ipucudur.
+*/
+.site-pricing-faq-question {
+    display: flex;
+    align-items: center;
+    min-block-size: var(--control-height);
+    font-weight: var(--zc-weight-strong);
+    cursor: pointer;
+}
+
+.site-pricing-faq-question:focus-visible {
+    outline: 2px solid var(--zc-focus);
+    outline-offset: 2px;
+}
+
+.site-pricing-faq-answer {
+    margin: 0;
+    padding-block-start: var(--space-2);
+    color: var(--fg-secondary);
+    line-height: 1.6;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════

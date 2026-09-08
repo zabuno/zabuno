@@ -104,10 +104,16 @@ final class FoundationStatusController extends Controller
     /**
      * Plan kataloğunun HERKESE AÇIK görünümü.
      *
-     * Yalnız ad, biçimlendirilmiş fiyat ve hak listesi geçer: iç kimlikler,
-     * sürüm numaraları ve sıralama alanları ziyaretçinin işi değil.
+     * Yalnız ad, biçimlendirilmiş fiyat, KİME UYGUN cümlesi ve hak listesi
+     * geçer: iç kimlikler, sürüm numaraları ve sıralama alanları ziyaretçinin
+     * işi değil.
      *
-     * @return list<array{name: string, price: ?string, entitlements: list<string>}>
+     * PLAN KODU DA GEÇMEZ (FF-239). Kod bir eşleme anahtarıdır ve burada
+     * çözülür; şablona verilseydi bir gün `data-plan="restaurant"` diye
+     * basılır ve `qr.bulk-generation` için verilmiş kararın (ham anahtar
+     * müşteri dili değildir) ikinci bir yerden delinmiş hâli olurdu.
+     *
+     * @return list<array{name: string, price: ?string, free: bool, audience: ?string, entitlements: list<string>}>
      */
     private function publicPlans(string $locale): array
     {
@@ -156,6 +162,17 @@ final class FoundationStatusController extends Controller
                     'name' => $plan->name,
                     'price' => $price,
                     'free' => $free,
+                    /*
+                        KİME UYGUN — kademenin adı bunu söylemez (`docs/139`).
+
+                        Tanınmayan bir kod `null` döner ve sayfa o plan için
+                        hiçbir cümle çizmez: sahibin panelden açtığı yeni bir
+                        plana uydurulmuş bir kitle yakıştırmak, bu satırın
+                        engellemek için var olduğu şey olurdu. Aynı sessizlik
+                        kuralı `entitlementLabel()`te de geçerli ve orada bir
+                        kapı onu ölçüyor.
+                    */
+                    'audience' => $siteText->planAudienceLabel($plan->code, $locale),
                     // Ham anahtar basmak sessizce geliştirici dilini
                     // sızdırmak olurdu; tanınmayan anahtar hiç gösterilmez.
                     'entitlements' => array_values(array_filter(array_map(
