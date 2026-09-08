@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Images, MagnifyingGlass, Queue, UploadSimple, X } from '@phosphor-icons/react';
 import { t } from '../../../../i18n/workspace';
 
@@ -23,9 +23,28 @@ type MediaManagerShellProps = {
     queueCount?: number;
     /** Kuyruk rozetinin götürdüğü bölüm. */
     queueKey?: string;
-    /** Sol şerit (klasörler + depolama); verilmezse yan sütun yoktur. */
+    /** İkincil şerit (klasörler + depolama); verilmezse yan sütun yoktur. */
     rail?: ReactNode;
 };
+
+/**
+ * GÜNLÜK ÜÇLÜ. Kabuğa on bir bölüm verilebiliyor; sahibin GÜNLÜK işi bunların
+ * üçünde geçer: dosyaya bakmak (kütüphane), dosya eklemek (yükle) ve eklediği
+ * işin ne olduğunu görmek (kuyruk). Boyut motoru, dönüştürme, yönetişim ya da
+ * olgunluk günde bir kez bile açılmaz — bir şey ters gittiğinde ya da bir soru
+ * sorulduğunda açılır.
+ *
+ * On bir sekme yan yana yazıldığında bu fark KAYBOLUYORDU: hepsi aynı boyda,
+ * aynı ağırlıkta, telefonda üç satıra sarılıyor ve sahip her seferinde
+ * "kütüphane neredeydi" diye listeyi baştan okuyordu. Sık kullanılanı öne
+ * almak bir süs değil, aramayı ortadan kaldırmaktır.
+ *
+ * Anahtarlar burada yazılı, çünkü hangi üçünün günlük olduğu bir VERİ değil bir
+ * ÜRÜN kararıdır ve `MediaPage` bunu her çağrıda tekrar bildirseydi karar iki
+ * yere dağılırdı. Tanınmayan anahtar sessizce ikincil olur; kabuk hiçbir bölümü
+ * yutmaz.
+ */
+const DAILY_SECTION_KEYS: ReadonlySet<string> = new Set(['library', 'upload', 'queue']);
 
 /**
  * MEDYA YÖNETİCİSİNİN KABUĞU (kanonik kaynak: `docs/reference/media-manager/
@@ -33,16 +52,17 @@ type MediaManagerShellProps = {
  * `docs/108` §1).
  *
  * Medya, Ayarlar'ın yanındaki düz bir sayfa değil KENDİ UYGULAMASIDIR:
- * kendi başlığı, kendi arama alanı, kendi bölüm gezintisi ve solda klasör
- * şeridi. Ayrım keyfi değil — bir menüyü yönetmekle bir dosya deposunu
+ * kendi başlığı, kendi arama alanı, kendi bölüm gezintisi ve ikincil bir
+ * klasör şeridi. Ayrım keyfi değil — bir menüyü yönetmekle bir dosya deposunu
  * yönetmek farklı işlerdir: birinde ürün ve fiyat, diğerinde biçim, boyut,
  * sürüm, kota ve kuyruk vardır. Aynı sayfaya sıkıştırıldığında ikisi de
  * yarım kalıyordu.
  *
- * Kabuk BOŞ BİR ÇERÇEVEDİR: veri çekmez, hangi bölümlerin var olduğunu
- * bilmez. Kaynak dokuz bölüm gösteriyor; depoda bugün ikisi gerçek. Kabuk
- * yalnız kendisine VERİLEN bölümleri çizer — var olmayan bir bölüme giden
- * bir sekme, kullanıcıyı boş bir odaya sokar.
+ * Kabuk hangi bölümlerin GERÇEK olduğunu bilmez: yalnız kendisine VERİLEN
+ * bölümleri çizer — var olmayan bir bölüme giden bir sekme, kullanıcıyı boş
+ * bir odaya sokar. Bildiği tek şey, verilenler arasında hangilerinin günlük
+ * iş olduğudur (bkz. `DAILY_SECTION_KEYS`); geri kalanı yerli bir `<details>`
+ * içinde durur — GİZLİ DEĞİL, bir tık uzakta ve klavyeyle gezilebilir.
  */
 export function MediaManagerShell({
     title,
@@ -57,6 +77,73 @@ export function MediaManagerShell({
     rail,
 }: MediaManagerShellProps) {
     const active = sections.find((section) => section.key === activeKey) ?? sections[0];
+
+    const daily = sections.filter((section) => DAILY_SECTION_KEYS.has(section.key));
+    /*
+        AÇILIR BÖLÜM YALNIZ İKİSİ DE DOLUYKEN VARDIR. Günlük hiçbir bölüm
+        verilmemişse (kiracı adresi yokken, ya da bambaşka anahtarlarla) her
+        şeyi "Daha fazla"nın arkasına koymak, ekranı tek bir kapalı satıra
+        indirirdi — o durumda hiyerarşi diye bir şey yoktur, gezinti düzdür.
+    */
+    const hasDisclosure = daily.length > 0 && daily.length < sections.length;
+    const primary = hasDisclosure ? daily : sections;
+    const secondary = hasDisclosure
+        ? sections.filter((section) => !DAILY_SECTION_KEYS.has(section.key))
+        : [];
+
+    const activeIsSecondary = secondary.some((section) => section.key === active?.key);
+
+    /*
+        AÇIK/KAPALI SAHİBİNDİR, ama aktif bölüm asla saklanmaz. Bölüm
+        "Daha fazla"nın içindeyken kapalı bir kapak, ekranda hiçbir yerde
+        işaretli sekme bırakmaz: içerik görünür, sahip nerede olduğunu
+        göremez.
+
+        Bu yüzden kapak yalnız GEZİNTİ ANINDA açılır (aktif anahtar
+        değiştiğinde), sonra kararı sahip verir — açık bir kapağı sahip
+        kapatabilir ve bir sonraki tıklamaya kadar kapalı kalır. Kalıcılık
+        yok: kabuk hiçbir tercihi kaydetmez, sayfa yenilendiğinde aktif
+        bölüm neredeyse ona göre başlar.
+    */
+    const [moreOpen, setMoreOpen] = useState(activeIsSecondary);
+    const [seenKey, setSeenKey] = useState(activeKey);
+
+    if (seenKey !== activeKey) {
+        setSeenKey(activeKey);
+
+        if (activeIsSecondary) {
+            setMoreOpen(true);
+        }
+    }
+
+    function renderTab(section: MediaManagerSection, prominent: boolean) {
+        const isActive = section.key === active?.key;
+
+        return (
+            <button
+                key={section.key}
+                type="button"
+                aria-current={isActive ? 'page' : undefined}
+                onClick={() => onSelect(section.key)}
+                className={[
+                    'flex min-h-[var(--control-height)] items-center gap-[var(--space-2)]',
+                    prominent
+                        ? 'rounded-[var(--radius-lg)] border px-[var(--space-4)] text-body'
+                        : 'rounded-[var(--radius-md)] px-[var(--space-3)] text-body',
+                    isActive
+                        ? 'bg-surface-active font-bold text-fg'
+                        : 'font-medium text-fg-secondary',
+                    prominent && isActive ? 'border-border-strong' : '',
+                    prominent && !isActive ? 'border-border bg-surface' : '',
+                ]
+                    .filter((part) => part !== '')
+                    .join(' ')}
+            >
+                {section.icon}
+                {section.label}
+            </button>
+        );
+    }
 
     return (
         <div data-testid="media-manager-shell" className="flex flex-col gap-[var(--space-4)]">
@@ -147,39 +234,63 @@ export function MediaManagerShell({
             {sections.length > 1 ? (
                 <nav
                     aria-label={t('workspace.media.shell.sections')}
-                    className="flex flex-wrap gap-[var(--space-1)]"
+                    className="flex flex-col gap-[var(--space-2)]"
                 >
-                    {sections.map((section) => {
-                        const isActive = section.key === active?.key;
+                    <div className="flex flex-wrap gap-[var(--space-2)]">
+                        {primary.map((section) => renderTab(section, true))}
+                    </div>
 
-                        return (
-                            <button
-                                key={section.key}
-                                type="button"
-                                aria-current={isActive ? 'page' : undefined}
-                                onClick={() => onSelect(section.key)}
-                                className={[
-                                    'flex min-h-[var(--control-height)] items-center gap-[var(--space-2)]',
-                                    'rounded-[var(--radius-lg)] px-[var(--space-3)] text-body',
-                                    isActive
-                                        ? 'bg-surface-active font-bold text-fg'
-                                        : 'font-medium text-fg-secondary',
-                                ].join(' ')}
-                            >
-                                {section.icon}
-                                {section.label}
-                            </button>
-                        );
-                    })}
+                    {secondary.length === 0 ? null : (
+                        /*
+                            YERLİ `<details>`, taklit bir açılır menü değil:
+                            klavye, ekran okuyucu, sayfa içi arama ve
+                            "yazdır" onu bedava doğru çalıştırır. Bir
+                            düğme + durum ile yeniden yazılan her açılır
+                            menü bu dördünü tek tek geri kazanmak zorunda
+                            kalır ve genelde kazanamaz.
+
+                            Sayı UYDURMA DEĞİLDİR: kapağın arkasındaki
+                            gerçek bölüm sayısıdır. "Daha fazla" tek başına
+                            kaç şey sakladığını söylemez; iki bölümle on
+                            bölüm aynı görünür.
+                        */
+                        <details
+                            open={moreOpen}
+                            onToggle={(event) => setMoreOpen(event.currentTarget.open)}
+                            className="rounded-[var(--radius-lg)] border border-border"
+                        >
+                            <summary className="flex min-h-[var(--control-height)] cursor-pointer items-center gap-[var(--space-2)] px-[var(--space-3)] text-body font-medium text-fg-secondary">
+                                {t('workspace.shell.nav.more')}
+                                <span className="rounded-pill border border-border px-[var(--space-2)] text-meta text-fg-muted tabular-nums">
+                                    {String(secondary.length)}
+                                </span>
+                            </summary>
+
+                            <div className="flex flex-wrap gap-[var(--space-1)] px-[var(--space-3)] pb-[var(--space-3)]">
+                                {secondary.map((section) => renderTab(section, false))}
+                            </div>
+                        </details>
+                    )}
                 </nav>
             ) : null}
 
             {/*
+                ANA SÜTUN ÖNCE GELİR — hem belgede hem ekranda. Şerit
+                (klasörler + kota) telefonda yukarıda dururken, sahip her
+                açılışta önce "ne kadar yerim kaldı" tablosunu geçip sonra
+                dosyalarına ulaşıyordu; oysa geldiği iş dosyalardı. Kota bir
+                CEVAPTIR, bir kapı değil.
+
                 Şerit ile ana sütun arasında KIRILMA NOKTASI YOK: ikisi de
                 esner, sığmadığında alt alta geçer. `999` büyüme katsayısı
-                geniş ekranda ana sütunu doldurur, şeridi 15rem'de bırakır.
+                geniş ekranda ana sütunu doldurur, şeridi 15rem'de bırakır —
+                yani geniş ekranda ana sütun ferah, şerit ikincil kalır;
+                dar ekranda ana sütun tek başına en üsttedir.
             */}
-            <div className="flex flex-wrap items-start gap-[var(--space-4)]">
+            <div className="flex flex-wrap items-start gap-[var(--space-5)]">
+                <div className="flex min-w-0 flex-[999_1_min(100%,24rem)] flex-col gap-[var(--space-4)]">
+                    {active?.content}
+                </div>
                 {rail ? (
                     <aside
                         data-testid="media-manager-rail"
@@ -194,9 +305,6 @@ export function MediaManagerShell({
                         {rail}
                     </aside>
                 ) : null}
-                <div className="flex min-w-0 flex-[999_1_min(100%,24rem)] flex-col gap-[var(--space-3)]">
-                    {active?.content}
-                </div>
             </div>
         </div>
     );
