@@ -27,6 +27,7 @@ final class CookiePolicy
                     'Oturum çerezi (adı "-session" ile biter): oturumunuzu açık tutar ve bulunduğunuz sayfanın durumunu hatırlar. Ömrü: tarayıcı oturumu.',
                     'XSRF-TOKEN: formları ve uygulamayı başka bir site tarafından sahte olarak oluşturulan isteklere karşı korur. Ömrü: tarayıcı oturumu.',
                     'Beni hatırla çerezi (adı "remember_" ile başlar): yalnızca oturumunuzun açık kalmasını seçerseniz yerleştirilir; böylece her ziyarette şifreniz sorulmaz.',
+                    'zbn_language: yaptığınız isteğe bağlı web sitesi dili seçimini (English veya Türkçe) sayfalar ve ziyaretler arasında hatırlar. Ömrü: 365 gün. Bir tercih çerezidir; oturum açma veya ölçüm çerezi değildir. Dil seçmeden siteyi kullanabilir veya tercihi tarayıcı ayarlarından kaldırabilirsiniz. Bu sunucu adı altında sitenin tamamında geçerlidir, tarayıcı betikleri tarafından okunamaz (HttpOnly), SameSite=Lax kullanır ve HTTPS bağlantılarında güvenli olarak gönderilir.',
                     'zabuno_guest_locale: yayımlanmış bir menüde misafirin seçtiği dili hatırlar. Ömrü: bir yıl.',
                     'zabuno_measurement_consent: ölçüm çerezlerini kabul ettiğinizi ya da reddettiğinizi hatırlar; böylece her sayfada tekrar sorulmaz. Ömrü: bir yıl.',
                     'Açık veya koyu tema tercihiniz bir çerez değildir; tarayıcının yerel depolamasında zabuno-theme adıyla tutulur ve cihazınızdan çıkmaz.',
