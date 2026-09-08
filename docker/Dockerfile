@@ -105,9 +105,25 @@ FROM php-base AS runtime
 # Daemon ve imza veritabanı bu imaja GİRMEZ; onlar compose'daki `clamav`
 # servisinde yaşar. Buraya yalnız soketten konuşan istemci girer, birkaç
 # megabayttır. `clamav-daemon` ya da `clamav-freshclam` eklenmez.
+#
+# `postgresql-client-17` — yedek tatbikatının `pg_dump`/`pg_restore`'u
+# (DEPLOY-PG-CLIENT-PARITY-14). 2026-09-08'e kadar imajda yoktu ve gece
+# tatbikatı üretimde hiç koşmamıştı. Sürüm sunucuyla (compose `postgres:17`)
+# AYNI büyük sürüm olmak zorunda: `pg_dump` kendinden yeni bir sunucuyu
+# reddeder. Debian bookworm yalnız 15 taşır, bu yüzden paket PGDG'nin
+# kendi deposundan ve imzasıyla gelir. Sunucu yükseltildiğinde bu satır
+# da yükselir; kapı ikisini birlikte sayar.
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        nginx supervisor curl clamdscan \
+        nginx supervisor curl clamdscan ca-certificates \
+    && install -d -m 0755 /usr/share/postgresql-common/pgdg \
+    && curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc \
+        -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc \
+    && echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt bookworm-pgdg main" \
+        > /etc/apt/sources.list.d/pgdg.list \
+    && apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        postgresql-client-17 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
