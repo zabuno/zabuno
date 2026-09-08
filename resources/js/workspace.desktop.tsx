@@ -8,6 +8,7 @@ import { AppErrorBoundary } from './components/system/AppErrorBoundary';
 import { BuildTruthBanner } from './components/system/BuildTruthBanner';
 import { DesktopSidebar } from './components/workspace/chrome/DesktopChrome';
 import { desktopKitchenSurface } from './components/workspace/kitchen/desktopKitchen';
+import { desktopPages } from './components/workspace/pages/desktop/desktopPages';
 
 /**
  * MASAÜSTÜ giriş noktası.
@@ -52,6 +53,17 @@ void readyForRender().then(() => {
                             ekran nedenini söyleyen bir cümle gösterir.
                         */
                         renderKitchenMonitor={desktopKitchenSurface}
+                        /*
+                            MASAÜSTÜNÜN KENDİ SAYFALARI (`docs/149`).
+
+                            Panellerle (`inspectors`) ve mutfak monitörüyle
+                            aynı desen, bir kademe yukarısı: orada bölümün
+                            bir PARÇASI cihaza özgüydü, burada bölümün
+                            KENDİSİ. Telefon bu haritayı hiç almaz ve her
+                            bölüm kayıtlı çizimiyle — yani 320 tabanıyla —
+                            çizilir.
+                        */
+                        pageOverrides={desktopPages}
                     />
                 </AppErrorBoundary>
             </ThemeRoot>

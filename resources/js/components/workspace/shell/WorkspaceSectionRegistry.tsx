@@ -1,5 +1,6 @@
 import { useEffect, type ReactNode } from 'react';
 import type { WorkspaceSectionRuntimeContext } from '../WorkspaceApp';
+import type { WorkspacePageOverrideMap } from '../pages/pageOverride';
 
 export type WorkspaceCatalogOnboardingPhase = 'brand-onboarding' | 'location-onboarding';
 
@@ -209,6 +210,14 @@ function SectionAccessRedirect({
 export function renderActiveSection(
     activeKey: string,
     ctx: WorkspaceSectionRuntimeContext,
+    /**
+     * BU CİHAZ PAKETİNİN kendi sayfaları — `docs/149` §5.
+     *
+     * Harita GİRİŞ NOKTASINDAN gelir; bu dosya hiçbir cihaza özgü modülü
+     * adıyla anmaz. Verilmezse (telefon) her bölüm kendi kayıtlı çizimiyle
+     * çizilir — yani bu parametrenin yokluğu bugünkü davranışın ta kendisi.
+     */
+    pageOverrides?: WorkspacePageOverrideMap,
 ): ReactNode {
     const descriptor =
         SECTION_DESCRIPTORS.find((candidate) => candidate.key === activeKey) ??
@@ -236,5 +245,20 @@ export function renderActiveSection(
         }
     }
 
-    return descriptor.render(ctx);
+    /*
+        CİHAZIN KENDİ SAYFASI, İZİN KAPISININ ARDINDAN (`docs/149` §5).
+
+        Sıra kritik: harita yukarıdaki izin kontrolünden SONRA sorulur.
+        Önce sorulsaydı, cihaza özgü bir sayfa izin kapısını atlayabilir ve
+        aynı ekran masaüstünde görünür, telefonda görünmez olurdu — yani
+        yetki sınırı cihaza göre değişirdi. Sunucu her ucu yine doğrular,
+        ama iki paketin AYNI kararı vermesi bu satırın işidir.
+
+        Anahtar `activeKey` değil `descriptor.key`: bilinmeyen bir adres
+        Panom'a düşer, ve o durumda çizilmesi gereken şey Panom'un cihaz
+        sayfasıdır — istenen ama bulunamayan bölümünki değil.
+    */
+    const override = pageOverrides?.[descriptor.key];
+
+    return override !== undefined ? override(ctx) : descriptor.render(ctx);
 }

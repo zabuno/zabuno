@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 
 import { t } from '../../../i18n/workspace';
 import { PageState } from './shared/PageState';
@@ -6,6 +6,7 @@ import { OrderHistoryRegion } from './orders/OrderHistoryRegion';
 import { OrderingSwitchRegion } from './orders/OrderingSwitchRegion';
 import { OrderQueueRegion } from './orders/OrderQueueRegion';
 import type { KitchenSurfaceRenderer } from './orders/kitchenSurface';
+import type { OrderQueueSurfaceContext, OrderQueueSurfaceRenderer } from './orders/queueSurface';
 
 /**
  * SİPARİŞLER — `docs/115` S4 + S5 + S6 (FF-179).
@@ -34,6 +35,21 @@ export type OrdersPageProps = {
      * gösterir.
      */
     renderKitchenMonitor?: KitchenSurfaceRenderer;
+    /**
+     * Garson kuyruğunu çizen işlev — YALNIZ masaüstü paketinde doludur
+     * (`docs/149`).
+     *
+     * `undefined` telefonun NORMAL hâlidir ve bir eksiklik anlatmaz: kuyruk
+     * o pakette bugünkü dokunmatik kart listesiyle çizilir. Mutfak
+     * monitöründen farkı tam burada: monitörün telefonda bir karşılığı YOK
+     * ve orada dürüst bir cümle durur; kuyruğun karşılığı VAR ve o karşılık
+     * dar ekranın tabanıdır (`docs/54`, TOUCH-FIRST-INTERFACE §1).
+     *
+     * Bayrak değil ÇİZİCİ geçilir: `deviceClass === 'desktop'` diye bir dal
+     * kodu yalnız GİZLERDİ — masaüstü kuyruğu telefon paketine yine iner,
+     * ayrıştırılır ve bakım ister (`docs/149` §3).
+     */
+    renderQueue?: OrderQueueSurfaceRenderer;
 };
 
 type Tab = 'queue' | 'kitchen' | 'settings';
@@ -57,6 +73,7 @@ export function OrdersPage({
     onNavigate,
     can,
     renderKitchenMonitor,
+    renderQueue,
 }: OrdersPageProps) {
     /*
         Şalterin hâli SAYFADA tutulur, iki sekmede birden okunmaz. Kuyruk
@@ -200,16 +217,36 @@ export function OrdersPage({
                 </ul>
             </nav>
 
-            {tab === 'queue' ? (
-                <OrderQueueRegion
-                    workspaceId={workspaceId}
-                    locationId={locationId}
-                    acceptsOrders={acceptsOrders}
-                    planIncludesOrdering={planIncludesOrdering}
-                    onNavigateToSettings={() => onNavigate('orders/settings')}
-                    onNavigateToPlan={() => onNavigate('billing')}
-                />
-            ) : null}
+            {tab === 'queue'
+                ? /*
+                      KUYRUK: aynı gerçek, İKİ GİRİŞ KİPİ (`docs/149`).
+
+                      Bağlam BİR KEZ kurulur ve iki yüzeye de aynısı verilir.
+                      Ayrı ayrı kurulsaydı masaüstü kuyruğu, plan kapısını ya
+                      da şalterin hâlini telefonunkinden farklı okuyabilirdi —
+                      ve fark ancak sahibin "bir ekran sipariş alıyor diyor,
+                      öteki almıyor" dediği akşam görünürdü.
+
+                      Çizici yoksa (telefon paketi) bugünkü dokunmatik kuyruk
+                      çizilir; taban odur ve bu paket onu değiştirmez.
+                  */
+                  ((): ReactNode => {
+                      const queue: OrderQueueSurfaceContext = {
+                          workspaceId,
+                          locationId,
+                          acceptsOrders,
+                          planIncludesOrdering,
+                          onNavigateToSettings: () => onNavigate('orders/settings'),
+                          onNavigateToPlan: () => onNavigate('billing'),
+                      };
+
+                      return renderQueue !== undefined ? (
+                          renderQueue(queue)
+                      ) : (
+                          <OrderQueueRegion {...queue} />
+                      );
+                  })()
+                : null}
 
             {tab === 'kitchen' ? (
                 canKitchen ? (

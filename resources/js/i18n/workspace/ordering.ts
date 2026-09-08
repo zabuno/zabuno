@@ -171,6 +171,36 @@ export const ordering = {
     'workspace.orders.permission.description':
         'Ask the workspace owner if you need to see the order queue.',
 
+    /*
+        MASAÜSTÜ KUYRUĞU (`docs/149`) — yalnız işaretleyici/klavye
+        yüzeyinde çizilen dizeler.
+
+        Bu anahtarların telefonda bir karşılığı YOKTUR ve olmamalı: dokunmada
+        `hover` yok, sağ tık yok, Enter yok. "Ok tuşlarıyla gezin" cümlesini
+        telefonda göstermek, olmayan bir yeteneği vaat etmek olurdu.
+
+        Sayıya bağlı çoğul YOK (`docs/86`): "{count} selected" hem 1 hem 9
+        için doğrudur ve dillerin çoğul kuralları bu depoda taşınmıyor.
+    */
+    'workspace.orders.queue.desktop.shortcuts':
+        'Arrow keys move · Space selects · Enter approves · R rejects',
+    'workspace.orders.queue.desktop.selected': '{count} selected',
+    'workspace.orders.queue.desktop.bulkRegion': 'Actions for the selected orders',
+    'workspace.orders.queue.desktop.bulkConfirm': 'Approve {count}',
+    'workspace.orders.queue.desktop.bulkReject': 'Reject {count}',
+    'workspace.orders.queue.desktop.clearSelection': 'Clear selection',
+    'workspace.orders.queue.desktop.bulkReason': 'Why are you rejecting these {count} orders?',
+    /*
+        TOPLU İŞLEMİN SONUCU TEK CÜMLEDE, ve başarısızlık AYRI sayılır:
+        "8 approved" deyip iki tanesinin tutmadığını yutmak, kasadaki kişiye
+        bitmiş bir işi bitmiş göstermek olurdu.
+    */
+    'workspace.orders.queue.desktop.outcome': '{ok} approved, {failed} did not go through.',
+    'workspace.orders.queue.desktop.menu': 'Order actions',
+    'workspace.orders.queue.desktop.detail.region': 'Selected order',
+    'workspace.orders.queue.desktop.detail.empty':
+        'Pick an order from the list to read its lines here.',
+
     'workspace.orders.prerequisite.title': 'Pick a location first',
     'workspace.orders.prerequisite.description':
         'Orders belong to a branch: a table, a queue and a kitchen are all part of one location.',
