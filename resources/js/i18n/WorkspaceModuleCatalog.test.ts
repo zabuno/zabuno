@@ -37,8 +37,6 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1709;
-
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
 // kendi cümlelerini kazandı; tek bir "tekrar deneyin" ikisini de yanlış
@@ -236,6 +234,14 @@ const FROZEN_LEGACY_KEY_COUNT = 1709;
 // yerelleştirme bu üç metnin dönüşmediğini gösterdi (`docs/121` §4).
 // ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
 // msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
+// FF-218 (`docs/122` Y7, `docs/133`): SEKİZ anahtar ve hepsi TEK bir
+// cümlenin parçaları — "platform ekibinden biri hesabınıza baktı".
+// `docs/122` §5 kaydın kiracının GÖREBİLECEĞİ biçimde yazılmasını şart
+// koşuyor; sahibin okuyacağı metnin katalogdan geçmesi o şartın kendisidir,
+// yan etkisi değil. Sekiz anahtar: kaynak etiketi, bölüm başlığı, ne
+// yapılamadığını anlatan yardım metni, açık ve kapalı oturumun zaman
+// cümleleri, sebep, kim ve failin bilinmediği hâli.
+// ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırları yazıldı.
 // FF-219: 1660 → 1694, otuz dört anahtar — ABONELİĞİN EKSİK YARISI
 // (docs/107 Faz 1.3, docs/134). İptal, iptalden cayma, plan düşürme,
 // ödemesiz süre ve askı. Bu grubun ayırt edici yanı, cümlelerin bir DURUM
@@ -270,14 +276,17 @@ const FROZEN_LEGACY_KEY_COUNT = 1709;
 // bir durumu adlandırmak, bir gün onu mümkün sanmaya yol açardı.
 // ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
 // msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
+
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '7744a53cf12f231aa0b3f9e59b0489ab74a34cb96645259be53edffd94c58f45';
+    '4ab6eddc6f10f557906e7a98d2927a102c14cd19f592dd3db5add086715afa53';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
     const normalized = sortedKeys.map((key) => `${key}=${entries[key]}`).join('\n');
     return createHash('sha256').update(normalized, 'utf8').digest('hex');
 }
+
+const FROZEN_LEGACY_KEY_COUNT = 1717;
 
 describe('workspace i18n modular catalog contract', () => {
     // Başlıktaki SAYI kaldırıldı ve bir daha yazılmayacak: liste zaten
