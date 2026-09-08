@@ -23,7 +23,7 @@ use Tests\TestCase;
  *
  * ── Kapı tek cümledir ────────────────────────────────────────────────────
  *
- * **Altbilgideki her bağlantı 200 döner.** Bunu sağlayan şey dikkat değil,
+ * **Kamusal altbilgi hedefleri 200 döner; /app misafiri girişe yönlendirir.** Bunu sağlayan şey dikkat değil,
  * kaynak: liste ziyaretçinin alacağı HTTP kodunu üreten aynı
  * `ResolvePageDelivery` kararından süzülüyor (`docs/129` §3).
  *
@@ -70,6 +70,13 @@ final class FooterContentMenusTest extends TestCase
         self::assertGreaterThan(12, count($targets), 'Altbilgi beklenenden kısa — ölçüm dayanaksız.');
 
         foreach ($targets as $target) {
+            // The account entry intentionally sends guests to authentication.
+            if ($target === '/app') {
+                $this->get($target)->assertRedirect(route('login'));
+
+                continue;
+            }
+
             $status = $this->get($target)->getStatusCode();
 
             /*
@@ -126,8 +133,14 @@ final class FooterContentMenusTest extends TestCase
         // dolayısıyla yayına alınan her sayfa bir çeviri borcu doğurmaz.
         self::assertStringContainsString('QR menu', $footer);
 
-        // Yaşayan gruplarda zaten duran bir adres burada TEKRAR edilmez.
-        self::assertSame(1, substr_count($footer, 'href="/pricing"'));
+        // Each responsive footer context has one pricing destination.
+        $dom = new \DOMDocument;
+        @$dom->loadHTML($footer);
+        $xpath = new \DOMXPath($dom);
+        foreach (['//*[@data-mobile-footer]', '//*[@data-desktop-footer]'] as $context) {
+            self::assertSame(1, $xpath->query($context)->length);
+            self::assertSame(1, $xpath->query($context.'//a[@href="/pricing"]')->length);
+        }
     }
 
     // --- FOOTER-CONTENT-05 -----------------------------------------------------

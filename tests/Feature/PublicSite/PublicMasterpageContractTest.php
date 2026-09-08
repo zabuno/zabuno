@@ -74,7 +74,7 @@ final class PublicMasterpageContractTest extends TestCase
     public function test_header_and_footer_are_the_same_on_every_page(): void
     {
         $normalise = static function (string $fragment): string {
-            // The shared language form intentionally returns to its current page.
+            // Only the language form's return destination varies by current page.
             $fragment = (string) preg_replace_callback(
                 '#<form\b[^>]*class="site-language-switcher"[^>]*>.*?</form>#s',
                 static fn (array $form): string => (string) preg_replace(
