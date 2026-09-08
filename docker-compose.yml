@@ -122,6 +122,43 @@ services:
             # İkisi de boş olabilir; boşken uygulama taahhüt yazmaz.
             SUPPORT_RESPONSE_COMMITMENT_HOURS: ${SUPPORT_RESPONSE_COMMITMENT_HOURS:-}
             SUPPORT_EMAIL: ${SUPPORT_EMAIL:-}
+            SUPPORT_ACCESS_SESSION_MINUTES: ${SUPPORT_ACCESS_SESSION_MINUTES:-15}
+            SUPPORT_ACCESS_SESSION_MAX_MINUTES: ${SUPPORT_ACCESS_SESSION_MAX_MINUTES:-60}
+
+            # ÖLÇÜM, SLA VE HUKUK KİMLİĞİ konteynere GEÇMELİ —
+            # DEPLOY-ENV-PASSTHROUGH-13.
+            #
+            # Aynı arıza sınıfının dördüncü örneği (06 URL, 08 posta, 12
+            # tarayıcı): `config/` bu anahtarları `env()` ile okuyordu ama
+            # burada satırları yoktu. Sunucu yönergesi "`.env`'e yaz, `up -d`
+            # yap" diyordu; yapılsaydı GTM açılmış görünür, tek bir ziyaret
+            # bile sayılmazdı — ve ölçüm geriye dönük toplanamaz. Kapı artık
+            # anahtarları config'ten türetiyor: yeni bir `env('X')` eklemek,
+            # buraya bir satır eklemek demektir.
+            #
+            # Dolu config varsayılanı olan anahtarlar (barındırma sağlayıcısı
+            # ve konumu, destek oturum süreleri) aynı varsayılanla taşınır;
+            # `${X:-}` yazılsaydı değişken BOŞ DİZE olarak var olur ve config
+            # varsayılanı kaybolurdu.
+            ANALYTICS_GTM_CONTAINER_ID: ${ANALYTICS_GTM_CONTAINER_ID:-}
+            ANALYTICS_GA4_ENABLED: ${ANALYTICS_GA4_ENABLED:-false}
+            ANALYTICS_YANDEX_METRICA_ENABLED: ${ANALYTICS_YANDEX_METRICA_ENABLED:-false}
+            ANALYTICS_HOTJAR_ENABLED: ${ANALYTICS_HOTJAR_ENABLED:-false}
+            SLA_AVAILABILITY_TARGET_PERCENT: ${SLA_AVAILABILITY_TARGET_PERCENT:-}
+            SLA_MEASUREMENT_SOURCE: ${SLA_MEASUREMENT_SOURCE:-}
+            SLA_INCIDENT_NOTIFICATION_MINUTES: ${SLA_INCIDENT_NOTIFICATION_MINUTES:-}
+            SLA_SERVICE_CREDIT_PERCENT: ${SLA_SERVICE_CREDIT_PERCENT:-}
+            LEGAL_COMPANY_LEGAL_NAME: ${LEGAL_COMPANY_LEGAL_NAME:-}
+            LEGAL_COMPANY_ADDRESS: ${LEGAL_COMPANY_ADDRESS:-}
+            LEGAL_COMPANY_MERSIS: ${LEGAL_COMPANY_MERSIS:-}
+            LEGAL_COMPANY_TAX_OFFICE: ${LEGAL_COMPANY_TAX_OFFICE:-}
+            LEGAL_COMPANY_TAX_NUMBER: ${LEGAL_COMPANY_TAX_NUMBER:-}
+            LEGAL_COMPANY_EMAIL: ${LEGAL_COMPANY_EMAIL:-}
+            LEGAL_COMPANY_PHONE: ${LEGAL_COMPANY_PHONE:-}
+            LEGAL_REVIEWED_AT: ${LEGAL_REVIEWED_AT:-}
+            LEGAL_HOSTING_PROVIDER: ${LEGAL_HOSTING_PROVIDER:-netcup GmbH}
+            LEGAL_HOSTING_LOCATION: ${LEGAL_HOSTING_LOCATION:-Karlsruhe, Germany — outside Turkey}
+            LEGAL_DATA_REQUEST_ADDRESS: ${LEGAL_DATA_REQUEST_ADDRESS:-}
         volumes:
             # Yüklenen medya imajın içinde yaşamaz; imaj değişince kaybolurdu.
             - app-storage:/var/www/html/storage/app
