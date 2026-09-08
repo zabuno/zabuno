@@ -14,6 +14,7 @@ use App\Domain\Platform\Credential\CredentialFieldStatus;
 use App\Domain\Platform\Credential\CredentialProvider;
 use App\Domain\Platform\Credential\CredentialScope;
 use App\Domain\Platform\Credential\CredentialStatus;
+use App\Domain\Platform\Credential\PlatformCredentialChanged;
 use App\Domain\Platform\Credential\ResolvedCredential;
 use Illuminate\Contracts\Encryption\Encrypter;
 use Illuminate\Support\Facades\DB;
@@ -545,13 +546,36 @@ final readonly class EloquentPlatformCredentialStore implements CredentialResolv
         return [$plain, $secrets, $hints];
     }
 
-    /** @param array<string, string> $values */
+    /**
+     * Alan adı ŞEMADA olmalı — ve kapalı uçlu bir alanın değeri de listede.
+     *
+     * İkinci kontrol olmadan `ga4 => 'evet'` kasaya girerdi ve okuma tarafı
+     * onu sessizce "kapalı" sayardı: hiçbir hata çıkmaz, yalnız raporlar
+     * boş kalırdı. Yazarken reddetmek, sahibe o anda "bu değeri kabul
+     * etmiyorum" der; okurken sessizce düşürmek ise kaybı aylar sonra
+     * fark ettirir.
+     *
+     * Boş dize istisnadır ve REDDEDİLMEZ: panel dokunulmamış bir alanı boş
+     * gönderir ve bu "değiştirme" demektir (`merge()`'ün sözleşmesi).
+     *
+     * @param  array<string, string>  $values
+     */
     private function assertKnownFields(CredentialProvider $provider, array $values): void
     {
-        foreach (array_keys($values) as $name) {
-            if ($provider->field((string) $name) === null) {
+        foreach ($values as $name => $value) {
+            $field = $provider->field((string) $name);
+
+            if ($field === null) {
                 throw new \InvalidArgumentException(
                     "Bilinmeyen alan '{$name}' — {$provider->value} şemasında yok.",
+                );
+            }
+
+            if (! $field->accepts((string) $value)) {
+                $allowed = implode(', ', $field->choices ?? []);
+
+                throw new \InvalidArgumentException(
+                    "'{$name}' yalnız şu değerleri kabul eder: {$allowed}.",
                 );
             }
         }
@@ -569,7 +593,18 @@ final readonly class EloquentPlatformCredentialStore implements CredentialResolv
         return $secrets === [] ? null : $this->encrypter->encryptString($this->encodeJson($secrets));
     }
 
-    /** Append-only denetim satırı — SIRSIZ. Yalnız kim/ne/ne zaman/hangi bağlantı. */
+    /**
+     * Append-only denetim satırı — SIRSIZ. Yalnız kim/ne/ne zaman/hangi bağlantı.
+     *
+     * Aynı yerden bir OLAY da çıkar (FF-220). Sebebi: bu metot kasadaki her
+     * mutasyonun geçtiği TEK boğazdır — yazma, döndürme, adlandırma, açma,
+     * kapama ve sağlık değişimi hepsi buraya uğrar. Olayı buraya koymak,
+     * ileride eklenecek bir yazma yolunun onu unutmasını imkânsız kılar;
+     * her çağrı yerine tek tek koymak ise unutulabilir bir liste olurdu.
+     *
+     * Dinleyen taraf kasadan okuduğunu önbelleğe almış olabilir
+     * (`VaultAnalyticsSettings`); onun geçersiz kılınması bu olaya bağlıdır.
+     */
     private function audit(CredentialProvider $provider, string $action, ?int $actor, ?int $connectionId): void
     {
         DB::table(self::AUDITS)->insert([
@@ -579,6 +614,8 @@ final readonly class EloquentPlatformCredentialStore implements CredentialResolv
             'actor_user_id' => $actor,
             'created_at' => now(),
         ]);
+
+        event(new PlatformCredentialChanged($provider, $connectionId, $action));
     }
 
     /** @return array<string, mixed> */
@@ -614,7 +651,16 @@ final readonly class EloquentPlatformCredentialStore implements CredentialResolv
         );
     }
 
-    /** @return array<string, string> */
+    /**
+     * @return array<string, string>
+     *
+     * ENV YEDEĞİ — kasa boşken bugünkü kurulumlar çalışmaya devam etsin.
+     *
+     * Ölçüm burada, posta ve ödemeyle AYNI yolu kullanır (FF-220): kasa >
+     * env önceliği tek bir yerde, `resolveRow()`'da yaşar. Ölçüme kendi
+     * öncelik mantığını yazmak, iki farklı yerde iki farklı "hangisi
+     * kazanır" kuralı demek olurdu — ve ikisi bir gün ayrışırdı.
+     */
     private function envValues(CredentialProvider $provider): array
     {
         $map = match ($provider) {
@@ -628,6 +674,19 @@ final readonly class EloquentPlatformCredentialStore implements CredentialResolv
                 'secret_key' => 'services.iyzico.sandbox.secret_key',
                 'base_url' => 'services.iyzico.sandbox.base_url',
             ],
+            /*
+                `config/analytics.php`'nin ortam varsayılanı KALIR. Bugün
+                üretimde ölçümü açan tek şey `ANALYTICS_GTM_CONTAINER_ID`
+                (`docs/126` §1); onu bu paketle çalışmaz hâle getirmek,
+                sahibin kasaya kimliği girdiği güne kadar ölçümü kapatmak
+                olurdu.
+            */
+            CredentialProvider::GoogleTagManager => [
+                'container_id' => 'analytics.gtm_container_id',
+                'ga4' => 'analytics.destinations.ga4',
+                'yandex_metrica' => 'analytics.destinations.yandex_metrica',
+                'hotjar' => 'analytics.destinations.hotjar',
+            ],
             // AI sağlayıcıları için env yedeği yok — kasa doldurulunca çalışır.
             default => [],
         };
@@ -635,6 +694,19 @@ final readonly class EloquentPlatformCredentialStore implements CredentialResolv
         $out = [];
         foreach ($map as $field => $configKey) {
             $value = config($configKey);
+
+            /*
+                Hedefler yapılandırmada MANTIKSAL, kasada kapalı uçlu bir
+                dizedir. Çeviri burada yapılır ki alanın tek bir tipi olsun:
+                aşağıdaki tüketici "bazen bool bazen dize" sormak zorunda
+                kalmaz.
+            */
+            if (is_bool($value)) {
+                $out[$field] = $value ? 'on' : 'off';
+
+                continue;
+            }
+
             if (is_string($value) && $value !== '') {
                 $out[$field] = $value;
             }
