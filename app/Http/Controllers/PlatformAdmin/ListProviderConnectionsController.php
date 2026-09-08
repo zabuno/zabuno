@@ -37,6 +37,15 @@ final class ListProviderConnectionsController extends Controller
                             'secret' => $field->secret,
                             'required' => $field->required,
                             'default' => $field->default,
+                            /*
+                                Kapalı uçlu alanın SEÇENEKLERİ (FF-220).
+                                Panel bunları bilmeden ölçüm hedeflerini
+                                serbest metin kutusu olarak çizerdi ve
+                                sahibin yazdığı `evet` sessizce "kapalı"
+                                sayılırdı. Liste tek kaynaktan (şemadan)
+                                gelir; panelde ikinci bir kopyası yoktur.
+                            */
+                            'choices' => $field->choices,
                         ],
                         $provider->fields(),
                     ),

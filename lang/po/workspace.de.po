@@ -3560,6 +3560,18 @@ msgstr ""
 msgid "workspace.media.settings.security.signedLink.on"
 msgstr ""
 
+#: workspace:workspace.media.settings.security.state.on
+msgid "workspace.media.settings.security.state.on"
+msgstr ""
+
+#: workspace:workspace.media.settings.security.state.partial
+msgid "workspace.media.settings.security.state.partial"
+msgstr ""
+
+#: workspace:workspace.media.settings.security.state.unavailable
+msgid "workspace.media.settings.security.state.unavailable"
+msgstr ""
+
 #: workspace:workspace.media.settings.security.virusScan
 msgid "workspace.media.settings.security.virusScan"
 msgstr ""
