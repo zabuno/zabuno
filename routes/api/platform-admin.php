@@ -81,7 +81,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
         /*
             Modül envanteri (`docs/111` adım 1) — mühendislik kanıtı, ticaret
-            değil; ekranı da `/platform` altında değil `/engineering` altında.
+            değil; ekranı da ticari `/platform` bölümlerinin arasında değil,
+            `/platform/engineering` kabuğunda.
             Yalnız OKUMA: modül açma/kapama bu depoda modellenmiş değil, o
             yüzden bir yazma ucu da yok (`docs/111` §5.1).
         */

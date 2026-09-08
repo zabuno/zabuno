@@ -57,10 +57,11 @@ php artisan db:seed --class=Database\\Seeders\\PlanCatalogueSeeder --force
 # yolları `planned` olarak ekler ve belgeden gelen alanları tazeler.
 # (`ImportSiteMapCommand`, `ImportSiteMapCommandTest`.)
 #
-# Yayın durumunu İLERLETEN komut (`site:sync-content-status`) buraya
-# BİLEREK konmadı. Kalite kapısı insanların işidir; bir betiğin her
-# dağıtımda geçtiği kapı, kapı değildir. Dağıtım kütüğü DOLDURUR, karar
-# vermez.
+# Ölçümden durum TÜRETEN komut (`site:sync-content-status`) buraya BİLEREK
+# konmadı ve konmayacak. O komut bir ölçüm yapar ("bu sayfanın metni
+# yazılmış mı?") ve ölçümden bir durum türetir; hiçbir insan devrede
+# değildir. Kalite kapısı insanların işidir; bir betiğin her dağıtımda
+# geçtiği kapı, kapı değildir. Dağıtım ölçümden KARAR VERMEZ.
 #
 # Kaynak belge imajın içindedir: `.dockerignore` `docs` dizinini eler ama
 # bu tek dosyayı geri alır. Geri alma bir gün silinirse komut dosyayı
@@ -69,6 +70,38 @@ php artisan db:seed --class=Database\\Seeders\\PlanCatalogueSeeder --force
 # sessizce yeşil görünmesindense açıkça durması yeğdir.
 log "sayfa kütüğü içe aktarılıyor"
 php artisan site:import-map
+
+# VERİLMİŞ YAYIN KARARLARI UYGULANIR — `docs/147`.
+#
+# Ölçülen boşluk (2026-09-08): karar `config/content-publication-decisions.php`
+# içinde yazılı, kod incelemesinden geçmiş ve main'e girmişti; dağıtım da
+# yeşil tamamlanmıştı. Ama kütükteki durum `planned` kaldığı için
+# `ShowCorporatePageController` o adreslere 404 dönmeye devam ediyordu.
+# Kararı uygulayan tek yol, birinin sunucuya SSH ile girip komutu ELLE
+# koşmasıydı; o kişi gelene kadar sahibin yayına aldığı sayfa canlıda YOKTU.
+#
+# ÜSTTEKİ YASAKLA ÇELİŞMİYOR ve fark yalnız bir üslup farkı değil:
+# `sync-content-status` bir ÖLÇÜMDEN karar türetir (insan yok, tavan var);
+# bu komut ise verilmiş bir kararı UYGULAR. Kararlar dosyası sayfaları
+# ADIYLA sayar, her satırda kararı vereni, günü ve sebebi taşır, ve kod
+# incelemesinden geçer. Kapıdan geçen şey bir betik değil, bir İNSANDIR —
+# ve o kapı burada değil, incelemededir. Toptan bir "her şeyi yayınla" yolu
+# yok: komut yalnız dosyada adı geçen satırlara dokunur.
+#
+# TEKRAR ÇALIŞTIRMASI ZARARSIZ: bir kez yayınlanmış satıra bir daha
+# dokunmaz, dolayısıyla sahibin SONRADAN verdiği bir kararı (örneğin bir
+# sayfayı bakıma almasını) her dağıtımda sessizce geri almaz.
+# (`ApplyPublicationDecisionsCommandTest::test_running_it_twice_changes_nothing`
+# ve `::test_it_never_overrules_a_later_human_decision`.)
+#
+# SIRA ŞART: komut, adı geçen her satırın kütükte VAR olmasını ve o dilde
+# yazılmış bir metni bulunmasını ölçer; ölçemezse hiçbir şey yapmadan
+# BAŞARISIZ olur. Bu yüzden `site:import-map`ten sonra gelir. Başarısızlığı
+# `set -e` gereği konteyneri hiç açtırmaz ve sağlık kontrolü dağıtımı
+# kırmızıya çeker — kararı uygulanmamış bir dağıtımın sessizce yeşil
+# görünmesindense açıkça durması yeğdir.
+log "yayın kararları uygulanıyor"
+php artisan site:apply-publication-decisions
 
 # Önbellekler migrasyondan SONRA: config ve route önbelleği şemayı değil
 # ama view ve event keşfi kod durumunu dondurur.

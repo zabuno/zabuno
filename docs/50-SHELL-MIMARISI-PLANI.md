@@ -339,7 +339,7 @@ Tek tık kapısı — hepsi sağlanmalı: bağlam açık, işlem sık, sonuç
 | --- | --- | --- |
 | 1 | Organizasyon ile Workspace ayrı kavram mı? | Veri modelinde aynı değilse UI'da tek switcher altında belirsiz bırakılamaz |
 | 2 | QR codes ayrı ana menü mü, Menus altında mı? | Bilgi mimarisi; bugün Publication içinde |
-| 3 | EngineeringShell ayrı rota mı (`/engineering/*`), platformun içinde mi? | Yetki ve deployment yüzeyi |
+| 3 | ~~EngineeringShell ayrı rota mı, platformun içinde mi?~~ **KARAR VERİLDİ (FF-248): kabuk ayrı, adres `/platform/engineering/*` içinde.** Eski `/engineering` 301 ile yaşıyor | Yetki ve deployment yüzeyi — yetki zaten tekti (`EnsurePlatformSuperAdmin`), adres alanı bunu söylemiyordu |
 | 4 | Mobilde alt gezinti hangi 3–5 hedef? | Faz 9 |
 | 5 | AI sağlayıcı ne zaman bağlanacak? | Faz 10 tetikleyicisi |
 

@@ -44,9 +44,28 @@ jobs:
           # Sunucu henüz kurulmadıysa deploy BAŞARISIZ OLMAZ, ATLANIR.
           # Her birleşmede kırmızı bir X görmek "kırmızıyı görmezden gel"
           # alışkanlığı yaratır, ve o alışkanlık gerçek arızaları da gizler.
+          #
+          # Ama ATLAMA SESSİZ KALAMAZ. Bu iş yeşil biter ve sahip yeşili
+          # "birleştirdiğim şey yayında" diye okur — oysa hiçbir şey
+          # koşmamıştır: ne göçler, ne sayfa kütüğü, ne de yayın kararları.
+          # Atlanan iş ADIYLA söylenir ve koşum özetine yazılır; bir
+          # `::notice::`, günlüğün içinde kaybolabilir.
           if [ -z "${DEPLOY_HOST}" ]; then
             echo "configured=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::Sunucu secret'ları tanımlı değil; deploy atlandı. Kurulum: docs/43."
+            echo "::warning::ADIM ATLANDI — sunucu secret'ları tanımlı değil. Yayın kararları (site:apply-publication-decisions) UYGULANMADI; canlıda hiçbir şey değişmedi. Kurulum: docs/43."
+            {
+              echo "### ADIM ATLANDI — dağıtım koşmadı"
+              echo
+              echo "Sunucu secret'ları (\`DEPLOY_HOST\`) tanımlı değil, bu yüzden **hiçbir şey yayına alınmadı**."
+              echo
+              echo "Koşmayan adımlar:"
+              echo
+              echo "- \`php artisan migrate --force\` — göçler"
+              echo "- \`php artisan site:import-map\` — sayfa kütüğü"
+              echo "- \`php artisan site:apply-publication-decisions\` — yayın kararları"
+              echo
+              echo "Bu koşumun yeşil olması, sitenin güncellendiği anlamına **gelmez**. Kurulum: \`docs/43\`."
+            } >> "$GITHUB_STEP_SUMMARY"
           else
             echo "configured=true" >> "$GITHUB_OUTPUT"
           fi

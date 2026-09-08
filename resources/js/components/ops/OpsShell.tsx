@@ -18,7 +18,7 @@ export type OpsSection<Key extends string> = {
 export type OpsShellProps<Key extends string> = {
     brandName: string;
     navLabel: string;
-    /** Adres kökü: `/platform` ya da `/engineering`. */
+    /** Adres kökü: `/platform` ya da `/platform/engineering`. */
     basePath: string;
     sections: OpsSection<Key>[];
     groupLabels: Record<string, string>;
