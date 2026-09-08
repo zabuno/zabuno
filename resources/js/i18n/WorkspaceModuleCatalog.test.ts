@@ -37,24 +37,6 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-/*
-    1705 → 1736 (FF-226, `docs/107` Faz 3.3, `docs/138`): veri hakları
-    bölümü — Ayarlar > Çalışma alanı'nın tehlikeli bölgesi — otuz bir
-    kaynak dizesi getirdi.
-
-    OTUZ BİR, otuz üç değil: ilk yazımda kullanılmayan iki anahtar vardı
-    ve `DS-BUNDLE-BUDGET-07` onları ölçtü. Masaüstü kapanışı 199.24 KB'den
-    200.02 KB'ye çıkıp 200 KB bütçesini aşınca, bölümün kendisi `lazy`
-    yapıldı ve kullanılmayan anahtarlar silindi; kapanış 199.96 KB'ye indi.
-    Kimsenin okumadığı bir dize de indirilir.
-
-    Sayı ve SHA burada bilerek DONMUŞ duruyor: bir dizenin sessizce
-    değişmesi, PO dosyalarındaki karşılığını kimseye söylemeden
-    geçersizleştirir ve çevirmen aynı cümleyi ikinci kez çevirmek zorunda
-    kalır (`docs/121`).
-*/
-const FROZEN_LEGACY_KEY_COUNT = 1736;
-
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
 // kendi cümlelerini kazandı; tek bir "tekrar deneyin" ikisini de yanlış
@@ -266,14 +248,27 @@ const FROZEN_LEGACY_KEY_COUNT = 1736;
 // ekranda yazılı.
 // ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
 // msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
+// FF-225: Medya > Ayarlar'daki güvenlik önlemleri ANAHTAR olmaktan çıktı
+// (sahibin kararı, 2026-09-08: "switch butonlar saçma, UI hatası"). Anahtar
+// hem "değiştirebilirsin" diyordu hem de altında "kapatılamaz" yazıyordu;
+// kullanıcı dokunuyor, hiçbir şey olmuyordu. Anahtarın tek bakışta
+// cevapladığı soru ("açık mı?") kaybolmasın diye hâl artık KELİMEDİR ve üç
+// anahtar bunun için doğdu: "On", "Partly on", "Not running here". Dördüncü
+// bir "Off" anahtarı YOK — bu dört önlemin kapalı diye bir hâli yok; olmayan
+// bir durumu adlandırmak, bir gün onu mümkün sanmaya yol açardı.
+// ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
+// msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
+
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '8d0905a13625691165262ae8307d7bdfe46fb07d87a689ba9ba73a0b60e907ed';
+    '6f5dc98695e1c9c50698516523a1bed82adead635b3959b3a4ff6c7e93fc4635';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
     const normalized = sortedKeys.map((key) => `${key}=${entries[key]}`).join('\n');
     return createHash('sha256').update(normalized, 'utf8').digest('hex');
 }
+
+const FROZEN_LEGACY_KEY_COUNT = 1739;
 
 describe('workspace i18n modular catalog contract', () => {
     // Başlıktaki SAYI kaldırıldı ve bir daha yazılmayacak: liste zaten

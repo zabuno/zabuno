@@ -262,6 +262,10 @@ final class ProductOverviewPage
                     new BlockEntry(text: 'Multiple branches', pageKey: 'urun.coklu-sube'),
                     new BlockEntry(text: 'Analytics', pageKey: 'urun.analitik'),
                     new BlockEntry(text: 'Zabuno AI', pageKey: 'urun.zabuno-ai'),
+                    // FF-229: haritanın kendisi eksikti. Genel bakış siparişi
+                    // bir yetenek satırında anlatıyordu ama ona çıkan bir
+                    // bağlantı yoktu — sayfası olmadığı için.
+                    new BlockEntry(text: 'Ordering', pageKey: 'urun.siparis'),
                     new BlockEntry(text: 'Solutions', pageKey: 'cozumler'),
                     new BlockEntry(text: 'Pricing', pageKey: 'fiyatlandirma'),
                 ]),

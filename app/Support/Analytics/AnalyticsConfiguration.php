@@ -26,14 +26,42 @@ final class AnalyticsConfiguration
         private readonly array $sources,
     ) {}
 
-    public static function fromConfig(): self
+    /**
+     * KASADAN GELENLER ÖNCE, YAPILANDIRMA (env) SONRA — `docs/135` §3.
+     *
+     * `$vault` boşken davranış BUGÜNKÜNÜN AYNISIDIR: kimlik ortam
+     * değişkeninden gelir. Bu bir nezaket değil zorunluluk — kasaya kimlik
+     * girilmemiş her kurulum, bu paketten sonra da ölçmeye devam etmeli
+     * (`docs/126` §1).
+     *
+     * Hedefler kasada kapalı uçlu bir dizedir (`on`/`off`); yalnız TAM
+     * `on` açar. Beklenmedik bir değer KAPALI sayılır: bir hedefi yanlışlıkla
+     * açmak, tarayıcıya fazladan bir adres yetkisi vermek demektir ve
+     * belirsizlikte doğru taraf kapalı olandır.
+     *
+     * @param  array<string, string>  $vault  Kasadan çözülmüş alanlar; boş olabilir.
+     */
+    public static function fromConfig(array $vault = []): self
     {
         /** @var array<string, mixed> $config */
         $config = (array) config('analytics', []);
 
+        /** @var array<string, mixed> $destinations */
+        $destinations = (array) ($config['destinations'] ?? []);
+
+        foreach (array_keys($destinations) as $name) {
+            if (array_key_exists((string) $name, $vault)) {
+                $destinations[$name] = $vault[(string) $name] === 'on';
+            }
+        }
+
+        $containerId = array_key_exists('container_id', $vault)
+            ? $vault['container_id']
+            : (string) ($config['gtm_container_id'] ?? '');
+
         return new self(
-            containerId: trim((string) ($config['gtm_container_id'] ?? '')),
-            destinations: (array) ($config['destinations'] ?? []),
+            containerId: trim($containerId),
+            destinations: $destinations,
             sources: (array) ($config['csp_sources'] ?? []),
         );
     }

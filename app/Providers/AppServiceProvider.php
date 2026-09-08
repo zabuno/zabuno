@@ -114,6 +114,7 @@ use App\Domain\Media\PdfInspector;
 use App\Domain\Media\SlotCatalogue;
 use App\Domain\Media\SvgSanitizer;
 use App\Domain\Platform\Credential\CredentialProvider;
+use App\Domain\Platform\Credential\PlatformCredentialChanged;
 use App\Domain\Url\CanonicalUrl;
 use App\Domain\Url\UrlNormalizer;
 use App\Domain\Url\UrlPolicy;
@@ -129,6 +130,7 @@ use App\Infrastructure\Ai\OpenAiVisionProvider;
 use App\Infrastructure\Ai\StructuredGenerationRouter;
 use App\Infrastructure\Ai\VisionExtractionRouter;
 use App\Infrastructure\Analytics\Persistence\EloquentAnalyticsRepository;
+use App\Infrastructure\Analytics\VaultAnalyticsSettings;
 use App\Infrastructure\Authorization\Persistence\EloquentAuthorizationDecisionPoint;
 use App\Infrastructure\Billing\Persistence\EloquentBillingMode;
 use App\Infrastructure\Billing\Persistence\EloquentBillingProfileRepository;
@@ -238,6 +240,7 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Http\Client\Factory as HttpFactory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -500,6 +503,31 @@ final class AppServiceProvider extends ServiceProvider
 
         // Posta sürücüsü seçimi kasadan beslenir (`docs/94` Faz 3).
         $this->app->bind(MailTransportSelectorPort::class, VaultMailTransportSelector::class);
+
+        /*
+            Ölçüm kimliği de kasadan beslenir (`docs/135`, FF-220).
+
+            `scoped`, `singleton` DEĞİL: sınıf istek içinde bir kez çözsün
+            (CSP başlığı ile görünüm aynı cevabı iki kez sormasın) ama uzun
+            ömürlü bir çalışan (Octane) istekler arasında onu TAŞIMASIN —
+            taşısaydı, bir istekte panelden açılan hedef sonraki isteklerde
+            görünmezdi.
+        */
+        $this->app->scoped(VaultAnalyticsSettings::class);
+
+        /*
+            Kasada bir şey değişti → ölçüm önbelleği düşer.
+
+            Dinleyici burada, kasanın içinde DEĞİL: depo kendisini okuyan
+            tüketicileri tanımak zorunda kalmamalı. Sağlayıcı ayrımı
+            yapılmıyor çünkü `forget()` tek bir anahtar silmektir; onu
+            koşula bağlamak, koşulun bir gün yanlış olacağı bir yer daha
+            açardı.
+        */
+        Event::listen(
+            PlatformCredentialChanged::class,
+            fn (): mixed => $this->app->make(VaultAnalyticsSettings::class)->forget(),
+        );
 
         $this->app->bind(MediaRepositoryPort::class, EloquentMediaRepository::class);
         // Medya klasörleri (`docs/108` §3 madde 1): kütüphanede gezinmeyi
