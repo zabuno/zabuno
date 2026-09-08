@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Application\Billing\UseCase\ListPlanCatalog;
-use App\Support\Localization\SiteText;
-use App\Support\Money\PriceLabel;
 use App\Support\Site\HomeStory;
+use App\Support\Site\PublicPlans;
 use App\Support\Site\SiteShell;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
-use Throwable;
 
 /**
  * Herkese açık pazarlama ve yasal sayfalar.
@@ -37,8 +34,7 @@ final class FoundationStatusController extends Controller
     ];
 
     public function __construct(
-        private readonly ListPlanCatalog $plans,
-        private readonly SiteText $siteText,
+        private readonly PublicPlans $plans,
         private readonly SiteShell $shell,
         private readonly HomeStory $story,
     ) {}
@@ -81,7 +77,13 @@ final class FoundationStatusController extends Controller
                 ardındaydı: fiyatı görmek için kaydolmak gerekiyordu, yani
                 ürün kaydolmayı fiyatı görmeye bağlı kılıyordu.
             */
-            'plans' => $this->publicPlans($locale),
+            /*
+                Projeksiyon `App\Support\Site\PublicPlans`e taşındı (FF-251):
+                yatırımcı sayfası da fiyatı gösterince ikinci bir müşteri
+                doğdu ve "ücretsiz mi, fiyatlanmamış mı, fiyatlı mı" ayrımının
+                iki yerde iki cevabı olamaz. Dil yine KABUKTAN (FF-249).
+            */
+            'plans' => $this->plans->forLocale($locale),
         ];
 
         if ($path === 'pricing') {
@@ -99,89 +101,5 @@ final class FoundationStatusController extends Controller
             // Aynı gerekçe (FF-249): tek dil kaynağı kabuğun kendisi.
             'story' => $this->story->lists($locale),
         ]);
-    }
-
-    /**
-     * Plan kataloğunun HERKESE AÇIK görünümü.
-     *
-     * Yalnız ad, biçimlendirilmiş fiyat, KİME UYGUN cümlesi ve hak listesi
-     * geçer: iç kimlikler, sürüm numaraları ve sıralama alanları ziyaretçinin
-     * işi değil.
-     *
-     * PLAN KODU DA GEÇMEZ (FF-239). Kod bir eşleme anahtarıdır ve burada
-     * çözülür; şablona verilseydi bir gün `data-plan="restaurant"` diye
-     * basılır ve `qr.bulk-generation` için verilmiş kararın (ham anahtar
-     * müşteri dili değildir) ikinci bir yerden delinmiş hâli olurdu.
-     *
-     * @return list<array{name: string, price: ?string, free: bool, audience: ?string, entitlements: list<string>}>
-     */
-    private function publicPlans(string $locale): array
-    {
-        try {
-            $plans = $this->plans->handle();
-        } catch (Throwable) {
-            /*
-                KATALOG OKUNAMAZSA SAYFA ÖLMEZ.
-
-                Bu sayfalar bugüne kadar tamamen statikti; fiyatı katalogdan
-                okumak onlara bir veritabanı bağımlılığı ekledi. Veritabanı
-                bir an tökezlediğinde tanıtım sitesinin tamamının 500 vermesi,
-                fiyat göstermemekten çok daha kötü olurdu — ziyaretçi ürünün
-                çöktüğünü görür.
-
-                Boş liste, sayfanın dürüst boş hâline düşer: "fiyatlar henüz
-                yayımlanmadı, bize yazın".
-            */
-            return [];
-        }
-
-        $siteText = $this->siteText;
-
-        return array_map(
-            static function ($plan) use ($siteText, $locale): array {
-                /*
-                    ÜÇ AYRI DURUM, üç ayrı cevap.
-
-                    - Tutar YOK (`null`): fiyatlanmamış — "bize yazın".
-                    - Tutar SIFIR: ücretsiz. `0,00 TRY` teknik olarak doğru
-                      ama insan onu "ücretsiz" diye okumaz, bir hata sanır.
-                    - Tutar var: biçimlendirilmiş fiyat.
-                */
-                if ($plan->amountMinor === null || $plan->currency === null) {
-                    $price = null;
-                    $free = false;
-                } elseif ($plan->amountMinor === 0) {
-                    $price = null;
-                    $free = true;
-                } else {
-                    $price = PriceLabel::for($plan->amountMinor, $plan->currency);
-                    $free = false;
-                }
-
-                return [
-                    'name' => $plan->name,
-                    'price' => $price,
-                    'free' => $free,
-                    /*
-                        KİME UYGUN — kademenin adı bunu söylemez (`docs/139`).
-
-                        Tanınmayan bir kod `null` döner ve sayfa o plan için
-                        hiçbir cümle çizmez: sahibin panelden açtığı yeni bir
-                        plana uydurulmuş bir kitle yakıştırmak, bu satırın
-                        engellemek için var olduğu şey olurdu. Aynı sessizlik
-                        kuralı `entitlementLabel()`te de geçerli ve orada bir
-                        kapı onu ölçüyor.
-                    */
-                    'audience' => $siteText->planAudienceLabel($plan->code, $locale),
-                    // Ham anahtar basmak sessizce geliştirici dilini
-                    // sızdırmak olurdu; tanınmayan anahtar hiç gösterilmez.
-                    'entitlements' => array_values(array_filter(array_map(
-                        static fn (string $key): ?string => $siteText->entitlementLabel($key, $locale),
-                        $plan->entitlements,
-                    ))),
-                ];
-            },
-            $plans,
-        );
     }
 }
