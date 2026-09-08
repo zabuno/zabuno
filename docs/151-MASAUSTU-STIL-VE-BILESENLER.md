@@ -277,7 +277,7 @@ gördüğü masaüstü kapanışı 267 dosyadan 322'ye çıktı — kod büyüme
 
 ## 5. Kapı ne yasaklıyor
 
-`scripts/adaptive-bundle-gate` üç yeni kural aldı ve öz-testi (`.test.sh`)
+`scripts/adaptive-bundle-gate` dört yeni kural aldı ve öz-testi (`.test.sh`)
 **on üç senaryo** koşuyor (dördü bu paketle eklendi):
 
 | kural | ne kırılır |
@@ -301,7 +301,7 @@ GEÇMEK ZORUNDA, ve iki belge de cihaz kararını `data-device` ile taşır.
 
 | | önce | sonra |
 |---|---|---|
-| masaüstü kapanışı | 267 dosya / 2.333.581 B | 338 dosya / 2.816.024 B |
+| masaüstü kapanışı | 267 dosya / 2.333.581 B | 338 dosya / 2.816.319 B |
 | mobil kapanışı | 257 dosya / 2.255.140 B | 315 dosya / 2.647.624 B |
 | cihaza özgü modül | 11 + 1 | 24 + 1 |
 
