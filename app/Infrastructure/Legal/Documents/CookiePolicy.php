@@ -35,6 +35,7 @@ final class CookiePolicy
                     'Session cookie (its name ends in "-session"): keeps you logged in and remembers the state of the page you are on. Lifetime: the browser session.',
                     'XSRF-TOKEN: protects forms and the application against requests forged by another site. Lifetime: the browser session.',
                     'Remember-me cookie (its name starts with "remember_"): set only if you choose to stay logged in, so that you are not asked for your password on every visit.',
+                    'zbn_language: remembers the optional website language choice you make (English or Türkçe) across pages and visits. Lifetime: 365 days. It is a preference cookie, not a sign-in or measurement cookie; you can use the site without choosing a language or remove the preference in your browser settings. It applies to this host across the site, is unavailable to browser scripts (HttpOnly), uses SameSite=Lax, and is sent securely on HTTPS connections.',
                     'zabuno_guest_locale: on a published menu, remembers the language a guest chose. Lifetime: one year.',
                     'zabuno_measurement_consent: remembers whether you accepted or declined measurement cookies, so that the question is not asked on every page. Lifetime: one year.',
                     'Your light or dark theme choice is not a cookie; it is kept in the browser\'s local storage under the name zabuno-theme and never leaves your device.',
