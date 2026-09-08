@@ -576,6 +576,18 @@ msgstr "Son güncelleme"
 msgid "site.plan.analytics"
 msgstr "Analytics: what guests look at, and what they search for and cannot find"
 
+#: site:site.plan.audience.restaurant
+msgid "site.plan.audience.restaurant"
+msgstr "You run a room of tables yourself, and you want the page the guest reads to look like your restaurant rather than like a form."
+
+#: site:site.plan.audience.starter
+msgid "site.plan.audience.starter"
+msgstr "You are putting your menu behind a QR code for the first time, you look after it yourself, and you would rather not pay to find out whether it works."
+
+#: site:site.plan.audience.team
+msgid "site.plan.audience.team"
+msgstr "You are not the only one who touches the menu: a manager, a waiter or an accountant needs an account of their own instead of yours."
+
 #: site:site.plan.branding
 msgid "site.plan.branding"
 msgstr "Your own colours and type on the guest menu"
@@ -600,6 +612,18 @@ msgstr "Team members with roles you control"
 msgid "site.pricing.adds"
 msgstr "Adds"
 
+#: site:site.pricing.audience
+msgid "site.pricing.audience"
+msgstr "Who it is for"
+
+#: site:site.pricing.cancellation
+msgid "site.pricing.cancellation"
+msgstr "You cancel from your own workspace, and the plan runs to the end of the period you paid for."
+
+#: site:site.pricing.cancellation.cta
+msgid "site.pricing.cancellation.cta"
+msgstr "Read the Cancellation and Refund Policy"
+
 #: site:site.pricing.empty
 msgid "site.pricing.empty"
 msgstr "Plan prices are not published yet. Tell us about your restaurant and we will answer with a price for your case."
@@ -607,6 +631,98 @@ msgstr "Plan prices are not published yet. Tell us about your restaurant and we 
 #: site:site.pricing.empty.cta
 msgid "site.pricing.empty.cta"
 msgstr "Contact us"
+
+#: site:site.pricing.excluded.campaign
+msgid "site.pricing.excluded.campaign"
+msgstr "There is no trial period, no introductory rate, no annual discount and no campaign. A plan is a name, an amount and a set of rights."
+
+#: site:site.pricing.excluded.currency
+msgid "site.pricing.excluded.currency"
+msgstr "Prices are in Turkish lira only. There is no second currency and no conversion at the payment step."
+
+#: site:site.pricing.excluded.delivery
+msgid "site.pricing.excluded.delivery"
+msgstr "There is no takeaway, no delivery, no collection and no ordering before arriving. The one way to send an order is to scan the code on a table."
+
+#: site:site.pricing.excluded.heading
+msgid "site.pricing.excluded.heading"
+msgstr "What no plan includes"
+
+#: site:site.pricing.excluded.kitchenHardware
+msgid "site.pricing.excluded.kitchenHardware"
+msgstr "Nothing prints and nothing beeps. Orders appear on a screen that refreshes itself, so somebody has to be able to see that screen."
+
+#: site:site.pricing.excluded.lead
+msgid "site.pricing.excluded.lead"
+msgstr "These are missing from every plan, not only from the cheap one. They are written here rather than found out after paying."
+
+#: site:site.pricing.excluded.payment
+msgid "site.pricing.excluded.payment"
+msgstr "Guests do not pay through Zabuno. An order carries no card step and no bill; the money is still handled at the table, exactly as it is today."
+
+#: site:site.pricing.excluded.pos
+msgid "site.pricing.excluded.pos"
+msgstr "There is no connection to a till, a point-of-sale system or an accounting package. An order lives in Zabuno and is read on a Zabuno screen."
+
+#: site:site.pricing.faq.branch.answer
+msgid "site.pricing.faq.branch.answer"
+msgstr "No. A plan carries one amount for the whole workspace, whatever it holds. Accounts for your team are a right the top plan opens, not a price per person."
+
+#: site:site.pricing.faq.branch.question
+msgid "site.pricing.faq.branch.question"
+msgstr "Does a second branch or another waiter cost more?"
+
+#: site:site.pricing.faq.cancel.answer
+msgid "site.pricing.faq.cancel.answer"
+msgstr "Yes, from the Billing screen of your workspace. Cancelling stops the renewal: the plan stays active until the end of the period you have already paid for, and you can undo the cancellation from the same screen before that date without paying again."
+
+#: site:site.pricing.faq.cancel.question
+msgid "site.pricing.faq.cancel.question"
+msgstr "Can I cancel it myself?"
+
+#: site:site.pricing.faq.change.answer
+msgid "site.pricing.faq.change.answer"
+msgstr "From the same Billing screen. Moving up takes effect as soon as its payment succeeds. Moving down is scheduled for the end of the period you have paid for, and before you confirm it the screen names the capabilities the cheaper plan does not include."
+
+#: site:site.pricing.faq.change.question
+msgid "site.pricing.faq.change.question"
+msgstr "How do I move to a bigger or a smaller plan?"
+
+#: site:site.pricing.faq.heading
+msgid "site.pricing.faq.heading"
+msgstr "Questions people ask before paying"
+
+#: site:site.pricing.faq.refund.answer
+msgid "site.pricing.faq.refund.answer"
+msgstr "No. A period that has already started is not refunded, and you keep everything it included until it ends. The exceptions are a consumer exercising the statutory right of withdrawal, and us ending or reducing the service before a paid period is over; the Cancellation and Refund Policy states them."
+
+#: site:site.pricing.faq.refund.question
+msgid "site.pricing.faq.refund.question"
+msgstr "Do I get money back if I cancel in the middle of a period?"
+
+#: site:site.pricing.faq.reprint.answer
+msgid "site.pricing.faq.reprint.answer"
+msgstr "No. Print once. You can change prices, reorganise the menu, publish a wrong list and go back to the previous one, or move where a code points; the paper on the table keeps working."
+
+#: site:site.pricing.faq.reprint.question
+msgid "site.pricing.faq.reprint.question"
+msgstr "Do I have to reprint the codes if I change my prices or my plan?"
+
+#: site:site.pricing.faq.stop.answer
+msgid "site.pricing.faq.stop.answer"
+msgstr "It keeps working. Writing the menu, publishing it, the printed codes and the page your guests read never needed a plan. When a paid period ends without a payment, the plan features stay on for a further period shown on your Billing screen, then switch off; your workspace, your menus and your published pages stay exactly as they are."
+
+#: site:site.pricing.faq.stop.question
+msgid "site.pricing.faq.stop.question"
+msgstr "What happens to my menu if I stop paying?"
+
+#: site:site.pricing.faq.trial.answer
+msgid "site.pricing.faq.trial.answer"
+msgstr "No, and there is no trial on the paid plans either. The free plan is the part of the product that never needed a plan, named rather than hidden: you can write the whole menu, publish it and print codes before deciding anything."
+
+#: site:site.pricing.faq.trial.question
+msgid "site.pricing.faq.trial.question"
+msgstr "Is the free plan a trial that runs out?"
 
 #: site:site.pricing.free
 msgid "site.pricing.free"
@@ -647,6 +763,14 @@ msgstr "Priced per restaurant."
 #: site:site.pricing.perRestaurant.cta
 msgid "site.pricing.perRestaurant.cta"
 msgstr "Contact us"
+
+#: site:site.pricing.plans.heading
+msgid "site.pricing.plans.heading"
+msgstr "The plans"
+
+#: site:site.pricing.terms.heading
+msgid "site.pricing.terms.heading"
+msgstr "Paying, and stopping"
 
 #: site:site.pricing.unsure
 msgid "site.pricing.unsure"

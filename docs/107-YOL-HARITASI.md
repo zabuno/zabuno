@@ -81,7 +81,7 @@ yaptığımızı anlar, deneyebilir ve ölçebiliriz.*
 | 2.4 | **Keşif altyapısı.** Türe ve dile bölünmüş sitemap index, `hreflang`, `x-default` (İngilizce tamamlanana kadar Türkçe canonical). | ◐ Tek sitemap var; hreflang hiç yok. |
 | 2.5 | **Demo ve teklif formları** bir yere düşer ve takip edilir. | ❌ |
 | 2.6 | **Canlı örnek menüler.** Gerçek bir restoranın izinli menüsü. | ❌ Uydurma örnek yayınlanmaz. |
-| 2.7 | **Fiyatlandırma sayfası** gerçek planlar ve SSS ile. | ◐ Planlar veritabanından okunuyor; sayfa metni eksik. |
+| 2.7 | **Fiyatlandırma sayfası** gerçek planlar ve SSS ile. | ✅ Planlar, tutarlar ve haklar katalogdan; her planın kime uygun olduğu, hiçbir planda olmayan altı şey ve yedi gerçek soru sayfada (`docs/139`, FF-239). Kalan: `/pricing` hâlâ sitemap'te değil (2.2/2.4) ve satın alma bu sayfadan başlamıyor (Faz 1.1). |
 | 2.8 | **Yardım merkezi P0 makaleleri.** | ◐ Bir makale var. |
 
 **Bitti ne demek:** Google'da "qr menü" araması bizi bulur, sayfa bir soruya

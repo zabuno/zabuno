@@ -1,0 +1,198 @@
+/*
+    FİYAT SAYFASI — daisyUI'nin masaüstü ölçüsünü 320 piksele çeken katman.
+
+    ═══ NEDEN AYRI BİR DOSYA ═══
+
+    `docs/136` §5 kuralı koydu: **yoğunluk kararı (`docs/118` E3) daisyUI'yi
+    ezer.** Kabuk (`site-shell.css`) bunu üst çubuk ve altbilgi için zaten
+    yapıyor; fiyat sayfası daisyUI'nin BAŞKA bileşenlerini kullanıyor (kart,
+    açılır bölme) ve onların kendi masaüstü ölçüleri var. Kabuğa yazmak,
+    yalnız tek bir sayfada geçerli kuralları her kurumsal adrese giydirmek
+    olurdu.
+
+    ═══ ÖLÇÜLEN ═══
+
+    `node_modules/daisyui/components/card.css` ve `collapse.css` okundu:
+
+      · `.card-body`  → `padding: var(--card-p, 1.5rem)` = 24px
+      · `.card-body`  → `font-size: var(--card-fs, .875rem)` = 14px
+      · `.card-title` → `font-size: var(--cardtitle-fs, 1.125rem)`
+      · `.collapse-title` → `padding: 1rem`, `min-height: 1lh`
+
+    320 pikselde bunların ikisi de yanlıştır ve ikisi FARKLI şekilde yanlış:
+    24px dolgu iç içe kaplarda birikip içeriği dar bir şeride sıkıştırır
+    (`docs/117` K2), 14px gövde ise sayfanın geri kalanından iki punto küçük
+    okunur — ve küçülen şey ölü alan değil, OKUNAN ŞEY olur (`docs/118` E3:
+    *"yoğunluk fontu küçülterek DEĞİL"*).
+
+    Doğru bileşim, sahibin tarif ettiği gibi: **büyük hedef, sıkı boşluk.**
+
+    ═══ NASIL EZİLİYOR ═══
+
+    daisyUI kendi ölçülerini `var(--card-p, …)` gibi YEDEKLİ değişkenlerle
+    yazdığı için ezmek `!important` gerektirmiyor; değişkeni tanımlamak
+    yetiyor. Ayrıca daisyUI kuralları `@layer utilities` içinde yaşar, bu
+    dosya ise katmansızdır ve katmansız bir kural her zaman katmanlı bir
+    kurala karşı kazanır (`docs/136` §5 ile aynı gerekçe).
+
+    ═══ HAM DEĞER YOK ═══
+
+    Renk, boşluk, yarıçap ve süre jetonlardan gelir (`docs/119` §18). Bu
+    dosyada bir tek sabit renk ya da uydurma bir boşluk yoktur.
+
+    ═══ KIRILMA NOKTASI YOK ═══
+
+    `MP-05` (testle sabit) kırılma noktası jetonunu yasaklıyor. Fiyat tablosu
+    dar ekranda en zor çizilen şeydir ve buradaki cevap medya sorgusu değil,
+    **kart yığını**: planlar tek sütunda alt alta durur ve ekran genişledikçe
+    `auto-fit` kendiliğinden çoğaltır. Yatay kaydırılan bir fiyat tablosu,
+    ikinci sütunu kimsenin görmediği bir tablodur.
+*/
+
+.site-pricing {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    /* Dolgu BİR kez: kabuk kolonu (`site-shell-inner`) yatayı zaten veriyor,
+       bu blok yalnız dikeyi ekler. Aksi hâlde 320 pikselde iki dolgu üst üste
+       binerdi. */
+    padding-block: var(--space-5);
+}
+
+.site-pricing-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+/* --- Plan yığını -------------------------------------------------------- */
+
+/*
+    TEK SÜTUN TABAN. `minmax(0, 1fr)` ile başlar; 18rem'lik iz, ekran
+    yettiğinde ikinci ve üçüncü sütunu kendiliğinden açar. Kırılma noktası
+    yazılmadı ve yazılamaz (`MP-05`).
+*/
+.site-pricing-plans {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
+    gap: var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.site-pricing-plan {
+    /* daisyUI `.card`ın kendi ölçüleri; yalnız yoğunluk çekiliyor. */
+    --card-p: var(--space-4);
+    --card-fs: var(--aep-text-body);
+    --cardtitle-fs: var(--text-subsection);
+    border: 1px solid var(--border);
+    background: var(--surface);
+}
+
+.site-pricing-plan-body {
+    gap: var(--space-2);
+}
+
+/* Fiyat, kartın en çok bakılan satırı. `tabular-nums` olmadan rakamlar eşit
+   genişlikte olmaz ve iki plan gözle karşılaştırılamaz. */
+.site-pricing-amount {
+    font-size: var(--text-subsection);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--fg);
+}
+
+.site-pricing-period {
+    font-size: var(--text-meta);
+    font-weight: 400;
+    color: var(--fg-secondary);
+}
+
+.site-pricing-label {
+    font-size: var(--text-meta);
+    font-weight: 600;
+    color: var(--fg-secondary);
+}
+
+/*
+    İMLEÇ GERİ GELİYOR — ölçülmüş bir kayıp.
+
+    Tailwind'in preflight'ı her `ul` için `list-style: none` yazar. Eski
+    bölüm bunu `list-disc` yardımcı sınıfıyla telafi ediyordu; kendi
+    sınıfına geçen bir liste onu sessizce kaybeder ve 320 pikselde altı
+    tane madde imsiz cümle, bir liste değil bir paragraf yığını gibi
+    okunur. Gözün "bunlar ayrı maddeler" demesini sağlayan tek şey odur.
+*/
+.site-pricing-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    margin: 0;
+    padding-inline-start: var(--space-4);
+    color: var(--fg-secondary);
+    list-style-type: disc;
+    list-style-position: outside;
+}
+
+/* --- SSS (betiksiz açılır bölme) ---------------------------------------- */
+
+/*
+    `<details>` — betiksiz çalışır, HTML'de her cevap zaten durur (arama
+    motoru ve JavaScript çalıştırmayan bot için gövde budur) ve KAPALI başlar:
+    yedi soru açık hâlde 320 pikselde fiyatın altını bir duvara çevirirdi.
+    Altbilgideki pSEO katıyla aynı karar (`docs/136` §6).
+*/
+.site-pricing-faq-item {
+    border: 1px solid var(--border);
+    background: var(--surface);
+}
+
+.site-pricing-faq-question {
+    display: flex;
+    align-items: center;
+    /* Parmak imleç değildir: başlığın kendisi hedeftir ve 44 pikselin altına
+       inmez (`docs/118` E3). daisyUI'nin `1lh` tabanı ~24 piksel bırakıyordu. */
+    min-height: var(--control-height);
+    padding: var(--space-3);
+    /*
+        OK İŞARETİNİN ALTINA GİRME. daisyUI oku `inset-inline-end: 1.4rem`
+        (22.4px) noktasına, 8px boyunda çiziyor: yani sondan 30.4 piksel
+        içeriye kadar dolu. 24 piksellik bir boşluk yetmiyordu ve ölçüldü —
+        "Is the free plan a trial that runs out?" son sözcüğü okun üstüne
+        biniyordu. 32 piksel ölçeğin bir sonraki adımı (`--space-6`) ve
+        okun bittiği yerin ötesinde.
+    */
+    padding-inline-end: var(--space-6);
+    font-weight: 600;
+    color: var(--fg);
+}
+
+.site-pricing-faq-answer {
+    padding-inline: var(--space-3);
+    color: var(--fg-secondary);
+}
+
+/* --- Ödeme, iptal ve çıkış yolu ----------------------------------------- */
+
+.site-pricing-note {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    color: var(--fg-secondary);
+}
+
+/*
+    Bağlantı CÜMLENİN İÇİNDE değil, KENDİ satırında ve 44 piksel: satır içi
+    bir bağlantı dar ekranda 18-42 piksel yüksekliğinde kalıyor ve parmakla
+    ıskalanıyor (`docs/117`). Aynı karar ödeme yöntemi satırında da verilmişti
+    (FF-216); burada yeni bağlantıların hepsi ona uyuyor.
+*/
+.site-pricing-link {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    min-height: var(--control-height);
+    text-decoration-line: underline;
+    text-underline-offset: 2px;
+}

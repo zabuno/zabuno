@@ -576,6 +576,18 @@ msgstr ""
 msgid "site.plan.analytics"
 msgstr ""
 
+#: site:site.plan.audience.restaurant
+msgid "site.plan.audience.restaurant"
+msgstr ""
+
+#: site:site.plan.audience.starter
+msgid "site.plan.audience.starter"
+msgstr ""
+
+#: site:site.plan.audience.team
+msgid "site.plan.audience.team"
+msgstr ""
+
 #: site:site.plan.branding
 msgid "site.plan.branding"
 msgstr ""
@@ -600,12 +612,116 @@ msgstr ""
 msgid "site.pricing.adds"
 msgstr ""
 
+#: site:site.pricing.audience
+msgid "site.pricing.audience"
+msgstr ""
+
+#: site:site.pricing.cancellation
+msgid "site.pricing.cancellation"
+msgstr ""
+
+#: site:site.pricing.cancellation.cta
+msgid "site.pricing.cancellation.cta"
+msgstr ""
+
 #: site:site.pricing.empty
 msgid "site.pricing.empty"
 msgstr ""
 
 #: site:site.pricing.empty.cta
 msgid "site.pricing.empty.cta"
+msgstr ""
+
+#: site:site.pricing.excluded.campaign
+msgid "site.pricing.excluded.campaign"
+msgstr ""
+
+#: site:site.pricing.excluded.currency
+msgid "site.pricing.excluded.currency"
+msgstr ""
+
+#: site:site.pricing.excluded.delivery
+msgid "site.pricing.excluded.delivery"
+msgstr ""
+
+#: site:site.pricing.excluded.heading
+msgid "site.pricing.excluded.heading"
+msgstr ""
+
+#: site:site.pricing.excluded.kitchenHardware
+msgid "site.pricing.excluded.kitchenHardware"
+msgstr ""
+
+#: site:site.pricing.excluded.lead
+msgid "site.pricing.excluded.lead"
+msgstr ""
+
+#: site:site.pricing.excluded.payment
+msgid "site.pricing.excluded.payment"
+msgstr ""
+
+#: site:site.pricing.excluded.pos
+msgid "site.pricing.excluded.pos"
+msgstr ""
+
+#: site:site.pricing.faq.branch.answer
+msgid "site.pricing.faq.branch.answer"
+msgstr ""
+
+#: site:site.pricing.faq.branch.question
+msgid "site.pricing.faq.branch.question"
+msgstr ""
+
+#: site:site.pricing.faq.cancel.answer
+msgid "site.pricing.faq.cancel.answer"
+msgstr ""
+
+#: site:site.pricing.faq.cancel.question
+msgid "site.pricing.faq.cancel.question"
+msgstr ""
+
+#: site:site.pricing.faq.change.answer
+msgid "site.pricing.faq.change.answer"
+msgstr ""
+
+#: site:site.pricing.faq.change.question
+msgid "site.pricing.faq.change.question"
+msgstr ""
+
+#: site:site.pricing.faq.heading
+msgid "site.pricing.faq.heading"
+msgstr ""
+
+#: site:site.pricing.faq.refund.answer
+msgid "site.pricing.faq.refund.answer"
+msgstr ""
+
+#: site:site.pricing.faq.refund.question
+msgid "site.pricing.faq.refund.question"
+msgstr ""
+
+#: site:site.pricing.faq.reprint.answer
+msgid "site.pricing.faq.reprint.answer"
+msgstr ""
+
+#: site:site.pricing.faq.reprint.question
+msgid "site.pricing.faq.reprint.question"
+msgstr ""
+
+#: site:site.pricing.faq.stop.answer
+msgid "site.pricing.faq.stop.answer"
+msgstr ""
+
+#: site:site.pricing.faq.stop.question
+msgid "site.pricing.faq.stop.question"
+msgstr ""
+
+#: site:site.pricing.faq.trial.answer
+msgid "site.pricing.faq.trial.answer"
+msgstr ""
+
+#: site:site.pricing.faq.trial.question
+msgid "site.pricing.faq.trial.question"
 msgstr ""
 
 #: site:site.pricing.free
@@ -646,6 +762,14 @@ msgstr ""
 
 #: site:site.pricing.perRestaurant.cta
 msgid "site.pricing.perRestaurant.cta"
+msgstr ""
+
+#: site:site.pricing.plans.heading
+msgid "site.pricing.plans.heading"
+msgstr ""
+
+#: site:site.pricing.terms.heading
+msgid "site.pricing.terms.heading"
 msgstr ""
 
 #: site:site.pricing.unsure
