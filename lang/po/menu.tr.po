@@ -534,31 +534,31 @@ msgstr "Menü yükleniyor…"
 
 #: menu:menu.media.empty
 msgid "menu.media.empty"
-msgstr ""
+msgstr "Henüz işlenmiş bir fotoğraf yok. Önce Medya sayfasına bir fotoğraf yükleyin (yuva: {slot})."
 
 #: menu:menu.media.empty.readOnly
 msgid "menu.media.empty.readOnly"
-msgstr ""
+msgstr "Henüz işlenmiş bir fotoğraf yok. Medya erişimi olan birinin Medya sayfasına fotoğraf yüklemesi gerekiyor (yuva: {slot})."
 
 #: menu:menu.media.link
 msgid "menu.media.link"
-msgstr ""
+msgstr "Medya sayfasını aç"
 
 #: menu:menu.media.requirement
 msgid "menu.media.requirement"
-msgstr ""
+msgstr "Bu yuva için en az {width}×{height} piksel ve {aspect} oranında bir çerçeve gerekiyor."
 
 #: menu:menu.media.requirement.noAspect
 msgid "menu.media.requirement.noAspect"
-msgstr ""
+msgstr "Bu yuva için en az {width}×{height} piksel gerekiyor."
 
 #: menu:menu.media.slot.itemImage
 msgid "menu.media.slot.itemImage"
-msgstr ""
+msgstr "Liste/kart/detay öğesi"
 
 #: menu:menu.media.slot.menuImportSource
 msgid "menu.media.slot.menuImportSource"
-msgstr ""
+msgstr "İçe aktarma kaynağı"
 
 #: menu:menu.move.down
 msgid "menu.move.down"
