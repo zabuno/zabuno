@@ -614,3 +614,63 @@
     margin: 0;
     overflow-wrap: anywhere;
 }
+
+/* Şirket anlatısı ve mesaj formu ayrı okuma düzenleri kullanır. */
+.site-company-page .site-company-body,
+.site-contact-page .site-contact-body {
+    min-inline-size: 0;
+}
+
+.site-company-page .site-company-intro,
+.site-company-page .site-company-details,
+.site-contact-page .site-contact-layout {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: start;
+    gap: var(--zc-rhythm-tight);
+}
+
+.site-company-page .site-company-service {
+    flex: 1.2 1 28rem;
+    min-inline-size: 0;
+    padding: clamp(1rem, 2.5vw, 2.5rem);
+    border-radius: var(--zc-radius-xl);
+    border-block-start: 2px solid var(--zc-accent);
+}
+
+.site-company-page .site-company-service h2 {
+    font-size: var(--zc-display-2);
+}
+
+.site-company-page .site-company-seller {
+    flex: 1 1 25rem;
+    min-inline-size: 0;
+}
+
+.site-company-page .site-company-details {
+    padding-block-start: var(--zc-rhythm-tight);
+    border-block-start: 1px solid var(--zc-edge);
+}
+
+.site-company-page .site-company-details > section {
+    flex: 1 1 25rem;
+    min-inline-size: 0;
+}
+
+.site-contact-page .site-contact-compose {
+    flex: 1.2 1 28rem;
+    min-inline-size: 0;
+    padding: clamp(1rem, 2.5vw, 2rem);
+    border-radius: var(--zc-radius-xl);
+    border-block-start: 2px solid var(--zc-accent);
+}
+
+.site-contact-page .site-contact-identity {
+    flex: 1 1 25rem;
+    min-inline-size: 0;
+    padding-block: var(--space-4);
+}
+
+.site-contact-page .site-contact-body .site-notice {
+    overflow-wrap: anywhere;
+}
