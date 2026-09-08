@@ -24,4 +24,18 @@ return [
      */
     'channel_email' => env('SUPPORT_EMAIL'),
 
+    /*
+     * Kiracı olarak bakma oturumunun süresi, DAKİKA — `docs/122` §5,
+     * `docs/133` §2.
+     *
+     * Süre koda gömülmez. Okunamayan bir değer "sınırsız" değil,
+     * `SupportAccessWindow::FALLBACK_MINUTES`'tır; tavan da ayrı bir
+     * anahtardır, çünkü süreyi sahibi seçer ama "süreli olma" özelliğini
+     * yapılandırma iptal edemez. Uzatma ucu yoktur: yeniden bakmak yeni bir
+     * kayıt ve yeni bir sebep demektir.
+     */
+    'access_session_minutes' => env('SUPPORT_ACCESS_SESSION_MINUTES', 15),
+
+    'access_session_max_minutes' => env('SUPPORT_ACCESS_SESSION_MAX_MINUTES', 60),
+
 ];

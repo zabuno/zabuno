@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\CanonicalUrl;
+use App\Http\Middleware\EnsureSupportAccessIsReadOnly;
 use App\Http\Middleware\NegotiateDeviceClass;
 use App\Http\Middleware\NegotiateLocale;
 use App\Http\Middleware\SecurityHeaders;
@@ -64,6 +65,23 @@ return Application::configure(basePath: dirname(__DIR__))
         // yükleneceği Blade'de karara bağlanıyor.
         $middleware->append(NegotiateDeviceClass::class);
         $middleware->append(SecurityHeaders::class);
+
+        /*
+         * KİRACI OLARAK BAKMA OTURUMU SALT OKUNURDUR (`docs/122` Y7,
+         * `docs/133` §4).
+         *
+         * Yasak İSTEK DÜZEYİNDEDİR: her denetleyiciye dağıtılmış bir `if`
+         * değil, iki rota grubuna da eklenen tek bir ara katman. Yeni bir uç
+         * yazan hiç kimse bu kuralı hatırlamak zorunda değil, çünkü yeni uç
+         * bu katmanın arkasında doğar.
+         *
+         * `web` VE `api`, ikisi de: panel ve platform yazmaları `api/*`'dan
+         * geçer, ama `web` tarafında da oturum açmış kullanıcının
+         * gönderebileceği formlar var. Global yığına konsaydı çalışmazdı —
+         * orada oturum henüz başlamamıştır ve kullanıcı görünmez.
+         */
+        $middleware->appendToGroup('web', EnsureSupportAccessIsReadOnly::class);
+        $middleware->appendToGroup('api', EnsureSupportAccessIsReadOnly::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         /*

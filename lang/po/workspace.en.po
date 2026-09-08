@@ -6296,6 +6296,38 @@ msgstr "Photo"
 msgid "workspace.settings.audit.source.publication"
 msgstr "Publishing"
 
+#: workspace:workspace.settings.audit.source.support-access
+msgid "workspace.settings.audit.source.support-access"
+msgstr "Account access"
+
+#: workspace:workspace.settings.audit.support.by
+msgid "workspace.settings.audit.support.by"
+msgstr "Opened by {actor}"
+
+#: workspace:workspace.settings.audit.support.closed
+msgid "workspace.settings.audit.support.closed"
+msgstr "From {startedAt} until {expiresAt}"
+
+#: workspace:workspace.settings.audit.support.help
+msgid "workspace.settings.audit.support.help"
+msgstr "Support can open a read-only session on your account to answer a question. Nothing can be changed, paid, published, invited or deleted during one, and every session is listed here with the reason it was opened."
+
+#: workspace:workspace.settings.audit.support.open
+msgid "workspace.settings.audit.support.open"
+msgstr "Open now, ends automatically at {expiresAt}"
+
+#: workspace:workspace.settings.audit.support.reason
+msgid "workspace.settings.audit.support.reason"
+msgstr "Reason: {reason}"
+
+#: workspace:workspace.settings.audit.support.title
+msgid "workspace.settings.audit.support.title"
+msgstr "Someone from Zabuno looked at your account"
+
+#: workspace:workspace.settings.audit.support.unknownActor
+msgid "workspace.settings.audit.support.unknownActor"
+msgstr "a platform administrator"
+
 #: workspace:workspace.settings.audit.unknownActor
 msgid "workspace.settings.audit.unknownActor"
 msgstr "Unknown"

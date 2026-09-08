@@ -55,18 +55,25 @@ final class AuthorizationMatrixReport
      * KİRACI ADRESLİ YAZMA UÇLARI — dondurulmuş liste.
      *
      * İlk ölçüm bir varsayımı yıktı: `api/admin/workspaces/{workspace}`
-     * önekinin tamamı salt okunur SANILIYORDU, ama iki yazma ucu var.
+     * önekinin tamamı salt okunur SANILIYORDU, ama iki yazma ucu vardı.
      * İkisi de kiracının İÇERİĞİNE değil ÖDEME DEFTERİNE yazar; yine de
      * "destek penceresinde yazma yoktur" cümlesi olduğu gibi doğru değildi
      * ve bu belge onu düzeltiyor.
      *
-     * Liste dondurulmuş olmasının sebebi tam olarak budur: bugün ikisi
-     * biliniyor ve gerekçeleri yazılı. Üçüncüsü eklendiği gün kapı kırılır
-     * ve yeni ucun kiracı içeriğine dokunup dokunmadığı KONUŞULUR. Sessizce
-     * eklenmesi mümkün değildir.
+     * ÜÇÜNCÜSÜ GELDİ ve kapı beklendiği gibi kırıldı: destek erişimi ucu
+     * (`docs/122` §5, `docs/133`) bu listeye sessizce giremedi, konuşuldu
+     * ve gerekçesiyle yazıldı. O da kiracının içeriğine değil, destek
+     * oturumu defterine yazar; kiracı içeriğine dokunmayı ayrıca
+     * `EnsureSupportAccessIsReadOnly` engeller.
+     *
+     * Liste dondurulmuş olmasının sebebi tam olarak budur: bugün üçü
+     * biliniyor ve gerekçeleri yazılı. Dördüncüsü eklendiği gün kapı yine
+     * kırılır ve yeni ucun kiracı içeriğine dokunup dokunmadığı KONUŞULUR.
+     * Sessizce eklenmesi mümkün değildir.
      */
     public const TENANT_ADDRESSED_WRITES = [
         'POST /api/admin/workspaces/{workspace}/manual-payments' => 'Elle tahsilat kaydı — abonelik defterine yazar (docs/123).',
+        'POST /api/admin/workspaces/{workspace}/support-access' => 'Destek erişimi — kiracının görebileceği destek oturumu defterine yazar, içeriğine değil (docs/122 §5, docs/133).',
         'POST /api/admin/workspaces/{workspace}/transactions/{transaction}/refund' => 'İade — ödeme defterine ters kayıt (docs/107 Faz 1.1).',
     ];
 

@@ -207,28 +207,28 @@ konmuş ama hiçbir kapıya bağlanmamış olduğunu söyler.
 
 | İzin | Okuyan dosya | İlk okuyan |
 | --- | ---: | --- |
-| `workspace.view` | 44 | `app/Http/Controllers/Media/ConvertMediaController.php` |
+| `workspace.view` | 45 | `app/Http/Controllers/Media/ConvertMediaController.php` |
 | `workspace.manage` | 18 | `app/Domain/Media/MediaBulkAction.php` |
-| `menu.view` | 46 | `app/Http/Controllers/Ai/ApplyBulkMenuAiImportController.php` |
+| `menu.view` | 47 | `app/Http/Controllers/Ai/ApplyBulkMenuAiImportController.php` |
 | `menu.manage` | 28 | `app/Http/Controllers/Ai/ApplyBulkMenuAiImportController.php` |
 | `menu.publish` | 4 | `app/Http/Controllers/Publication/CancelPublicationScheduleController.php` |
 | `menu.allergens.manage` | 1 | `app/Http/Controllers/MenuCatalog/UpdateMenuItemAllergensController.php` |
 | `menu.stock.manage` | 2 | `app/Http/Controllers/MenuCatalog/UpdateMenuItemStockController.php` |
-| `qr.view` | 14 | `app/Http/Controllers/QrDestination/DisableQrCodeController.php` |
+| `qr.view` | 15 | `app/Http/Controllers/QrDestination/DisableQrCodeController.php` |
 | `qr.create` | 4 | `app/Http/Controllers/QrDestination/RenameDiningAreaController.php` |
 | `qr.disable` | 2 | `app/Http/Controllers/QrDestination/DisableQrCodeController.php` |
 | `qr.design.manage` | 6 | `app/Http/Controllers/QrDestination/ExportQrCardController.php` |
-| `analytics.view` | 4 | `app/Http/Controllers/Analytics/ShowAnalyticsSummaryController.php` |
-| `billing.view` | 8 | `app/Http/Controllers/Billing/DownloadInvoiceDocumentController.php` |
+| `analytics.view` | 5 | `app/Http/Controllers/Analytics/ShowAnalyticsSummaryController.php` |
+| `billing.view` | 9 | `app/Http/Controllers/Billing/DownloadInvoiceDocumentController.php` |
 | `billing.manage` | 8 | `app/Http/Controllers/Billing/DestroyPlanChangeController.php` |
 | `security.evidence.view` | 4 | `app/Http/Controllers/Security/ShowBackupRestoreEvidenceController.php` |
 | `media.manage` | 21 | `app/Domain/Media/MediaBulkAction.php` |
 | `media.download_original` | 3 | `app/Http/Controllers/Media/CreateOriginalDownloadLinkController.php` |
-| `order.view` | 6 | `app/Http/Controllers/Ordering/ChangeOrderStatusController.php` |
+| `order.view` | 7 | `app/Http/Controllers/Ordering/ChangeOrderStatusController.php` |
 | `order.confirm` | 1 | `app/Http/Controllers/Ordering/ChangeOrderStatusController.php` |
 | `order.kitchen` | 2 | `app/Http/Controllers/Ordering/ChangeOrderStatusController.php` |
 | `order.settings` | 2 | `app/Http/Controllers/Ordering/ShowOrderingSwitchController.php` |
-| `rating.view` | 1 | `app/Http/Controllers/Rating/ListMenuRatingsController.php` |
+| `rating.view` | 2 | `app/Http/Controllers/Rating/ListMenuRatingsController.php` |
 | `rating.reply` | 2 | `app/Http/Controllers/Rating/DeleteRatingReplyController.php` |
 
 ### Süperadmin ve destek penceresi
@@ -239,10 +239,10 @@ uçların kendisidir ve bu liste yönlendiriciye sorularak üretildi.
 
 | Ölçüm | Sayı |
 | --- | ---: |
-| Kapının arkasındaki okuma ucu | 16 |
-| Kapının arkasındaki yazma ucu | 13 |
-| Tek kiracıyı adlandıran okuma ucu | 2 |
-| Tek kiracıyı adlandıran YAZMA ucu | 2 |
+| Kapının arkasındaki okuma ucu | 18 |
+| Kapının arkasındaki yazma ucu | 15 |
+| Tek kiracıyı adlandıran okuma ucu | 3 |
+| Tek kiracıyı adlandıran YAZMA ucu | 3 |
 | Bunlardan gerekçesi KAYITSIZ olan | 0 |
 | Kiracı kimliğine bürünme ucu | 0 |
 
@@ -253,7 +253,9 @@ ve yazan uçların kayıtlı gerekçesiyle:
 | --- | --- | --- |
 | `GET /api/admin/workspaces/{workspace}` | okuma | — |
 | `GET /api/admin/workspaces/{workspace}/subscription` | okuma | — |
+| `GET /api/admin/workspaces/{workspace}/support-view` | okuma | — |
 | `POST /api/admin/workspaces/{workspace}/manual-payments` | **YAZMA** | Elle tahsilat kaydı — abonelik defterine yazar (docs/123). |
+| `POST /api/admin/workspaces/{workspace}/support-access` | **YAZMA** | Destek erişimi — kiracının görebileceği destek oturumu defterine yazar, içeriğine değil (docs/122 §5, docs/133). |
 | `POST /api/admin/workspaces/{workspace}/transactions/{transaction}/refund` | **YAZMA** | İade — ödeme defterine ters kayıt (docs/107 Faz 1.1). |
 
 **Kapının arkasındaki bütün yazma uçları:**
@@ -265,7 +267,9 @@ ve yazan uçların kayıtlı gerekçesiyle:
 - `POST /api/admin/plans`
 - `POST /api/admin/plans/{plan}/activate`
 - `POST /api/admin/release-attestations`
+- `POST /api/admin/support-access/end`
 - `POST /api/admin/workspaces/{workspace}/manual-payments`
+- `POST /api/admin/workspaces/{workspace}/support-access`
 - `POST /api/admin/workspaces/{workspace}/transactions/{transaction}/refund`
 - `PUT /api/admin/connections/{connection}`
 - `PUT /api/admin/credentials/{provider}`

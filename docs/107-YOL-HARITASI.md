@@ -98,7 +98,7 @@ sorduğunda, cevap bir sayfada hazır durur.*
 | # | Madde | Bugün |
 | --- | --- | --- |
 | 3.1 | **Güven merkezi**: güvenlik yaklaşımı, altyapı ve süreklilik, yedekleme politikası, olay yönetimi, alt işleyen listesi, uyum, sorumlu açıklama. | ❌ Kütükte planlı. |
-| 3.2 | **Sözleşmeler**: DPA (veri işleme), SLA (hizmet seviyesi), kabul edilebilir kullanım, üçüncü taraf lisansları. | ❌ |
+| 3.2 | **Sözleşmeler**: DPA (veri işleme), SLA (hizmet seviyesi), kabul edilebilir kullanım, üçüncü taraf lisansları. | ◐ **Dört belge yayında** (FF-228, `docs/140`): `/data-processing`, `/sla`, `/acceptable-use`, `/third-party-licenses` — mevcut yasal belge sistemine eklendi (kütüphane 9 → 13), sürüm ve "pending legal review" notuyla. Alt işleyen listesi kasadan ve ölçüm yapılandırmasından **ölçülüyor** (bugün 1 kayıt: netcup GmbH, Karlsruhe); lisans listesi kilit dosyalarından **türetiliyor** (13 + 7 doğrudan, 100 + 494 dolaylı). **SLA'da hiçbir rakam yok ve olamaz**: çalışma süresi ölçülmüyor (3.4 ❌) — dört `SLA_*` değeri sahibin kararını bekliyor. Kalan: hukukçu incelemesi ve altbilgi bağlantısı. |
 | 3.3 | **KVKK hakları ürün içinde**: kiracı verisini dışa aktarma ve silme, denetim kaydı. | ◐ Medya denetim kaydı var; hesap düzeyinde yok. |
 | 3.4 | **Durum sayfası** ve olay geçmişi. | ❌ `status.zabuno.com` planlı. |
 | 3.5 | **Erişilebilirlik beyanı** ve WCAG 2.2 AA denetimi. | ◐ Kurallar kodda ve testlerde; beyan ve dış denetim yok. |

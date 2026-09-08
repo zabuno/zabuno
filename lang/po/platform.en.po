@@ -380,6 +380,10 @@ msgstr "Menu"
 msgid "platform.auditLog.source.publication"
 msgstr "Publication"
 
+#: platform:platform.auditLog.source.support-access
+msgid "platform.auditLog.source.support-access"
+msgstr "Tenant access"
+
 #: platform:platform.auditLog.title
 msgid "platform.auditLog.title"
 msgstr "Events"
@@ -1147,6 +1151,242 @@ msgstr "Select a workspace"
 #: platform:platform.subscriptions.workspace.retry
 msgid "platform.subscriptions.workspace.retry"
 msgstr "Retry"
+
+#: platform:platform.support.error
+msgid "platform.support.error"
+msgstr "We could not read this account."
+
+#: platform:platform.support.finding.location_has_no_menu
+msgid "platform.support.finding.location_has_no_menu"
+msgstr "This branch has no menu."
+
+#: platform:platform.support.finding.location_has_no_qr
+msgid "platform.support.finding.location_has_no_qr"
+msgstr "This branch has no QR code."
+
+#: platform:platform.support.finding.no_location
+msgid "platform.support.finding.no_location"
+msgstr "No branch has been created yet."
+
+#: platform:platform.support.finding.qr_disabled
+msgid "platform.support.finding.qr_disabled"
+msgstr "A QR code on this branch is disabled."
+
+#: platform:platform.support.finding.qr_has_no_destination
+msgid "platform.support.finding.qr_has_no_destination"
+msgstr "A QR code on this branch points nowhere: scanning it opens nothing."
+
+#: platform:platform.support.finding.qr_menu_never_published
+msgid "platform.support.finding.qr_menu_never_published"
+msgstr "A QR code points at a menu that was never published, so the printed code on the table opens an empty page."
+
+#: platform:platform.support.finding.subscription_not_active
+msgid "platform.support.finding.subscription_not_active"
+msgstr "No active subscription."
+
+#: platform:platform.support.finding.workspace_not_serving
+msgid "platform.support.finding.workspace_not_serving"
+msgstr "The workspace is not in a serving state, so nothing else on this page matters yet."
+
+#: platform:platform.support.findings.none
+msgid "platform.support.findings.none"
+msgstr "Nothing measurable is broken: the workspace is serving, the subscription is active, and every QR code points at a published menu."
+
+#: platform:platform.support.findings.scope
+msgid "platform.support.findings.scope"
+msgstr "Every line here is the result of a query, not a guess. A question this installation cannot answer is not listed at all."
+
+#: platform:platform.support.findings.title
+msgid "platform.support.findings.title"
+msgstr "What is wrong right now"
+
+#: platform:platform.support.guest.locationMeta
+msgid "platform.support.guest.locationMeta"
+msgstr "{menus} menus · {ordering}"
+
+#: platform:platform.support.guest.noDestination
+msgid "platform.support.guest.noDestination"
+msgstr "No destination"
+
+#: platform:platform.support.guest.noLocation
+msgid "platform.support.guest.noLocation"
+msgstr "No branch, so there is no guest address yet."
+
+#: platform:platform.support.guest.noQr
+msgid "platform.support.guest.noQr"
+msgstr "No QR code on this branch."
+
+#: platform:platform.support.guest.notPublished
+msgid "platform.support.guest.notPublished"
+msgstr "never published"
+
+#: platform:platform.support.guest.orderingOff
+msgid "platform.support.guest.orderingOff"
+msgstr "ordering off"
+
+#: platform:platform.support.guest.orderingOn
+msgid "platform.support.guest.orderingOn"
+msgstr "ordering on"
+
+#: platform:platform.support.guest.published
+msgid "platform.support.guest.published"
+msgstr "published v{version}"
+
+#: platform:platform.support.guest.title
+msgid "platform.support.guest.title"
+msgstr "What the guest sees"
+
+#: platform:platform.support.history.none
+msgid "platform.support.history.none"
+msgstr "Nobody from the platform team has looked at this account."
+
+#: platform:platform.support.history.tenantSees
+msgid "platform.support.history.tenantSees"
+msgstr "The owner reads this same list in their own panel, under Settings → Audit trail. Write the reason as something they should read."
+
+#: platform:platform.support.history.title
+msgid "platform.support.history.title"
+msgstr "Who looked at this account"
+
+#: platform:platform.support.history.unknownActor
+msgid "platform.support.history.unknownActor"
+msgstr "unknown"
+
+#: platform:platform.support.idle
+msgid "platform.support.idle"
+msgstr "Pick a restaurant to see what its guests and its owner see today."
+
+#: platform:platform.support.intro
+msgid "platform.support.intro"
+msgstr "What the caller is actually looking at, answered without entering their account. Pick the restaurant, read the findings, open their guest address. Looking as the tenant is the last card on this page, and it is meant to be the last resort."
+
+#: platform:platform.support.loading
+msgid "platform.support.loading"
+msgstr "Reading the account…"
+
+#: platform:platform.support.nav.label
+msgid "platform.support.nav.label"
+msgstr "Support desk"
+
+#: platform:platform.support.open.alreadyOpen
+msgid "platform.support.open.alreadyOpen"
+msgstr "A session is already open. End it before opening another one; sessions never stack and are never renewed."
+
+#: platform:platform.support.open.contract
+msgid "platform.support.open.contract"
+msgstr "This is the most dangerous thing a platform admin can do, so it is deliberately hard. The session is read-only, lasts {minutes} minutes, ends by itself, cannot be extended, and is written into the owner’s own audit trail with the reason you type below. The owner is emailed as well."
+
+#: platform:platform.support.open.failed
+msgid "platform.support.open.failed"
+msgstr "The session could not be opened."
+
+#: platform:platform.support.open.pickTenant
+msgid "platform.support.open.pickTenant"
+msgstr "Pick a restaurant first."
+
+#: platform:platform.support.open.reason
+msgid "platform.support.open.reason"
+msgstr "Why do you need to look?"
+
+#: platform:platform.support.open.reasonHelp
+msgid "platform.support.open.reasonHelp"
+msgstr "At least {min} characters, and the restaurant owner will read exactly what you write here."
+
+#: platform:platform.support.open.submit
+msgid "platform.support.open.submit"
+msgstr "Open a support session on {name}"
+
+#: platform:platform.support.open.title
+msgid "platform.support.open.title"
+msgstr "Look at this account as the tenant"
+
+#: platform:platform.support.region.label
+msgid "platform.support.region.label"
+msgstr "Support desk"
+
+#: platform:platform.support.requests.none
+msgid "platform.support.requests.none"
+msgstr "This restaurant has opened no support request."
+
+#: platform:platform.support.requests.title
+msgid "platform.support.requests.title"
+msgstr "Support requests from this restaurant"
+
+#: platform:platform.support.retry
+msgid "platform.support.retry"
+msgstr "Retry"
+
+#: platform:platform.support.session.elsewhere
+msgid "platform.support.session.elsewhere"
+msgstr "You have an open support session on another restaurant. It ends by itself at {expiresAt}."
+
+#: platform:platform.support.session.end
+msgid "platform.support.session.end"
+msgstr "End the session now"
+
+#: platform:platform.support.session.endFailed
+msgid "platform.support.session.endFailed"
+msgstr "The session could not be ended. Try again."
+
+#: platform:platform.support.session.here
+msgid "platform.support.session.here"
+msgstr "You are looking at {name} as support. The session ends by itself at {expiresAt}."
+
+#: platform:platform.support.session.readOnly
+msgid "platform.support.session.readOnly"
+msgstr "Nothing can be written while this session is open: no payment, no plan change, no deletion, no invitation, no publishing. Switching to another restaurant is closed too."
+
+#: platform:platform.support.session.reason
+msgid "platform.support.session.reason"
+msgstr "Reason you gave: {reason}"
+
+#: platform:platform.support.session.title
+msgid "platform.support.session.title"
+msgstr "You are inside a tenant account"
+
+#: platform:platform.supportQueue.empty
+msgid "platform.supportQueue.empty"
+msgstr "Nothing is waiting."
+
+#: platform:platform.supportQueue.filter
+msgid "platform.supportQueue.filter"
+msgstr "Status"
+
+#: platform:platform.supportQueue.filter.all
+msgid "platform.supportQueue.filter.all"
+msgstr "All statuses"
+
+#: platform:platform.supportQueue.markAnswered
+msgid "platform.supportQueue.markAnswered"
+msgstr "Mark answered"
+
+#: platform:platform.supportQueue.markClosed
+msgid "platform.supportQueue.markClosed"
+msgstr "Close"
+
+#: platform:platform.supportQueue.noAcknowledgement
+msgid "platform.supportQueue.noAcknowledgement"
+msgstr "No acknowledgement email reached this sender, so they may not know the request arrived."
+
+#: platform:platform.supportQueue.noReplySurface
+msgid "platform.supportQueue.noReplySurface"
+msgstr "Oldest first: the longest wait is answered first. Replies are written by email — this product has no reply surface yet, so marking a request answered records the timing, it does not send anything."
+
+#: platform:platform.supportQueue.status.answered
+msgid "platform.supportQueue.status.answered"
+msgstr "Answered"
+
+#: platform:platform.supportQueue.status.closed
+msgid "platform.supportQueue.status.closed"
+msgstr "Closed"
+
+#: platform:platform.supportQueue.status.received
+msgid "platform.supportQueue.status.received"
+msgstr "Received"
+
+#: platform:platform.supportQueue.title
+msgid "platform.supportQueue.title"
+msgstr "Support queue"
 
 #: platform:platform.tenants.col.action
 msgid "platform.tenants.col.action"

@@ -234,6 +234,14 @@ const FROZEN_MODULE_FILENAMES = [
 // yerelleştirme bu üç metnin dönüşmediğini gösterdi (`docs/121` §4).
 // ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
 // msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
+// FF-218 (`docs/122` Y7, `docs/133`): SEKİZ anahtar ve hepsi TEK bir
+// cümlenin parçaları — "platform ekibinden biri hesabınıza baktı".
+// `docs/122` §5 kaydın kiracının GÖREBİLECEĞİ biçimde yazılmasını şart
+// koşuyor; sahibin okuyacağı metnin katalogdan geçmesi o şartın kendisidir,
+// yan etkisi değil. Sekiz anahtar: kaynak etiketi, bölüm başlığı, ne
+// yapılamadığını anlatan yardım metni, açık ve kapalı oturumun zaman
+// cümleleri, sebep, kim ve failin bilinmediği hâli.
+// ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırları yazıldı.
 // FF-219: 1660 → 1694, otuz dört anahtar — ABONELİĞİN EKSİK YARISI
 // (docs/107 Faz 1.3, docs/134). İptal, iptalden cayma, plan düşürme,
 // ödemesiz süre ve askı. Bu grubun ayırt edici yanı, cümlelerin bir DURUM
@@ -270,7 +278,7 @@ const FROZEN_MODULE_FILENAMES = [
 // msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
 
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '6281dda1edc1cdcccb6097af87c8e4571f00e9e11529005f318db188f9cff6de';
+    '802b7fecd35a7de1c7e52f0846f46860b25d4549c0059b1374009b4bcf158f22';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
@@ -278,7 +286,7 @@ function normalizedHash(entries: Record<string, string>): string {
     return createHash('sha256').update(normalized, 'utf8').digest('hex');
 }
 
-const FROZEN_LEGACY_KEY_COUNT = 1736;
+const FROZEN_LEGACY_KEY_COUNT = 1744;
 
 describe('workspace i18n modular catalog contract', () => {
     // Başlıktaki SAYI kaldırıldı ve bir daha yazılmayacak: liste zaten

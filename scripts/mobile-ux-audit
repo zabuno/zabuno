@@ -109,9 +109,75 @@ if (CHROME === undefined) {
     değil; portu Chrome'a bırakmak o olasılığı sıfırlar.
 */
 
-/** En dar desteklenen genişlik. Taban budur; geniş ekran zenginleştirmedir. */
-const WIDTH = 320;
-const HEIGHT = 568;
+/*
+    ÖLÇÜLEN GENİŞLİK — varsayılan 320, TABAN budur.
+
+    `--width` bayrağı 2026-09-08'de eklendi ve sırayı DEĞİŞTİRMEZ: dar ekran
+    hâlâ tabandır, geniş ekran hâlâ zenginleştirmedir, CI kapısı hâlâ 320'de
+    koşar (`.github/workflows/ci.yml`). Bayrak yalnız ikinci bir SORUYU
+    sorulabilir kılar: "aynı düzen geniş ekranda da ayakta mı?"
+
+    Sorunun gerekçesi ölçülmüş bir riskti: kırılma noktası kullanmayan akışkan
+    bir ızgara (`repeat(auto-fit, minmax(…))`) 320'de doğru olup 1280'de
+    dağılabilir — sütunlar gereğinden çok, hedefler gereğinden dar. 320'de
+    ölçüp geniş ekranı hiç açmamak, o dağılmayı sahibin ekranında keşfetmek
+    demekti.
+
+    Yükseklik genişlikten TÜRER: 320×568 bir telefon, 1280×800 bir dizüstü.
+    Türetilen değer varsayılandır ve varsayılan olarak kalır; `--height` onu
+    açıkça değiştirmek isteyene bir kapı açar (aşağıya bak).
+*/
+const widthFlag = process.argv.indexOf('--width');
+const WIDTH = widthFlag > -1 ? Number.parseInt(process.argv[widthFlag + 1] ?? '', 10) : 320;
+
+if (!Number.isInteger(WIDTH) || WIDTH < 320 || WIDTH > 3840) {
+    console.error(
+        `mobile-ux-audit: --width 320 ile 3840 arasında bir tam sayı olmalı (gelen: ${process.argv[widthFlag + 1]}).`,
+    );
+    process.exit(2);
+}
+
+/*
+    GİRİŞ KİPİ GENİŞLİKTEN TÜREMEZ AMA CİHAZ TÜRER (`docs/118` E2).
+
+    768'in altı bir telefon olarak emüle edilir (dokunma, `mobile: true`);
+    üstü bir işaretleyici cihazıdır. Bu, "medya sorgusuyla iki düzen" demek
+    DEĞİL — ölçülen ŞEYİN ne olduğunu söylemek: aynı tek düzen, iki farklı
+    giriş kipinde.
+*/
+const MOBILE = WIDTH < 768;
+
+/*
+    YÜKSEKLİK — genişlikten TÜRER, ama `--height` ile açıkça söylenebilir.
+
+    2026-09-08'e kadar yükseklik yalnız türetiliyordu (320 → 568, geniş →
+    800) ve gerekçesi şuydu: ikisini bağımsız seçmek "ölçtüğüm cihaz
+    hangisi" sorusunu cevapsız bırakır. Gerekçe hâlâ doğru; eksik olan,
+    türetilen tek yüksekliğin bir SEÇİM olduğunu görmekti.
+
+    568, iPhone SE'nin (2016) boyudur. Sahibin tabanı bir adım daha
+    dardır — *"iPhone 4 first"* — ve iPhone 4'ün görüntü alanı **320×480**.
+    Aradaki 88 piksel önemsiz değil: 480'de bir "hero" sahnesi ekranı
+    doldurup içeriği katlanmanın altına iterse, 568'de bunu yapmayabilir.
+    Yani ölçülmeyen bir yükseklikte kusur GÖRÜNMEZ, YOK olmaz.
+
+    Bayrak sırayı DEĞİŞTİRMEZ: 320×568 hâlâ türetilen taban, CI kapısı hâlâ
+    onu koşuyor. `--height` ikinci bir soruyu sorulabilir kılar: *aynı ilk
+    ekran, 88 piksel daha kısa bir telefonda da içerik gösteriyor mu?*
+
+    Ölçülen yükseklik raporun BAŞLIĞINDA ve JSON çıktısında zaten yazıyor;
+    "hangi cihaz" sorusu bu yüzden cevapsız kalmıyor.
+*/
+const heightFlag = process.argv.indexOf('--height');
+const HEIGHT =
+    heightFlag > -1 ? Number.parseInt(process.argv[heightFlag + 1] ?? '', 10) : MOBILE ? 568 : 800;
+
+if (!Number.isInteger(HEIGHT) || HEIGHT < 320 || HEIGHT > 2160) {
+    console.error(
+        `mobile-ux-audit: --height 320 ile 2160 arasında bir tam sayı olmalı (gelen: ${process.argv[heightFlag + 1]}).`,
+    );
+    process.exit(2);
+}
 
 /** Dokunma hedefinin asgarisi (CSS pikseli). */
 const MIN_TARGET = 44;
@@ -539,7 +605,8 @@ const targetDir = process.argv[2] ? resolve(process.argv[2]) : process.argv[2];
 if (!targetDir || !existsSync(targetDir)) {
     console.error(
         'kullanım: scripts/mobile-ux-audit <storybook-static-dizini|html-dizini> ' +
-            '[--json rapor.json] [--fail] [--baseline liste.json]',
+            '[--json rapor.json] [--fail] [--baseline liste.json] ' +
+            '[--width 320] [--height 480] [--direction ltr|rtl]',
     );
     process.exit(2);
 }
@@ -740,7 +807,7 @@ try {
         width: WIDTH,
         height: HEIGHT,
         deviceScaleFactor: 1,
-        mobile: true,
+        mobile: MOBILE,
     });
     await cdp(ws, 'Page.enable');
 

@@ -1,4 +1,12 @@
-import { Buildings, ClipboardText, CreditCard, Key, Receipt, Users } from '@phosphor-icons/react';
+import {
+    Buildings,
+    ClipboardText,
+    CreditCard,
+    Key,
+    Lifebuoy,
+    Receipt,
+    Users,
+} from '@phosphor-icons/react';
 
 import { OpsShell } from '../ops/OpsShell';
 import { OpsPageHeader } from '../ops/OpsPageHeader';
@@ -8,10 +16,11 @@ import { ProviderCredentialsPage } from '../admin/pages/ProviderCredentialsPage'
 import { TenantDetailPage } from '../admin/pages/TenantDetailPage';
 import { PlatformUsersPage } from '../admin/pages/PlatformUsersPage';
 import { AuditLogPage } from '../admin/pages/AuditLogPage';
+import { SupportDeskPage } from '../admin/pages/SupportDeskPage';
 import { t } from '../../i18n/platform';
 
 type PlatformSection =
-    'plans' | 'subscriptions' | 'credentials' | 'workspaces' | 'users' | 'audit-log';
+    'plans' | 'subscriptions' | 'credentials' | 'workspaces' | 'users' | 'audit-log' | 'support';
 
 /**
  * Platform yönetimi kabuğu — plan, abonelik, sağlayıcı anahtarları.
@@ -46,6 +55,19 @@ export function PlatformApp() {
                     key: 'workspaces',
                     label: t('platform.tenants.nav.label'),
                     icon: <Buildings aria-hidden="true" size={18} />,
+                    group: 'oversight',
+                },
+                {
+                    /*
+                        DESTEK MASASI (`docs/122` §3 boşluk 3, Y7). Gözetim
+                        grubunda ve kiracı ayrıntısının HEMEN ALTINDA: destek
+                        çağrısı "bu restoranda ne oluyor" ile başlar, "bu
+                        restorana bakayım" ile değil. Ticari gruba konsaydı,
+                        bir destek aracı bir satış işi gibi görünürdü.
+                    */
+                    key: 'support',
+                    label: t('platform.support.nav.label'),
+                    icon: <Lifebuoy aria-hidden="true" size={18} />,
                     group: 'oversight',
                 },
                 {
@@ -100,6 +122,18 @@ export function PlatformApp() {
                                 crumbs={[crumb, { label: t('platform.tenants.nav.label') }]}
                             />
                             <TenantDetailPage />
+                        </>
+                    );
+                }
+
+                if (section === 'support') {
+                    return (
+                        <>
+                            <OpsPageHeader
+                                title={t('platform.support.region.label')}
+                                crumbs={[crumb, { label: t('platform.support.nav.label') }]}
+                            />
+                            <SupportDeskPage />
                         </>
                     );
                 }

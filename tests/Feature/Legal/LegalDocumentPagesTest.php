@@ -46,6 +46,11 @@ final class LegalDocumentPagesTest extends TestCase
             ['/refund-policy', 'refund-policy'],
             ['/cookies', 'cookies'],
             ['/marketing-consent', 'marketing-consent'],
+            // Kurumsal sözleşmeler (FF-228, `docs/107` Faz 3.2, `docs/140`).
+            ['/data-processing', 'data-processing'],
+            ['/sla', 'sla'],
+            ['/acceptable-use', 'acceptable-use'],
+            ['/third-party-licenses', 'third-party-licenses'],
         ];
     }
 
@@ -194,7 +199,7 @@ final class LegalDocumentPagesTest extends TestCase
      */
     public static function sellerIdentityPages(): array
     {
-        return [['/distance-sales'], ['/pre-information'], ['/delivery']];
+        return [['/distance-sales'], ['/pre-information'], ['/delivery'], ['/data-processing'], ['/sla']];
     }
 
     #[DataProvider('sellerIdentityPages')]
@@ -239,7 +244,7 @@ final class LegalDocumentPagesTest extends TestCase
     {
         $this->withoutCompany();
 
-        foreach (['/terms', '/privacy', '/kvkk', '/cookies', '/refund-policy', '/marketing-consent'] as $path) {
+        foreach (['/terms', '/privacy', '/kvkk', '/cookies', '/refund-policy', '/marketing-consent', '/acceptable-use', '/third-party-licenses'] as $path) {
             $response = $this->get($path)->assertOk();
 
             self::assertNull($response->headers->get('X-Robots-Tag'), "LEGAL-PAGES-09: [{$path}] gereksiz yere noindex.");
@@ -280,7 +285,8 @@ final class LegalDocumentPagesTest extends TestCase
 
         $xml = (string) $this->get('/sitemap.xml')->assertOk()->getContent();
 
-        foreach (['/about', '/distance-sales', '/pre-information', '/delivery', '/refund-policy', '/cookies'] as $path) {
+        foreach (['/about', '/distance-sales', '/pre-information', '/delivery', '/refund-policy', '/cookies',
+            '/data-processing', '/sla', '/acceptable-use', '/third-party-licenses'] as $path) {
             self::assertStringContainsString($path.'</loc>', $xml, "LEGAL-PAGES-06: [{$path}] sitemap'te yok.");
         }
     }
@@ -298,9 +304,15 @@ final class LegalDocumentPagesTest extends TestCase
 
         $xml = (string) $this->get('/sitemap.xml')->assertOk()->getContent();
 
-        foreach (['/about', '/distance-sales', '/pre-information', '/delivery'] as $path) {
+        foreach (['/about', '/distance-sales', '/pre-information', '/delivery', '/data-processing', '/sla'] as $path) {
             self::assertStringNotContainsString($path.'</loc>', $xml, "LEGAL-PAGES-06: [{$path}] eksikken sitemap'te ilan ediliyor.");
         }
+
+        // Bildirim niteliğindeki metinler yerinde kalır: bir kabul edilebilir
+        // kullanım politikası ya da lisans listesi bir satış sözleşmesi
+        // değildir ve tarafsız hâliyle de doğrudur.
+        self::assertStringContainsString('/acceptable-use</loc>', $xml);
+        self::assertStringContainsString('/third-party-licenses</loc>', $xml);
 
         // Sözleşme olmayanlar yerinde kalır.
         self::assertStringContainsString('/terms</loc>', $xml);
@@ -324,7 +336,8 @@ final class LegalDocumentPagesTest extends TestCase
         try {
             $this->artisan('site:export-static', ['--out' => $out])->assertSuccessful();
 
-            foreach (['cookies', 'distance-sales', 'pre-information', 'delivery', 'refund-policy', 'about'] as $dir) {
+            foreach (['cookies', 'distance-sales', 'pre-information', 'delivery', 'refund-policy', 'about',
+                'data-processing', 'sla', 'acceptable-use', 'third-party-licenses'] as $dir) {
                 self::assertFileExists($out.'/'.$dir.'/index.html', "LEGAL-PAGES-08: [{$dir}] statik önizlemede yok.");
             }
         } finally {
@@ -334,7 +347,7 @@ final class LegalDocumentPagesTest extends TestCase
 
     // --- Kütüphane sözleşmesi ---------------------------------------------
 
-    public function test_the_library_knows_exactly_the_nine_documents_and_every_text_is_english_source(): void
+    public function test_the_library_knows_exactly_the_thirteen_documents_and_every_text_is_english_source(): void
     {
         $library = app(LegalLibraryPort::class);
         $keys = array_map(static fn ($document) => $document->key, $library->all());
@@ -342,7 +355,11 @@ final class LegalDocumentPagesTest extends TestCase
         sort($keys);
 
         self::assertSame(
-            ['cookies', 'delivery', 'distance-sales', 'kvkk', 'marketing-consent', 'pre-information', 'privacy', 'refund-policy', 'terms'],
+            [
+                'acceptable-use', 'cookies', 'data-processing', 'delivery', 'distance-sales', 'kvkk',
+                'marketing-consent', 'pre-information', 'privacy', 'refund-policy', 'sla', 'terms',
+                'third-party-licenses',
+            ],
             $keys,
         );
 
@@ -372,7 +389,19 @@ final class LegalDocumentPagesTest extends TestCase
                 $document->sections,
             ))));
 
-            foreach (['within 24 hours', 'within 48 hours', 'business days', '99.9%', 'guaranteed uptime', '₺', 'try/month'] as $claim) {
+            /*
+                FF-228 eklenenler: kurumsal sözleşmeler bir ürünün en kolay
+                yalan söylediği yerdir. Bir sertifika alınmadı, bir çalışma
+                süresi ölçülmüyor ve yedeğin sunucu dışında bir kopyası yok
+                (`docs/124` §7.4). Bu üç olguyu ters yönde ifade eden her
+                cümle burada yakalanır.
+            */
+            foreach ([
+                'within 24 hours', 'within 48 hours', 'business days', '99.9%', 'guaranteed uptime', '₺', 'try/month',
+                'iso 27001 certified', 'iso/iec 27001 certified', 'soc 2 certified', 'soc 2 type', 'pci dss certified',
+                'off-site', 'offsite', 'separate location', 'geographically separate', 'geographically redundant',
+                'penetration test report', 'annual audit',
+            ] as $claim) {
                 self::assertStringNotContainsString($claim, $text,
                     "[{$document->key}] \"{$claim}\" — ürünün tutmadığı bir taahhüt ya da uydurma bir tutar.");
             }
