@@ -25,6 +25,10 @@ use App\Application\Billing\Port\PlanManagementRepositoryPort;
 use App\Application\Billing\Port\SandboxPaymentGatewayPort;
 use App\Application\Billing\Port\SubscriptionRepositoryPort;
 use App\Application\Content\Port\ContentLibraryPort;
+use App\Application\DataRights\Port\DataRequestRepositoryPort;
+use App\Application\DataRights\Port\DataRightsNotifierPort;
+use App\Application\DataRights\Port\WorkspaceDataEraserPort;
+use App\Application\DataRights\Port\WorkspaceDataExporterPort;
 use App\Application\Entitlement\Port\EntitlementRepositoryPort;
 use App\Application\Ledger\Port\LedgerPort;
 use App\Application\Legal\Port\ConsentLedgerPort;
@@ -141,6 +145,10 @@ use App\Infrastructure\Billing\Provider\IyzipaySandboxModeGateway;
 use App\Infrastructure\Billing\Provider\UnconfiguredEArchiveGateway;
 use App\Infrastructure\Billing\Rendering\MpdfInvoiceDocumentAdapter;
 use App\Infrastructure\Content\ProductPageLibrary;
+use App\Infrastructure\DataRights\Erasure\DatabaseWorkspaceDataEraser;
+use App\Infrastructure\DataRights\Export\ZipWorkspaceDataExporter;
+use App\Infrastructure\DataRights\Mail\MailDataRightsNotifier;
+use App\Infrastructure\DataRights\Persistence\EloquentDataRequestRepository;
 use App\Infrastructure\Entitlement\DatabaseEntitlementRepository;
 use App\Infrastructure\Ledger\DatabaseLedger;
 use App\Infrastructure\Legal\DatabaseConsentLedger;
@@ -545,6 +553,16 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(MediaConversionPort::class, EloquentMediaConversion::class);
         $this->app->bind(MediaFormatSupportPort::class, RuntimeMediaFormatSupport::class);
         $this->app->bind(WorkspaceAuditTrailPort::class, EloquentWorkspaceAuditTrail::class);
+        /*
+            VERİ HAKLARI (FF-226, `docs/138`). Dördü de port arkasında:
+            defterin nerede durduğu, arşivin hangi biçimde üretildiği,
+            silmenin nasıl yürüdüğü ve haberin nasıl gittiği ayrı altyapı
+            kararlarıdır ve biri değişince diğerleri değişmemeli.
+        */
+        $this->app->bind(DataRequestRepositoryPort::class, EloquentDataRequestRepository::class);
+        $this->app->bind(WorkspaceDataExporterPort::class, ZipWorkspaceDataExporter::class);
+        $this->app->bind(WorkspaceDataEraserPort::class, DatabaseWorkspaceDataEraser::class);
+        $this->app->bind(DataRightsNotifierPort::class, MailDataRightsNotifier::class);
         // KURULUM İLERLEMESİ (`docs/107` 1.7): beş adım + ilk yayına kadar geçen
         // dakika, var olan damgalardan; yeni tablo yok.
         $this->app->bind(SetupProgressPort::class, EloquentSetupProgress::class);

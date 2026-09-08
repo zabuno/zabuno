@@ -29,6 +29,7 @@ use App\Http\Controllers\Rating\StoreGuestRatingController;
 use App\Http\Controllers\Seo\ShowRobotsController;
 use App\Http\Controllers\Seo\ShowSitemapController;
 use App\Http\Controllers\Team\ShowTeamInvitationController;
+use App\Http\Controllers\Workspace\DownloadWorkspaceDataExportController;
 use App\Http\Controllers\WorkspaceAppController;
 use App\Http\Middleware\EnsurePlatformSuperAdmin;
 use App\Http\Responses\GuestDeadEnd;
@@ -173,6 +174,26 @@ Route::get('/media/r/{rendition}-{fingerprint}.{format}', ServeRenditionControll
     // veriyor (`ServeRenditionController`).
     ->where('format', '(webp|png|jpeg|svg)')
     ->name('media.rendition');
+
+/*
+    VERİ DIŞA AKTARMA ARŞİVİ (FF-226, `docs/138`) — imzalı adres.
+
+    `media.original` ile aynı desen ve aynı gerekçe: dosya özel diskte
+    durur, herkese açık bir adresi yoktur ve imza yetkidir. Oturum
+    İSTENMEZ, çünkü bağlantı e-postayla da gider ve sahip onu başka bir
+    cihazda açabilmeli.
+
+    ADRES `/workspaces/...` DEĞİL `/data-export/...`: her üst düzey yol
+    rezerve edilmek zorunda (URL-RESERVED-COVERS-ROUTES-13) ve `workspaces`
+    gibi geniş bir sözcüğü bir işletmenin slug'ı olmaktan çıkarmak, bu
+    paketin isteyeceğinden çok daha büyük bir karardı. Taslak önizlemesi
+    (`/menu-preview/{workspace}/{menu}`) aynı sorunu aynı biçimde çözüyor.
+*/
+Route::get('/data-export/{workspace}/{request}', DownloadWorkspaceDataExportController::class)
+    ->where('workspace', '[0-9]+')
+    ->where('request', '[0-9]+')
+    ->middleware('signed')
+    ->name('workspace.data-export.download');
 
 // Aslın İMZALI adresi (`docs/49` Faz 6 madde 2): 10 dakikalık imza,
 // kiracı + varlık; süresi dolunca 403. Oturum gerekmez — imza yetkidir.

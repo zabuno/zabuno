@@ -37,7 +37,23 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1705;
+/*
+    1705 → 1736 (FF-226, `docs/107` Faz 3.3, `docs/138`): veri hakları
+    bölümü — Ayarlar > Çalışma alanı'nın tehlikeli bölgesi — otuz bir
+    kaynak dizesi getirdi.
+
+    OTUZ BİR, otuz üç değil: ilk yazımda kullanılmayan iki anahtar vardı
+    ve `DS-BUNDLE-BUDGET-07` onları ölçtü. Masaüstü kapanışı 199.24 KB'den
+    200.02 KB'ye çıkıp 200 KB bütçesini aşınca, bölümün kendisi `lazy`
+    yapıldı ve kullanılmayan anahtarlar silindi; kapanış 199.96 KB'ye indi.
+    Kimsenin okumadığı bir dize de indirilir.
+
+    Sayı ve SHA burada bilerek DONMUŞ duruyor: bir dizenin sessizce
+    değişmesi, PO dosyalarındaki karşılığını kimseye söylemeden
+    geçersizleştirir ve çevirmen aynı cümleyi ikinci kez çevirmek zorunda
+    kalır (`docs/121`).
+*/
+const FROZEN_LEGACY_KEY_COUNT = 1736;
 
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
@@ -234,6 +250,9 @@ const FROZEN_LEGACY_KEY_COUNT = 1705;
 // birleştiriliyordu, artık ADLI yer tutuculu tek bir anahtar.
 // Sayının büyümesi burada bir yüzey büyümesi değil, GÖRÜNÜRLÜK: sahte-
 // yerelleştirme bu üç metnin dönüşmediğini gösterdi (`docs/121` §4).
+// FF-226: veri hakları bölümü — arşiv almanın ve silme istemenin ekrandaki
+// cümleleri. "Her şey silinir" DEMEYEN bir metin bilerek yazıldı: saklanan
+// tabloların listesi sunucudan gelir ve ekranda adıyla sayılır.
 // ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
 // msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
 // FF-219: 1660 → 1694, otuz dört anahtar — ABONELİĞİN EKSİK YARISI
@@ -248,7 +267,7 @@ const FROZEN_LEGACY_KEY_COUNT = 1705;
 // ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
 // msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'c8ce2a3ec0eba1d1150b9d4b4e7467e4d164bb4a1c4ebd546f1708d2cbdcfe37';
+    '8d0905a13625691165262ae8307d7bdfe46fb07d87a689ba9ba73a0b60e907ed';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();

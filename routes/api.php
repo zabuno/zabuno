@@ -19,3 +19,10 @@ require __DIR__.'/api/platform-admin.php';
 require __DIR__.'/api/ordering.php';
 require __DIR__.'/api/rating.php';
 require __DIR__.'/api/support.php';
+/*
+    VERİ HAKLARI (FF-226, `docs/138`). Listenin SONUNDA ve bilerek: hiçbir
+    mevcut yolu gölgelemiyor ve sona eklemek dondurulmuş imza listesini
+    ortasından kaydırmıyor — sipariş, puan ve destek dosyalarıyla aynı
+    gerekçe.
+*/
+require __DIR__.'/api/workspace-data-rights.php';

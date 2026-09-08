@@ -6272,6 +6272,10 @@ msgstr "What happened here"
 msgid "workspace.settings.audit.retry"
 msgstr "Try again"
 
+#: workspace:workspace.settings.audit.source.dataRights
+msgid "workspace.settings.audit.source.dataRights"
+msgstr "Data request"
+
 #: workspace:workspace.settings.audit.source.media
 msgid "workspace.settings.audit.source.media"
 msgstr "Photo"
@@ -6283,6 +6287,126 @@ msgstr "Publishing"
 #: workspace:workspace.settings.audit.unknownActor
 msgid "workspace.settings.audit.unknownActor"
 msgstr "Unknown"
+
+#: workspace:workspace.settings.dataRights.erasure.cancel
+msgid "workspace.settings.dataRights.erasure.cancel"
+msgstr "Take the request back"
+
+#: workspace:workspace.settings.dataRights.erasure.confirmHelp
+msgid "workspace.settings.dataRights.erasure.confirmHelp"
+msgstr "A tick box is ticked without looking. The name makes you check where you are."
+
+#: workspace:workspace.settings.dataRights.erasure.confirmLabel
+msgid "workspace.settings.dataRights.erasure.confirmLabel"
+msgstr "Type the workspace name to confirm"
+
+#: workspace:workspace.settings.dataRights.erasure.heading
+msgid "workspace.settings.dataRights.erasure.heading"
+msgstr "Erase this workspace data"
+
+#: workspace:workspace.settings.dataRights.erasure.help
+msgid "workspace.settings.dataRights.erasure.help"
+msgstr "Erasing is not switching the workspace off, and it cannot be undone. The request waits {days} days, one button takes it back, and the workspace keeps working until then."
+
+#: workspace:workspace.settings.dataRights.erasure.keptHeading
+msgid "workspace.settings.dataRights.erasure.keptHeading"
+msgstr "What is not removed, and why"
+
+#: workspace:workspace.settings.dataRights.erasure.legalHold
+msgid "workspace.settings.dataRights.erasure.legalHold"
+msgstr "Erasure cannot start: {count} file(s) are held for a dispute. Release the hold in Media first."
+
+#: workspace:workspace.settings.dataRights.erasure.mismatch
+msgid "workspace.settings.dataRights.erasure.mismatch"
+msgstr "That is not this workspace name."
+
+#: workspace:workspace.settings.dataRights.erasure.request
+msgid "workspace.settings.dataRights.erasure.request"
+msgstr "Ask for erasure"
+
+#: workspace:workspace.settings.dataRights.erasure.scheduled
+msgid "workspace.settings.dataRights.erasure.scheduled"
+msgstr "Erasure is scheduled for {date}."
+
+#: workspace:workspace.settings.dataRights.error
+msgid "workspace.settings.dataRights.error"
+msgstr "This section could not be loaded."
+
+#: workspace:workspace.settings.dataRights.export.availableUntil
+msgid "workspace.settings.dataRights.export.availableUntil"
+msgstr "Link works until {date}."
+
+#: workspace:workspace.settings.dataRights.export.download
+msgid "workspace.settings.dataRights.export.download"
+msgstr "Download the archive"
+
+#: workspace:workspace.settings.dataRights.export.expired
+msgid "workspace.settings.dataRights.export.expired"
+msgstr "That archive expired. Prepare a new one."
+
+#: workspace:workspace.settings.dataRights.export.failed
+msgid "workspace.settings.dataRights.export.failed"
+msgstr "The archive could not be prepared. Try again."
+
+#: workspace:workspace.settings.dataRights.export.heading
+msgid "workspace.settings.dataRights.export.heading"
+msgstr "Take a copy"
+
+#: workspace:workspace.settings.dataRights.export.help
+msgid "workspace.settings.dataRights.export.help"
+msgstr "One archive with everything this workspace holds, twice over: machine readable files for moving to another system, and spreadsheet files a person can open. Uploaded files themselves are not inside — their details are, and originals download one by one from Media."
+
+#: workspace:workspace.settings.dataRights.export.notNotified
+msgid "workspace.settings.dataRights.export.notNotified"
+msgstr "No e-mail was sent: sending is not configured. The archive is here either way."
+
+#: workspace:workspace.settings.dataRights.export.notified
+msgid "workspace.settings.dataRights.export.notified"
+msgstr "We e-mailed you when it was ready."
+
+#: workspace:workspace.settings.dataRights.export.ready
+msgid "workspace.settings.dataRights.export.ready"
+msgstr "The archive is ready."
+
+#: workspace:workspace.settings.dataRights.export.request
+msgid "workspace.settings.dataRights.export.request"
+msgstr "Prepare an archive"
+
+#: workspace:workspace.settings.dataRights.export.sections
+msgid "workspace.settings.dataRights.export.sections"
+msgstr "Sections: {count}"
+
+#: workspace:workspace.settings.dataRights.export.working
+msgid "workspace.settings.dataRights.export.working"
+msgstr "Preparing the archive. You can leave this page."
+
+#: workspace:workspace.settings.dataRights.forbidden
+msgid "workspace.settings.dataRights.forbidden"
+msgstr "Only the workspace owner can copy or erase this data."
+
+#: workspace:workspace.settings.dataRights.history
+msgid "workspace.settings.dataRights.history"
+msgstr "Requests so far"
+
+#: workspace:workspace.settings.dataRights.history.empty
+msgid "workspace.settings.dataRights.history.empty"
+msgstr "Nothing requested yet."
+
+#: workspace:workspace.settings.dataRights.hosting
+msgid "workspace.settings.dataRights.hosting"
+msgstr "The servers are run by {provider} in {country}, so your data is stored outside Turkey. Backups are kept on the same servers."
+
+#: workspace:workspace.settings.dataRights.loading
+msgid "workspace.settings.dataRights.loading"
+msgstr "Loading…"
+
+#: workspace:workspace.settings.dataRights.region
+msgid "workspace.settings.dataRights.region"
+msgstr "Your data"
+
+#: workspace:workspace.settings.dataRights.retry
+msgid "workspace.settings.dataRights.retry"
+msgstr "Try again"
 
 #: workspace:workspace.settings.logo.change
 msgid "workspace.settings.logo.change"

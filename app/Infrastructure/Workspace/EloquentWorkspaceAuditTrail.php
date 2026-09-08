@@ -20,6 +20,13 @@ use Illuminate\Support\Facades\DB;
  * tablonun sütunları farklı ve bir gün üçüncü bir kaynak eklendiğinde
  * (fatura, takım) SQL'i büyütmek yerine bir dizi daha eklenir.
  *
+ * ÜÇÜNCÜ KAYNAK GELDİ (FF-226, `docs/138` §5): veri hakları defteri.
+ * "Kim, ne zaman, hangi kapsamla dışa aktarma ya da silme istedi" sorusu
+ * kiracının KENDİ görebileceği yerde durmak zorunda; platformun denetim
+ * kaydında durması, kiracının kendi hakkını kendi ekranından
+ * doğrulayamaması demekti. Yeni bir ekran açılmadı — sahip zaten
+ * Ayarlar → Denetim izi ekranına bakıyor (`docs/133` deseni).
+ *
  * Aktör E-POSTAYLA yazılır: bir ekipte iki "Mehmet" olabilir ve "Mehmet
  * sildi" cümlesi hiçbir soruyu kapatmaz. Kullanıcı silinmişse alan boş
  * kalır — kaydı gizlemek yerine failin bilinmediğini söylemek dürüst
@@ -29,7 +36,11 @@ final class EloquentWorkspaceAuditTrail implements WorkspaceAuditTrailPort
 {
     public function recent(int $workspaceId, int $limit = 100): array
     {
-        $events = [...$this->mediaEvents($workspaceId, $limit), ...$this->publicationEvents($workspaceId, $limit)];
+        $events = [
+            ...$this->mediaEvents($workspaceId, $limit),
+            ...$this->publicationEvents($workspaceId, $limit),
+            ...$this->dataRightsEvents($workspaceId, $limit),
+        ];
 
         /*
             Sıralama İKİ anahtarlı: zaman eşitse kaynak adı belirler.
@@ -69,6 +80,56 @@ final class EloquentWorkspaceAuditTrail implements WorkspaceAuditTrailPort
             'actor' => $row->email === null ? null : (string) $row->email,
             'at' => $row->created_at === null ? null : (string) $row->created_at,
         ])->all();
+    }
+
+    /**
+     * Veri hakları — FF-226 (`docs/138` §5).
+     *
+     * OLAY ADI DURUMLA BİRLEŞİR (`export.ready`, `erasure.scheduled`):
+     * yalnız "export" yazsaydı, satır talebin istendiği mi yoksa
+     * tamamlandığı mı anlaşılmazdı ve bir hukuk birimi için tam olarak o
+     * ayrım önemlidir.
+     *
+     * KONU KAPSAMIN BÜYÜKLÜĞÜDÜR. Talebin kaç bölümü kapsadığı ve —
+     * yürütülmüşse — kaç satırın gerçekten silindiği burada durur; sayı,
+     * "tamamlandı" damgasının kontrol edilebilir olmasını sağlayan tek şey.
+     *
+     * @return array<int, array{source:string, action:string, subject:?string, actor:?string, at:?string}>
+     */
+    private function dataRightsEvents(int $workspaceId, int $limit): array
+    {
+        $rows = DB::table('workspace_data_requests as d')
+            ->leftJoin('users as u', 'u.id', '=', 'd.requested_by_user_id')
+            ->where('d.workspace_id', $workspaceId)
+            ->orderByDesc('d.requested_at')
+            ->orderByDesc('d.id')
+            ->limit($limit)
+            ->get(['d.kind', 'd.state', 'd.scope', 'd.deleted_counts', 'd.requested_at', 'u.email']);
+
+        return $rows->map(static function (object $row): array {
+            $scope = json_decode((string) $row->scope, true);
+            $sections = is_array($scope) ? count($scope) : 0;
+
+            $counts = $row->deleted_counts === null ? null : json_decode((string) $row->deleted_counts, true);
+            $deleted = is_array($counts) ? array_sum($counts) : null;
+
+            return [
+                'source' => 'data_rights',
+                'action' => (string) $row->kind.'.'.(string) $row->state,
+                /*
+                    KONU BİR CÜMLE DEĞİL, BİR JETON. Bu listedeki `action`
+                    sütunu zaten çevrilmemiş teknik jetonlar taşıyor
+                    (`uploaded`, `published`); araya İngilizce bir cümle
+                    koymak, çevrilemez borcu bir kaynak dizesi gibi
+                    göstermek olurdu (`docs/121`).
+                */
+                'subject' => $deleted === null
+                    ? 'sections='.$sections
+                    : 'sections='.$sections.' · rows='.$deleted,
+                'actor' => $row->email === null ? null : (string) $row->email,
+                'at' => $row->requested_at === null ? null : (string) $row->requested_at,
+            ];
+        })->all();
     }
 
     /**

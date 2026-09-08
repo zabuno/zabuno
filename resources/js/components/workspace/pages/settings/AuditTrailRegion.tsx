@@ -26,6 +26,22 @@ type AuditEvent = {
 
 type Status = 'loading' | 'error' | 'ready';
 
+/**
+ * Kaynak adı bir ETİKETE çevrilir, bir if-else zincirine değil.
+ *
+ * Üçüncü kaynak (veri hakları, FF-226) eklendiğinde iki dallı üçlü işleç
+ * artık okunmuyordu ve dördüncüsünde büsbütün okunmaz olurdu. Bilinmeyen
+ * bir kaynak kendi adıyla görünür: kayıt gizlenmez, yalnız etiketi
+ * çevrilmemiş kalır — sessizce "Yayınlama" demek, yanlış bir olay adı
+ * göstermek olurdu.
+ */
+function sourceLabelKey(source: string): Parameters<typeof t>[0] {
+    if (source === 'media') return 'workspace.settings.audit.source.media';
+    if (source === 'data_rights') return 'workspace.settings.audit.source.dataRights';
+
+    return 'workspace.settings.audit.source.publication';
+}
+
 export function AuditTrailRegion({ workspaceId }: { workspaceId: number }) {
     const [status, setStatus] = useState<Status>('loading');
     const [events, setEvents] = useState<AuditEvent[]>([]);
@@ -143,13 +159,7 @@ export function AuditTrailRegion({ workspaceId }: { workspaceId: number }) {
                             </span>
 
                             <span className="font-medium text-fg">
-                                {t(
-                                    (event.source === 'media'
-                                        ? 'workspace.settings.audit.source.media'
-                                        : 'workspace.settings.audit.source.publication') as Parameters<
-                                        typeof t
-                                    >[0],
-                                )}
+                                {t(sourceLabelKey(event.source))}
                             </span>
 
                             <span>{event.action}</span>
