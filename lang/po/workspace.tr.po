@@ -3788,6 +3788,10 @@ msgstr "Ürün görseli"
 msgid "workspace.media.upload.field.assetSlot.logo"
 msgstr "Logo"
 
+#: workspace:workspace.media.upload.field.assetSlot.menuImportSource
+msgid "workspace.media.upload.field.assetSlot.menuImportSource"
+msgstr ""
+
 #: workspace:workspace.media.upload.field.assetSlot.ogImage
 msgid "workspace.media.upload.field.assetSlot.ogImage"
 msgstr "Paylaşım görseli"

@@ -13,6 +13,7 @@ import userEvent from '@testing-library/user-event';
 const WORKSPACE_ID = 7;
 const LOCATION_ID = 3;
 const MENU_ID = 42;
+const MEDIA_HREF = '/app/zeytin-restoranlari/media';
 
 function jsonResponse(status: number, body: unknown): Response {
     return {
@@ -59,11 +60,30 @@ function tree(overrides: Record<string, unknown> = {}) {
 
 type Call = { url: string; method: string; body: unknown };
 
+/**
+ * YUVA POLİTİKALARI — `GET /api/media/slot-policies`, kaynağı
+ * `config/media-slots.php`. Ekran ölçüyü BURADAN okur; sahte yanıt gerçek
+ * yapılandırmadaki `itemImage` satırını taşır (1000×1000, 1:1).
+ */
+function slotPolicies() {
+    return {
+        slots: [
+            { key: 'itemImage', minWidth: 1000, minHeight: 1000, aspect: '1:1' },
+            { key: 'menuImportSource', minWidth: 600, minHeight: 600, aspect: null },
+        ],
+    };
+}
+
 async function renderWorkspace(
     options: {
         media?: unknown[];
         imageStatus?: number;
         draftResponse?: Response;
+        /** `undefined` = politika okunabiliyor; `null` = uç cevap vermedi. */
+        policies?: unknown | null;
+        can?: (permission: string) => boolean;
+        mediaHref?: string;
+        onNavigateToSection?: (section: string) => void;
     } = {},
 ) {
     const calls: Call[] = [];
@@ -77,6 +97,11 @@ async function renderWorkspace(
         });
 
         if (String(url) === '/sanctum/csrf-cookie') return jsonResponse(204, {});
+        if (String(url) === '/api/media/slot-policies' && method === 'GET') {
+            return options.policies === null
+                ? jsonResponse(503, { message: 'unavailable' })
+                : jsonResponse(200, options.policies ?? slotPolicies());
+        }
         if (String(url).endsWith('/brand') && method === 'GET') {
             return jsonResponse(200, { id: 1, workspaceId: WORKSPACE_ID, currency: 'TRY' });
         }
@@ -120,10 +145,24 @@ async function renderWorkspace(
     vi.stubGlobal('fetch', fetchMock);
 
     const { MenuCatalogWorkspace } = (await import('./MenuCatalogWorkspace')) as unknown as {
-        MenuCatalogWorkspace: React.ComponentType<{ workspaceId: number; locationId: number }>;
+        MenuCatalogWorkspace: React.ComponentType<{
+            workspaceId: number;
+            locationId: number;
+            can?: (permission: string) => boolean;
+            mediaHref?: string;
+            onNavigateToSection?: (section: string) => void;
+        }>;
     };
 
-    render(<MenuCatalogWorkspace workspaceId={WORKSPACE_ID} locationId={LOCATION_ID} />);
+    render(
+        <MenuCatalogWorkspace
+            workspaceId={WORKSPACE_ID}
+            locationId={LOCATION_ID}
+            can={options.can}
+            mediaHref={options.mediaHref ?? MEDIA_HREF}
+            onNavigateToSection={options.onNavigateToSection}
+        />,
+    );
     await screen.findByRole('heading', { name: 'Kebaplar' });
 
     return { calls, user: userEvent.setup() };
@@ -208,17 +247,133 @@ describe('sunum düzenleyicisi (docs/78)', () => {
 
         vi.unstubAllGlobals();
     });
+});
 
-    it('hazır görsel yoksa sahip nereye gideceğini okur', async () => {
+/**
+ * ÇIKMAZ SOKAK — sahibin 2026-09-08'de bulduğu kusur (FF-224).
+ *
+ * Sahip "Photo" başlığı altında tek seçenek gördü ("No photo") ve sordu:
+ * *"Ürünlere, menülere resim yükleme alanı yok?"* Yükleme VARDI — Medya
+ * ekranında. Panel ise hiçbir şey söylemiyordu: ne "önce yükleyin", ne
+ * hangi yuva, ne oraya giden bir yol.
+ */
+describe('seçilecek fotoğraf yokken panel konuşur (FF-224)', () => {
+    it('sebebini, yuvasını, ölçüsünü ve Medya ekranına giden gerçek bağlantıyı verir', async () => {
         const { user } = await renderWorkspace({ media: [] });
 
         await openEditor(user);
 
+        // 1. NE OLDU ve NEREYE — yuva adı cümlenin içinde.
         expect(
-            screen.getByText(
-                'No processed photo is available yet. Upload one on the Media page first.',
+            await screen.findByText(
+                'No processed photo is available yet. Upload one on the Media page ' +
+                    '(slot: List/card/detail item) first.',
             ),
         ).toBeInTheDocument();
+
+        // 2. O YUVA NE İSTİYOR — rakamlar `config/media-slots.php`'den.
+        expect(
+            await screen.findByText('That slot needs at least 1000×1000 px and a 1:1 frame.'),
+        ).toBeInTheDocument();
+
+        // 3. GERÇEK BİR ADRES — düğme değil, `<a href>`; kopyalanabilir,
+        //    yeni sekmede açılabilir, yer imine eklenebilir.
+        const link = screen.getByRole('link', { name: 'Open the Media page' });
+        expect(link).toHaveAttribute('href', MEDIA_HREF);
+
+        vi.unstubAllGlobals();
+    });
+
+    it('süslenmemiş sol tıklama tam sayfa yenilemeden Medya bölümüne geçer', async () => {
+        const onNavigateToSection = vi.fn();
+        const { user } = await renderWorkspace({ media: [], onNavigateToSection });
+
+        await openEditor(user);
+        await user.click(await screen.findByRole('link', { name: 'Open the Media page' }));
+
+        expect(onNavigateToSection).toHaveBeenCalledWith('media');
+
+        vi.unstubAllGlobals();
+    });
+
+    it('yuva politikası okunamazsa ölçü UYDURULMAZ; yol tarifi yine durur', async () => {
+        const { user } = await renderWorkspace({ media: [], policies: null });
+
+        await openEditor(user);
+
+        expect(
+            await screen.findByText(
+                'No processed photo is available yet. Upload one on the Media page ' +
+                    '(slot: List/card/detail item) first.',
+            ),
+        ).toBeInTheDocument();
+        expect(screen.queryByText(/That slot needs at least/)).toBeNull();
+        expect(screen.getByRole('link', { name: 'Open the Media page' })).toBeInTheDocument();
+
+        vi.unstubAllGlobals();
+    });
+
+    /*
+        Medya kütüphanesi `media.manage` ister (`MediaPage.section`). Mutfak
+        rolüne "yükleyin" deyip bir bağlantı vermek, kapattığımız çıkmaz
+        sokağın yerine yenisini koymak olurdu.
+    */
+    it('medyayı yönetemeyen rol bağlantı görmez, kimin yükleyeceğini okur', async () => {
+        const { user } = await renderWorkspace({
+            media: [],
+            can: (permission) => permission !== 'media.manage',
+        });
+
+        await openEditor(user);
+
+        expect(
+            await screen.findByText(
+                'No processed photo is available yet. Someone with media access has to ' +
+                    'upload one on the Media page (slot: List/card/detail item).',
+            ),
+        ).toBeInTheDocument();
+        expect(screen.queryByRole('link', { name: 'Open the Media page' })).toBeNull();
+
+        vi.unstubAllGlobals();
+    });
+
+    /*
+        DOLU HÂL BOZULMADI: hazır bir görsel varken yol tarifi ÇİZİLMEZ —
+        yoksa panel, sahibin zaten yaptığı işi tarif ederdi.
+    */
+    it('seçilebilecek fotoğraf varken yol tarifi çizilmez', async () => {
+        const { user } = await renderWorkspace();
+
+        await openEditor(user);
+
+        expect(screen.queryByRole('link', { name: 'Open the Media page' })).toBeNull();
+        expect(screen.queryByText(/No processed photo is available yet/)).toBeNull();
+
+        vi.unstubAllGlobals();
+    });
+
+    /*
+        AYNI ÇIKMAZ SOKAK, İKİNCİ EKRAN: fotoğraftan içe aktarma. Cümle
+        yuvayı zaten söylüyordu; eksik olan bağlantıydı — ve söylediği yuva
+        adı ("Import source") Medya ekranının açılır listesinde HİÇ
+        yazmıyordu (`SlotNameIsReadableTest`).
+    */
+    it('fotoğraftan içe aktarma boş hâli de aynı yolu gösterir', async () => {
+        const { user } = await renderWorkspace({ media: [] });
+
+        await user.click(screen.getByRole('button', { name: 'Import from a photo (AI)' }));
+
+        expect(
+            await screen.findByText(
+                'No processed photo is available yet. Upload one on the Media page ' +
+                    '(slot: Import source) first.',
+            ),
+        ).toBeInTheDocument();
+        expect(await screen.findByText('That slot needs at least 600×600 px.')).toBeInTheDocument();
+        expect(screen.getByRole('link', { name: 'Open the Media page' })).toHaveAttribute(
+            'href',
+            MEDIA_HREF,
+        );
 
         vi.unstubAllGlobals();
     });

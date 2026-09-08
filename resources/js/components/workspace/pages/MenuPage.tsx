@@ -18,6 +18,11 @@ type MenuPageProps = {
     /** Bkz. `MenuCatalogWorkspaceProps.can` — tanımsızsa daraltma yapılmaz. */
     can?: (permission: string) => boolean;
     /**
+     * Medya ekranının gerçek adresi (FF-224). Katalog bileşeni rota sahibi
+     * değildir; adres kabuktan geçer.
+     */
+    mediaHref?: string;
+    /**
      * Menüde en az bir ürün var mı? (`docs/70` §2.1: menünün varlığı adımı
      * bitirmez.) `undefined` = henüz bilinmiyor; bilinmeyen için ipucu
      * çizilmez — "bilmiyorum" ile "bitmedi" aynı şey değildir.
@@ -47,6 +52,7 @@ export function MenuPage({
     onTreeChange,
     onNavigateToSection,
     can,
+    mediaHref,
     firstProductDone,
 }: MenuPageProps) {
     /*
@@ -140,6 +146,7 @@ export function MenuPage({
                     onTreeChange={onTreeChange}
                     onNavigateToSection={onNavigateToSection}
                     can={can}
+                    mediaHref={mediaHref}
                 />
             );
         }

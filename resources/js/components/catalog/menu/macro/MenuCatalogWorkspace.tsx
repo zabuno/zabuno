@@ -9,7 +9,7 @@ import {
     Prohibit,
     Warning,
 } from '@phosphor-icons/react';
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent, type MouseEvent } from 'react';
 import { RowActions } from '../compound/RowActions';
 import { CategoryRail } from '../compound/CategoryRail';
 import {
@@ -26,7 +26,9 @@ import { FileDropzone } from '../../forms/compound/FileDropzone';
 import { InlineRename } from '../micro/InlineRename';
 import { ConfirmDialog } from '../../overlays/compound/ConfirmDialog';
 import { FieldError } from '../micro/FieldError';
+import { MediaSlotHint } from '../micro/MediaSlotHint';
 import { OrderBadge } from '../micro/OrderBadge';
+import { shouldInterceptNavigation } from '../../../../lib/navigation';
 
 export type MenuCatalogWorkspaceProps = {
     workspaceId: number;
@@ -51,6 +53,18 @@ export type MenuCatalogWorkspaceProps = {
      * gömme) sessizce boş bir menü ekranı gösterirdi.
      */
     can?: (permission: string) => boolean;
+    /**
+     * MEDYA EKRANININ GERÇEK ADRESİ — FF-224.
+     *
+     * Bu bileşen adresi kendisi üretemez: adres çalışma alanının slug'ını
+     * içerir ve katalog bileşeni rota sahibi değildir (`docs/35`, kırıntı
+     * bileşenindeki `locationsHref` ile aynı sözleşme).
+     *
+     * `undefined` ise bağlantı ÇİZİLMEZ — Storybook gibi rotası olmayan
+     * yollarda hiçbir yere gitmeyen bir bağlantı bırakmak, tıklayanı
+     * boşluğa düşürürdü.
+     */
+    mediaHref?: string;
 };
 
 type Brand = {
@@ -88,6 +102,21 @@ type ReadyMediaRow = {
     altText: string;
     slot: string;
     status: string;
+};
+
+/**
+ * Bir yuvanın ne istediği — `GET /api/media/slot-policies`, kaynağı
+ * `config/media-slots.php`.
+ *
+ * Ekran bu rakamları KENDİSİ bilmez. Yapılandırma değiştiğinde eski sayıyı
+ * söyleyen bir ekran, sahibi ikinci kez yanlış boyutta bir dosya yüklemeye
+ * gönderirdi.
+ */
+type SlotPolicyRow = {
+    key: string;
+    minWidth: number;
+    minHeight: number;
+    aspect: string | null;
 };
 
 /**
@@ -271,6 +300,14 @@ function importUrl(workspaceId: number, menuId: number): string {
 
 function mediaUrl(workspaceId: number): string {
     return `/api/workspaces/${workspaceId}/media`;
+}
+
+/**
+ * Yuva politikaları çalışma alanına BAĞLI DEĞİLDİR: ürünün kendi kuralları
+ * (`routes/api/media.php`, kaynağı `config/media-slots.php`).
+ */
+function slotPoliciesUrl(): string {
+    return '/api/media/slot-policies';
 }
 
 function menuItemUrl(workspaceId: number, menuItemId: number): string {
@@ -596,6 +633,7 @@ export function MenuCatalogWorkspace({
     onTreeChange,
     onNavigateToSection,
     can,
+    mediaHref,
 }: MenuCatalogWorkspaceProps) {
     /*
         MENÜYÜ İŞLETME YETKİSİ — tek bir soru, tek bir yerde sorulur.
@@ -610,6 +648,16 @@ export function MenuCatalogWorkspace({
         rolü değişmedikçe o gün gelmeyecek.
     */
     const canManageMenu = can === undefined || can('menu.manage');
+    /*
+        MEDYA EKRANINI AÇABİLİYOR MU — FF-224.
+
+        Kütüphane bir ÇALIŞMA ekranıdır ve `media.manage` ister
+        (`MediaPage.section`). Mutfak rolü onu göremez; ona "Medya
+        sayfasından yükleyin" deyip bir bağlantı vermek, açamayacağı bir
+        kapıya yollamak olurdu — kapattığımız çıkmaz sokağın yerine yenisini
+        koymak. O rol yerine KİMİN yükleyeceğini okur.
+    */
+    const canManageMedia = can === undefined || can('media.manage');
 
     const [initialLoading, setInitialLoading] = useState(true);
     const [initialError, setInitialError] = useState(false);
@@ -735,6 +783,16 @@ export function MenuCatalogWorkspace({
     const [presentationError, setPresentationError] = useState<string | null>(null);
     const [savingPresentation, setSavingPresentation] = useState(false);
     const [readyMedia, setReadyMedia] = useState<ReadyMediaRow[]>([]);
+    /*
+        YUVA POLİTİKALARI — `GET /api/media/slot-policies`, kaynağı
+        `config/media-slots.php` (FF-224).
+
+        Boş hâl "hangi yuvaya, hangi ölçüde" diyebilsin diye okunur. Uç
+        cevap vermezse liste BOŞ kalır ve ölçü satırı hiç çizilmez: burada
+        bir rakam UYDURMAK, sahibi yanlış boyutta bir fotoğraf yüklemeye
+        yönlendirirdi ve bu, hiç bilgi vermemekten pahalıdır.
+    */
+    const [slotPolicies, setSlotPolicies] = useState<SlotPolicyRow[]>([]);
     /*
         AI ÖNERİSİ — `docs/97` R4-R5. `aiDraftArtifactId` dolu olduğu sürece
         "Kaydet" düz PUT yerine onay uç noktasına gider (`docs/96` `opt-23`);
@@ -1105,6 +1163,117 @@ export function MenuCatalogWorkspace({
     }
 
     /**
+     * Yuva politikalarını BİR KEZ okur — FF-224.
+     *
+     * Boş hâlin "hangi yuvaya, hangi ölçüde" cümlesi buradan beslenir.
+     * Sayfa yüklenince değil, seçici AÇILINCA istenir: menü ekranını açan
+     * herkese ürünün yuva kurallarını indirtmek için sebep yok.
+     *
+     * Uç cevap vermezse liste boş kalır ve ölçü satırı çizilmez. Bu bir
+     * hata değildir: yol tarifi (yuvanın adı ve Medya ekranının adresi)
+     * politikaya BAĞLI DEĞİL, o yüzden ölçü olmadan da kutu konuşur.
+     */
+    async function loadSlotPolicies() {
+        if (slotPolicies.length > 0) return;
+
+        try {
+            const response = await fetch(slotPoliciesUrl(), buildAuthRequestInit());
+
+            if (!response.ok) return;
+
+            const body = (await response.json()) as { slots?: SlotPolicyRow[] };
+
+            setSlotPolicies(body.slots ?? []);
+        } catch {
+            setSlotPolicies([]);
+        }
+    }
+
+    /**
+     * Süslenmemiş sol tıklama uygulamanın, geri kalanı tarayıcının
+     * (`shouldInterceptNavigation`). Ctrl/Cmd ile tıklayan biri yeni sekme
+     * bekler; koşulsuz `preventDefault` onu sessizce öldürürdü.
+     *
+     * `onNavigateToSection` yoksa hiç engellemeyiz: adres gerçek olduğu için
+     * tam sayfa yüklemesi de doğru yere gider. Bağlantı her hâlükârda
+     * ÇALIŞIR — tek fark, tek sayfa geçişi mi yoksa yenileme mi olduğudur.
+     */
+    function handleNavigateToMedia(event: MouseEvent<HTMLAnchorElement>) {
+        if (onNavigateToSection === undefined) return;
+        if (!shouldInterceptNavigation(event)) return;
+
+        event.preventDefault();
+        onNavigateToSection('media');
+    }
+
+    /**
+     * SEÇİLECEK GÖRSEL YOKKEN NE YAZAR — FF-224.
+     *
+     * Üç şey söyler ve üçü de sahibin bir sonraki adımını belirler:
+     *
+     *   1. Fotoğrafın NEREDEN geldiği ve hangi YUVAYA yükleneceği. Yuva
+     *      adı olmadan sahip Medya ekranını bulsa bile yanlış yeri seçip
+     *      aynı boş listeye geri dönerdi.
+     *   2. O yuvanın ne beklediği — ölçü ve varsa en-boy oranı. Rakamlar
+     *      `config/media-slots.php`'den gelir; politika okunamadıysa satır
+     *      HİÇ çizilmez, uydurulmaz.
+     *   3. Medya ekranının gerçek adresi. Bir `<a>`; sahip adresi elle
+     *      aramaz.
+     *
+     * Yükleme buraya TAŞINMAZ: Medya ekranı kırpma, biçim dönüştürme,
+     * güvenlik taraması ve yuva politikası taşıyor ve ikinci bir yükleme
+     * yolu o zincirin yarısını atlardı.
+     */
+    function renderMediaSlotHint(slot: 'itemImage' | 'menuImportSource') {
+        const policy = slotPolicies.find((candidate) => candidate.key === slot) ?? null;
+        const slotLabel = t(
+            slot === 'itemImage' ? 'menu.media.slot.itemImage' : 'menu.media.slot.menuImportSource',
+        );
+
+        /*
+            SIFIR BİR ÖLÇÜ DEĞİLDİR. `config/media-slots.php` bazı yuvalarda
+            `min_width`/`min_height` için 0 yazar ve orada bu "sınır yok"
+            demektir (bir belgede piksel ızgarası yoktur). "En az 0×0 px"
+            cümlesi bir bilgi değil, gürültüdür.
+        */
+        const hasPixelFloor = policy !== null && (policy.minWidth > 0 || policy.minHeight > 0);
+
+        const requirement =
+            policy === null || !hasPixelFloor
+                ? null
+                : policy.aspect === null
+                  ? t('menu.media.requirement.noAspect', {
+                        width: String(policy.minWidth),
+                        height: String(policy.minHeight),
+                    })
+                  : t('menu.media.requirement', {
+                        width: String(policy.minWidth),
+                        height: String(policy.minHeight),
+                        aspect: policy.aspect,
+                    });
+
+        return (
+            <MediaSlotHint
+                message={t(canManageMedia ? 'menu.media.empty' : 'menu.media.empty.readOnly', {
+                    slot: slotLabel,
+                })}
+                requirement={requirement}
+                href={canManageMedia ? (mediaHref ?? null) : null}
+                linkLabel={t('menu.media.link')}
+                onNavigate={handleNavigateToMedia}
+                icon={
+                    <ImageSquare
+                        size={18}
+                        weight="regular"
+                        aria-hidden="true"
+                        className="mt-[0.125rem] shrink-0"
+                    />
+                }
+            />
+        );
+    }
+
+    /**
      * Sunum düzenleyicisini açar/kapatır ve o anda hazır olan görselleri
      * çeker.
      *
@@ -1132,6 +1301,8 @@ export function MenuCatalogWorkspace({
         setAiSuggestionError(null);
         setAiSuggestionUncertain(false);
         setAiSuggestionUsedFallback(false);
+
+        void loadSlotPolicies();
 
         try {
             const response = await fetch(mediaUrl(workspaceId), buildAuthRequestInit());
@@ -1316,6 +1487,8 @@ export function MenuCatalogWorkspace({
 
         setAiImportOpen(true);
         setAiImportReviewError(null);
+
+        void loadSlotPolicies();
 
         try {
             const response = await fetch(mediaUrl(workspaceId), buildAuthRequestInit());
@@ -3075,9 +3248,15 @@ export function MenuCatalogWorkspace({
                                                 {t('menu.item.ai.import.media.label')}
                                             </legend>
                                             {importSourceMedia.length === 0 ? (
-                                                <p className="text-meta text-fg-secondary">
-                                                    {t('menu.item.ai.import.media.empty')}
-                                                </p>
+                                                /*
+                                                    AYNI ÇIKMAZ SOKAK, AYNI
+                                                    CEVAP (FF-224). Buradaki
+                                                    cümle yuvayı zaten
+                                                    söylüyordu; eksik olan
+                                                    Medya ekranına giden
+                                                    GERÇEK bir bağlantıydı.
+                                                */
+                                                renderMediaSlotHint('menuImportSource')
                                             ) : (
                                                 /*
                                         ÇOK SEÇİM — `docs/96` Faz 3. Bir
@@ -4326,11 +4505,22 @@ export function MenuCatalogWorkspace({
                                                                     </option>
                                                                 ))}
                                                             </Select>
-                                                            {readyMedia.length === 0 ? (
-                                                                <p className="text-meta text-fg-secondary">
-                                                                    {t('menu.item.image.empty')}
-                                                                </p>
-                                                            ) : null}
+                                                            {/*
+                                                                SAHİBİN BULDUĞU
+                                                                ÇIKMAZ SOKAK
+                                                                (FF-224): liste
+                                                                boşken burada
+                                                                yalnız "No
+                                                                photo" duruyor
+                                                                ve panel
+                                                                sebebini,
+                                                                yuvasını ve
+                                                                yükleme yolunu
+                                                                SÖYLEMİYORDU.
+                                                            */}
+                                                            {readyMedia.length === 0
+                                                                ? renderMediaSlotHint('itemImage')
+                                                                : null}
 
                                                             {presentationError ? (
                                                                 <FieldError
