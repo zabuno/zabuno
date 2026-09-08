@@ -1,0 +1,16 @@
+{
+    "Reset your password": "Şifrenizi sıfırlayın",
+    "You are receiving this email because we received a password reset request for your account.": "Hesabınız için şifre sıfırlama talebi aldığımızdan bu e-postayı gönderiyoruz.",
+    "Reset Password": "Şifreyi Sıfırla",
+    "This password reset link will expire in :count minutes.": "Bu şifre sıfırlama bağlantısının süresi :count dakika içinde dolar.",
+    "If you did not request a password reset, no further action is required.": "Şifre sıfırlama talebinde bulunmadıysanız herhangi bir işlem yapmanız gerekmez.",
+    "Verify your email address": "E-posta adresinizi doğrulayın",
+    "Please click the button below to verify your email address.": "E-posta adresinizi doğrulamak için lütfen aşağıdaki düğmeye tıklayın.",
+    "Verify Email Address": "E-posta Adresini Doğrula",
+    "If you did not create an account, no further action is required.": "Hesabı siz oluşturmadıysanız herhangi bir işlem yapmanız gerekmez.",
+    "Hello!": "Merhaba!",
+    "Whoops!": "Bir sorun oluştu!",
+    "Regards,": "Saygılarımızla,",
+    "If you're having trouble clicking the \":actionText\" button, copy and paste the URL below\ninto your web browser:": "\":actionText\" düğmesine tıklayamıyorsanız aşağıdaki adresi kopyalayıp\nweb tarayıcınıza yapıştırın:",
+    "All rights reserved.": "Tüm hakları saklıdır."
+}
