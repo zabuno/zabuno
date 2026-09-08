@@ -181,6 +181,26 @@ final class SiteText
             'contactHoneypot' => 'site.contact.honeypot',
             'contactIdentityHeading' => 'site.contact.identity.heading',
             'contactFormHeading' => 'site.contact.form.heading',
+            /*
+                İLETİŞİM SAYFASININ OLGUNLUK KATMANI (FF-240).
+
+                Hepsi katalogda, çünkü hepsi ekranda görünür ve şablonda
+                sabit bir dize yasak (I18N-SSR-RATCHET-16).
+            */
+            'contactIdentityBody' => 'site.contact.identity.body',
+            'contactBeforeHeading' => 'site.contact.before.heading',
+            'contactBeforeBody' => 'site.contact.before.body',
+            'contactBeforeCta' => 'site.contact.before.cta',
+            'contactTipsHeading' => 'site.contact.tips.heading',
+            'contactTipsRestaurant' => 'site.contact.tips.restaurant',
+            'contactTipsScreen' => 'site.contact.tips.screen',
+            'contactTipsWhen' => 'site.contact.tips.when',
+            'contactEmailHint' => 'site.contact.email.hint',
+            'contactMessageHint' => 'site.contact.message.hint',
+            'contactRequired' => 'site.contact.required',
+            'contactErrorsHeading' => 'site.contact.errors.heading',
+            'contactSentHeading' => 'site.contact.sent.heading',
+            'contactPrivacyBody' => 'site.contact.privacy.body',
             // "Kimden alışveriş yapıyorum?" (FF-216).
             'aboutHeading' => 'site.about.heading',
             'aboutLead' => 'site.about.lead',
@@ -196,6 +216,19 @@ final class SiteText
             'aboutReachCta' => 'site.about.reach.cta',
             'aboutIncompleteHeading' => 'site.about.incomplete.heading',
             'aboutIncompleteBody' => 'site.about.incomplete.body',
+            // Sözleşme listesi ve sonraki adım bandı (FF-240). Listenin
+            // KENDİSİ katalogda değil: satırlar `SiteNavigation`ın yasal
+            // grubundan gelir, yani her biri 200 döner.
+            'aboutAgreementsHeading' => 'site.about.agreements.heading',
+            'aboutAgreementsBody' => 'site.about.agreements.body',
+            'aboutNextHeading' => 'site.about.next.heading',
+            'aboutNextPricing' => 'site.about.next.pricing',
+            'aboutNextHelp' => 'site.about.next.help',
+            // Yardım GİRİŞİ (FF-240): makaleyi saran yüzeyin metni. Makale
+            // adları katalogda DEĞİL — makalenin kendi bildiriminden gelir.
+            'helpArticlesHeading' => 'site.help.articles.heading',
+            'helpStuckHeading' => 'site.help.stuck.heading',
+            'helpStuckBody' => 'site.help.stuck.body',
             // Gönderim sonrası REFERANS (FF-201, `docs/125`): denetleyici
             // `{reference}` yer tutucusunu doldurur, şablon yalnız yazar.
             'contactSentReference' => 'site.contact.sentReference',

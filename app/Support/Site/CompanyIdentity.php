@@ -66,25 +66,76 @@ final class CompanyIdentity
     /**
      * Sayfada çizilecek satırlar: etiket + değer (girilmemişse `null`).
      *
+     * `href` yalnız DOKUNULABİLİR iki alanda doludur (FF-240) — bkz.
+     * `actionFor()`. Diğer satırlarda `null`dur ve şablon onları düz metin
+     * çizer; bir vergi numarasının bağlantı olması, tıklandığında hiçbir
+     * şey yapmayan bir hedef üretirdi.
+     *
      * @param  array<string, string>  $siteText  `SiteText::all()` çıktısı.
-     * @return list<array{field: string, label: string, value: string|null}>
+     * @return list<array{field: string, label: string, value: string|null, href: string|null}>
      */
     public static function rows(CompanyProfile $company, array $siteText): array
     {
         $rows = [];
 
         foreach (self::LABELS as $field => $textKey) {
+            // UYDURMA YOK: girilmemiş alan boş döner ve şablon bunu
+            // "girilmedi" diye YAZAR — sessizce atlamaz. Atlanan bir
+            // satır, o alanın hiç istenmediği izlenimi verirdi.
+            $value = $company->field($field);
+
             $rows[] = [
                 'field' => $field,
                 'label' => $siteText[$textKey] ?? $textKey,
-                // UYDURMA YOK: girilmemiş alan boş döner ve şablon bunu
-                // "girilmedi" diye YAZAR — sessizce atlamaz. Atlanan bir
-                // satır, o alanın hiç istenmediği izlenimi verirdi.
-                'value' => $company->field($field),
+                'value' => $value,
+                'href' => $value === null ? null : self::actionFor($field, $value),
             ];
         }
 
         return $rows;
+    }
+
+    /**
+     * Satırın DOKUNULABİLİR hâli — `mailto:` ve `tel:` (FF-240).
+     *
+     * ═══ NEDEN ═══
+     *
+     * Ölçülen boşluk: iletişim sayfasındaki telefon ve e-posta düz metindi.
+     * Telefonundan bakan bir restoran sahibi numarayı elle kopyalamak
+     * zorundaydı — ve `docs/136` §5'in kendi ölçüsüyle, kopyalanacak metin
+     * bir dokunma hedefi bile değildi. Bir iletişim sayfasında en sık
+     * yapılan iş aramaktır; onu iki adıma çıkarmak, sayfanın var olma
+     * sebebini zayıflatır.
+     *
+     * ═══ NEDEN YALNIZ İKİ ALAN ═══
+     *
+     * Adres bir harita bağlantısı OLMADI: harita sağlayıcısı bir dış
+     * kaynaktır, adresin o sağlayıcıda gerçekten bulunduğu ÖLÇÜLMEMİŞTİR
+     * ve bulunamayan bir adres "burası yok" demek olurdu.
+     *
+     * ═══ TELEFONDAKİ BOŞLUKLAR ═══
+     *
+     * `tel:` şeması boşluk kabul eder ama tarayıcılar arasında tutarlı
+     * değildir; RFC 3966 numarayı ayraçsız ister. Bu yüzden GÖRÜNEN değer
+     * sahibin yazdığı gibi kalır ve yalnız `href` sadeleşir: ziyaretçi
+     * okunur bir numara görür, telefon çevrilebilir bir numara alır.
+     */
+    private static function actionFor(string $field, string $value): ?string
+    {
+        if ($field === 'email') {
+            // Geçersiz bir adresi `mailto:` yapmak, boş bir taslak açan bir
+            // bağlantı üretirdi; öyle bir değer düz metin kalır.
+            return filter_var($value, FILTER_VALIDATE_EMAIL) === false ? null : 'mailto:'.$value;
+        }
+
+        if ($field === 'phone') {
+            $dialable = (string) preg_replace('/[^0-9+]/', '', $value);
+
+            // Rakam taşımayan bir "telefon" çevrilemez.
+            return preg_match('/[0-9]/', $dialable) === 1 ? 'tel:'.$dialable : null;
+        }
+
+        return null;
     }
 
     /**

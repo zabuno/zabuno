@@ -8,6 +8,14 @@ msgstr ""
 "X-Source-Locale: en\n"
 "X-Generator: scripts/i18n\n"
 
+#: site:site.about.agreements.body
+msgid "site.about.agreements.body"
+msgstr "A paid subscription is governed by the documents below. Every one of them is published on this site and can be read in full before any payment is made."
+
+#: site:site.about.agreements.heading
+msgid "site.about.agreements.heading"
+msgstr "The agreements that apply"
+
 #: site:site.about.heading
 msgid "site.about.heading"
 msgstr "About us"
@@ -23,6 +31,18 @@ msgstr "This page is not complete yet."
 #: site:site.about.lead
 msgid "site.about.lead"
 msgstr "Who sells Zabuno, what it is, how it is paid for and how to reach a person about it."
+
+#: site:site.about.next.heading
+msgid "site.about.next.heading"
+msgstr "Where to go next"
+
+#: site:site.about.next.help
+msgid "site.about.next.help"
+msgstr "Read the help articles"
+
+#: site:site.about.next.pricing
+msgid "site.about.next.pricing"
+msgstr "See what a subscription costs"
 
 #: site:site.about.payment.body
 msgid "site.about.payment.body"
@@ -120,9 +140,29 @@ msgstr "Cookie choice"
 msgid "site.consent.link"
 msgstr "Cookie Policy"
 
+#: site:site.contact.before.body
+msgid "site.contact.before.body"
+msgstr "The questions of the first day — importing a menu, printing QR codes, changing a price — are already written down and need no account to read."
+
+#: site:site.contact.before.cta
+msgid "site.contact.before.cta"
+msgstr "Open the help articles"
+
+#: site:site.contact.before.heading
+msgid "site.contact.before.heading"
+msgstr "Before you write"
+
 #: site:site.contact.email
 msgid "site.contact.email"
 msgstr "Your email"
+
+#: site:site.contact.email.hint
+msgid "site.contact.email.hint"
+msgstr "We reply to this address. Check it for typos."
+
+#: site:site.contact.errors.heading
+msgid "site.contact.errors.heading"
+msgstr "Your message was not sent"
 
 #: site:site.contact.form.heading
 msgid "site.contact.form.heading"
@@ -136,6 +176,10 @@ msgstr "Contact"
 msgid "site.contact.honeypot"
 msgstr "Leave this empty"
 
+#: site:site.contact.identity.body
+msgid "site.contact.identity.body"
+msgstr "These are the details of the company behind Zabuno. The e-mail address and the phone number below open directly from a phone. The same details are on the About page, because both pages read them from one place."
+
 #: site:site.contact.identity.heading
 msgid "site.contact.identity.heading"
 msgstr "Who you are writing to"
@@ -148,13 +192,29 @@ msgstr "Ask about pricing, a pilot, or anything that is in your way. We keep eve
 msgid "site.contact.message"
 msgstr "Your message"
 
+#: site:site.contact.message.hint
+msgid "site.contact.message.hint"
+msgstr "Up to 4000 characters."
+
 #: site:site.contact.name
 msgid "site.contact.name"
 msgstr "Your name"
 
+#: site:site.contact.privacy.body
+msgid "site.contact.privacy.body"
+msgstr "What you write is stored so that a person can read and answer it. How long it is kept and who can see it is written in the Privacy Notice."
+
+#: site:site.contact.required
+msgid "site.contact.required"
+msgstr "All three fields are required."
+
 #: site:site.contact.sent
 msgid "site.contact.sent"
 msgstr "Thank you — we received your message and will reply to the address you gave."
+
+#: site:site.contact.sent.heading
+msgid "site.contact.sent.heading"
+msgstr "We have your message"
 
 #: site:site.contact.sentReference
 msgid "site.contact.sentReference"
@@ -163,6 +223,22 @@ msgstr "Your reference is {reference}. Quote it if you write to us again."
 #: site:site.contact.submit
 msgid "site.contact.submit"
 msgstr "Send message"
+
+#: site:site.contact.tips.heading
+msgid "site.contact.tips.heading"
+msgstr "What helps us answer"
+
+#: site:site.contact.tips.restaurant
+msgid "site.contact.tips.restaurant"
+msgstr "The name of your restaurant and the e-mail address you sign in with."
+
+#: site:site.contact.tips.screen
+msgid "site.contact.tips.screen"
+msgstr "Which screen you were on and what you expected to happen."
+
+#: site:site.contact.tips.when
+msgid "site.contact.tips.when"
+msgstr "Roughly when it happened, and whether it happens every time."
 
 #: site:site.engineering.title
 msgid "site.engineering.title"
@@ -215,6 +291,18 @@ msgstr "Your menu behind a QR code, kept up to date by your own team."
 #: site:site.footer.terms
 msgid "site.footer.terms"
 msgstr "Terms"
+
+#: site:site.help.articles.heading
+msgid "site.help.articles.heading"
+msgstr "All help articles"
+
+#: site:site.help.stuck.body
+msgid "site.help.stuck.body"
+msgstr "If the answer is not here, write to us. Tell us which restaurant you are and which screen you were on."
+
+#: site:site.help.stuck.heading
+msgid "site.help.stuck.heading"
+msgstr "Still stuck?"
 
 #: site:site.home.contact.cta
 msgid "site.home.contact.cta"

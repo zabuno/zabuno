@@ -943,3 +943,353 @@
         align-items: baseline;
     }
 }
+
+/* --- Sayfa gövdesi: panel, eylem, form, dizin (FF-240) ------------------ */
+
+/*
+    ═══ NEDEN BU BLOK VAR ═══
+
+    İletişim, Hakkımızda ve Yardım girişi doğruydu ama ÇIPLAKTI: her sayfa
+    kendi kutusunu yardımcı sınıflardan yeniden kuruyordu ve kurduğu her
+    kutu bir öncekinden biraz farklı çıkıyordu. Kabuk (`.site-header`,
+    `.site-footer`) ve yasal belgeler (`.site-legal-*`) zaten kendi
+    ölçülerini tek yerde tutuyor; gövde sayfalarının böyle bir yeri yoktu.
+
+    ═══ DAR EKRAN TABAN — BÜYÜK HEDEF, SIKI BOŞLUK ═══
+
+    Bütün ölçüler 320 piksele göre yazıldı ve geniş ekranda AYNI kalıyor.
+    Kırılma noktası jetonu YOK (`MP-05`): genişleyen tek şey, `auto-fit`
+    ızgarasının kendiliğinden çoğalan sütun sayısıdır.
+
+    Dolgu BİR kez uygulanır (`docs/117` K2): panel kendi dolgusunu koyar,
+    içindeki bölümler koymaz. İç içe dolgu 320 pikselde ekranın yarısını
+    yerdi.
+*/
+
+/*
+    PANEL — gövdedeki bir düşüncenin sınırı.
+
+    Gölge YOK (`docs/136` §3.4 `--depth: 0`, Flat 2.0): vurgu tonla ve
+    geometriyle verilir. Ton `data-tone` ile değişir ve renk TEK BAŞINA
+    anlatmaz — başarı panelinin kendi başlığı, hata panelinin kendi başlığı
+    vardır, çünkü rengi göremeyen bir okuyucu için yeşil bir kenar hiçbir
+    şey demektir.
+*/
+.site-panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin: 0;
+    padding: var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+}
+
+.site-panel[data-tone='danger'] {
+    border-color: var(--border-danger);
+    border-inline-start-width: 3px;
+}
+
+/* Onay paneli: aynı geometri, kalın bir başlangıç kenarı. Ton değil, ağırlık
+   — başarı için ikinci bir renk jetonu icat etmek, marka paletinde karşılığı
+   olmayan bir değer yazmak olurdu. */
+.site-panel[data-tone='confirmed'] {
+    border-inline-start: 3px solid var(--fg);
+}
+
+.site-panel-title {
+    margin: 0;
+    font-size: var(--text-subsection);
+    line-height: var(--text-subsection--line-height);
+    font-weight: 600;
+}
+
+.site-panel[data-tone='danger'] .site-panel-title {
+    color: var(--fg-danger);
+}
+
+.site-panel p {
+    margin: 0;
+    line-height: 1.6;
+    color: var(--fg-secondary);
+}
+
+/* Panelin ana olgusu — referans numarası gibi, not alınacak tek satır. */
+.site-panel-fact {
+    font-weight: 600;
+    color: var(--fg);
+    overflow-wrap: anywhere;
+}
+
+/*
+    EYLEM BAĞLANTISI — düğme görünümlü, 44 piksel.
+
+    `.site-action` yalnız yüksekliği garanti eder ve gövde sayfalarında her
+    seferinde yanına dört yardımcı sınıf yazılıyordu. Burada geometri ve
+    kenar TEK yerde: bir gün 44 değişirse hepsi birlikte döner.
+
+    Metin AKIŞI içindeki bağlantı bu sınıfı ALMAZ ve almamalı — WCAG 2.2
+    ölçüt 2.5.8 onları muaf tutar ve 44 piksele büyütmek satır aralığını
+    kırar (`docs/136` §8.1).
+*/
+.site-cta {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    min-height: var(--control-height);
+    padding-inline: var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    color: var(--fg);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.site-cta:hover {
+    background: var(--surface-hover);
+}
+
+.site-cta:focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: 2px;
+}
+
+/*
+    Sayfanın ASIL eylemi (formu göndermek). Marka sarısının tek doğru
+    mürekkebi `--color-action-fg`; sarı üstüne beyaz ~1.75:1 idi (FF-125).
+*/
+.site-cta[data-emphasis='true'] {
+    border-color: var(--color-action);
+    background: var(--color-action);
+    color: var(--color-action-fg);
+}
+
+.site-cta[data-emphasis='true']:hover {
+    /* Vurgulu düğme tonunu KORUR: `--surface-hover` onu sayfanın zeminine
+       çevirir ve düğme bir anlığına kaybolurdu. */
+    background: var(--color-action);
+    text-decoration: underline;
+}
+
+/*
+    DOKUNULABİLİR KİMLİK SATIRI (FF-240) — `mailto:` ve `tel:`.
+
+    Değerin kendisi bağlantıdır ve hedef 44 piksel taşır. `inline-flex`
+    değil `flex` DEĞİL: satır kendi genişliği kadar olmalı, yoksa uzun bir
+    adres satırının yanındaki boşluk da tıklanabilir görünürdü.
+*/
+.site-company-identity-action {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--control-height);
+    color: var(--fg);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    overflow-wrap: anywhere;
+}
+
+.site-company-identity-action:focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: 2px;
+}
+
+/* --- Form alanı --------------------------------------------------------- */
+
+/*
+    ETİKET, GİRDİ, İPUCU — bu sırayla ve HEP birlikte.
+
+    İpucu girdinin ALTINDA değil ÜSTÜNDE durmaz: yazmaya başlamadan önce
+    okunmalı, ama etiketle girdinin arasına girmemeli. `aria-describedby`
+    ile bağlanır, yani ekran okuyucu onu alanın parçası olarak okur.
+*/
+.site-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.site-field-label {
+    font-weight: 600;
+}
+
+.site-field-hint {
+    margin: 0;
+    color: var(--fg-secondary);
+    line-height: 1.5;
+}
+
+/*
+    GİRDİ GEOMETRİSİ — 44 piksel, ölçüyle sabit.
+
+    Yükseklik dolgudan TÜRETİLMEZ: dolgu artı satır yüksekliği hesabı yazı
+    tipi değiştiği gün sessizce 42 piksele düşer ve kimse fark etmez. Taban
+    açıkça yazılır.
+
+    `font: inherit` — bir tarayıcının kendi 13 piksellik form yazı tipi,
+    deponun "gövde tabanı 1rem'in altına inmez" kararını (`docs/118` E3)
+    tam olarak en çok okunması gereken yerde bozardı.
+*/
+.site-control {
+    width: 100%;
+    min-height: var(--control-height);
+    padding-block: var(--space-2);
+    padding-inline: var(--space-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    color: var(--fg);
+    font: inherit;
+}
+
+.site-control:focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: -1px;
+}
+
+/* Çok satırlı alan yeniden boyutlandırılabilir kalır ama YANA değil: yatay
+   büyüyen bir metin kutusu 320 pikselde sayfayı kaydırırdı. */
+textarea.site-control {
+    resize: vertical;
+}
+
+/*
+    SAYILI LİSTE — "ne yazarsan cevap gelir" gibi kısa, okunur maddeler.
+
+    Madde işareti kaldırılmadı: bir liste liste gibi görünmeli. Ama iç
+    dolgusu mantıksal yöndedir (`padding-inline-start`), yani sağdan sola
+    bir dilde de doğru tarafta durur.
+*/
+.site-list {
+    margin: 0;
+    padding-inline-start: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    color: var(--fg-secondary);
+    line-height: 1.6;
+}
+
+/* --- Sonraki adım bandı ------------------------------------------------- */
+
+/*
+    Sayfanın sonundaki hedefler. `auto-fit` ile: 320 pikselde tek sütun,
+    ekran genişledikçe kendiliğinden çoğalır — kırılma noktası jetonu
+    YASAK (`MP-05`) ve zaten gereksiz.
+*/
+.site-next {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: var(--space-2);
+}
+
+.site-next > .site-cta {
+    align-self: stretch;
+    justify-content: center;
+    text-align: center;
+}
+
+/* --- Yardım GİRİŞİ (FF-240) --------------------------------------------- */
+
+/*
+    ═══ MAKALEYİ SARAN YÜZEY ═══
+
+    `/help` bir MAKALEDİR ve öyle kalır (`docs/89`): panelin ilk-kez
+    ipuçları ona ve onun çıpalarına bağlanıyor. Eksik olan şey makale değil,
+    makalenin ETRAFIYDI — okuyucu başka ne yazıldığını göremiyordu ve
+    aradığını bulamadığında ne yapacağını bilmiyordu.
+
+    ═══ DİZİN NEDEN KAPALI BAŞLIYOR ═══
+
+    Altbilginin içerik katıyla aynı gerekçe (`docs/136` §6.4): dar ekranda
+    çok satırlı bir liste, ilk ekranı GERÇEK içerikten önce doldurur.
+    `<details>` tarayıcının kendi açılır kapanır düğmesidir — klavyeyle
+    çalışır, durumunu ekran okuyucuya söyler, betiksiz açılır ve içindeki
+    her bağlantı sunucu HTML'inde zaten durur (`docs/118` E8).
+
+    Geniş ekranda da kapalı başlar: TEK kod yolu (`docs/118` E2).
+*/
+.site-help-index {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+}
+
+.site-help-index-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    min-height: var(--control-height);
+    padding-inline: var(--space-3);
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+}
+
+.site-help-index-toggle::-webkit-details-marker {
+    display: none;
+}
+
+.site-help-index-toggle:focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: -2px;
+}
+
+.site-help-index[open] > .site-help-index-toggle .site-icon {
+    transform: rotate(180deg);
+}
+
+.site-help-index-list {
+    list-style: none;
+    margin: 0;
+    padding: 0 var(--space-2) var(--space-2);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+/*
+    MAKALE SATIRI — başlık ve tek satırlık tarif, TEK hedef içinde.
+
+    İkisini iki ayrı bağlantı yapmak, aynı yere giden iki komşu hedef
+    üretirdi; `scripts/mobile-ux-audit` bunu haklı olarak "ayrım" kusuru
+    sayar. Bir satır, bir hedef.
+*/
+.site-help-article {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-height: var(--control-height);
+    padding: var(--space-2);
+    border-radius: var(--radius-md);
+    color: var(--fg);
+}
+
+.site-help-article:hover {
+    background: var(--surface-hover);
+}
+
+.site-help-article:focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: -2px;
+}
+
+/* Okunan makale kendi listesinde işaretlidir — `aria-current` ekran
+   okuyucuya, kalın kenar göze söyler. Renk tek başına anlatmaz. */
+.site-help-article[aria-current='page'] {
+    background: var(--surface-hover);
+    border-inline-start: 3px solid var(--fg);
+}
+
+.site-help-article-title {
+    font-weight: 600;
+}
+
+.site-help-article-summary {
+    color: var(--fg-secondary);
+    line-height: 1.5;
+}

@@ -8,6 +8,14 @@ msgstr ""
 "X-Source-Locale: en\n"
 "X-Generator: scripts/i18n\n"
 
+#: site:site.about.agreements.body
+msgid "site.about.agreements.body"
+msgstr ""
+
+#: site:site.about.agreements.heading
+msgid "site.about.agreements.heading"
+msgstr ""
+
 #: site:site.about.heading
 msgid "site.about.heading"
 msgstr ""
@@ -22,6 +30,18 @@ msgstr ""
 
 #: site:site.about.lead
 msgid "site.about.lead"
+msgstr ""
+
+#: site:site.about.next.heading
+msgid "site.about.next.heading"
+msgstr ""
+
+#: site:site.about.next.help
+msgid "site.about.next.help"
+msgstr ""
+
+#: site:site.about.next.pricing
+msgid "site.about.next.pricing"
 msgstr ""
 
 #: site:site.about.payment.body
@@ -120,8 +140,28 @@ msgstr ""
 msgid "site.consent.link"
 msgstr ""
 
+#: site:site.contact.before.body
+msgid "site.contact.before.body"
+msgstr ""
+
+#: site:site.contact.before.cta
+msgid "site.contact.before.cta"
+msgstr ""
+
+#: site:site.contact.before.heading
+msgid "site.contact.before.heading"
+msgstr ""
+
 #: site:site.contact.email
 msgid "site.contact.email"
+msgstr ""
+
+#: site:site.contact.email.hint
+msgid "site.contact.email.hint"
+msgstr ""
+
+#: site:site.contact.errors.heading
+msgid "site.contact.errors.heading"
 msgstr ""
 
 #: site:site.contact.form.heading
@@ -136,6 +176,10 @@ msgstr ""
 msgid "site.contact.honeypot"
 msgstr ""
 
+#: site:site.contact.identity.body
+msgid "site.contact.identity.body"
+msgstr ""
+
 #: site:site.contact.identity.heading
 msgid "site.contact.identity.heading"
 msgstr ""
@@ -148,12 +192,28 @@ msgstr ""
 msgid "site.contact.message"
 msgstr ""
 
+#: site:site.contact.message.hint
+msgid "site.contact.message.hint"
+msgstr ""
+
 #: site:site.contact.name
 msgid "site.contact.name"
 msgstr ""
 
+#: site:site.contact.privacy.body
+msgid "site.contact.privacy.body"
+msgstr ""
+
+#: site:site.contact.required
+msgid "site.contact.required"
+msgstr ""
+
 #: site:site.contact.sent
 msgid "site.contact.sent"
+msgstr ""
+
+#: site:site.contact.sent.heading
+msgid "site.contact.sent.heading"
 msgstr ""
 
 #: site:site.contact.sentReference
@@ -162,6 +222,22 @@ msgstr ""
 
 #: site:site.contact.submit
 msgid "site.contact.submit"
+msgstr ""
+
+#: site:site.contact.tips.heading
+msgid "site.contact.tips.heading"
+msgstr ""
+
+#: site:site.contact.tips.restaurant
+msgid "site.contact.tips.restaurant"
+msgstr ""
+
+#: site:site.contact.tips.screen
+msgid "site.contact.tips.screen"
+msgstr ""
+
+#: site:site.contact.tips.when
+msgid "site.contact.tips.when"
 msgstr ""
 
 #: site:site.engineering.title
@@ -214,6 +290,18 @@ msgstr ""
 
 #: site:site.footer.terms
 msgid "site.footer.terms"
+msgstr ""
+
+#: site:site.help.articles.heading
+msgid "site.help.articles.heading"
+msgstr ""
+
+#: site:site.help.stuck.body
+msgid "site.help.stuck.body"
+msgstr ""
+
+#: site:site.help.stuck.heading
+msgid "site.help.stuck.heading"
 msgstr ""
 
 #: site:site.home.contact.cta

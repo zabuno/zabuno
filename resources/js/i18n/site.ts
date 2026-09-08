@@ -282,6 +282,44 @@ export const siteTranslations = {
        yazdığını bilmeyen ziyaretçi yazmaz. */
     'site.contact.identity.heading': 'Who you are writing to',
     'site.contact.form.heading': 'Send us a message',
+    /*
+        FF-240 — İLETİŞİM SAYFASININ OLGUNLUĞU.
+
+        Ölçülen boşluk: sayfa doğruydu ama SESSİZDİ. Ziyaretçi kime yazdığını
+        görüyordu, ama telefona dokunamıyordu (numara düz metindi), ne
+        yazması gerektiğini bilmiyordu, cevabı zaten yazılmış bir soruyu
+        sormaktan kaçınamıyordu ve yazdığı şeyin ne olacağını okuyamıyordu.
+
+        Buradaki hiçbir cümle bir hız ya da kalite sözü VERMEZ: yanıt
+        taahhüdü ayrı bir anahtardır (`site.support.commitment`) ve yalnız
+        sahibi bir sayı girdiyse çizilir.
+    */
+    'site.contact.identity.body':
+        'These are the details of the company behind Zabuno. The e-mail address and the phone number below open directly from a phone. The same details are on the About page, because both pages read them from one place.',
+    // Formdan ÖNCE: cevabı zaten yazılmış bir soruyu sormak, cevabı
+    // beklemek demektir.
+    'site.contact.before.heading': 'Before you write',
+    'site.contact.before.body':
+        'The questions of the first day — importing a menu, printing QR codes, changing a price — are already written down and need no account to read.',
+    'site.contact.before.cta': 'Open the help articles',
+    // Bir destek mesajının cevaplanabilmesi için gereken üç olgu. Bunlar
+    // bir SÖZ değil, bir ISTEK: eksikse yazışma bir tur uzar.
+    'site.contact.tips.heading': 'What helps us answer',
+    'site.contact.tips.restaurant':
+        'The name of your restaurant and the e-mail address you sign in with.',
+    'site.contact.tips.screen': 'Which screen you were on and what you expected to happen.',
+    'site.contact.tips.when': 'Roughly when it happened, and whether it happens every time.',
+    // Alan altı ipucu: hatayı gönderdikten SONRA değil, yazarken söyler.
+    'site.contact.email.hint': 'We reply to this address. Check it for typos.',
+    'site.contact.message.hint': 'Up to 4000 characters.',
+    'site.contact.required': 'All three fields are required.',
+    // Hata bandının BAŞLIĞI: "bir şeyler ters gitti" değil, ne olmadığı.
+    'site.contact.errors.heading': 'Your message was not sent',
+    'site.contact.sent.heading': 'We have your message',
+    /* Yazdığı şeye ne olacağı, yazmadan ÖNCE. Bağlantı yaşayan bir rotadır
+       (`/privacy`) ve etiketi altbilgininkiyle aynı kaynaktan gelir. */
+    'site.contact.privacy.body':
+        'What you write is stored so that a person can read and answer it. How long it is kept and who can see it is written in the Privacy Notice.',
 
     // --- Hakkımızda (FF-216) ---------------------------------------------
     /*
@@ -318,6 +356,24 @@ export const siteTranslations = {
     'site.about.incomplete.body':
         'The legal identity of the seller has not been published yet, so the details below are missing. Until they are entered, use the contact form to reach us.',
 
+    /*
+        FF-240 — HAKKIMIZDA'NIN OLGUNLUĞU.
+
+        Eklenen iki bölümün ikisi de ÖLÇÜLEBİLİR: sözleşme listesi
+        altbilgideki yasal grubun AYNI kaynağından (`SiteNavigation`) gelir,
+        yani her satırı 200 döner ve hiçbiri elle yazılmaz. "Sonraki adım"
+        bandındaki üç hedef de bugün yaşayan rotadır.
+
+        ŞİŞİRME YOK: bu iki bölüm tek bir yeni İDDİA taşımaz — var olan ve
+        okunabilen belgelere işaret eder.
+    */
+    'site.about.agreements.heading': 'The agreements that apply',
+    'site.about.agreements.body':
+        'A paid subscription is governed by the documents below. Every one of them is published on this site and can be read in full before any payment is made.',
+    'site.about.next.heading': 'Where to go next',
+    'site.about.next.pricing': 'See what a subscription costs',
+    'site.about.next.help': 'Read the help articles',
+
     /* Fiyatın yanında, ödeme adımından ÖNCE (FF-216). */
     'site.pricing.paymentMethods':
         'Paid plans are paid by card through the payment service provider Iyzico; no other payment method is offered.',
@@ -329,6 +385,23 @@ export const siteTranslations = {
     */
     'site.contact.sentReference':
         'Your reference is {reference}. Quote it if you write to us again.',
+
+    // --- Yardım GİRİŞİ (FF-240) ------------------------------------------
+    /*
+        Makalenin KENDİSİ katalogda değildir ve olmayacaktır (`docs/89`):
+        belge, arayüz etiketi değil. Buradaki dizeler makaleyi SARAN yüzeye
+        aittir — dizin bandı ve çıkmaz sokak paneli.
+
+        Dizin bandının BAŞLIKLARI da katalogda değil: her makalenin adı ve
+        tek satırlık tarifi makalenin KENDİ `@section` bildiriminden okunur
+        (`HelpDirectory`). Makale başına bir katalog anahtarı yazmak, her
+        yeni makale için bir kod değişikliği ve bir çeviri borcu üretirdi —
+        altbilginin içerik katıyla aynı gerekçe (`docs/136` §6.2).
+    */
+    'site.help.articles.heading': 'All help articles',
+    'site.help.stuck.heading': 'Still stuck?',
+    'site.help.stuck.body':
+        'If the answer is not here, write to us. Tell us which restaurant you are and which screen you were on.',
 
     // --- Destek kanalı (FF-201, `docs/125`) --------------------------------
     /*

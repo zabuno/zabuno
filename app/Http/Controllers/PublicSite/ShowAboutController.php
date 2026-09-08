@@ -41,6 +41,7 @@ final class ShowAboutController extends Controller
             'companyRows' => CompanyIdentity::rows($company, $shared['st']),
             'companyComplete' => $company->isComplete(),
             'sellerIdentityMissing' => ! $company->isComplete(),
+            'agreements' => self::agreements($shared['nav']),
         ]);
 
         $response = response($view);
@@ -50,5 +51,46 @@ final class ShowAboutController extends Controller
         }
 
         return $response;
+    }
+
+    /**
+     * Bu satışı bağlayan belgeler — ELLE YAZILMAZ (FF-240).
+     *
+     * ═══ NEDEN GEZİNTİDEN SÜZÜLÜYOR ═══
+     *
+     * Ödeme kuruluşunun üye iş yeri incelemesi "hangi sözleşme geçerli"
+     * sorusunu bu sayfada arar ve cevabın bir bağlantı listesi olması
+     * gerekiyor. Listeyi buraya elle yazmak, deponun aynı listeyi ikinci kez
+     * tutması demekti: altbilgiye bir belge eklendiği gün burası sessizce
+     * eksik kalır, bir belge kaldırıldığı gün burası 404'e bağlanırdı.
+     *
+     * Kaynak bu yüzden `SiteNavigation`ın yasal grubudur — altbilgiyle AYNI
+     * dizi, aynı etiketler. Kapının kendisi de oradan miras alınır:
+     * *altbilgideki her bağlantı 200 döner* (`docs/136` §6.3, `MP-06`).
+     *
+     * Grup bir gün boşalırsa liste boş döner ve sayfa o bölümü HİÇ çizmez;
+     * başlığı çizilip altı boş kalan bir bölüm, olmayan bir belgenin sözünü
+     * vermektir.
+     *
+     * @param  array<string, mixed>  $nav  `SiteShell::context()` çıktısındaki gezinti.
+     * @return list<array{label: string, href: string}>
+     */
+    private static function agreements(array $nav): array
+    {
+        /** @var list<array{id: string, label: string, items: list<array{label: string, href: string, emphasis: bool}>}> $footer */
+        $footer = $nav['footer'] ?? [];
+
+        foreach ($footer as $group) {
+            if ($group['id'] !== 'legal') {
+                continue;
+            }
+
+            return array_map(
+                static fn (array $item): array => ['label' => $item['label'], 'href' => $item['href']],
+                $group['items'],
+            );
+        }
+
+        return [];
     }
 }
