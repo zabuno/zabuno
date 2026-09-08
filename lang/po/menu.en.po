@@ -320,10 +320,6 @@ msgstr "The photo could not be read. You can still add items by hand."
 msgid "menu.item.ai.import.fallback"
 msgstr "Read by a backup provider."
 
-#: menu:menu.item.ai.import.media.empty
-msgid "menu.item.ai.import.media.empty"
-msgstr "No processed photo is available yet. Upload one on the Media page (slot: Import source) first."
-
 #: menu:menu.item.ai.import.media.label
 msgid "menu.item.ai.import.media.label"
 msgstr "Choose the photos to read"
@@ -423,10 +419,6 @@ msgstr "A short line the guest reads under the name. Up to 500 characters."
 #: menu:menu.item.description.label
 msgid "menu.item.description.label"
 msgstr "Description"
-
-#: menu:menu.item.image.empty
-msgid "menu.item.image.empty"
-msgstr "No processed photo is available yet. Upload one on the Media page first."
 
 #: menu:menu.item.image.label
 msgid "menu.item.image.label"
@@ -539,6 +531,34 @@ msgstr "Show {name} on the menu"
 #: menu:menu.loading
 msgid "menu.loading"
 msgstr "Loading menu…"
+
+#: menu:menu.media.empty
+msgid "menu.media.empty"
+msgstr "No processed photo is available yet. Upload one on the Media page (slot: {slot}) first."
+
+#: menu:menu.media.empty.readOnly
+msgid "menu.media.empty.readOnly"
+msgstr "No processed photo is available yet. Someone with media access has to upload one on the Media page (slot: {slot})."
+
+#: menu:menu.media.link
+msgid "menu.media.link"
+msgstr "Open the Media page"
+
+#: menu:menu.media.requirement
+msgid "menu.media.requirement"
+msgstr "That slot needs at least {width}×{height} px and a {aspect} frame."
+
+#: menu:menu.media.requirement.noAspect
+msgid "menu.media.requirement.noAspect"
+msgstr "That slot needs at least {width}×{height} px."
+
+#: menu:menu.media.slot.itemImage
+msgid "menu.media.slot.itemImage"
+msgstr "List/card/detail item"
+
+#: menu:menu.media.slot.menuImportSource
+msgid "menu.media.slot.menuImportSource"
+msgstr "Import source"
 
 #: menu:menu.move.down
 msgid "menu.move.down"

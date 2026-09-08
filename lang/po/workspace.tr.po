@@ -3560,6 +3560,18 @@ msgstr "Özel dosyalar için imzalı bağlantı"
 msgid "workspace.media.settings.security.signedLink.on"
 msgstr "Aslın herkese açık bir adresi yoktur. İndirmek için, on dakika sonra çalışmayı bırakan imzalı bir bağlantı gerekir."
 
+#: workspace:workspace.media.settings.security.state.on
+msgid "workspace.media.settings.security.state.on"
+msgstr ""
+
+#: workspace:workspace.media.settings.security.state.partial
+msgid "workspace.media.settings.security.state.partial"
+msgstr ""
+
+#: workspace:workspace.media.settings.security.state.unavailable
+msgid "workspace.media.settings.security.state.unavailable"
+msgstr ""
+
 #: workspace:workspace.media.settings.security.virusScan
 msgid "workspace.media.settings.security.virusScan"
 msgstr "Virüs taraması"
@@ -3787,6 +3799,10 @@ msgstr "Ürün görseli"
 #: workspace:workspace.media.upload.field.assetSlot.logo
 msgid "workspace.media.upload.field.assetSlot.logo"
 msgstr "Logo"
+
+#: workspace:workspace.media.upload.field.assetSlot.menuImportSource
+msgid "workspace.media.upload.field.assetSlot.menuImportSource"
+msgstr ""
 
 #: workspace:workspace.media.upload.field.assetSlot.ogImage
 msgid "workspace.media.upload.field.assetSlot.ogImage"

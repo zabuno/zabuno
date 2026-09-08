@@ -168,6 +168,10 @@ msgstr "Send message"
 msgid "site.engineering.title"
 msgstr "Zabuno — Engineering"
 
+#: site:site.footer.contentMenus
+msgid "site.footer.contentMenus"
+msgstr "Browse all pages"
+
 #: site:site.footer.cookies
 msgid "site.footer.cookies"
 msgstr "Cookie Policy"

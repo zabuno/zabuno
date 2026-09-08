@@ -37,7 +37,7 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1705;
+const FROZEN_LEGACY_KEY_COUNT = 1709;
 
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
@@ -247,8 +247,31 @@ const FROZEN_LEGACY_KEY_COUNT = 1705;
 // ekranda yazılı.
 // ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
 // msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
+// FF-224: 1705 → 1706, TEK anahtar ve yeni bir yüzey değil — ADI OLMAYAN
+// BİR YUVANIN adı. `menuImportSource`, yükleme sihirbazının açılır
+// listesinde ZATEN duruyordu (uç nokta onu döndürüyor, çünkü sihirbazın
+// seçtirebildiği biçimleri taşıyor) ama etiketi hiç yazılmamıştı: `t()`
+// eksik anahtarı KENDİSİ olarak döndürür, yani sahip listede
+// "workspace.media.upload.field.assetSlot.menuImportSource" okuyordu.
+// Bunu asıl pahalı yapan, ürünün BAŞKA bir ekranda o yuvayı adıyla
+// istemesiydi ("önce Medya sayfasından yükleyin — yuva: Import source"):
+// tarif edilen yol, tarif edildiği hâliyle yürünemiyordu. Sayı bir ekran
+// büyüdüğü için değil, var olan bir seçeneğin okunabilir olması için arttı;
+// `SlotNameIsReadableTest` bundan sonra adsız yuvayı hiç doğurtmuyor.
+// ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
+// msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
+// FF-225: Medya > Ayarlar'daki güvenlik önlemleri ANAHTAR olmaktan çıktı
+// (sahibin kararı, 2026-09-08: "switch butonlar saçma, UI hatası"). Anahtar
+// hem "değiştirebilirsin" diyordu hem de altında "kapatılamaz" yazıyordu;
+// kullanıcı dokunuyor, hiçbir şey olmuyordu. Anahtarın tek bakışta
+// cevapladığı soru ("açık mı?") kaybolmasın diye hâl artık KELİMEDİR ve üç
+// anahtar bunun için doğdu: "On", "Partly on", "Not running here". Dördüncü
+// bir "Off" anahtarı YOK — bu dört önlemin kapalı diye bir hâli yok; olmayan
+// bir durumu adlandırmak, bir gün onu mümkün sanmaya yol açardı.
+// ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
+// msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    'c8ce2a3ec0eba1d1150b9d4b4e7467e4d164bb4a1c4ebd546f1708d2cbdcfe37';
+    '7744a53cf12f231aa0b3f9e59b0489ab74a34cb96645259be53edffd94c58f45';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
