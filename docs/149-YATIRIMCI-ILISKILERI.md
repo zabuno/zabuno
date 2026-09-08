@@ -140,9 +140,10 @@ bağlamının maliyeti hâlâ ölçülmedi, `docs/146` §11), dekoratif her katm
 `/investors/contact` gövdesinde. Bir fiyatın ve bir muhatap adresinin okunduğu
 yer, dikkatin bölünmemesi gereken yerdir.
 
-Ağırlık: kurumsal stil **+115 bayt gzip** (36.405 → 36.520; tavan 40.960).
-Betik **0 bayt**: dört sayfanın tamamı motorun var olan dağarcığını kullanıyor
-ve tek satır JavaScript eklemedi.
+Ağırlık: kurumsal stil **+115 bayt gzip** (ölçüldü: aynı ağaçta §6 bloğu
+olmadan 36.405, onunla 36.520; tavan 40.960). Betik **0 bayt**: dört sayfanın
+tamamı motorun var olan dağarcığını kullanıyor ve tek satır JavaScript
+eklemedi (`siteEntryGzipBytes` 4.700, değişmedi).
 
 ---
 
@@ -174,9 +175,24 @@ markup tek bir bulgu üretmedi.
    `scene-perf-gate`, `scene-visual-gate` ve `mobile-ux-audit` hâlâ elle
    çalıştırılıyor (`docs/146` §11 madde 4). Bu paket o borcu kapatmadı;
    gizlemesi daha kötü olurdu.
-3. **Görsel gerileme tabanı.** `scene-visual.baseline.json` yalnız dört eski
-   yüzeyi tanıyor; yatırımcı sayfaları için imza üretilmedi, yani bu dört
-   sayfada "hareketsiz olması gereken hâller bire bir sabit mi" sorusu
-   **sorulmadı**.
+3. **Görsel gerileme tabanı — ve zaten kırık olduğu ölçüldü.**
+   `scene-visual.baseline.json` yalnız dört eski yüzeyi tanıyor; yatırımcı
+   sayfaları için imza **üretilmedi**.
+
+   Üretilmemesinin sebebi ölçüldü: kapı bu makinede **bu paketten bağımsız**
+   olarak kırık. `origin/main`in kendisi (400e00a9) ayrı bir çalışma ağacında
+   derlenip ölçüldüğünde **aynı 24 bulgu, aynı sapma değerleriyle** (home-320
+   74/255, pricing-1280 33/255, …) çıkıyor. Yani sapma bu paketin ürettiği bir
+   gerileme değil; ya taban yazıldıktan sonra birleşen paketlerin ya da
+   `docs/146` §11 madde 5'in açıkça bilinmez bıraktığı şeyin — başka bir
+   rasterleştiricide 8/255 toleransının yetip yetmediğinin — sonucu.
+
+   `--update` ile tabanı bu makinede yeniden yazmak dört ESKİ yüzeyin sapmasını
+   da sessizce yutardı; başka bir paketin sinyalini silmek bu paketin işi değil.
+   Bu yüzden taban **dokunulmadı** ve yatırımcı sayfaları listeye eklenmedi.
+
+   Kapının DAVRANIŞSAL iddiası her iki koşuda da yeşil: hareketsiz olması
+   gereken on altı görünümün hiçbirinde iki kare arasında fark yok
+   (`still` ihlali **sıfır**).
 4. **Türkçe.** Çeviri kilidi kapalı (`docs/120` §7). Dört sayfanın metni
    İngilizce kaynak katalogda; `tr` yuvası boş doğdu ve doldurulmadı.
