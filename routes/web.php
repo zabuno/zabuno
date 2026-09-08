@@ -32,6 +32,7 @@ use App\Http\Controllers\Team\ShowTeamInvitationController;
 use App\Http\Controllers\WorkspaceAppController;
 use App\Http\Middleware\EnsurePlatformSuperAdmin;
 use App\Http\Responses\GuestDeadEnd;
+use App\Support\Localization\HelpLibrary;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -51,14 +52,22 @@ Route::get('/', [FoundationStatusController::class, '__invoke'])->name('foundati
 Route::get('/pricing', [FoundationStatusController::class, '__invoke'])->name('public.pricing');
 
 /*
-    "Tıkanırsam kime sorarım?" (`docs/88`).
+    YARDIM MERKEZİ (`docs/89`, `docs/107` Faz 2.8).
 
-    Gönderim HIZ SINIRLI: form herkese açık ve oturum istemiyor, dolayısıyla
-    sınırsız gönderim bir tabloyu doldurmanın en ucuz yolu olurdu.
+    `/help` giriş makalesidir ve öyle KALIR: panelin ilk-kez ipuçları ona ve
+    onun çıpalarına bağlanıyor. Diğer makaleler `/help/<slug>` altında.
+
+    Rotalar LİTERAL — desenle (`/help/{article}`) yazılmadılar. Sebep
+    ölçülebilirlik: statik site dışa aktarımı desen taşıyan bir rotayı bir
+    sayfa saymaz, dolayısıyla desenli yazılsalardı makaleler 320 piksel
+    ölçümüne ve masterpage kapılarına hiç girmezdi.
+
+    Oturum İSTEMEZ: tıkanan biri oturum açamıyor olabilir.
 */
-// "İlk 15 dakika" — menüyü aktarmak, karekod basmak, fiyat değiştirmek.
-// Oturum İSTEMEZ: tıkanan biri oturum açamıyor olabilir (`docs/89`).
-Route::get('/help', ShowHelpController::class)->name('public.help');
+foreach (HelpLibrary::ARTICLES as $helpArticle) {
+    Route::get(HelpLibrary::pathOf($helpArticle), ShowHelpController::class)
+        ->name($helpArticle === HelpLibrary::ENTRY ? 'public.help' : 'public.help.'.$helpArticle);
+}
 
 /*
     "Kimden alışveriş yapıyorum?" (FF-216).
@@ -69,6 +78,12 @@ Route::get('/help', ShowHelpController::class)->name('public.help');
 */
 Route::get('/about', ShowAboutController::class)->name('public.about');
 
+/*
+    "Tıkanırsam kime sorarım?" (`docs/88`).
+
+    Gönderim HIZ SINIRLI: form herkese açık ve oturum istemiyor, dolayısıyla
+    sınırsız gönderim bir tabloyu doldurmanın en ucuz yolu olurdu.
+*/
 Route::get('/contact', ShowContactFormController::class)->name('public.contact');
 Route::post('/contact', StoreContactMessageController::class)
     ->middleware('throttle:5,1')

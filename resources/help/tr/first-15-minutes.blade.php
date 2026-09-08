@@ -76,6 +76,44 @@
 
     <hr class="border-border" role="separator">
 
+    <section id="help-more" aria-labelledby="help-more-heading" class="flex flex-col gap-3">
+        <h2 id="help-more-heading" class="text-2xl font-bold">Daha fazla yardım</h2>
+        <p class="text-fg-secondary">
+            Her biri, bugün var olan bir ekranla ilgili tek bir soruyu cevaplar.
+        </p>
+        <ul class="flex flex-col gap-3 text-fg-secondary">
+            <li>
+                <a class="flex min-h-[var(--density-hit-area-min)] items-center underline underline-offset-2" href="/help/add-your-restaurant">Where do I put my restaurant name and address?</a>
+            </li>
+            <li>
+                <a class="flex min-h-[var(--density-hit-area-min)] items-center underline underline-offset-2" href="/help/nothing-changed-for-my-guests">I changed the menu but my guests still see the old one. Why?</a>
+            </li>
+            <li>
+                <a class="flex min-h-[var(--density-hit-area-min)] items-center underline underline-offset-2" href="/help/table-cards-and-areas">How do I print a card for every table?</a>
+            </li>
+            <li>
+                <a class="flex min-h-[var(--density-hit-area-min)] items-center underline underline-offset-2" href="/help/a-photo-on-a-dish">How do I put a photo on a dish?</a>
+            </li>
+            <li>
+                <a class="flex min-h-[var(--density-hit-area-min)] items-center underline underline-offset-2" href="/help/menus-that-change-during-the-day">How do I serve a breakfast menu and a dinner menu?</a>
+            </li>
+            <li>
+                <a class="flex min-h-[var(--density-hit-area-min)] items-center underline underline-offset-2" href="/help/who-can-do-what">How do I let my staff in, and what can each one do?</a>
+            </li>
+            <li>
+                <a class="flex min-h-[var(--density-hit-area-min)] items-center underline underline-offset-2" href="/help/guest-ratings">A guest scored a dish badly. Can I remove it?</a>
+            </li>
+            <li>
+                <a class="flex min-h-[var(--density-hit-area-min)] items-center underline underline-offset-2" href="/help/plan-and-invoices">How do I change or cancel my plan, and where is my invoice?</a>
+            </li>
+        </ul>
+        <p class="text-fg-secondary">
+            Makaleler İngilizcedir; ürünün kendi dili de İngilizce. Her makale, o ekranda NE YAPILAMADIĞINI da yazar.
+        </p>
+    </section>
+
+    <hr class="border-border" role="separator">
+
     <p class="text-fg-secondary">
         Önünüzde başka bir şey mi var?
         <a class="underline underline-offset-2" href="/contact">Bize yazın</a>.
