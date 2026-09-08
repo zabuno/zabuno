@@ -6,7 +6,7 @@
      uygulanır (`.site-measure-prose`): iç içe kapların dolgusu birikirse
      320 pikselde metin dar bir şeride sıkışır. --}}
 <main id="main-content" class="site-page">
-    {{-- SAHNE, SAKİN KİPTE (`docs/147` §3).
+    {{-- SAHNE, SAKİN KİPTE (`docs/146` §12).
 
          Bu bir makale sayfası: buraya gelen kişi keşfetmiyor, CEVAP ARIYOR.
          Bandın markup'ı ortak parçadan geliyor (`public.partials.prologue`) —
@@ -91,7 +91,7 @@
 
     <p class="text-fg-secondary">
         Önünüzde başka bir şey mi var?
-        <a class="underline underline-offset-2" href="/contact">Bize yazın</a>.
+        <a class="site-inline-action" href="/contact">Bize yazın</a>.
     </p>
     </div>
 </main>

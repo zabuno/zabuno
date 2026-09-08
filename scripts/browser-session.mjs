@@ -231,9 +231,14 @@ export function cdp(ws, method, params = {}) {
             if (message.id !== id) return;
 
             ws.removeEventListener('message', onMessage);
-            message.error
-                ? reject(new Error(`${method}: ${message.error.message}`))
-                : resolve(message.result);
+
+            if (message.error) {
+                reject(new Error(`${method}: ${message.error.message}`));
+
+                return;
+            }
+
+            resolve(message.result);
         };
 
         ws.addEventListener('message', onMessage);

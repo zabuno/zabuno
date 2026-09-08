@@ -1,4 +1,4 @@
-# 146 — Sahne motoru: kurumsal sitenin hareketi (Döngü 2/3)
+# 146 — Sahne motoru: kurumsal sitenin hareketi (Döngü 3/3)
 
 **Sahibin emri (2026-09-08):**
 
@@ -14,7 +14,9 @@ lazım? Ekle, çöz, yap."*
 onunla yeniden yazıldı. §9 Döngü 1'in kendi eksik listesidir ve her maddesinin
 yanında bugünkü durumu yazıyor. **§10 Döngü 2'nin çıktısıdır:** sahne öteki
 sayfalara yayıldı, dağarcık büyüdü, dokunmada kamera açıldı ve iki yeni kapı
-kuruldu. §11 Döngü 3'e BIRAKILANLARI sayar.
+kuruldu. §11 Döngü 3'e BIRAKILANLARI sayar. **§12 Döngü 3'ün çıktısıdır** ve
+§11'in altı maddesini tek tek karşılar; §13 ölçülemeyenleri ayrı bir başlıkta
+sayar.
 
 Ezilen kısıtların kaydı `docs/118` E11–E14'te. Renk paleti ve yüzey dili
 `docs/145`'te; bu belge onun üstüne **hareketi** koyuyor.
@@ -638,3 +640,324 @@ Ve iki küçük borç:
 6. Önsöz bandının `orbit`/`grid`/`conduit` yüzleri **ekran görüntüsüyle**
    seçildi, göz kararıyla değil — ama üçünün de dar ekranda (320) ne kadar
    görünür kaldığı yalnız `motion` PNG'lerinde bakıldı, imzayla ölçülmedi.
+
+---
+
+## 12. Döngü 3 — kapılar CI'a girdi, sahne okunan sayfalara ulaştı (2026-09-08)
+
+Bu döngünün sorusu §11'de yazılıydı ve tek cümleyle şuydu: **üç döngülük iş
+korunuyor mu, ve sahne hâlâ hangi sayfaların dışında.**
+
+Cevabın ilk yarısı acıydı.
+
+### 12.1 Koşulmayan kapı bir kapı değildi — ve kanıtı elimizde
+
+§11 madde 4 bunu bir risk olarak yazıyordu: *"Hiçbir sahne kapısı CI'da
+koşmuyor… koşulmayan bir kapı yoktur."* Risk değildi, **olmuş bir olaydı.**
+
+Döngü 3'ün ilk işi `scene-visual-gate`i main'in ucunda çalıştırmak oldu ve kapı
+**24 bulguyla kırmızı** döndü. Sapma her sayfada ve her hâlde AYNI yerdeydi —
+16×12 ızgaranın 0. satırı, 5.–10. sütunları; yani üst çubukta 320 pikselde
+x≈100–210, y≈0–40 aralığı:
+
+| Görünüm | Sapma (tolerans o gün 8) |
+| --- | --- |
+| `home-320-reduce` / `pricing-320-*` / `about-320-*` / `contact-320-*` | **67/255** |
+| `home-1280-*` / `pricing-1280-*` | **48/255** |
+| `*-forced` (zorlanmış renkler) | **36–49/255** |
+
+Sebep bir gerileme değil, **iki paketin aynı gün birleşmesiydi**: `#328`
+masterpage'i katmanlarken üst çubuğa vurgulu bir `/register` düğmesi koydu
+(`site-header-cta`, `ba819197`), `#332` ise görsel tabanı o düğme YOKKEN yazdı
+(`cf4cbbd8`). İkisi main'de yan yana geldi ve **aradaki çelişkiyi hiçbir şey
+ölçmedi**, çünkü kapı hiçbir yerde koşmuyordu. Taban, main'e girdiği günden
+beri kırmızıydı.
+
+Bu, "koşulmayan bir kapı yoktur" cümlesinin bir görüş değil bir gözlem
+olduğunun kanıtıdır ve `docs/146`'nın kendi listesinden çıktı.
+
+### 12.2 Kapı CI'a girmeden önce iki kere ölçülemezdi
+
+CI'a bağlamadan önce üç arıza bulundu ve üçü de "ölçtüğünü sandığını
+ölçmüyor" ailesindendi.
+
+**(a) Ölçülen sayfanın DİLİ makineden geliyordu.** Kurumsal sitenin dili
+ziyaretçinin `Accept-Language` başlığından seçilir (`SiteText`) ve kapı hiçbir
+dil yazmıyordu — yani başsız Chrome işletim sisteminin dilini gönderiyordu. Bu
+Mac'te sayfa **Türkçe** çiziliyordu, bir Ubuntu koşucusunda İngilizce
+çizilecekti. Aynı taban dosyası iki dili birden koruyamaz. Dil artık ortak
+oturum modülünde sabit (`en-US`) ve bu bir çeviri kararı değil bir ölçüm
+kararıdır: ürünün bugün gönderdiği tek dil İngilizce.
+
+**(b) RENK KİPİ hiç yazılmıyordu ve fark yıkıcıydı.** Aynı sunucuya iki
+tarayıcıdan bakıldı — macOS'taki Chrome ile bir Debian kabındaki Chromium — ve
+imza farkı **233–255/255** çıktı. Yani neredeyse ters bir resim. Sebep
+rasterleştirici değildi: macOS'taki Chrome sistemin KOYU kipini miras alıyor,
+kaptaki Chromium AÇIK kipe düşüyordu. Kapı iki farklı SİTE ölçüyor ve bunu hiç
+söylemiyordu. `prefers-color-scheme` artık her hâlde açıkça yazılıyor ve
+**açık kip de kendi durağanlık görünümüyle ölçülüyor** (`light` hâli, +1 hâl).
+
+**(c) Chrome başlayamazsa kapı ASILIYORDU.** `chrome.kill()` çağrılıp
+ardından `chrome.once('exit')` bekleniyordu — ama Chrome ZATEN çıkmışsa o olay
+bir daha gelmez. Kapta ölçüldü: araç hiçbir şey basmadan sonsuza kadar bekledi
+ve `--fail` bile bir şey söyleyemedi. Hiç ölçmeyen bir kapı, kırılan bir
+kapıdan kötüdür; kırılan kapı görünür.
+
+Üçünün de çözümü tek yerde: **`scripts/browser-session.mjs`** — Chrome bulma,
+başlatma bayrakları, dil sabitleme, CDP ve ASILMAYAN kapanış. `scene-perf-gate`
+ve `scene-visual-gate` artık onu kullanıyor; her ikisinden ~60 satır tekrar
+kalktı.
+
+### 12.3 8/255 toleransı sınandı — ve yetmiyordu
+
+§11 madde 5: *"farklı bir rasterleştiricide 8/255 toleransının yetip
+yetmediği bilinmiyor."* Ölçüldü.
+
+Düzenek: aynı sunucu, aynı sayfa, aynı dil, aynı renk kipi; bir yanda macOS
+Chrome, öte yanda Debian kabında Chromium (arm64).
+
+| Ölçüm | Sonuç |
+| --- | --- |
+| Renk kipi YAZILMADAN | 233–255/255 |
+| Renk kipi sabitlendikten sonra | **1–7/255**, en kötü hücre 7 |
+| Gerçek bir gerileme (12.1'deki üst çubuk) | 36–80/255 |
+
+Tolerans **12** oldu. 8, ölçülen en kötü farka (7) yalnız 1 birim pay
+bırakıyordu ve bir sonraki yazı tipi güncellemesinde kırılırdı. 12 hâlâ ayırt
+eder: gerçek bir gerileme beş kat uzakta.
+
+Taban tek dosyada kaldı ve platforma bölünmedi — çünkü ölçüm bunu gerektirmedi.
+macOS'ta yazılan taban, Linux Chromium'da **en kötü 4/255** sapmayla geçti.
+
+### 12.4 `scene-perf-gate` oynaktı; sebebi ölçüldü ve kapı ölçtüğü şeye
+bağlandı
+
+§11 kapının CI'da "oynak olabileceğini" yazmıştı. Oynaktı — ama sahne yüzünden
+değil. Aynı makinede, aynı sayfada, arka arkaya üç koşu:
+
+| Koşu | `opaqueAt` (birincil eylem tam opak) |
+| --- | --- |
+| 1 | **1199 ms** — kapı KIRILDI (tavan 1000) |
+| 2 | 222 ms — geçti |
+| 3 | 948 ms — geçti, kıl payı |
+
+Sahnede tek bayt değişmemişti. Değişen şey `php artisan serve`in tek iş
+parçacıklı yanıt süresiydi: `opaqueAt` gezinmeden itibaren sayıyor, yani
+HTML'in ve stilin gelmesini de içine alıyordu.
+
+Ölçüm ikiye ayrıldı:
+
+- **`firstSeenAt`** — düğme DOM'da ölçülebilir hâle geldiği an (sunucunun payı).
+- **`sceneDelayMs` = `opaqueAt − firstSeenAt`** — düğme doğduktan sonra sahnenin
+  onu geciktirdiği süre. **Kapı budur.**
+
+Altı ardışık koşu, gerçek Chrome, CPU ×4, 320×480:
+
+| Koşu | `firstSeenAt` | `opaqueAt` | **`sceneDelayMs`** | `sceneHitDelayMs` |
+| --- | --- | --- | --- | --- |
+| 1 | 371 | 371 | **0** | 5 |
+| 2 | 211 | 211 | **0** | 4 |
+| 3 | 242 | 242 | **0** | 7 |
+| 4 | 204 | 204 | **0** | 4 |
+| 5 | 240 | 240 | **0** | 4 |
+| 6 | 299 | 299 | **0** | 5 |
+
+Sunucunun payı 204–371 ms arasında dalgalanırken sahnenin payı **her koşuda
+0 ms**. Tavan 120 ms — ölçülenin on yedi katı bir pay değil, bir KARE
+bütçesi payı: bir giriş animasyonunun kuyruğuna girmek 700 ms'lik geçişiyle
+burayı anında aşar. Toplam süre raporda duruyor ama kapı değil.
+
+### 12.5 Üç kapı CI'da koşuyor
+
+`.github/workflows/ci.yml`, `npm run build`ten ve mobil denetimden sonra:
+
+| Adım | Ne ölçüyor | Tarayıcı |
+| --- | --- | --- |
+| `scene-budget-gate --fail` | kurumsal betik ve stilin gzip ağırlığı | hayır |
+| `scene-visual-gate --fail` | beş hâlin durağanlığı + 48 görünümün imzası | evet |
+| `scene-perf-gate --fail` (320×480, CPU ×4) | kare süresi + ilk ekran | evet |
+| `scene-perf-gate --expect-tier minimal` (2 çekirdek) | merdiven gerçekten iniyor mu | evet |
+
+Sunucu adımı sunucunun AÇILDIĞINI doğruluyor ve açılmazsa **kırılıyor**:
+60 saniye boyunca `curl` denenir, açılmazsa adım "OLCUM YAPILMADI" der ve
+düşer. Sessizce atlayan bir kapı, olmayan bir kapıdan kötüdür.
+
+Koşucudaki Chrome ayrıca bulundu değil, **aranıyor**: `browser-session.mjs`
+altı adayı sırayla dener ve hiçbirini bulamazsa süreç 2 ile çıkar.
+
+### 12.6 Sahne okunan sayfalara ulaştı — SUSARAK
+
+§11 madde 3'ün üç yüzeyi de kapandı: `/help`, on üç yasal belge ve kütükten
+çizilen sayfalar.
+
+**Yeni bir yüz değil, bir SUSMA kararı: `calm`.** Önsöz bandının dördüncü
+değeri (`orbit` | `grid` | `conduit` | **`calm`**) bir tema değil, üç
+ölçülebilir yokluk:
+
+| | tuval | parallax düzlemi | animasyon |
+| --- | --- | --- | --- |
+| `orbit`/`grid`/`conduit` | 1 | var | var |
+| **`calm`** | **0** | **0** | **0** |
+
+Gerekçe kompozisyon: bir sözleşmeyi açan kişi maddeyi arar, bir yardım
+makalesini açan kişi cevabı arar. Okunan bir metnin üstünde hareket bir süs
+değil bir engeldir — göz satır başını kaybeder. Yükseklik de düştü: taban
+`clamp(6rem, 18svh, 12rem)`, yani 320×480'de ilk ekranın beşte biri.
+
+**Yasal sayfada bant uyarının ALTINDA.** §11 bunu ölçülmesi gereken bir soru
+olarak bırakmıştı: *"yasal sayfada uyarının ÜSTÜNDE bir şey olması ayrıca
+ölçülmeli."* Cevap **hayır**: `role="alert"` taşıyan eksik-sözleşme bandı
+sayfada gördüğü ilk şey olmak için vardır ve önüne dekor konmaz. Belge sırası
+artık bir kapı: `SAHNE-B11`, uyarı çizilen her yasal sayfada bandın uyarıdan
+SONRA geldiğini doğruluyor — ve hiç uyarı çıkmadıysa "geçti" demiyor,
+"ölçüm yapılmadı" diye kırılıyor.
+
+**386 sayfa için tek karar.** Kütük sayfaları `content/page.blade.php`den
+çiziliyor; bant oraya bir kez girdi. Bandın YÜZÜ sayfanın hiyerarşideki
+derinliğinden türüyor — kök `orbit` (bir SİSTEM), ikinci seviye `grid` (o
+sistemin ZEMİNİ), daha derini `conduit` (bir İŞLEM). Rastgele bir dağıtım da
+üç yüzü karıştırırdı ama hiçbir şey ANLATMAZDI ve iki komşu sayfa aynı yüzü
+alabilirdi. Aynı geçişte sayfa gövdesi kurumsal ölçü kabına taşındı
+(`site-measure-prose`): 1280 pikselde satır 1200 piksele uzuyordu ve o
+uzunlukta göz satır başını kaybeder.
+
+Yeni kapılar `SAHNE-B9…B12` (`CalmSceneOnReadingSurfacesTest`, 30 test / 142
+iddia): her okuma yüzeyinde bant VAR ve SAKİN; tuval 0, düzlem 0; uyarı bantta
+önce; kütük sayfası tek tuval, tek `h1`, iki farklı derinlik iki farklı yüz.
+Görsel kapı da genişledi: `/terms` ve `/help` artık 48 görünümün içinde —
+DOM'da hiçbir şey değişmeden bir CSS kuralıyla hareket eklenebilir ve o kusur
+yalnız pikselde görünür.
+
+### 12.7 İkinci WebGL bağlamının maliyeti ölçüldü — ve kapı yine de 1'de kaldı
+
+§11 madde 1 iki döngüdür açıktı. Yeni araç: `scripts/scene-webgl-context-cost`.
+Aynı sayfa, aynı kısma, yalnız tuval sayısı değişerek; kopyalar belge
+ayrıştırılırken DOM'a giriyor, yani üretim motoru (`mount.ts`) onları kendi
+buluyor.
+
+Gerçek Chrome, CPU ×4:
+
+| Görüntü alanı | Tuval | Canlı bağlam | p50 | p95 | uzun kare | JS yığını |
+| --- | --- | --- | --- | --- | --- | --- |
+| 320×480 | 1 | 1 | 16,7 ms | 16,8 ms | 0 | 787 KB |
+| 320×480 | 2 | **2** | 16,7 ms | 16,7 ms | 0 | 822 KB |
+| 320×480 | 4 | **4** | 16,7 ms | 16,7 ms | 0 | 890 KB |
+| 1280×800 | 1 | 1 | 16,7 ms | 16,7 ms | 0 | 797 KB |
+| 1280×800 | 2 | **2** | 16,7 ms | 16,8 ms | 0 | 850 KB |
+| 1280×800 | 4 | **4** | 16,7 ms | 16,7 ms | 0 | 1449 KB |
+
+Dört bağlam da GERÇEKTEN açıldı (`data-scene-live` dördünde de `true`) ve
+kare süresine etkisi ölçülemedi: p50 sabit, p95 farkı ±0,1 ms, uzun kare 0.
+
+**Buna rağmen `SAHNE-B7` sayfa başına tuvali 1'de tutuyor** ve gerekçe ölçümün
+kendi sınırı: bu ölçüm **GPU belleğini göremez** — sürücü tarafındaki doku ve
+tampon belleği hiçbir tarayıcı API'sinden okunmuyor, üstelik başsız Chrome
+yazılım rasterleştirici kullanıyor. Elde edilen sayı "ikinci bağlam bedava"
+demiyor; "ikinci bağlamın ÖLÇEBİLDİĞİMİZ kısmı bedava" diyor. Asıl kalemini
+göremeyen bir ölçüm bir kapıyı gevşetmeye yetmez.
+
+İlk sürüm bunu bile söyleyemedi ve bu da kaydedildi: gözlemci
+`document.documentElement` üzerine kuruluyordu, ama betik belge açılmadan önce
+koşuyor ve o an `documentElement` YOK. `observe(null)` istisna fırlattı, betik
+sessizce öldü ve araç "üç koşuda da tek tuval" diye bir sonuç bastı. Rapor
+artık `canvases` ve `live` sayılarını da yazıyor: bir maliyet ölçümünün ilk
+kanıtı, ölçtüğü şeyin VAR olduğudur.
+
+### 12.8 Ölçülmüş dokunma borcu kapandı
+
+`scripts/mobile-ux-audit`, 320×480, gerçek Chrome — ÖNCE:
+
+| Yüzey | Hedef | Ölçü |
+| --- | --- | --- |
+| `/` ve `/pricing` | `Contact us` | **79×18** |
+| `/` ve `/pricing` | `Ask us` | **48×18** |
+| `/help` | `Write to us` | **267×42** |
+
+Genişlik yetiyordu, YÜKSEKLİK yetmiyordu; 18 piksel bir imleç için yeter,
+parmak için yetmez (`TOUCH-FIRST-INTERFACE` madde 2 ve 5). Çözüm
+`.site-inline-action`: `inline-flex` + `min-block-size: 2.75rem`. Bağlantı
+cümlenin İÇİNDE kaldı — ayrı satıra taşınsaydı "plan girilmemişse BİZE YAZIN"
+cümlesinin ikinci parçası neye ait olduğunu kaybederdi. Yatay dolgu yok:
+cümlenin içindeki bir bağlantıya yatay dolgu vermek kelimeler arasında
+düzensiz boşluk açar.
+
+SONRA (36 sayfalık statik önizleme):
+
+| Çerçeve | Etkilenen sayfa |
+| --- | --- |
+| 320×480 ltr | **0/36** |
+| 320×480 rtl | **0/36** |
+| 1280×568 ltr | **0/36** |
+| 1920×568 ltr | **0/36** |
+
+### 12.9 Ağırlık
+
+| Ölçüt | Döngü 2 sonu | Döngü 3 sonu | Tavan |
+| --- | --- | --- | --- |
+| Kurumsal betik (gzip) | 4.700 | **4.700** (+0) | 6.144 |
+| Kurumsal stil (gzip) | 32.756 | **34.105** | 40.960 |
+
+Betik hiç büyümedi ve bu tesadüf değil: Döngü 3 motora tek satır eklemedi.
+Sakin bant bir YOKLUKTUR — çizilmeyen katmanın kodu da yoktur. Stildeki artışın
+bir kısmı bu paketin değil, arada main'e giren zengin altbilgininki (Döngü 2
+kapanışında 32.756, bu paket başlarken 34.024); bu paketin kendi payı
+**+81 bayt** (`.site-prologue-calm`, `.site-prologue-inset`, `.scene-still`,
+`.site-inline-action`).
+
+---
+
+## 13. ÖLÇÜLEMEYENLER — Döngü 3'ün kendi listesi
+
+Bu başlık ayrı duruyor çünkü karıştırılması en pahalı iki şey burada ayrılıyor:
+**ölçülüp geçen** ile **ölçülemeyen**. İkincisi bir raporda yeşil renkte
+görünürse, o rapor bir daha okunmaz.
+
+### 13.1 iOS Safari hâlâ doğrulanmadı
+
+Bütün ölçümler Chrome ve Chromium'da. `svh`, `overflow: clip`, `clip-path`,
+`touch-action: pan-y` ve WebGL bağlam sınırları iOS Safari'de farklı
+davranabilir. **Bu makinede iOS Safari yok** ve "muhtemelen çalışır" demek
+uydurma yasağının kapsamındadır.
+
+Döngü 3 bunu bir adım ilerletmedi ve ilerletmiş gibi de yapmıyor. Kapatmanın
+tek yolu gerçek bir cihaz ya da bir cihaz çiftliği; ikisi de bu paketin
+kararı değil.
+
+### 13.2 İkinci WebGL bağlamının GPU bellek maliyeti
+
+§12.7'de ölçülen şey kare süresi ve JS yığını. **GPU belleği ölçülmedi ve bu
+araçla ölçülemez**: sürücü tarafındaki doku/tampon belleğini hiçbir tarayıcı
+API'si vermiyor. Ayrıca başsız Chrome yazılım rasterleştirici kullanıyor, yani
+ölçülen kare süresi gerçek bir GPU'nun değil.
+
+Sonuç: kapı 1'de kaldı. Ölçüm bir kararı GEVŞETMEDİ, yalnız kararın hangi
+soruya cevap vermediğini netleştirdi.
+
+### 13.3 Görsel taban yalnız iki rasterleştiricide sınandı
+
+macOS Chrome ve Debian Chromium (arm64). GitHub koşucusu **amd64** ve kendi
+yazı tipi kümesi var. Site Roboto'yu kendi deposundan sunduğu için (`fonts.css`
+içinde `@font-face`) İngilizce bir sayfada yedek yazı tipi devreye girmemeli —
+ama bu bir çıkarım, bir ölçüm değil. Bu paket CI'ı ilk kez bağlıyor; koşucudaki
+gerçek sapma, bu PR'ın kendi CI koşusunda görülecek.
+
+Kapı bu belirsizliği SESSİZCE karşılamıyor: 12'yi aşan bir sapma kırmızı yanar
+ve sebebini yazar. Yanlış olan yer bir taban dosyasıdır ve bir taban dosyası
+ölçümle güncellenir.
+
+### 13.4 Kütük sayfalarının imzası dondurulmadı
+
+386 sayfanın içeriği veritabanından geliyor; imzaları kurulumun VERİSİNE
+bağlı olurdu ve taban makineden makineye kayardı. Bu yüzden görsel kapıda
+yoklar. Sözleşmeleri DOM tarafında (`SAHNE-B12`): bant var mı, tuval bir mi,
+`h1` bir mi, iki farklı derinlik iki farklı yüz mü.
+
+Yani bu sayfaların **kompozisyonu** ölçülüyor, **pikselleri** ölçülmüyor.
+
+### 13.5 `mobile-ux-audit` yük altında oynak
+
+1920 çerçevesinde arka arkaya üç koşuda biri `Features` bağlantısı için bir
+bulgu üretti, ikisi sıfır bulgu verdi; bir koşu da `CDP timeout: Page.navigate`
+ile düştü. Aynı statik çıktı, aynı makine. Bu, ölçülen sayfaların değil ARACIN
+oynaklığı ve bu paket onu düzeltmedi — 320 ve 1280 çerçeveleri (taban ve masaüstü)
+üst üste sıfır bulgu verdi ve borç kapanışı oraya dayanıyor.

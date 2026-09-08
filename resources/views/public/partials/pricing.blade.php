@@ -83,7 +83,7 @@
         --}}
         <p class="site-pricing-note">
             {{ $st['pricingEmpty'] }}
-            <a class="underline underline-offset-2" href="/contact">{{ $st['pricingEmptyCta'] }}</a>
+            <a class="site-inline-action" href="/contact">{{ $st['pricingEmptyCta'] }}</a>
         </p>
     @else
         {{--
@@ -121,7 +121,7 @@
                         --}}
                         <span class="site-pricing-note">
                             {{ $st['perRestaurant'] }}
-                            <a class="underline underline-offset-2" href="/contact">{{ $st['perRestaurantCta'] }}</a>
+                            <a class="site-inline-action" href="/contact">{{ $st['perRestaurantCta'] }}</a>
                         </span>
                     @else
                         {{-- `tabular-nums`: rakamlar eşit genişlikte olmazsa
@@ -147,7 +147,7 @@
 
         <p class="site-pricing-note">
             {{ $st['unsure'] }}
-            <a class="underline underline-offset-2" href="/contact">{{ $st['unsureCta'] }}</a>
+            <a class="site-inline-action" href="/contact">{{ $st['unsureCta'] }}</a>
         </p>
 
         {{-- KABUL EDİLEN ÖDEME YÖNTEMİ, FİYATIN YANINDA (FF-216).

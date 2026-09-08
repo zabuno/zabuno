@@ -94,7 +94,15 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { inflateSync } from 'node:zlib';
 
-import { cdp, closeChrome, connect, debuggerUrl, launchChrome, pinLanguage, requireChrome } from './browser-session.mjs';
+import {
+    cdp,
+    closeChrome,
+    connect,
+    debuggerUrl,
+    launchChrome,
+    pinLanguage,
+    requireChrome,
+} from './browser-session.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -134,6 +142,22 @@ const PAGES = [
     { key: 'pricing', path: '/pricing', widths: [320, 1280] },
     { key: 'about', path: '/about', widths: [320] },
     { key: 'contact', path: '/contact', widths: [320] },
+    /*
+        DÖNGÜ 3'ÜN İKİ YENİ YÜZEYİ — SAKİN BANT.
+
+        Yasal belge ve yardım makalesi bandı `calm` kipte giyiyor: tuval yok,
+        düzlem yok, animasyon yok. Bu üç yokluğun DOM tarafı bir kapıda
+        (`CalmSceneOnReadingSurfacesTest`); burada ölçülen şey PİKSEL — bir
+        gün biri bandı hareketlendirirse, DOM'da hiçbir şey değişmeden de
+        yapabilir (bir CSS kuralı yeter) ve o kusur ancak burada görünür.
+
+        Kütükten çizilen sayfalar bu listede YOK ve bu bilerek: içerikleri
+        veritabanından geliyor, yani imzaları kurulumun verisine bağlı olurdu
+        ve taban makineden makineye kayardı. Onların sözleşmesi DOM tarafında
+        (`SAHNE-B12`), pikselde değil.
+    */
+    { key: 'terms', path: '/terms', widths: [320] },
+    { key: 'help', path: '/help', widths: [320] },
 ];
 
 /*

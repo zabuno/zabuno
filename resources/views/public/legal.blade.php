@@ -48,7 +48,7 @@
             <p class="site-legal-notice" role="note" data-legal-review="pending">{{ $st['legalReviewPending'] }}</p>
         @endif
 
-        {{-- SAHNE, UYARININ ALTINDA — ÖLÇÜLMÜŞ BİR SIRA (`docs/147` §3).
+        {{-- SAHNE, UYARININ ALTINDA — ÖLÇÜLMÜŞ BİR SIRA (`docs/146` §12).
 
              Döngü 2 bu maddeyi bilerek bırakmıştı: *"yasal sayfada uyarının
              ÜSTÜNDE bir şey olması ayrıca ölçülmeli."* Ölçüldü ve cevap

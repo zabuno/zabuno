@@ -54,7 +54,15 @@
 
 import { writeFileSync } from 'node:fs';
 
-import { cdp, closeChrome, connect, debuggerUrl, launchChrome, pinLanguage, requireChrome } from './browser-session.mjs';
+import {
+    cdp,
+    closeChrome,
+    connect,
+    debuggerUrl,
+    launchChrome,
+    pinLanguage,
+    requireChrome,
+} from './browser-session.mjs';
 
 const CHROME = requireChrome('scene-perf-gate');
 

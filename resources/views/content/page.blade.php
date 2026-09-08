@@ -19,7 +19,7 @@
 
 @php
     /*
-        SAHNE, 386 SAYFAYA TEK YERDEN (`docs/147` §3).
+        SAHNE, 386 SAYFAYA TEK YERDEN (`docs/146` §12).
 
         Döngü 2 bu sayfaları bilerek dışarıda bırakmıştı: *"kütük sayfalarının
         kompozisyonu hiç ölçülmedi ve 386 sayfayı tek seferde giydirmek,
@@ -57,7 +57,7 @@
                  yazılamaz (I18N-SSR-RATCHET-16) ve `aria-label` de görünen
                  metin sayılır. Makine tarafındaki anlamı `BreadcrumbList`
                  taşıyor; bir katalog anahtarı açıldığında landmark eklenir. --}}
-            <ol class="site-measure-page flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-fg-secondary">
+            <ol class="site-measure-prose flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-fg-secondary">
                 @foreach ($trail as $crumb)
                     <li class="flex items-center gap-2">
                         @unless ($loop->first)
@@ -105,12 +105,20 @@
 
         {{-- SAYFANIN TEK H1'i, ARTIK SAHNENİN İÇİNDE. Şablon tek H1 üretir;
              ikincisini yazacak yer yok — bant onu taşıyınca da öyle kaldı. --}}
+        {{-- ÖLÇÜ KABI: OKUMA GENİŞLİĞİ, SAYFA GENİŞLİĞİ DEĞİL.
+
+             Bu sayfalar paragraf okunan sayfalardır. 1280 pikselde sayfa
+             ölçüsü (`--zc-measure-page`) satırı 1200 piksele kadar uzatıyordu
+             ve o uzunlukta göz satır başını kaybeder. Bant tam kanamalı kalır
+             ama İÇİ, gövdeyle AYNI sütunda durur: başlık ile ilk paragrafın
+             sol kenarı hizalanmazsa sayfa ikiye bölünmüş gibi okunur. --}}
         @include('public.partials.prologue', [
             'prologueHeading' => $content->metadata->h1,
             'prologueVariant' => $prologueVariant,
+            'prologueMeasure' => 'site-measure-prose',
         ])
 
-        <div class="site-measure-page site-page-body">
+        <div class="site-measure-prose site-page-body">
             @foreach ($content->blocks as $block)
                 @include('content.blocks.'.$block->type->value, ['block' => $block])
             @endforeach

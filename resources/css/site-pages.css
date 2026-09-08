@@ -156,6 +156,34 @@
    Burada hareket YOK ve olmayacak: bir fiyatın okunduğu yer, dikkatin
    bölünmemesi gereken yerdir. Değişen şey kalınlık, hareket değil.
 */
+/*
+    ── CÜMLENİN İÇİNDEKİ EYLEM (`site-inline-action`) — Döngü 3 ────────────
+
+    ÖLÇÜLDÜ (`scripts/mobile-ux-audit`, 320 piksel, gerçek Chrome,
+    2026-09-08): fiyat sayfasındaki üç bağlantı `Contact us` 79×18 ve
+    `Ask us` 48×18 idi. Genişlik yetiyordu, YÜKSEKLİK yetmiyordu — ve 18
+    piksel bir imleç için yeter, parmak için yetmez. Global kural
+    (`TOUCH-FIRST-INTERFACE` madde 2 ve 5) 44×44'ü bir taban sayar.
+
+    ── NEDEN AYRI BİR SATIRA TAŞINMADI ──
+
+    Bağlantı bir cümlenin İÇİNDE ve orada olması bilgi taşıyor: "plan
+    girilmemişse BİZE YAZIN" cümlesi ikiye bölündüğünde, ikinci parça neye
+    ait olduğunu kaybeder. `inline-flex` + `min-block-size` hedefi büyütür
+    ve cümleyi bozmaz; satır kutusu 44 piksele çıkar, harfler yerinde kalır.
+
+    Yatay dolgu YOK: cümlenin içindeki bir bağlantıya yatay dolgu vermek,
+    kelimeler arasında düzensiz bir boşluk açar. Genişlik zaten ölçüldü ve
+    ikisi de 44'ün üstünde.
+*/
+.site-inline-action {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 2.75rem;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
 .site-pricing {
     display: flex;
     flex-direction: column;
