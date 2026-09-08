@@ -192,6 +192,20 @@
             ]
         },
         {
+            "key": "workspace.data.export",
+            "group": "workspace",
+            "roles": [
+                "owner"
+            ]
+        },
+        {
+            "key": "workspace.data.erase",
+            "group": "workspace",
+            "roles": [
+                "owner"
+            ]
+        },
+        {
             "key": "rating.view",
             "group": "rating",
             "roles": [
@@ -235,6 +249,8 @@
                 "order.confirm",
                 "order.kitchen",
                 "order.settings",
+                "workspace.data.export",
+                "workspace.data.erase",
                 "rating.view",
                 "rating.reply"
             ],
@@ -270,7 +286,9 @@
             "denied": [
                 "billing.manage",
                 "security.evidence.view",
-                "order.settings"
+                "order.settings",
+                "workspace.data.export",
+                "workspace.data.erase"
             ],
             "invitable": true,
             "removable": true,
@@ -303,6 +321,8 @@
                 "order.confirm",
                 "order.kitchen",
                 "order.settings",
+                "workspace.data.export",
+                "workspace.data.erase",
                 "rating.reply"
             ],
             "invitable": true,
@@ -336,6 +356,8 @@
                 "order.confirm",
                 "order.kitchen",
                 "order.settings",
+                "workspace.data.export",
+                "workspace.data.erase",
                 "rating.reply"
             ],
             "invitable": false,
@@ -368,6 +390,8 @@
                 "media.download_original",
                 "order.confirm",
                 "order.settings",
+                "workspace.data.export",
+                "workspace.data.erase",
                 "rating.view",
                 "rating.reply"
             ],

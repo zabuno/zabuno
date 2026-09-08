@@ -47,6 +47,7 @@ const SOURCE_LABELS = {
     media: 'workspace.settings.audit.source.media',
     publication: 'workspace.settings.audit.source.publication',
     'support-access': 'workspace.settings.audit.source.support-access',
+    data_rights: 'workspace.settings.audit.source.dataRights',
 } as const;
 
 type SourceKey = keyof typeof SOURCE_LABELS;

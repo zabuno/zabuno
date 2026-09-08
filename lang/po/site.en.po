@@ -164,6 +164,46 @@ msgstr "Your reference is {reference}. Quote it if you write to us again."
 msgid "site.contact.submit"
 msgstr "Send message"
 
+#: site:site.dataRights.erasure.body
+msgid "site.dataRights.erasure.body"
+msgstr "Someone with owner access asked for the data of your workspace to be erased. Nothing has been removed yet, and the workspace keeps working until the date below."
+
+#: site:site.dataRights.erasure.detail
+msgid "site.dataRights.erasure.detail"
+msgstr "The erasure will run on {date}."
+
+#: site:site.dataRights.erasure.note
+msgid "site.dataRights.erasure.note"
+msgstr "If this was not intended, open Settings in your workspace and take the request back. Records we must keep by law — issued invoices, the accounting entries behind them, the payments they rest on and the record of consents given — are not removed by an erasure; that screen lists each of them."
+
+#: site:site.dataRights.erasure.subject
+msgid "site.dataRights.erasure.subject"
+msgstr "Zabuno — an erasure was requested for your workspace"
+
+#: site:site.dataRights.export.action
+msgid "site.dataRights.export.action"
+msgstr "Download it here:"
+
+#: site:site.dataRights.export.body
+msgid "site.dataRights.export.body"
+msgstr "The archive you asked for is ready. It carries everything your workspace holds, in a machine readable form and as spreadsheet files a person can open."
+
+#: site:site.dataRights.export.detail
+msgid "site.dataRights.export.detail"
+msgstr "The link below stops working on {date}."
+
+#: site:site.dataRights.export.note
+msgid "site.dataRights.export.note"
+msgstr "If the link has expired, open Settings in your workspace and prepare a new archive."
+
+#: site:site.dataRights.export.subject
+msgid "site.dataRights.export.subject"
+msgstr "Zabuno — your data archive is ready"
+
+#: site:site.dataRights.greeting
+msgid "site.dataRights.greeting"
+msgstr "Hello,"
+
 #: site:site.engineering.title
 msgid "site.engineering.title"
 msgstr "Zabuno — Engineering"

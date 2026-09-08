@@ -174,6 +174,14 @@ return [
             gereken yayınlanmamış fiyatları taşıyor.
         */
         'menu-preview',
+        /*
+            VERİ DIŞA AKTARMA ARŞİVİ (`/data-export/{workspace}/{request}`,
+            FF-226, `docs/138`). Taslak önizlemesiyle aynı gerekçe ve daha
+            ağırı: bu kök, bir çalışma alanının BÜTÜN verisini taşıyan bir
+            arşive götürüyor. Bir işletme bu slug'ı alabilseydi, kendi
+            menüsü ile o arşivin adresi aynı kökü paylaşırdı.
+        */
+        'data-export',
         'privacy', 'q', 'register', 'reset-password', 'robots.txt', 'sanctum',
         /*
             DİL DİZİNLERİ — DOKUZUNUN HEPSİ rezerve.
@@ -203,6 +211,9 @@ return [
      */
     'noindex_prefixes' => [
         'app',
+        // Bir çalışma alanının bütün verisini taşıyan imzalı arşiv
+        // (FF-226). İmza zaten kapıdır; bu, ikinci hattır.
+        'data-export',
         'platform',
         // Yeni adres `platform` önekinden zaten kapalı; bu satır kökteki
         // 301 yönlendirmesinin kendisini kapatır (FF-248).
@@ -234,6 +245,7 @@ return [
      */
     'disallow_prefixes' => [
         'app',
+        'data-export',
         'platform',
         // FF-248 sonrası yalnız 301 yönlendirmesini kapatır; kabuğun kendisi
         // `platform` önekinin altındadır.

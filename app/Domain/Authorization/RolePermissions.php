@@ -84,6 +84,13 @@ final class RolePermissions
                 // Yanıt verir, KALDIRMAZ (`docs/116` §4). Listede
                 // `rating.delete` diye bir satır yok ve olmayacak.
                 Permission::RatingReply,
+                /*
+                    Verinin kopyasını almak ve verinin silinmesini istemek
+                    (`docs/138`). İkisi de yalnız burada: Yönetici bir
+                    çalışma alanını yürütür, ona SAHİP değildir.
+                */
+                Permission::WorkspaceDataExport,
+                Permission::WorkspaceDataErase,
             ],
             MembershipRole::Manager => [
                 Permission::WorkspaceView,
