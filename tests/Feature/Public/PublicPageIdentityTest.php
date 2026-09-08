@@ -32,7 +32,9 @@ final class PublicPageIdentityTest extends TestCase
     public static function publicPaths(): array
     {
         return [['/'], ['/pricing'], ['/contact'], ['/terms'], ['/privacy'], ['/kvkk'],
-            ['/distance-sales'], ['/pre-information'], ['/refund-policy'], ['/cookies'], ['/marketing-consent']];
+            ['/distance-sales'], ['/pre-information'], ['/refund-policy'], ['/cookies'], ['/marketing-consent'],
+            // Kurumsal sözleşmeler (FF-228, `docs/140`).
+            ['/data-processing'], ['/sla'], ['/acceptable-use'], ['/third-party-licenses']];
     }
 
     // --- PUBLIC-PAGE-TITLE-01 ---------------------------------------------

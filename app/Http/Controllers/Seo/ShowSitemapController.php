@@ -58,14 +58,30 @@ final class ShowSitemapController extends Controller
      *
      * @var list<string>
      */
-    private const SELLER_IDENTITY_PATHS = ['/about', '/distance-sales', '/pre-information', '/delivery'];
+    private const SELLER_IDENTITY_PATHS = [
+        '/about',
+        '/distance-sales',
+        '/pre-information',
+        '/delivery',
+        /*
+            KURUMSAL SÖZLEŞMELER (FF-228, `docs/140`). Bir veri işleme
+            sözleşmesinin "işleyen"i ve bir hizmet seviyesi taahhüdünün
+            taahhüt edeni ADIYLA anılmak zorundadır; tarafı "not yet
+            provided" yazan bir DPA, bir zincirin hukukçusuna gönderilebilir
+            bir belge değildir. Kabul edilebilir kullanım ve lisans listesi
+            bu kuralın DIŞINDA: ikisi de bir sözleşme değil bir bildirimdir
+            ve tarafsız hâlleriyle de doğrudur.
+        */
+        '/data-processing',
+        '/sla',
+    ];
 
     /**
      * Kütüğe BAĞLI OLMAYAN, bugün gerçekten 200 dönen adresler.
      *
-     * Ölçüldü (`docs/129` §4): bu dokuz yolun HİÇBİRİ `content_pages`
+     * Ölçüldü (`docs/129` §4): bu on beş yolun HİÇBİRİ `content_pages`
      * tablosunda yok ve olamaz — hiçbiri kurumsal kapıdan geçmiyor. Ana
-     * sayfa `FoundationStatusController`'ın, sekiz yasal belge ise
+     * sayfa `FoundationStatusController`'ın, on üç yasal belge ise
      * `ShowLegalDocumentController`'ın kendi rotasıdır (`routes/web.php`);
      * yayın durumları yok çünkü yayın kararı zaten verilmiş — sayfa canlı.
      *
@@ -86,6 +102,11 @@ final class ShowSitemapController extends Controller
         '/refund-policy',
         '/cookies',
         '/marketing-consent',
+        // Kurumsal sözleşmeler (FF-228, `docs/107` Faz 3.2).
+        '/data-processing',
+        '/sla',
+        '/acceptable-use',
+        '/third-party-licenses',
     ];
 
     public function __construct(

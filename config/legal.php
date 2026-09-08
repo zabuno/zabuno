@@ -36,6 +36,34 @@ return [
     'reviewed_at' => env('LEGAL_REVIEWED_AT'),
 
     /*
+     * BARINDIRMA — verinin fiziksel olarak DURDUĞU yer (FF-228, `docs/140` §3).
+     *
+     * Veri işleme sözleşmesinin (DPA) alt işleyen listesindeki ilk satır ve
+     * bir zincirin hukukçusunun ilk sorusu: *veri nerede tutuluyor?*
+     *
+     * ═══ NEDEN BURADA BİR VARSAYILAN VAR — ŞİRKET KİMLİĞİNDE YOKKEN ═══
+     *
+     * İkisi farklı türde olgular. Bir tüzel kişinin ünvanı BİLİNEMEZ: bu
+     * yazılımı kuran kişinin kim olduğunu kod bilemez ve bir varsayılan
+     * yazmak sözleşmenin tarafını uydurmak olurdu. Barındırma ise BU ürünün
+     * üretim dağıtımı için ölçülmüş bir olgudur — netcup GmbH, Karlsruhe,
+     * Almanya (sahip doğruladı 2026-09-08; `docs/42`, `docs/43`).
+     *
+     * Yine de env'den geliyor, çünkü bu yazılım tek bir kuruluma ait değil
+     * (`SAAS-DOMAIN`): kendi sunucusuna kuran biri kendi sağlayıcısını yazar
+     * ve DPA'sı doğru olur. Değeri BOŞALTAN bir dağıtımda sayfa "not yet
+     * provided" der — uydurmaz.
+     *
+     * NOT: `location` içinde ülke ADIYLA geçmeli. DPA'nın yurt dışı aktarım
+     * bölümü (KVKK madde 9) okuyucunun bu satırı okumasına dayanır; "Bir veri
+     * merkezi" gibi bir değer o bölümü anlamsız kılar.
+     */
+    'hosting' => [
+        'provider' => env('LEGAL_HOSTING_PROVIDER', 'netcup GmbH'),
+        'location' => env('LEGAL_HOSTING_LOCATION', 'Karlsruhe, Germany — outside Turkey'),
+    ],
+
+    /*
      * HESAP VERİSİ TALEBİ — `docs/110` (P0-09), FF-169.
      *
      * Sahip "hesabımdaki her şeyi istiyorum" dediğinde talebi nereye

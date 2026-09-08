@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Application\Legal\Port\LegalLibraryPort;
 use App\Domain\Publication\BusinessType;
 use App\Http\Controllers\Analytics\StoreGuestMenuEventsController;
 use App\Http\Controllers\Auth\LogoutController;
@@ -77,12 +78,21 @@ Route::post('/contact', StoreContactMessageController::class)
 /*
     YASAL BELGELER (FF-198, `docs/107` Faz 1.2, `docs/124`).
 
-    Sekiz belge, tek denetleyici: anahtar adresin kendisidir. `/kvkk` adı
+    On üç belge, tek denetleyici: anahtar adresin kendisidir. `/kvkk` adı
     KALIR — altbilgi, kütük ve sitemap ona bağlı; belge İngilizce yazıldı
     (`docs/118` E4) ama adres Türkiye'deki kanunun adını taşımaya devam
     eder. Oturum istemez, indekslenir: bir sözleşme kaydolmadan okunabilmeli.
+
+    KURUMSAL SÖZLEŞMELER (FF-228, `docs/107` Faz 3.2, `docs/140`): son dört
+    adres bir zincirin satın alma ya da hukuk birimi içindir. `/sla` adı da
+    `/kvkk` gibi KALIR: o birim aradığı şeyi bu üç harfle arar, belgenin
+    başlığı ("Service Level Terms") ise ne taahhüt edip etmediğini söyler.
+
+    Liste `LegalLibraryPort::KEYS` ile AYNI olmak zorunda ve bunun bir testi var
+    (`LegalDocumentPagesTest`): kütüphaneye eklenip rotası unutulan bir
+    belge, hiçbir uyarı vermeden 404 döner.
 */
-foreach (['terms', 'privacy', 'kvkk', 'distance-sales', 'pre-information', 'delivery', 'refund-policy', 'cookies', 'marketing-consent'] as $legalDocument) {
+foreach (LegalLibraryPort::KEYS as $legalDocument) {
     Route::get('/'.$legalDocument, ShowLegalDocumentController::class)->name('legal.'.$legalDocument);
 }
 

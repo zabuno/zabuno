@@ -29,6 +29,8 @@ use App\Application\Entitlement\Port\EntitlementRepositoryPort;
 use App\Application\Ledger\Port\LedgerPort;
 use App\Application\Legal\Port\ConsentLedgerPort;
 use App\Application\Legal\Port\LegalLibraryPort;
+use App\Application\Legal\Port\SubprocessorRegistryPort;
+use App\Application\Legal\Port\ThirdPartyLicensePort;
 use App\Application\Localization\Port\TranslationPort;
 use App\Application\Mail\Port\MailTransportSelectorPort;
 use App\Application\Media\Port\MalwareScannerAvailabilityPort;
@@ -149,6 +151,8 @@ use App\Infrastructure\Entitlement\DatabaseEntitlementRepository;
 use App\Infrastructure\Ledger\DatabaseLedger;
 use App\Infrastructure\Legal\DatabaseConsentLedger;
 use App\Infrastructure\Legal\LegalLibrary;
+use App\Infrastructure\Legal\ManifestThirdPartyLicenses;
+use App\Infrastructure\Legal\MeasuredSubprocessors;
 use App\Infrastructure\Localization\MoFileTranslator;
 use App\Infrastructure\Localization\PseudoLocalizingTranslator;
 use App\Infrastructure\Mail\VaultMailTransportSelector;
@@ -273,6 +277,21 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->singleton(ContentLibraryPort::class, ProductPageLibrary::class);
         // Yasal belgeler ve onay defteri (FF-198, `docs/124`).
         $this->app->singleton(LegalLibraryPort::class, LegalLibrary::class);
+        /*
+            KURUMSAL SÖZLEŞMELERİN ÖLÇÜLEN GİRDİLERİ (FF-228, `docs/140`).
+
+            Alt işleyen listesi kimlik kasasından, lisans listesi manifest ve
+            kilit dosyalarından TÜRETİLİR; ikisi de elle yazılmaz, çünkü elle
+            yazılmış bir liste bir `composer require` ya da bir kasa kaydıyla
+            hiçbir uyarı vermeden eskir.
+
+            `bind`, `singleton` DEĞİL: ikisi de bir OLGUYU ölçüyor ve ölçüm
+            istek boyunca `LegalLibrary`nin kendi önbelleğinde zaten
+            tutuluyor. Tekil yapmak, uzun ömürlü bir süreçte (Octane) dünkü
+            kasayı bugünkü sözleşmeye yazdırırdı.
+        */
+        $this->app->bind(SubprocessorRegistryPort::class, MeasuredSubprocessors::class);
+        $this->app->bind(ThirdPartyLicensePort::class, ManifestThirdPartyLicenses::class);
         $this->app->bind(ConsentLedgerPort::class, DatabaseConsentLedger::class);
 
         $this->app->bind(EntitlementRepositoryPort::class, DatabaseEntitlementRepository::class);
