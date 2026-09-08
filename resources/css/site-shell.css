@@ -1073,6 +1073,126 @@
     overflow-wrap: anywhere;
 }
 
+/* --- Güvence iddiaları: ölçülen, ölçülmeyen, kusurlu, olmayan (FF-252) --- */
+
+/*
+    GÜVEN MERKEZİ VE ERİŞİLEBİLİRLİK BEYANININ İDDİA LİSTESİ.
+
+    ── Neden ayrı bir yüzey ──────────────────────────────────────────────
+
+    Bir iddia paragraf DEĞİLDİR: bir konusu, bir HÂLİ ve bir kanıtı vardır.
+    Düz paragraf olarak yazıldığında okuyucu ölçülmüş bir satırla
+    ölçülmemiş bir satırı ayırt edemez — ve bu iki sayfanın var olma sebebi
+    tam olarak o ayrımdır.
+
+    ── HÂL RENKLE ANLATILMAZ ─────────────────────────────────────────────
+
+    Her satır hâlini KELİMEYLE yazar (`.site-claim-state`); kenar rengi
+    yalnız o kelimeyi destekler. Rengi göremeyen bir okuyucu için tek
+    başına bir kenar rengi hiçbir şey demez — eksik sözleşme bandıyla aynı
+    karar. Bu, erişilebilirlik beyanı olan bir sayfada söylenip
+    yapılmayacak bir şey değildir.
+
+    ── 320 piksel taban ──────────────────────────────────────────────────
+
+    Dolgu `.site-legal` sütununa EKLENMEZ: liste sütunun içinde durur,
+    sütunu daraltmaz (`docs/117` K2). Başlık satırı sarar — dar ekranda
+    konu ve hâl alt alta, geniş ekranda yan yana; kırılma noktası yok,
+    `flex-wrap` kararı içeriğin kendi boyundan geliyor.
+*/
+.site-claims {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.site-claim {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    border: 1px solid var(--border);
+    border-inline-start: 3px solid var(--border);
+    border-radius: var(--radius-md);
+}
+
+.site-claim-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2);
+    margin: 0;
+    line-height: 1.4;
+}
+
+.site-claim-subject {
+    color: var(--fg);
+    font-weight: 600;
+}
+
+/*
+    HÂL ETİKETİ. Küçük ama SOLUK DEĞİL: bu satırın işi bir iddianın
+    ağırlığını söylemek ve okunamayan bir ağırlık, söylenmemiş bir
+    ağırlıktır.
+*/
+.site-claim-state {
+    color: var(--fg-secondary);
+    font-size: var(--text-meta);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+}
+
+.site-claim-detail {
+    margin: 0;
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+}
+
+.site-claim-evidence {
+    margin: 0;
+    color: var(--fg-secondary);
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+/*
+    Etiket KENDİ SATIRINDA: araya sabit bir iki nokta yazmak şablona
+    çevrilemez bir noktalama gömerdi ve bazı diller onu başka türlü diziyor.
+
+    Kanıtın kendisi bir `<code>`tur ve tarayıcının kendi tek aralıklı
+    ailesiyle çizilir: depoda bir tek aralıklı JETON YOK ve bir yazı tipi
+    ailesini elle yazmak, jeton katmanının dışında ikinci bir tipografi
+    kararı doğururdu (`typography.guard`).
+*/
+.site-claim-evidence-label {
+    display: block;
+    color: var(--fg);
+    font-weight: 500;
+}
+
+/*
+    ÖLÇÜLEN ile ÖLÇÜLMEYENİN kenarı ayrışır — ama kelime zaten yazılı
+    olduğu için bu bir EK bilgi, tek bilgi değil.
+
+    "Bilinmiyor" YEŞİL GÖSTERİLMEZ: ölçülmemiş ve bilinen kusurlu satırlar
+    uyarı mürekkebini taşır, sahip olmadığımız şeyler ise nötr kalır —
+    olmayan bir sertifika bir kusur değil, bir olgudur.
+*/
+.site-claim[data-claim-state='measured'] {
+    border-inline-start-color: var(--fg);
+}
+
+.site-claim[data-claim-state='not-measured'],
+.site-claim[data-claim-state='known-gap'] {
+    border-inline-start-color: var(--border-danger);
+}
+
+.site-claim[data-claim-state='not-measured'] .site-claim-state,
+.site-claim[data-claim-state='known-gap'] .site-claim-state {
+    color: var(--fg-danger);
+}
+
 /* --- Çerez seçim şeridi ve tercih düğmeleri (FF-198) -------------------- */
 
 /*

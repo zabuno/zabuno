@@ -196,6 +196,27 @@ final class SiteNavigation
                         çevirirdi; giriş sayfası üçüne de bağlanıyor.
                     */
                     ['labelKey' => 'site.nav.investors', 'path' => '/investors'],
+                    /*
+                        GÜVEN MERKEZİ VE ERİŞİLEBİLİRLİK BEYANI (FF-252).
+
+                        YASAL SATIRDA DEĞİL, ŞİRKET GRUBUNDA — ve bu bir yer
+                        tercihi değil bir tür ayrımı. Yasal satır SÖZLEŞMELERİ
+                        sayar: her birinin sürümü, yürürlük tarihi ve bir onay
+                        kaydı vardır. Bu iki sayfa sözleşme değil DURUM
+                        TESPİTİDİR; içerikleri her çizimde o anki
+                        yapılandırmadan doğar. Onları sözleşmelerin arasına
+                        koymak, okuyucuya imzalanacak bir şey gibi gösterirdi.
+
+                        Grup böylece BEŞ maddeye çıkıyor ve `OPEN_ITEM_CEILING`
+                        dört olduğu için KAPALI başlıyor. Bu bir kayıp değil
+                        kuralın kendisi (`docs/118` E1): beş bağlantı 320
+                        pikselde 220 piksel eder ve altbilgi zaten altı satır.
+                        Katlamak GİZLEMEK DEĞİLDİR — beş bağlantının beşi de
+                        sunucu HTML'inde duruyor, betiksiz açılıyor ve arama
+                        motoru hepsini görüyor.
+                    */
+                    ['labelKey' => 'site.nav.trust', 'path' => '/trust'],
+                    ['labelKey' => 'site.nav.accessibility', 'path' => '/accessibility'],
                 ],
             ],
             [
