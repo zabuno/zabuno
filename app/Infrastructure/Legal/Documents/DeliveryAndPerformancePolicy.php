@@ -62,7 +62,7 @@ final class DeliveryAndPerformancePolicy
                     'The menus, images and other content you put into your workspace stay yours. You can export your menu yourself, as a CSV file, from your workspace; you do not need to ask the seller for it. What happens to the content after a subscription ends is described in the Terms of Service and in the Privacy Policy.',
                 ]),
                 new LegalSection('Language of this text', [
-                    'This text is published in English, which is the language it was written in. A Turkish text is not published yet. When one is published it will carry its own version and effective date, and this note will say so.',
+                    'This text is published in English, which is the language it was written in. A Turkish translation is also available. Each language displays the applicable version and effective date at the top of the page.',
                 ]),
             ],
             requiresSellerIdentity: true,

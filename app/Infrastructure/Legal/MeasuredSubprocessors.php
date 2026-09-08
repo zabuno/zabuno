@@ -81,9 +81,9 @@ final class MeasuredSubprocessors implements SubprocessorRegistryPort
 
     public function __construct(private readonly PlatformCredentialAdminPort $vault) {}
 
-    public function inventory(): SubprocessorInventory
+    public function inventory(string $locale = 'en'): SubprocessorInventory
     {
-        $active = [$this->hosting()];
+        $active = [$this->hosting($locale)];
         $vaultUnreadable = false;
 
         try {
@@ -108,11 +108,11 @@ final class MeasuredSubprocessors implements SubprocessorRegistryPort
 
         foreach (CredentialProvider::cases() as $provider) {
             if (isset($configured[$provider->value]) || $this->hasEnvFallback($provider)) {
-                $active[] = $this->describe($provider);
+                $active[] = $this->describe($provider, $locale);
             }
         }
 
-        foreach ($this->measurementTools() as $tool) {
+        foreach ($this->measurementTools($locale) as $tool) {
             $active[] = $tool;
         }
 
@@ -127,21 +127,21 @@ final class MeasuredSubprocessors implements SubprocessorRegistryPort
      * sağlayıcısını yazar. Varsayılan, BU ürünün üretim dağıtımının ölçülmüş
      * hâlidir (`docs/42`, `docs/43`), uydurma değil.
      */
-    private function hosting(): Subprocessor
+    private function hosting(string $locale): Subprocessor
     {
         return new Subprocessor(
-            name: $this->hostingValue('provider'),
-            role: 'Hosting: runs the virtual server on which the application, the database and the uploaded files live.',
-            data: 'Everything the service stores — account data, workspace and menu content, uploaded images, logs and database backups.',
-            location: $this->hostingValue('location'),
+            name: $this->hostingValue('provider', $locale),
+            role: ($locale === 'tr' ? 'Barındırma: uygulamanın, veritabanının ve yüklenen dosyaların bulunduğu sanal sunucuyu işletir.' : 'Hosting: runs the virtual server on which the application, the database and the uploaded files live.'),
+            data: ($locale === 'tr' ? 'Hizmetin sakladığı her şey — hesap verileri, çalışma alanı ve menü içeriği, yüklenen görseller, günlükler ve veritabanı yedekleri.' : 'Everything the service stores — account data, workspace and menu content, uploaded images, logs and database backups.'),
+            location: $this->hostingValue('location', $locale),
         );
     }
 
-    private function hostingValue(string $key): string
+    private function hostingValue(string $key, string $locale): string
     {
         $value = config('legal.hosting.'.$key);
 
-        return is_string($value) && trim($value) !== '' ? trim($value) : 'not yet provided';
+        return is_string($value) && trim($value) !== '' ? trim($value) : ($locale === 'tr' ? 'henüz belirtilmedi' : 'not yet provided');
     }
 
     /**
@@ -182,20 +182,20 @@ final class MeasuredSubprocessors implements SubprocessorRegistryPort
      * gün bu metot patlar, test kırılır ve belge tarif edilmeden yayına
      * çıkamaz.
      */
-    private function describe(CredentialProvider $provider): Subprocessor
+    private function describe(CredentialProvider $provider, string $locale): Subprocessor
     {
         return match ($provider) {
             CredentialProvider::Mailgun => new Subprocessor(
                 name: 'Mailgun',
-                role: 'E-mail delivery: sends address-verification, team-invitation, notification and contact-form receipt messages.',
-                data: 'The recipient e-mail address, the sender address and the content of the message that is sent.',
-                location: self::LOCATION_NOT_MEASURED,
+                role: ($locale === 'tr' ? 'E-posta iletimi: adres doğrulama, ekip daveti, bildirim ve iletişim formu alındı mesajlarını gönderir.' : 'E-mail delivery: sends address-verification, team-invitation, notification and contact-form receipt messages.'),
+                data: ($locale === 'tr' ? 'Alıcının e-posta adresi, gönderici adresi ve gönderilen mesajın içeriği.' : 'The recipient e-mail address, the sender address and the content of the message that is sent.'),
+                location: $locale === 'tr' ? 'Sağlayıcının kendi koşulları uyarınca belirlenir; bu hizmet sağlayıcının verileri nerede sakladığını ölçmez.' : self::LOCATION_NOT_MEASURED,
             ),
             CredentialProvider::Iyzico => new Subprocessor(
                 name: 'iyzico',
-                role: 'Payment service provider: collects the payment for a paid plan and confirms it back to the service.',
-                data: 'The billing details submitted with the order and the result of the payment. Card details are entered on the provider\'s own systems and never reach this service.',
-                location: self::LOCATION_NOT_MEASURED,
+                role: ($locale === 'tr' ? 'Ödeme hizmeti sağlayıcısı: ücretli planın ödemesini tahsil eder ve hizmete onayını iletir.' : 'Payment service provider: collects the payment for a paid plan and confirms it back to the service.'),
+                data: ($locale === 'tr' ? 'Siparişle gönderilen faturalandırma bilgileri ve ödeme sonucu. Kart bilgileri sağlayıcının kendi sistemlerine girilir ve bu hizmete hiçbir zaman ulaşmaz.' : 'The billing details submitted with the order and the result of the payment. Card details are entered on the provider\'s own systems and never reach this service.'),
+                location: $locale === 'tr' ? 'Sağlayıcının kendi koşulları uyarınca belirlenir; bu hizmet sağlayıcının verileri nerede sakladığını ölçmez.' : self::LOCATION_NOT_MEASURED,
             ),
             /*
                 ÖLÇÜM KONTEYNERİ TARAYICIDA ÇALIŞIR, SUNUCUDA DEĞİL.
@@ -214,15 +214,15 @@ final class MeasuredSubprocessors implements SubprocessorRegistryPort
                 karşılığı olan hiçbir istek çıkmaz.
             */
             CredentialProvider::GoogleTagManager => new Subprocessor(
-                name: 'Google (Tag Manager, and the tools configured inside it)',
-                role: 'Measurement container loaded in the visitor\'s browser, and only after the visitor allows measurement in the cookie choice. The container runs the analytics tools the operator has configured inside it.',
-                data: 'What the visitor\'s browser sends to the tools inside the container: pages viewed, the address they arrived from, approximate location derived from the network address, and device and browser characteristics. This service\'s own servers do not send visitor data to Google; the visitor\'s browser does.',
-                location: self::LOCATION_NOT_MEASURED,
+                name: ($locale === 'tr' ? 'Google (Tag Manager ve içinde yapılandırılmış araçlar)' : 'Google (Tag Manager, and the tools configured inside it)'),
+                role: ($locale === 'tr' ? 'Ziyaretçinin tarayıcısına yalnızca çerez tercihinde ölçüme izin vermesinden sonra yüklenen ölçüm kapsayıcısı. Kapsayıcı, işletmecinin içinde yapılandırdığı analiz araçlarını çalıştırır.' : 'Measurement container loaded in the visitor\'s browser, and only after the visitor allows measurement in the cookie choice. The container runs the analytics tools the operator has configured inside it.'),
+                data: ($locale === 'tr' ? 'Ziyaretçinin tarayıcısının kapsayıcıdaki araçlara gönderdiği veriler: görüntülenen sayfalar, gelinen adres, ağ adresinden türetilen yaklaşık konum, cihaz ve tarayıcı özellikleri. Hizmetin kendi sunucuları Google’a ziyaretçi verisi göndermez; ziyaretçinin tarayıcısı gönderir.' : 'What the visitor\'s browser sends to the tools inside the container: pages viewed, the address they arrived from, approximate location derived from the network address, and device and browser characteristics. This service\'s own servers do not send visitor data to Google; the visitor\'s browser does.'),
+                location: $locale === 'tr' ? 'Sağlayıcının kendi koşulları uyarınca belirlenir; bu hizmet sağlayıcının verileri nerede sakladığını ölçmez.' : self::LOCATION_NOT_MEASURED,
             ),
-            CredentialProvider::OpenAi => $this->aiProvider('OpenAI'),
-            CredentialProvider::Gemini => $this->aiProvider('Google (Gemini API)'),
-            CredentialProvider::Anthropic => $this->aiProvider('Anthropic'),
-            CredentialProvider::Kimi => $this->aiProvider('Moonshot AI (Kimi)'),
+            CredentialProvider::OpenAi => $this->aiProvider('OpenAI', $locale),
+            CredentialProvider::Gemini => $this->aiProvider('Google (Gemini API)', $locale),
+            CredentialProvider::Anthropic => $this->aiProvider('Anthropic', $locale),
+            CredentialProvider::Kimi => $this->aiProvider('Moonshot AI (Kimi)', $locale),
             /*
                 ÖZEL UÇ NOKTA BİR ŞİRKET ADI DEĞİL, BİR ADRESTİR. Kendi
                 sunucusunu (Qwen/vLLM/Ollama) yazan bir kurulumda alt işleyen
@@ -232,21 +232,21 @@ final class MeasuredSubprocessors implements SubprocessorRegistryPort
                 herkese açık bir sayfada duyurulması gereken bir şey değildir.
             */
             CredentialProvider::CustomEndpoint => new Subprocessor(
-                name: 'Self-hosted AI endpoint',
-                role: 'AI-assisted menu import, running against an endpoint configured by the operator of this deployment rather than a named vendor.',
-                data: 'The menu text or menu photograph submitted to that feature.',
-                location: 'The server the operator of this deployment configured; ask the operator which one it is.',
+                name: ($locale === 'tr' ? 'Kendi sunucusunda barındırılan yapay zekâ uç noktası' : 'Self-hosted AI endpoint'),
+                role: ($locale === 'tr' ? 'Adı belirtilmiş bir sağlayıcı yerine bu kurulumun işletmecisinin yapılandırdığı uç noktada çalışan yapay zekâ destekli menü aktarımı.' : 'AI-assisted menu import, running against an endpoint configured by the operator of this deployment rather than a named vendor.'),
+                data: ($locale === 'tr' ? 'Bu özelliğe gönderilen menü metni veya menü fotoğrafı.' : 'The menu text or menu photograph submitted to that feature.'),
+                location: ($locale === 'tr' ? 'Bu kurulumun işletmecisinin yapılandırdığı sunucu; hangisi olduğunu işletmeciye sorun.' : 'The server the operator of this deployment configured; ask the operator which one it is.'),
             ),
         };
     }
 
-    private function aiProvider(string $name): Subprocessor
+    private function aiProvider(string $name, string $locale): Subprocessor
     {
         return new Subprocessor(
             name: $name,
-            role: 'AI-assisted menu import: reads the menu text or photograph you submit to that feature and returns a draft menu.',
-            data: 'Only what is submitted to that feature — the menu text or the photograph. Account data, guest data and payment data are not sent.',
-            location: self::LOCATION_NOT_MEASURED,
+            role: ($locale === 'tr' ? 'Yapay zekâ destekli menü aktarımı: bu özelliğe gönderdiğiniz menü metnini veya fotoğrafını okur ve taslak menü döndürür.' : 'AI-assisted menu import: reads the menu text or photograph you submit to that feature and returns a draft menu.'),
+            data: ($locale === 'tr' ? 'Yalnızca bu özelliğe gönderilenler — menü metni veya fotoğraf. Hesap, misafir ve ödeme verileri gönderilmez.' : 'Only what is submitted to that feature — the menu text or the photograph. Account data, guest data and payment data are not sent.'),
+            location: $locale === 'tr' ? 'Sağlayıcının kendi koşulları uyarınca belirlenir; bu hizmet sağlayıcının verileri nerede sakladığını ölçmez.' : self::LOCATION_NOT_MEASURED,
         );
     }
 
@@ -259,7 +259,7 @@ final class MeasuredSubprocessors implements SubprocessorRegistryPort
      *
      * @return list<Subprocessor>
      */
-    private function measurementTools(): array
+    private function measurementTools(string $locale): array
     {
         $container = config('analytics.gtm_container_id');
 
@@ -269,9 +269,9 @@ final class MeasuredSubprocessors implements SubprocessorRegistryPort
 
         $tools = [new Subprocessor(
             name: 'Google Tag Manager',
-            role: 'Loads the measurement tools listed below, and only after a visitor accepts measurement cookies.',
-            data: 'Which page was opened and whether a conversion happened. Form contents, e-mail addresses and names are not sent.',
-            location: self::LOCATION_NOT_MEASURED,
+            role: ($locale === 'tr' ? 'Aşağıdaki ölçüm araçlarını yalnızca ziyaretçi ölçüm çerezlerini kabul ettikten sonra yükler.' : 'Loads the measurement tools listed below, and only after a visitor accepts measurement cookies.'),
+            data: ($locale === 'tr' ? 'Hangi sayfanın açıldığı ve dönüşüm gerçekleşip gerçekleşmediği. Form içerikleri, e-posta adresleri ve adlar gönderilmez.' : 'Which page was opened and whether a conversion happened. Form contents, e-mail addresses and names are not sent.'),
+            location: $locale === 'tr' ? 'Sağlayıcının kendi koşulları uyarınca belirlenir; bu hizmet sağlayıcının verileri nerede sakladığını ölçmez.' : self::LOCATION_NOT_MEASURED,
         )];
 
         $names = self::MEASUREMENT_TOOL_NAMES;
@@ -286,9 +286,9 @@ final class MeasuredSubprocessors implements SubprocessorRegistryPort
 
             $tools[] = new Subprocessor(
                 name: $name,
-                role: 'Measurement, loaded through Google Tag Manager only after a visitor accepts measurement cookies.',
-                data: 'Page views and events on the public site and on published menus, under that tool\'s own cookies.',
-                location: self::LOCATION_NOT_MEASURED,
+                role: ($locale === 'tr' ? 'Yalnızca ziyaretçi ölçüm çerezlerini kabul ettikten sonra Google Tag Manager üzerinden yüklenen ölçüm.' : 'Measurement, loaded through Google Tag Manager only after a visitor accepts measurement cookies.'),
+                data: ($locale === 'tr' ? 'Aracın kendi çerezleri kapsamında, herkese açık sitedeki ve yayımlanmış menülerdeki sayfa görüntülemeleri ve olaylar.' : 'Page views and events on the public site and on published menus, under that tool\'s own cookies.'),
+                location: $locale === 'tr' ? 'Sağlayıcının kendi koşulları uyarınca belirlenir; bu hizmet sağlayıcının verileri nerede sakladığını ölçmez.' : self::LOCATION_NOT_MEASURED,
             );
         }
 

@@ -15,5 +15,5 @@ use App\Domain\Legal\SubprocessorInventory;
  */
 interface SubprocessorRegistryPort
 {
-    public function inventory(): SubprocessorInventory;
+    public function inventory(string $locale = 'en'): SubprocessorInventory;
 }
