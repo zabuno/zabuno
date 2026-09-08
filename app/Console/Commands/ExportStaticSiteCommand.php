@@ -7,9 +7,11 @@ namespace App\Console\Commands;
 use App\Domain\Content\PagePublicationStatus;
 use App\Http\Controllers\FoundationStatusController;
 use App\Http\Controllers\PublicSite\ShowAboutController;
+use App\Http\Controllers\PublicSite\ShowAccessibilityStatementController;
 use App\Http\Controllers\PublicSite\ShowContactFormController;
 use App\Http\Controllers\PublicSite\ShowHelpController;
 use App\Http\Controllers\PublicSite\ShowLegalDocumentController;
+use App\Http\Controllers\PublicSite\ShowTrustCentreController;
 use App\Models\ContentPage;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Http\Kernel as HttpKernel;
@@ -69,6 +71,17 @@ final class ExportStaticSiteCommand extends Command
         ShowAboutController::class,
         // Yasal belgeler (FF-198): sekiz adres, tek denetleyici.
         ShowLegalDocumentController::class,
+        /*
+            GÜVEN MERKEZİ VE ERİŞİLEBİLİRLİK BEYANI (FF-252).
+
+            Burada olmaları bir tercih değil bir ŞART: `scripts/mobile-ux-audit`
+            kurumsal sayfaları bu komutun çıktısı üzerinden ölçüyor. Listeye
+            eklenmeyen bir sayfa, 320 pikselde hiç ölçülmez — ve ölçülmeyen bir
+            sayfa hakkında "taşma yok" demek, tam olarak bu paketin yasakladığı
+            cümle olurdu.
+        */
+        ShowTrustCentreController::class,
+        ShowAccessibilityStatementController::class,
     ];
 
     public function handle(HttpKernel $kernel): int

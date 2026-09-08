@@ -107,6 +107,22 @@ final class ShowSitemapController extends Controller
         '/sla',
         '/acceptable-use',
         '/third-party-licenses',
+        /*
+            GÜVEN MERKEZİ VE ERİŞİLEBİLİRLİK BEYANI (FF-252, `docs/107` Faz 3).
+
+            İkisi de bugün 200 dönüyor, kütükte değil ve kendi denetleyicileri
+            var — yani bu listenin tanımına birebir uyuyorlar. Ve ikisi de
+            İNDEKSLENMELİ: bir kurumsal alıcı güven merkezini arama motorunda
+            arar, bir kamu alımı şartnamesi erişilebilirlik beyanını adıyla
+            ister. Sitemap'te olmayan bir sayfa, o iki kişi için yok demektir.
+
+            `SELLER_IDENTITY_PATHS`e GİRMİYORLAR ve bu bilinçli: ikisi de bir
+            taraf beyan etmiyor, neyin ölçülüp neyin ölçülmediğini söylüyor —
+            ve o cümleler satıcının ünvanı girilmeden de doğru. Kabul
+            edilebilir kullanım ile lisans listesi aynı sınırın aynı tarafında.
+        */
+        '/trust',
+        '/accessibility',
     ];
 
     public function __construct(

@@ -131,14 +131,39 @@ final class ServiceLevelTerms
      * ÖNCE bilmelidir. Sıfır olduğunda bölümü atlamak, "söylenmemiş bir
      * yok" üretirdi ve söylenmemiş bir yok her zaman müşterinin aleyhine
      * çalışır: okuyan taraf bir telafi olduğunu varsayar.
+     *
+     * ═══ NEDEN GENEL (`public`) VE NEDEN ARTIK TAM BİR FONKSİYON ═══
+     *
+     * FF-252'de güven merkezi (`/trust`) bu cümleyi ÇİZİYOR. İkinci bir
+     * kopya yazmak, iki sayfanın bir gün ayrışması demekti — ve ayrışacağı
+     * gün, sözleşmede "kredi yok" yazarken güven merkezinde bir kredi vaat
+     * eden bir sitemiz olurdu. Bir olgu, tek cümle.
+     *
+     * Metot bu yüzden ARTIK TAM: eskiden yalnız taahhüt eksiksizken
+     * çağrılıyordu, dolayısıyla `null` dalı hiç yoktu ve bir `null` değer
+     * cümleye "a service credit of % of that month's fee" diye basardı.
+     * Güven merkezi taahhüt EKSİKKEN de bu satırı göstermek zorunda —
+     * gizlenen bir sınır, güven merkezinin kendisini çürütür.
      */
-    private static function creditSentence(ServiceLevelCommitment $commitment): string
+    public static function creditSentence(ServiceLevelCommitment $commitment): string
     {
-        if ($commitment->serviceCreditPercent() === 0) {
+        $percent = $commitment->serviceCreditPercent();
+
+        if ($percent === null) {
+            /*
+                DEĞER GİRİLMEMİŞ. "Kredi yok" DEMEK DEĞİLDİR ve öyle
+                yazılmaz: biri sahibin verdiği bir karar, öteki henüz
+                verilmemiş bir karardır. Okuyucunun ikisini ayırt edebilmesi
+                için anahtarın adı da cümlede geçer.
+            */
+            return 'No service credit rate has been entered for this deployment (service_credit_percent), so these terms commit to none. Until it is entered, treat the remedy for a missed month as cancellation under the cancellation terms.';
+        }
+
+        if ($percent === 0) {
             return 'Where the target is missed in a calendar month, no service credit is paid. This service offers no financial remedy for missed availability; your remedy is to cancel, under the cancellation terms.';
         }
 
-        return 'Where the target is missed in a calendar month, a service credit of '.$commitment->serviceCreditPercent().'% of that month\'s fee for the affected plan is applied to a following period, on the terms in the section on remedies below.';
+        return 'Where the target is missed in a calendar month, a service credit of '.$percent.'% of that month\'s fee for the affected plan is applied to a following period, on the terms in the section on remedies below.';
     }
 
     /**
@@ -146,8 +171,13 @@ final class ServiceLevelTerms
      *
      * Yapılandırma anahtarını ve ne anlama geldiğini birlikte yazar: sahip
      * sayfayı okuyup hangi değeri nereye gireceğini bilebilmeli.
+     *
+     * Genel (`public`), çünkü güven merkezi aynı listeyi gösteriyor
+     * (FF-252) ve iki yerde iki liste tutmak, birinin bir gün eksik
+     * kalmasıdır. Taahhüt eksiksizken boş bir cümle döner; çağıran taraf
+     * onu zaten sormaz.
      */
-    private static function missingSentence(ServiceLevelCommitment $commitment): string
+    public static function missingSentence(ServiceLevelCommitment $commitment): string
     {
         $labels = [
             'availability_target_percent' => 'the availability percentage to be committed for a calendar month',
@@ -162,6 +192,11 @@ final class ServiceLevelTerms
             $missing[] = $labels[$field].' ('.$field.')';
         }
 
-        return implode('; ', $missing).'.';
+        /*
+            Eksik yokken NOKTADAN İBARET bir cümle dönerdi. Belge bu metodu
+            yalnız eksik varken çağırıyor, ama genel bir metot çağıranını
+            seçemez ve tek başına bir "." bir sayfaya basılabilirdi.
+        */
+        return $missing === [] ? '' : implode('; ', $missing).'.';
     }
 }

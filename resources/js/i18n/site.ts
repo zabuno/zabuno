@@ -114,6 +114,15 @@ export const siteTranslations = {
     'site.nav.help': 'Help',
     'site.nav.about': 'About us',
     'site.nav.contact': 'Contact',
+    /*
+        GÜVEN MERKEZİ VE ERİŞİLEBİLİRLİK BEYANI (FF-252).
+
+        İkisi de ŞİRKET grubunda, yasal satırda değil: bir sözleşme değil bir
+        durum tespitidirler. Ad kısa tutuldu çünkü bir kurumsal alıcı ve bir
+        erişilebilirlik denetçisi tam olarak bu iki kelimeyi arar.
+    */
+    'site.nav.trust': 'Trust centre',
+    'site.nav.accessibility': 'Accessibility',
     'site.nav.login': 'Log in',
     'site.nav.register': 'Create account',
     /*
@@ -347,6 +356,26 @@ export const siteTranslations = {
     'site.about.incomplete.heading': 'This page is not complete yet.',
     'site.about.incomplete.body':
         'The legal identity of the seller has not been published yet, so the details below are missing. Until they are entered, use the contact form to reach us.',
+
+    /*
+        GÜVENCE İDDİALARININ HÂL ETİKETLERİ (FF-252).
+
+        Dört hâl, dört kelime öbeği — ve HEPSİ YAZILIR. Bir güven merkezi ile
+        bir erişilebilirlik beyanının tek işi, ölçülmüş bir satırı ölçülmemiş
+        bir satırdan ayırmaktır; o ayrım renkle değil KELİMEYLE anlatılır,
+        çünkü rengi göremeyen bir okuyucu için bir kenar rengi hiçbir şey
+        demez.
+
+        "Not measured" bilerek uzun ve düz: "kısmen", "büyük ölçüde",
+        "planlanıyor" gibi bir sözcük, ölçülmemiş bir şeyi ölçülmüş gibi
+        okutur ve bu iki sayfa tam olarak onu engellemek için var.
+    */
+    'site.assurance.state.measured': 'Measured',
+    'site.assurance.state.notMeasured': 'Not measured',
+    'site.assurance.state.knownGap': 'Known gap',
+    'site.assurance.state.notHeld': 'We do not have this',
+    /* Kanıt bir SONUÇ değil, ölçenin adıdır: bir dosya ya da bir komut. */
+    'site.assurance.evidence': 'Measured by',
 
     /* Fiyatın yanında, ödeme adımından ÖNCE (FF-216). */
     'site.pricing.paymentMethods':

@@ -18,9 +18,11 @@ use App\Http\Controllers\Ordering\StoreGuestOrderController;
 use App\Http\Controllers\PlatformAdminAppController;
 use App\Http\Controllers\Publication\ShowDraftPreviewController;
 use App\Http\Controllers\PublicSite\ShowAboutController;
+use App\Http\Controllers\PublicSite\ShowAccessibilityStatementController;
 use App\Http\Controllers\PublicSite\ShowContactFormController;
 use App\Http\Controllers\PublicSite\ShowHelpController;
 use App\Http\Controllers\PublicSite\ShowLegalDocumentController;
+use App\Http\Controllers\PublicSite\ShowTrustCentreController;
 use App\Http\Controllers\PublicSite\StoreContactMessageController;
 use App\Http\Controllers\PublicSite\StoreMeasurementConsentController;
 use App\Http\Controllers\QrDestination\RedirectQrTokenController;
@@ -89,6 +91,25 @@ Route::get('/help', ShowHelpController::class)->name('public.help');
     istemez, veritabanına dokunmaz.
 */
 Route::get('/about', ShowAboutController::class)->name('public.about');
+
+/*
+    GÜVEN MERKEZİ (FF-252, `docs/107` Faz 3).
+
+    "Satın almadan önce neyi bilmem gerekiyor?" — bir zincirin satın alma ya
+    da hukuk birimi bu sayfayı ADIYLA arar ve `/trust` o birimin aradığı
+    kelimedir. Sayfa veritabanına dokunmaz ve oturum istemez: onu okuyan
+    kişinin henüz bir hesabı yoktur.
+*/
+Route::get('/trust', ShowTrustCentreController::class)->name('public.trust');
+
+/*
+    ERİŞİLEBİLİRLİK BEYANI (FF-252).
+
+    Adres `/accessibility`: bir denetçi ve bir kamu alımı şartnamesi onu bu
+    kelimeyle arar. OTURUM İSTEMEZ ve bu, sayfanın konusunun kendisiyle
+    ilgili — arayüzü kullanamayan biri oturum da açamıyor olabilir.
+*/
+Route::get('/accessibility', ShowAccessibilityStatementController::class)->name('public.accessibility');
 
 Route::get('/contact', ShowContactFormController::class)->name('public.contact');
 Route::post('/contact', StoreContactMessageController::class)

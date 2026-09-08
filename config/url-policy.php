@@ -162,6 +162,15 @@ return [
             menüsüyle gölgelenirdi.
         */
         'acceptable-use', 'data-processing', 'sla', 'third-party-licenses',
+        /*
+            GÜVEN MERKEZİ VE ERİŞİLEBİLİRLİK BEYANI (FF-252). Aynı kural,
+            aynı gerekçe: ikisi de üst düzey yoldur
+            (URL-RESERVED-COVERS-ROUTES-13). Bir işletme `accessibility`
+            slug'ını alırsa, bir kamu alımı şartnamesinin adıyla aradığı
+            beyan o işletmenin menüsüyle gölgelenirdi — ve gölgelendiği
+            hiçbir yerde bir hata olarak görünmezdi.
+        */
+        'accessibility', 'trust',
         // `engineering` REZERVE KALIR: kökte yaşayan 301 yönlendirmesi
         // orada duruyor, bir kiracı o slug'ı alırsa kendi sayfası ile
         // yönlendirme aynı adresi paylaşırdı (FF-248).

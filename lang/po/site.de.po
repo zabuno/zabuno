@@ -64,6 +64,26 @@ msgstr ""
 msgid "site.about.service.scope"
 msgstr ""
 
+#: site:site.assurance.evidence
+msgid "site.assurance.evidence"
+msgstr ""
+
+#: site:site.assurance.state.knownGap
+msgid "site.assurance.state.knownGap"
+msgstr ""
+
+#: site:site.assurance.state.measured
+msgid "site.assurance.state.measured"
+msgstr ""
+
+#: site:site.assurance.state.notHeld
+msgid "site.assurance.state.notHeld"
+msgstr ""
+
+#: site:site.assurance.state.notMeasured
+msgid "site.assurance.state.notMeasured"
+msgstr ""
+
 #: site:site.brand
 msgid "site.brand"
 msgstr ""
@@ -668,6 +688,10 @@ msgstr ""
 msgid "site.nav.about"
 msgstr ""
 
+#: site:site.nav.accessibility
+msgid "site.nav.accessibility"
+msgstr ""
+
 #: site:site.nav.account
 msgid "site.nav.account"
 msgstr ""
@@ -730,6 +754,10 @@ msgstr ""
 
 #: site:site.nav.solutions
 msgid "site.nav.solutions"
+msgstr ""
+
+#: site:site.nav.trust
+msgid "site.nav.trust"
 msgstr ""
 
 #: site:site.pageState.approved

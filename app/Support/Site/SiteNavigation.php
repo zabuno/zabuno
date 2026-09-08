@@ -186,6 +186,24 @@ final class SiteNavigation
                 'items' => [
                     ['labelKey' => 'site.nav.about', 'path' => '/about'],
                     ['labelKey' => 'site.nav.contact', 'path' => '/contact'],
+                    /*
+                        GÜVEN MERKEZİ VE ERİŞİLEBİLİRLİK BEYANI (FF-252).
+
+                        YASAL SATIRDA DEĞİL, ŞİRKET GRUBUNDA — ve bu bir yer
+                        tercihi değil bir tür ayrımı. Yasal satır SÖZLEŞMELERİ
+                        sayar: her birinin sürümü, yürürlük tarihi ve bir onay
+                        kaydı vardır. Bu iki sayfa sözleşme değil DURUM
+                        TESPİTİDİR; içerikleri her çizimde o anki
+                        yapılandırmadan doğar. Onları sözleşmelerin arasına
+                        koymak, okuyucuya imzalanacak bir şey gibi gösterirdi.
+
+                        Grup böylece DÖRT maddeye çıkıyor — `OPEN_ITEM_CEILING`
+                        tam olarak dört, yani grup hâlâ AÇIK başlıyor ve dar
+                        ekranda bir dokunuş eklemiyor. Beşinci bir madde
+                        eklendiği gün kendiliğinden katlanır.
+                    */
+                    ['labelKey' => 'site.nav.trust', 'path' => '/trust'],
+                    ['labelKey' => 'site.nav.accessibility', 'path' => '/accessibility'],
                 ],
             ],
             [

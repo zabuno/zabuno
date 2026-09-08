@@ -64,6 +64,26 @@ msgstr "What Zabuno is"
 msgid "site.about.service.scope"
 msgstr "Depending on the plan, the workspace also covers branches, tables and QR codes, guest ordering, guest rating, team members with their own permissions, custom branding, reporting, and importing a menu from a photograph with a person confirming the result. The service is used through a web browser; nothing is installed."
 
+#: site:site.assurance.evidence
+msgid "site.assurance.evidence"
+msgstr "Measured by"
+
+#: site:site.assurance.state.knownGap
+msgid "site.assurance.state.knownGap"
+msgstr "Known gap"
+
+#: site:site.assurance.state.measured
+msgid "site.assurance.state.measured"
+msgstr "Measured"
+
+#: site:site.assurance.state.notHeld
+msgid "site.assurance.state.notHeld"
+msgstr "We do not have this"
+
+#: site:site.assurance.state.notMeasured
+msgid "site.assurance.state.notMeasured"
+msgstr "Not measured"
+
 #: site:site.brand
 msgid "site.brand"
 msgstr "Zabuno"
@@ -668,6 +688,10 @@ msgstr "Version"
 msgid "site.nav.about"
 msgstr "About us"
 
+#: site:site.nav.accessibility
+msgid "site.nav.accessibility"
+msgstr "Accessibility"
+
 #: site:site.nav.account
 msgid "site.nav.account"
 msgstr "Account"
@@ -731,6 +755,10 @@ msgstr "Resources"
 #: site:site.nav.solutions
 msgid "site.nav.solutions"
 msgstr "Solutions"
+
+#: site:site.nav.trust
+msgid "site.nav.trust"
+msgstr "Trust centre"
 
 #: site:site.pageState.approved
 msgid "site.pageState.approved"
