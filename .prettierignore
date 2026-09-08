@@ -21,6 +21,13 @@ package-lock.json
 # Fixed test-writer files — implementation writer does not reformat them.
 resources/js/__tests__
 
+# Koddan üretilen yetki matrisi (`docs/139`). Bu dosyanın baytlarını
+# `php artisan authorization:matrix` yazar ve bir kapı (
+# `AuthorizationMatrixArtifactTest`) onları birebir karşılaştırır. Prettier
+# burada çalışsaydı iki yazar olurdu: üretici dosyayı yazar, biçimlendirici
+# yeniden yazar ve kapı her koşuda ayrışma bildirirdi.
+resources/js/generated
+
 # AEP teslim paketinin BİREBİR kopyası (FF-131). Biçimlendirilmez: kaynak
 # sahibin verdiği dosyadır ve yeniden kopyalandığında fark okunabilir
 # kalmalı. Prettier burada çalışsaydı her güncelleme, tek bir değer

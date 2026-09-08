@@ -6856,6 +6856,114 @@ msgstr "Herkes yalnızca işinin gerektirdiğini görür."
 msgid "workspace.team.pendingInvitations.region"
 msgstr "Bekleyen davetler"
 
+#: workspace:workspace.team.roleGuide.ability.analytics.view
+msgid "workspace.team.roleGuide.ability.analytics.view"
+msgstr ""
+
+#: workspace:workspace.team.roleGuide.ability.billing.manage
+msgid "workspace.team.roleGuide.ability.billing.manage"
+msgstr ""
+
+#: workspace:workspace.team.roleGuide.ability.billing.view
+msgid "workspace.team.roleGuide.ability.billing.view"
+msgstr ""
+
+#: workspace:workspace.team.roleGuide.ability.media.download_original
+msgid "workspace.team.roleGuide.ability.media.download_original"
+msgstr ""
+
+#: workspace:workspace.team.roleGuide.ability.media.manage
+msgid "workspace.team.roleGuide.ability.media.manage"
+msgstr ""
+
+#: workspace:workspace.team.roleGuide.ability.menu.allergens.manage
+msgid "workspace.team.roleGuide.ability.menu.allergens.manage"
+msgstr ""
+
+#: workspace:workspace.team.roleGuide.ability.menu.manage
+msgid "workspace.team.roleGuide.ability.menu.manage"
+msgstr ""
+
+#: workspace:workspace.team.roleGuide.ability.menu.publish
+msgid "workspace.team.roleGuide.ability.menu.publish"
+msgstr ""
+
+#: workspace:workspace.team.roleGuide.ability.menu.stock.manage
+msgid "workspace.team.roleGuide.ability.menu.stock.manage"
+msgstr ""
+
+#: workspace:workspace.team.roleGuide.ability.menu.view
+msgid "workspace.team.roleGuide.ability.menu.view"
+msgstr ""
+
+#: workspace:workspace.team.roleGuide.ability.order.confirm
+msgid "workspace.team.roleGuide.ability.order.confirm"
+msgstr ""
+
+#: workspace:workspace.team.roleGuide.ability.order.kitchen
+msgid "workspace.team.roleGuide.ability.order.kitchen"
+msgstr ""
+
+#: workspace:workspace.team.roleGuide.ability.order.settings
+msgid "workspace.team.roleGuide.ability.order.settings"
+msgstr ""
+
+#: workspace:workspace.team.roleGuide.ability.order.view
+msgid "workspace.team.roleGuide.ability.order.view"
+msgstr ""
+
+#: workspace:workspace.team.roleGuide.ability.qr.create
+msgid "workspace.team.roleGuide.ability.qr.create"
+msgstr ""
+
+#: workspace:workspace.team.roleGuide.ability.qr.design.manage
+msgid "workspace.team.roleGuide.ability.qr.design.manage"
+msgstr ""
+
+#: workspace:workspace.team.roleGuide.ability.qr.disable
+msgid "workspace.team.roleGuide.ability.qr.disable"
+msgstr ""
+
+#: workspace:workspace.team.roleGuide.ability.qr.view
+msgid "workspace.team.roleGuide.ability.qr.view"
+msgstr ""
+
+#: workspace:workspace.team.roleGuide.ability.rating.reply
+msgid "workspace.team.roleGuide.ability.rating.reply"
+msgstr ""
+
+#: workspace:workspace.team.roleGuide.ability.rating.view
+msgid "workspace.team.roleGuide.ability.rating.view"
+msgstr ""
+
+#: workspace:workspace.team.roleGuide.ability.security.evidence.view
+msgid "workspace.team.roleGuide.ability.security.evidence.view"
+msgstr ""
+
+#: workspace:workspace.team.roleGuide.ability.workspace.manage
+msgid "workspace.team.roleGuide.ability.workspace.manage"
+msgstr ""
+
+#: workspace:workspace.team.roleGuide.ability.workspace.view
+msgid "workspace.team.roleGuide.ability.workspace.view"
+msgstr ""
+
+#: workspace:workspace.team.roleGuide.detail.can
+msgid "workspace.team.roleGuide.detail.can"
+msgstr ""
+
+#: workspace:workspace.team.roleGuide.detail.cannot
+msgid "workspace.team.roleGuide.detail.cannot"
+msgstr ""
+
+#: workspace:workspace.team.roleGuide.detail.show
+msgid "workspace.team.roleGuide.detail.show"
+msgstr ""
+
+#: workspace:workspace.team.roleGuide.detail.source
+msgid "workspace.team.roleGuide.detail.source"
+msgstr ""
+
 #: workspace:workspace.team.roleGuide.editor
 msgid "workspace.team.roleGuide.editor"
 msgstr "Ürünler, fiyatlar ve fotoğraflar. Yayınlayamaz."
