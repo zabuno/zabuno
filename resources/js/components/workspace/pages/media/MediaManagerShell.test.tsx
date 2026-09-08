@@ -39,6 +39,29 @@ const UPLOAD = {
     content: <p>upload content</p>,
 };
 
+const QUEUE = {
+    key: 'queue',
+    label: 'Queue',
+    icon: <span aria-hidden="true" data-testid="queue-icon" />,
+    content: <p>queue content</p>,
+};
+
+const GOVERNANCE = {
+    key: 'governance',
+    label: 'Governance',
+    icon: <span aria-hidden="true" data-testid="governance-icon" />,
+    content: <p>governance content</p>,
+};
+
+const MATURITY = {
+    key: 'maturity',
+    label: 'Maturity',
+    icon: <span aria-hidden="true" data-testid="maturity-icon" />,
+    content: <p>maturity content</p>,
+};
+
+const ALL = [LIBRARY, UPLOAD, QUEUE, GOVERNANCE, MATURITY];
+
 type ShellOverrides = Partial<React.ComponentProps<typeof MediaManagerShell>>;
 
 function mount(overrides: ShellOverrides = {}) {
@@ -183,6 +206,90 @@ describe('MediaManagerShell — klasör şeridi ve ölçek disiplini', () => {
         expect(classLists.filter((list) => /rounded-full/.test(list))).toEqual([]);
         expect(classLists.filter((list) => /\[\d+px\]/.test(list))).toEqual([]);
         expect(classLists.filter((list) => /(^|\s)(sm|md|lg|xl|2xl):/.test(list))).toEqual([]);
+    });
+});
+
+describe('MediaManagerShell — günlük iş öne çıkar', () => {
+    /*
+        Kabuğa on bir bölüme kadar veriliyor; sahibin GÜNLÜK işi üçünde
+        geçer: dosyaya bakmak, dosya eklemek, eklediği işin ne olduğunu
+        görmek. On bir sekme yan yana yazıldığında bu fark kayboluyordu —
+        hepsi aynı boyda, telefonda üç satıra sarılı, her seferinde baştan
+        okunan bir liste.
+    */
+    it('günlük üçlü öne çıkar, geri kalanı açılır bölümde durur — ama HEPSİ erişilebilir', async () => {
+        const user = userEvent.setup();
+        const { onSelect } = mount({ sections: ALL });
+
+        const nav = screen.getByRole('navigation', { name: 'Media sections' });
+        const disclosure = nav.querySelector('details') as HTMLDetailsElement;
+
+        // Öne çıkanlar kapağın DIŞINDA: sahip onlara bir tık bile harcamaz.
+        ['Library', 'Upload', 'Queue'].forEach((label) => {
+            const tab = within(nav).getByRole('button', { name: label });
+
+            expect(disclosure.contains(tab)).toBe(false);
+            expect(tab).toHaveClass('px-[var(--space-4)]');
+        });
+
+        // Geri kalanı GİZLİ DEĞİL, bir tık uzakta — ve gittiği yer gerçek.
+        const governance = within(disclosure).getByRole('button', { name: 'Governance' });
+        expect(within(disclosure).getByRole('button', { name: 'Maturity' })).toBeInTheDocument();
+
+        await user.click(governance);
+        expect(onSelect).toHaveBeenCalledWith('governance');
+    });
+
+    it('aktif bölüm kapağın ARDINDAYSA kapak açık başlar', () => {
+        /*
+            Kapalı bir kapak, ekranda hiçbir yerde işaretli sekme bırakmaz:
+            içerik görünür ama sahip nerede olduğunu göremez. "Yönetişim"i
+            açan biri, geri dönerken hangi kutudan çıktığını görmelidir.
+        */
+        mount({ sections: ALL, activeKey: 'governance' });
+
+        const nav = screen.getByRole('navigation', { name: 'Media sections' });
+        const disclosure = nav.querySelector('details') as HTMLDetailsElement;
+
+        expect(disclosure.open).toBe(true);
+        expect(within(disclosure).getByRole('button', { name: 'Governance' })).toHaveAttribute(
+            'aria-current',
+            'page',
+        );
+    });
+
+    it('günlük bölüm aktifken kapak kapalı başlar ve gezinti düzse hiç çizilmez', () => {
+        mount({ sections: ALL });
+
+        const nav = screen.getByRole('navigation', { name: 'Media sections' });
+        expect((nav.querySelector('details') as HTMLDetailsElement).open).toBe(false);
+
+        // Yalnız günlük bölümler verildiğinde saklanacak bir şey yoktur.
+        mount({ sections: [LIBRARY, UPLOAD, QUEUE] });
+        expect(
+            screen
+                .getAllByRole('navigation', { name: 'Media sections' })[1]
+                .querySelector('details'),
+        ).toBeNull();
+    });
+});
+
+describe('MediaManagerShell — ana sütun önce', () => {
+    it('şerit (klasör + kota) ana içerikten SONRA gelir', () => {
+        /*
+            Şerit belgede önde dururken telefonda sahip her açılışta önce
+            "ne kadar yerim kaldı" tablosunu geçip sonra dosyalarına
+            ulaşıyordu; oysa geldiği iş dosyalardı. Kota bir CEVAPTIR, bir
+            kapı değil — ve bu sıra ekran okuyucuda da aynen okunur.
+        */
+        mount({ rail: <p>rail content</p> });
+
+        const content = screen.getByText('library content');
+        const rail = screen.getByTestId('media-manager-rail');
+
+        expect(
+            content.compareDocumentPosition(rail) & Node.DOCUMENT_POSITION_FOLLOWING,
+        ).toBeTruthy();
     });
 });
 
