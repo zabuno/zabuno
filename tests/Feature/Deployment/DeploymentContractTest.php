@@ -995,38 +995,43 @@ final class DeploymentContractTest extends TestCase
     }
 
     /**
-     * DAĞITIM BİR YAYIN KARARI VERMEZ — `docs/128`.
+     * DAĞITIM ÖLÇÜMDEN BİR YAYIN KARARI TÜRETMEZ — `docs/128`, `docs/147`.
      *
-     * Kütüğü doldurmak ile bir sayfayı yayına almak AYRI işlerdir ve
-     * ikincisi bir insanın kararıdır (yönerge §20: içerik onayı, tasarım,
-     * SEO, erişilebilirlik, QA). `site:sync-content-status` bu kararın
-     * bir kademe altını — "içeriği yazılmış" ölçümünü — yürütür ve tavanı
-     * bilerek `content_draft`tır; ama her dağıtımda KENDİLİĞİNDEN yürüyen
-     * bir durum ilerletici, o tavanı bir gün yükseltmenin en kolay yolunu
-     * açardı.
+     * Kural ilk yazıldığında tek cümleydi: *"giriş betiği kütüğü DOLDURUR,
+     * durumu İLERLETMEZ."* Sebebi hâlâ yerinde ve hâlâ doğru:
+     * `site:sync-content-status` bir ÖLÇÜM yapar ("bu sayfanın metni
+     * yazılmış mı?") ve ölçümden bir durum türetir. Hiçbir insan devrede
+     * değildir. Her dağıtımda kendiliğinden yürüyen böyle bir ilerletici,
+     * `content_draft` tavanını bir gün yükseltmenin en kolay yolunu açardı —
+     * *"bir betiğin her seferinde geçtiği kalite kapısı, kapı değildir."*
      *
-     * Bu yüzden kural: giriş betiği kütüğü DOLDURUR, durumu İLERLETMEZ.
-     * İlerletme elle ve bilerek çalıştırılır.
+     * ── Yasak DARALTILDI, sebebi ölçüldü (`docs/147`) ─────────────────────
      *
-     * ── Kural GENİŞLETİLDİ (`docs/144`) ──────────────────────────────────
+     * `docs/144` yasağı ikinci bir komuta, `site:apply-publication-decisions`
+     * ile genişletmişti, ve o genişletme bir DAĞITIM BOŞLUĞU üretti: sahip
+     * bir sayfayı yayına aldığında, birisi sunucuya SSH ile girip komutu
+     * elle koşana kadar sayfa canlıda YOKTU. Dağıtım yeşil yanıyor, sağlık
+     * kontrolü geçiyor, ve kararın kendisi uygulanmamış duruyordu.
      *
-     * Kapı ilk yazıldığında durumu ilerletebilen tek bir komut vardı ve
-     * yasak onun ADINA yazılmıştı. Artık ikincisi var:
-     * `site:apply-publication-decisions`, sahibin adıyla sayılmış yayın
-     * kararlarını uygular.
+     * Sahibin kararı (2026-09-08): dağıtım kendi başına tamamlanmalı.
+     * DEPLOY-GATED-04'te olduğu gibi kapı sessizce silinmedi, YENİDEN
+     * YAZILDI — ve daraltmanın gerekçesi, komutun kendi belgesinin zaten
+     * söylediği ayrımdır:
      *
-     * Yeni komutun yasağa dahil edilmesi, bu paketin kendi işini
-     * zorlaştırıyor — ve tam olarak bu yüzden doğru. Kuralın metni "giriş
-     * betiği durumu ilerletmez" diyordu ama ölçümü tek bir dizgeyi
-     * arıyordu; ikinci komut, kuralı hiç değiştirmeden yanından geçebilirdi.
-     * Kapının GEVŞEMESİ böyle olur: yasak eskir, kod yenilenir, ve kimse
-     * bir şey değiştirmemiş olur.
+     *   `sync-content-status` bir ölçümden karar TÜRETİR — insan yok, tavan
+     *   var, dağıtımda çalışamaz.
      *
-     * Sonucu açıkça kaydedilsin: yayın kararı üretimde ELLE uygulanır
-     * (`docs/144` §Nasıl uygulanır). Bir dağıtım siteyi kendiliğinden
-     * açmaz.
+     *   `apply-publication-decisions` bir kararı UYGULAR. Kararı veren
+     *   dosya (`config/content-publication-decisions.php`) sayfaları adıyla
+     *   sayar, her satırda kararı vereni ve sebebini taşır, ve kod
+     *   incelemesinden geçer. Kapıdan geçen şey bir betik değil, bir
+     *   İNSANDIR; kapı da bu dosyanın incelemesidir. O kapı dağıtıma
+     *   taşınmadı — dağıtım yalnız verilmiş kararı taşır.
+     *
+     * Toptan bir "her şeyi yayınla" yolu hâlâ YOK: komut yalnız kararlar
+     * dosyasında adı geçen satırlara dokunur.
      */
-    public function test_the_deploy_fills_the_ledger_without_advancing_a_publication_decision(): void
+    public function test_the_deploy_never_derives_a_publication_decision_from_a_measurement(): void
     {
         // Yorumlar ELENİR — bu dosyanın iki kez öğrendiği ders (bkz.
         // DEPLOY-SENDS-EVERY-TOPOLOGY-10 ve DEPLOY-GATED-04): yasağı
@@ -1035,30 +1040,51 @@ final class DeploymentContractTest extends TestCase
         // NEDEN konmadığını anlatan yorum, kapıyı düşürüyordu.
         $entrypoint = preg_replace('/^\s*#.*$/m', '', $this->read('docker/entrypoint.sh')) ?? '';
 
-        foreach ([
-            'site:sync-content-status',
-            'site:apply-publication-decisions',
-        ] as $advancer) {
+        foreach (self::BANNED_FROM_DEPLOY as $advancer) {
             self::assertStringNotContainsString(
                 $advancer,
                 $entrypoint,
-                "DEPLOY-PAGE-LEDGER-12: dağıtım `{$advancer}` ile yayın durumunu ilerletiyor; "
-                .'bir betiğin her seferinde geçtiği kalite kapısı, kapı değildir.'
+                "DEPLOY-PAGE-LEDGER-12: dağıtım `{$advancer}` ile bir ÖLÇÜMDEN yayın "
+                .'durumu türetiyor; bir betiğin her seferinde geçtiği kalite kapısı, '
+                .'kapı değildir.'
             );
         }
     }
 
+    /** Ölçümden karar türeten, dolayısıyla dağıtımda çalışamayacak komutlar. */
+    private const BANNED_FROM_DEPLOY = ['site:sync-content-status'];
+
     /**
-     * DURUMU İLERLETEBİLEN HER KOMUT YASAĞA DAHİL OLMALI — DEPLOY-PAGE-LEDGER-13.
-     *
-     * Üstteki kapı bir dizge listesi tutuyor ve dizge listeleri eskir: üçüncü
-     * bir komut yazıldığı gün, kimse listeye eklemeyi hatırlamazsa yasak onun
-     * için hiç var olmamış olur. Bu kapı listeyi ÖLÇÜME bağlar — kütüğün
-     * yayın durumuna dokunabilen her `site:` komutu listede olmak zorundadır.
+     * Verilmiş bir kararı UYGULAYAN, dolayısıyla dağıtımda çalışması gereken
+     * komutlar. Listeye girmek bedavaya değil: her satırın kararı bir insana
+     * ve kod incelemesinden geçen bir dosyaya dayanmak zorunda.
      */
-    public function test_every_command_that_can_advance_a_page_is_covered_by_the_ban(): void
+    private const APPLIES_A_HUMAN_DECISION = ['site:apply-publication-decisions'];
+
+    /**
+     * DURUMU İLERLETEBİLEN HER KOMUT SINIFLANDIRILMIŞ OLMALI — DEPLOY-PAGE-LEDGER-13.
+     *
+     * Üstteki kapı dizge listeleri tutuyor ve dizge listeleri eskir: üçüncü
+     * bir komut yazıldığı gün, kimse listelere eklemeyi hatırlamazsa kural
+     * onun için hiç var olmamış olur. Bu kapı listeleri ÖLÇÜME bağlar —
+     * kütüğün yayın durumuna dokunabilen her `site:` komutu İKİ listeden tam
+     * olarak birinde olmak zorundadır.
+     *
+     * "Tam olarak birinde" şart: bir komut hem yasaklı hem izinli olamaz,
+     * ve sınıflandırılmamış bir komut sessizce dağıtıma sızamaz. Sınıflama
+     * bir düşünme adımıdır — karar ölçümden mi türüyor, yoksa bir insandan
+     * mı geliyor?
+     */
+    public function test_every_command_that_can_advance_a_page_is_classified(): void
     {
-        $covered = ['site:sync-content-status', 'site:apply-publication-decisions'];
+        $banned = self::BANNED_FROM_DEPLOY;
+        $allowed = self::APPLIES_A_HUMAN_DECISION;
+
+        self::assertSame(
+            [],
+            array_intersect($banned, $allowed),
+            'DEPLOY-PAGE-LEDGER-13: bir komut hem yasaklı hem izinli olamaz.'
+        );
 
         foreach (array_keys(Artisan::all()) as $name) {
             if (! str_starts_with((string) $name, 'site:')) {
@@ -1077,10 +1103,160 @@ final class DeploymentContractTest extends TestCase
 
             self::assertContains(
                 (string) $name,
-                $covered,
+                array_merge($banned, $allowed),
                 "DEPLOY-PAGE-LEDGER-13: `{$name}` yayın durumunu ilerletebiliyor ama "
-                .'giriş betiği yasağının listesinde yok.'
+                .'sınıflandırılmamış: ölçümden mi türüyor (yasak), yoksa verilmiş bir '
+                .'insan kararını mı uyguluyor (dağıtımda çalışır)?'
             );
         }
+    }
+
+    // --- DEPLOY-PUBLICATION-APPLIED-14 ------------------------------------
+
+    /**
+     * DAĞITIM KENDİ BAŞINA TAMAMLANIR — `docs/147`.
+     *
+     * Ölçülen boşluk (2026-09-08): `config/content-publication-decisions.php`
+     * içindeki karar main'e girip dağıtıldığında bile canlıda hiçbir şey
+     * değişmiyordu. `ShowCorporatePageController` kütükteki durumu okur; durum
+     * `planned` kaldığı için sayfa 404 dönüyordu. Kararı uygulayan komut
+     * depoda vardı, testleri de vardı — onu üretimde çalıştıran tek yol bir
+     * insanın SSH ile girip elle koşmasıydı.
+     *
+     * Bu, DEPLOY-PAGE-LEDGER-12 ve DEPLOY-SEED ile tam olarak aynı sınıftan
+     * bir kusur: şema değil VERİ eksik, ve veri eksikliği hiçbir yerde
+     * kırmızı göstermiyor. Dağıtım yeşil, konteyner ayakta, sayfa yok.
+     *
+     * Kapı üç şeyi birden ölçer, çünkü üçünden biri eksikse adım anlamsız:
+     *
+     *   1. Adım VAR.
+     *   2. Göçlerden ve kütük içe aktarımından SONRA — komut ikisini de
+     *      bekler ve kütükte olmayan bir satır için YÜKSEK SESLE durur.
+     *   3. Uygulama trafiğe açılmadan ÖNCE. Giriş betiği supervisord'u
+     *      `exec` ile devraldığı anda site cevap vermeye başlar; sağlık
+     *      kontrolünün geçebildiği ilk an odur. Adım o satırdan sonra
+     *      olsaydı, sağlık kontrolü kararı uygulanmamış bir siteyi yeşil
+     *      sayardı.
+     */
+    public function test_the_deployment_applies_publication_decisions_before_it_serves_traffic(): void
+    {
+        $entrypoint = preg_replace('/^\s*#.*$/m', '', $this->read('docker/entrypoint.sh')) ?? '';
+
+        $applied = strpos($entrypoint, 'artisan site:apply-publication-decisions');
+
+        self::assertIsInt(
+            $applied,
+            'DEPLOY-PUBLICATION-APPLIED-14: dağıtım yayın kararlarını uygulamıyor; '
+            .'sahibin yayına aldığı sayfa, birisi sunucuda elle komut koşana kadar '
+            .'canlıda yok.'
+        );
+
+        $migrated = strpos($entrypoint, 'artisan migrate --force');
+        $imported = strpos($entrypoint, 'artisan site:import-map');
+        $serving = strpos($entrypoint, 'exec supervisord');
+
+        self::assertIsInt($migrated, 'DEPLOY-PUBLICATION-APPLIED-14: göç adımı okunamadı.');
+        self::assertIsInt($imported, 'DEPLOY-PUBLICATION-APPLIED-14: kütük adımı okunamadı.');
+        self::assertIsInt($serving, 'DEPLOY-PUBLICATION-APPLIED-14: trafiğe açılma satırı okunamadı.');
+
+        self::assertLessThan(
+            $applied,
+            $migrated,
+            'DEPLOY-PUBLICATION-APPLIED-14: kararlar göçlerden ÖNCE uygulanıyor; tablo henüz yok.'
+        );
+
+        self::assertLessThan(
+            $applied,
+            $imported,
+            'DEPLOY-PUBLICATION-APPLIED-14: kararlar kütük dolmadan ÖNCE uygulanıyor; '
+            .'komut "kütükte yok" diyerek durur ve konteyner hiç açılmaz.'
+        );
+
+        self::assertGreaterThan(
+            $applied,
+            $serving,
+            'DEPLOY-PUBLICATION-APPLIED-14: kararlar site cevap vermeye başladıktan SONRA '
+            .'uygulanıyor; sağlık kontrolü kararı uygulanmamış bir siteyi yeşil sayar.'
+        );
+    }
+
+    /**
+     * KOMUT KIRMIZI VERİRSE DAĞITIM KIRMIZI VERİR.
+     *
+     * Sessizce atlanan bir adım, hiç olmayan bir adımdan kötüdür: yeşil bir
+     * dağıtım sahibe "kararın uygulandı" der. Giriş betiği `set -e` ile
+     * koştuğu için başarısız komut konteyneri hiç açtırmaz, sağlık kontrolü
+     * de 120 saniyede geçemeyip dağıtımı kırmızıya çeker.
+     *
+     * `|| true`, `|| :` ya da `set +e` ile yumuşatılmış bir çağrı bu zinciri
+     * koparır; kapı özellikle onu arar.
+     */
+    public function test_a_failing_publication_step_cannot_be_swallowed(): void
+    {
+        $entrypoint = preg_replace('/^\s*#.*$/m', '', $this->read('docker/entrypoint.sh')) ?? '';
+
+        self::assertStringContainsString(
+            'set -euo pipefail',
+            $entrypoint,
+            'DEPLOY-PUBLICATION-APPLIED-14: giriş betiği hatada durmuyor; '
+            .'başarısız bir adım sessizce geçer.'
+        );
+
+        self::assertSame(
+            0,
+            preg_match('/^\s*set\s+\+e/m', $entrypoint),
+            'DEPLOY-PUBLICATION-APPLIED-14: betik bir yerde hatada durmayı kapatıyor.'
+        );
+
+        self::assertSame(
+            1,
+            preg_match(
+                '/^php artisan site:apply-publication-decisions\s*$/m',
+                $entrypoint
+            ),
+            'DEPLOY-PUBLICATION-APPLIED-14: yayın adımı ya yok ya da `|| true` benzeri '
+            .'bir kaçışla yumuşatılmış; kırmızısı dağıtıma ulaşmaz.'
+        );
+
+        // Ve sağlık kontrolü, konteyner yayına alındıktan SONRA gelmeli:
+        // sıra bozulursa yukarıdaki zincirin son halkası kopar.
+        $workflow = $this->read('.github/workflows/deploy.yml');
+
+        self::assertLessThan(
+            (int) strpos($workflow, 'name: Sağlık kontrolü'),
+            (int) strpos($workflow, 'name: Yeni imajı yayına al'),
+            'DEPLOY-PUBLICATION-APPLIED-14: sağlık kontrolü konteyner yayına alınmadan '
+            .'önce koşuyor.'
+        );
+    }
+
+    /**
+     * SUNUCU SECRET'I YOKSA, ATLANAN ŞEY ADIYLA SÖYLENİR.
+     *
+     * Akışın bilinen tuzağı: sunucu secret'ları tanımlı değilse deploy işi
+     * kırmızı vermeden atlanır (bilinçli — bkz. `guard` işi). Bu doğru bir
+     * karar, ama sessiz kaldığı sürece tehlikeli: sahip yeşil bir CI görür ve
+     * yayın kararının uygulandığını sanar. Oysa kütük de dolmamıştır, göçler
+     * de koşmamıştır.
+     *
+     * Kapı, atlamanın ADIYLA duyurulmasını şart koşar.
+     */
+    public function test_a_skipped_deploy_says_the_publication_decisions_were_not_applied(): void
+    {
+        $workflow = $this->read('.github/workflows/deploy.yml');
+
+        self::assertStringContainsString(
+            'ADIM ATLANDI',
+            $workflow,
+            'DEPLOY-PUBLICATION-APPLIED-14: sunucu tanımsızken atlama sessiz; '
+            .'yeşil bir koşum "kararın uygulandı" der.'
+        );
+
+        self::assertStringContainsString(
+            'site:apply-publication-decisions',
+            $workflow,
+            'DEPLOY-PUBLICATION-APPLIED-14: atlama bildirimi, uygulanmayan kararı '
+            .'adıyla söylemiyor.'
+        );
     }
 }
