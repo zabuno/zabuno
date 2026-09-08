@@ -421,7 +421,7 @@ final class MeasuredAssuranceLibrary implements AssuranceLibraryPort
                 new AssuranceClaim(
                     subject: 'Links inside a sentence are smaller than 44 by 44',
                     state: ClaimState::KnownGap,
-                    detail: 'Three links written into the middle of a sentence are the height of the line of text they sit in rather than 44 pixels: "Contact us" in the shared pricing block, which appears on the home page and the pricing page, and "Write to us" on the help page. Making them 44 pixels tall would break the paragraph they are part of. The finding is left open and named here rather than closed by a rule that hides it.',
+                    detail: 'Links written into the middle of a sentence are the height of the line of text they sit in rather than 44 pixels: "Contact us" in the shared block that shows the plans, which appears on every page carrying that block, and "Write to us" on the help page. Making them 44 pixels tall would break the paragraph they are part of. The finding is left open and named here rather than closed by a rule that hides it — and it is written as a shape rather than a list of pages, because a list would be out of date the next time that block appears somewhere new.',
                     evidence: 'scripts/mobile-ux-audit',
                 ),
                 new AssuranceClaim(
