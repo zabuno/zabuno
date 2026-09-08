@@ -8,6 +8,7 @@ use App\Http\Controllers\Analytics\StoreGuestMenuEventsController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\SendEmailVerificationNotificationController;
+use App\Http\Controllers\Build\ShowBuildProofController;
 use App\Http\Controllers\Content\ShowCorporatePageController;
 use App\Http\Controllers\EngineeringAppController;
 use App\Http\Controllers\FoundationStatusController;
@@ -38,6 +39,24 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Contracts\VerifyEmailResponse as VerifyEmailResponseContract;
+
+/*
+    DAĞITIM NE DAĞITTI? — `docs/142`.
+
+    Sağlık kontrolü yalnız "bir şey 200 dönüyor mu?" diye sorar; eski sürüm
+    de 200 döner. 2026-09-08'de dağıtım her adımı yeşil tamamladı ve canlı
+    site birleştirilen commit'i çalıştırmıyordu. Bu uç, dağıtımın kendi
+    yayınını doğrulayabilmesi için var: uygulamanın çalıştırdığı commit ile
+    sunulan varlıkların derlendiği commit AYRI AYRI okunur.
+
+    `/up` DEĞİŞTİRİLMEDİ: o, konteynerin sağlık probu ve dağıtımın bekleme
+    döngüsüdür. Kanıt onun yerine değil yanına gelir. Adres `/build`
+    olamazdı: orası nginx'in diskten sunduğu statik varlık dizinidir.
+
+    Kütükteki `/{locale}/{path?}` yakalayıcısı `tr|en` ile sınırlı olduğu
+    için bu adresi gölgelemez; yine de sıra burada, en üstte tutuluyor.
+*/
+Route::get('/up/build', ShowBuildProofController::class)->name('build.proof');
 
 Route::get('/', [FoundationStatusController::class, '__invoke'])->name('foundation.status');
 
@@ -384,6 +403,57 @@ Route::get('/platform', PlatformAdminAppController::class)
     ->middleware(['auth:web', 'verified', EnsurePlatformSuperAdmin::class])
     ->name('platform.admin');
 
+/*
+    Mühendislik kabuğu (`docs/98` FF-66): release readiness, güvenlik
+    kanıtı, AI denetim izi. Platform (plan/ödeme/anahtar) kabuğundan AYRI —
+    aynı kişi olabilir, aynı iş değil. Yetki aynı: superadmin, aynı
+    enumeration-safe 404.
+
+    ADRES `/platform` ALTINDA (FF-248). Sahibin sorusu şuydu: *"'/platform'
+    haricinde '/engineering' sayfası var. '/platform/engineering' olsa, fena
+    mı olurdu?"* Fena olmazdı. İki kabuk da bu üç ara katmandan geçiyor;
+    yetki tek bir kapıysa adres de tek bir kök olmalı. Kök seviyesinde duran
+    `/engineering` kendini üçüncü bir uygulama gibi gösteriyor, `docs/38`'in
+    her yeni köke bir rezerve kelime ve bir noindex satırı yazdıran kuralına
+    ikinci bir kalem ekliyordu. Kabuk hâlâ AYRI — ayrılan iş, adres değil.
+
+    SIRALAMA BURADA ANLAMLIDIR ve tesadüf değildir. Aşağıdaki
+    `/platform/{section}` deseni `engineering` kelimesiyle de eşleşir;
+    Laravel ilk eşleşen rotayı çalıştırır. Bu iki satır oraya kayarsa istek
+    sessizce PLATFORM kabuğuna düşer: durum kodu yine 200 olur, ekran yanlış
+    olur ve hiçbir kapı bunu yakalamaz. Bu yüzden gövdeyi okuyan bir test
+    var (`EngineeringAddressMoveTest`).
+*/
+Route::get('/platform/engineering', EngineeringAppController::class)
+    ->middleware(['auth:web', 'verified', EnsurePlatformSuperAdmin::class])
+    ->name('engineering');
+Route::get('/platform/engineering/{section}', EngineeringAppController::class)
+    ->where('section', '[a-z0-9]+(?:-[a-z0-9]+)*')
+    ->middleware(['auth:web', 'verified', EnsurePlatformSuperAdmin::class])
+    ->name('engineering.section');
+
+/*
+    ESKİ ADRES KALICI OLARAK YENİSİNE GİDER (FF-248).
+
+    Bir adres bir kez paylaşıldığında onu geri almak bizim elimizde değildir
+    (`config/url-policy.php` girişindeki sözleşme). `/engineering` bir yer
+    iminde, bir ekran görüntüsünde, bir iç wiki satırında yaşıyor olabilir;
+    taşımanın bedelini o bağlantıyı tıklayan kişiye ödetmeyiz.
+
+    301, 302 DEĞİL: taşıma kalıcıdır ve tarayıcı ile ara katmanların eski
+    adresi unutmasını istiyoruz. 302 olsaydı her tıklamada iki istek daha
+    doğardı ve hiçbir istemci eski adresi bırakmazdı.
+
+    Yönlendirme KAPI DEĞİLDİR — kimlik doğrulaması yok, çünkü bir adres
+    tercümesi kimseyi içeri almaz: kapı hedeftedir ve orada yetkisiz
+    kullanıcıya yine çıplak 404 verir. Kimliğe bağlasaydık, çıkış yapmış
+    birinin yer imi çalışmaz, giriş yapmışınki çalışırdı — aynı basılı
+    bağlantı iki farklı sonuç verirdi.
+*/
+Route::permanentRedirect('/engineering', '/platform/engineering');
+Route::permanentRedirect('/engineering/{section}', '/platform/engineering/{section}')
+    ->where('section', '[a-z0-9]+(?:-[a-z0-9]+)*(?:/[a-z0-9]+(?:-[a-z0-9]+)*)*');
+
 /**
  * The same panel addressed by section. The section name is deliberately NOT
  * validated here: the client owns the section list, and a second list on the
@@ -394,20 +464,6 @@ Route::get('/platform/{section}', PlatformAdminAppController::class)
     ->where('section', '[a-z0-9]+(?:-[a-z0-9]+)*')
     ->middleware(['auth:web', 'verified', EnsurePlatformSuperAdmin::class])
     ->name('platform.admin.section');
-
-/*
-    Mühendislik kabuğu (`docs/98` FF-66): release readiness, güvenlik
-    kanıtı, AI denetim izi. Platform (plan/ödeme/anahtar) kabuğundan AYRI —
-    aynı kişi olabilir, aynı iş değil. Yetki aynı: superadmin, aynı
-    enumeration-safe 404.
-*/
-Route::get('/engineering', EngineeringAppController::class)
-    ->middleware(['auth:web', 'verified', EnsurePlatformSuperAdmin::class])
-    ->name('engineering');
-Route::get('/engineering/{section}', EngineeringAppController::class)
-    ->where('section', '[a-z0-9]+(?:-[a-z0-9]+)*')
-    ->middleware(['auth:web', 'verified', EnsurePlatformSuperAdmin::class])
-    ->name('engineering.section');
 
 /**
  * Shadows Fortify's default GET /email/verify/{id}/{hash} (registered

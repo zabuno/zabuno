@@ -72,6 +72,13 @@ return [
         'kvkk',
         'app',
         'platform',
+        /*
+            Kabuk `/platform/engineering` adresine taşındı (FF-248) ve ilk
+            segmenti artık `platform`. `engineering` yine de BURADA KALIR:
+            kökte duran 301 yönlendirmesi hâlâ yaşıyor ve `/Engineering`
+            yazan biri önce küçük harfe katlanıp sonra yeni adrese
+            gitmelidir. Yönlendirme kaldırıldığı gün bu satır da kalkar.
+        */
         'engineering',
         'login',
         'register',
@@ -155,6 +162,9 @@ return [
             menüsüyle gölgelenirdi.
         */
         'acceptable-use', 'data-processing', 'sla', 'third-party-licenses',
+        // `engineering` REZERVE KALIR: kökte yaşayan 301 yönlendirmesi
+        // orada duruyor, bir kiracı o slug'ı alırsa kendi sayfası ile
+        // yönlendirme aynı adresi paylaşırdı (FF-248).
         'en', 'menu', 'platform', 'engineering', 'pricing', 'restaurant', 'restoran',
         /*
             TASLAK ÖNİZLEMESİ (`/menu-preview/{workspace}/{menu}`, sahibin
@@ -194,6 +204,8 @@ return [
     'noindex_prefixes' => [
         'app',
         'platform',
+        // Yeni adres `platform` önekinden zaten kapalı; bu satır kökteki
+        // 301 yönlendirmesinin kendisini kapatır (FF-248).
         'engineering',
         'api',
         'q',
@@ -223,6 +235,8 @@ return [
     'disallow_prefixes' => [
         'app',
         'platform',
+        // FF-248 sonrası yalnız 301 yönlendirmesini kapatır; kabuğun kendisi
+        // `platform` önekinin altındadır.
         'engineering',
         'api',
         'invitations',

@@ -11,7 +11,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
- * CONTENT-TEMPLATE-01…10 — on sekiz sayfanın çizildiği TEK şablon (`docs/146`).
+ * CONTENT-TEMPLATE-01…10 — on sekiz sayfanın çizildiği TEK şablon (`docs/148`).
  *
  * `CorporateProductPageTest` şablonun ne SÖYLEDİĞİNİ ölçüyor: doğru metin,
  * doğru sıra, doğru şema. Bu test şablonun nasıl GÖRÜNDÜĞÜNÜ ölçer — daha

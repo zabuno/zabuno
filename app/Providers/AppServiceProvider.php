@@ -110,6 +110,7 @@ use App\Application\Tenancy\Profile\Port\LocationRepositoryPort;
 use App\Application\Workspace\Port\SetupProgressPort;
 use App\Application\Workspace\Port\WorkspaceAuditTrailPort;
 use App\Domain\Ai\Capability;
+use App\Domain\Legal\CompanyProfile;
 use App\Domain\Media\PdfInspector;
 use App\Domain\Media\SlotCatalogue;
 use App\Domain\Media\SvgSanitizer;
@@ -238,6 +239,8 @@ use App\Infrastructure\Workspace\EloquentSetupProgress;
 use App\Infrastructure\Workspace\EloquentWorkspaceAuditTrail;
 use App\Support\Localization\PseudoLocalizer;
 use App\Support\Localization\SiteText;
+use App\Support\Site\CompanyIdentity;
+use App\Support\Site\HomeStory;
 use App\Support\Site\SiteNavigation;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
@@ -840,6 +843,29 @@ final class AppServiceProvider extends ServiceProvider
             yapar ve onu her kimlik/panel görünümünde çalıştırmak, hiç
             kullanılmayacak bir sorgu ödemek olurdu.
         */
+        /*
+            ANA SAYFANIN ÜÇ LİSTESİ DE HER ZAMAN VAR (`docs/138`).
+
+            Aynı gerekçe, aynı desen: görünüm doğrudan çizildiğinde (tema
+            önyükleme sözleşmesi bunu tam olarak yapıyor) `$story`
+            geçirilmemiş olur ve sayfa `Undefined variable` ile çökerdi —
+            ölçüldü, iki test kırıldı. Çağıranın unutabileceği bir adım
+            bırakmamak, bu depoda zaten verilmiş bir karar.
+
+            Besteci YALNIZ ana sayfaya bağlı: fiyat, yardım ve yasal
+            sayfalarda bu listeler hiç çizilmiyor ve okunmayacak 25 maddeyi
+            her istekte çözmek, hiçbir şeyin görünmediği bir iş olurdu.
+
+            Elle verilen değer KAZANIR: denetleyici ziyaretçinin diline göre
+            çözülmüş hâlini geçiriyor (`getPreferredLanguage`), besteci ise
+            uygulamanın diline düşer.
+        */
+        View::composer('public.home', function ($view): void {
+            if (! array_key_exists('story', $view->getData())) {
+                $view->with('story', app(HomeStory::class)->lists());
+            }
+        });
+
         View::composer(['public.partials.header', 'public.partials.footer'], function ($view): void {
             $data = $view->getData();
 
@@ -847,6 +873,23 @@ final class AppServiceProvider extends ServiceProvider
                 $view->with('nav', app(SiteNavigation::class)->forShell(
                     (string) ($data['anchorPrefix'] ?? '/'),
                 ));
+            }
+
+            /*
+                SATICI KİMLİĞİ DE KABUĞUN VERİSİ (FF-237) — aynı desen.
+
+                Altbilginin beşinci satırı satıcının kim olduğunu söyler ve o
+                satır her kurumsal adreste çizilir. Değeri elle geçirmeyi
+                unutan bir görünüm ÇÖKERDİ; gezinti için verilen kararın
+                aynısı burada da geçerli. Değer `.env` → `config/legal.php`
+                yolundan gelir, veritabanına dokunmaz (`CompanyIdentity`).
+            */
+            if (! array_key_exists('companyRows', $data)) {
+                $company = CompanyProfile::fromConfig();
+                $siteText = $data['st'] ?? app(SiteText::class)->all();
+
+                $view->with('companyRows', CompanyIdentity::rows($company, $siteText));
+                $view->with('companyComplete', $company->isComplete());
             }
         });
 

@@ -37,3 +37,23 @@ export const WithLegacyReadOnlyRole: Story = {
 
 /** Tek kişilik çalışma alanı: yalnız sahiplik anlatılır. */
 export const OwnerOnly: Story = { args: { roles: ['owner'] } };
+
+/**
+ * KARTIN EN GENİŞ HÂLİ — dar ekran denetimi için (`docs/139` §6).
+ *
+ * Ayrıntı üründe kapalı başlar; kapalı kartı ölçmek, yirmi üç satırlık
+ * listenin 320 pikselde ne yaptığını ölçmemek demektir. Denetim aracı bir
+ * düğmeye basmaz, o yüzden en geniş hâl BURADA çizilir. Editör seçildi:
+ * hem "yapabilir" hem "yapamaz" listesi dolu olan rol.
+ */
+export const AbilitiesExpanded: Story = {
+    args: { roles: ['editor'], initiallyExpanded: ['editor'] },
+};
+
+/** Beş rolün hepsi açık: en uzun sayfa, en yoğun dokunma hedefi dizilimi. */
+export const EveryRoleExpanded: Story = {
+    args: {
+        roles: ['owner', 'manager', 'editor', 'kitchen', 'member'],
+        initiallyExpanded: ['owner', 'manager', 'editor', 'kitchen', 'member'],
+    },
+};

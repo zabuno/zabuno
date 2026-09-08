@@ -68,14 +68,30 @@
     font-size: inherit;
 }
 
-/* Kabuğun ortak içerik kolonu. Dolgu BİR kez uygulanır; iç kaplar kendi
-   dolgusunu üstüne eklemez (`docs/117` K2: dolgu birikmesi 320 pikselde
-   ekranın yarısını yiyordu). */
+/*
+    Kabuğun ortak içerik kolonu. Dolgu BİR kez uygulanır; iç kaplar kendi
+    dolgusunu üstüne eklemez (`docs/117` K2: dolgu birikmesi 320 pikselde
+    ekranın yarısını yiyordu).
+
+    ── GENİŞLİK: 64 rem'DEN 82 rem'E (`docs/145` §4) ──
+
+    Ölçüldü (2026-09-08, `scripts/mobile-ux-audit --width 1440`): 64 rem'lik
+    kolon 1440 piksellik bir ekranda sağda ve solda 208'er piksel BOŞ
+    bırakıyordu; 1920'de 448'er piksel. Sahibin ifadesi birebir buydu.
+
+    320 pikselde HİÇBİR ŞEY DEĞİŞMEZ: `min(100%, 82rem)` orada `100%`e
+    çözülür, yani tavan devreye bile girmez. Geniş ekran zenginleştirmedir,
+    taban değil.
+
+    Dolgu da artık akışkan (`--zc-gutter`) ve alt sınırı yine `--space-3` —
+    dar ekranda önceki değerle bire bir aynı, geniş ekranda 48 piksele
+    kadar açılıyor.
+*/
 .site-shell-inner {
     width: 100%;
-    max-width: 64rem;
+    max-width: var(--zc-measure-page);
     margin-inline: auto;
-    padding-inline: var(--space-3);
+    padding-inline: var(--zc-gutter);
 }
 
 /* --- Üst çubuk ---------------------------------------------------------- */
@@ -117,6 +133,79 @@
     letter-spacing: 0.01em;
 }
 
+/*
+    HESAP EYLEMLERİ ÇUBUKTA (FF-237, `docs/141` §4).
+
+    Sahibin isteği: üst çubuk marka, gezinti ve HESAP EYLEMLERİ taşısın.
+    FF-232'de eylemler bölmenin içindeydi ve kaydolmaya karar vermiş biri
+    önce bir menü açmak zorundaydı.
+
+    Sarma bilinçlidir, bir kusur değil: 320 pikselde marka + iki hesap
+    eylemi + menü düğmesi yan yana sığmazsa eylemler kendi satırına iner.
+    Alternatifi taşmaktı — ve taşan bir düğme, olmayan bir düğmedir.
+*/
+.site-header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.site-header-cta-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.site-header-cta {
+    display: inline-flex;
+    align-items: center;
+    /* Parmak imleç değildir (`docs/118` E3). */
+    min-height: var(--control-height);
+    /*
+        BÜYÜK HEDEF, SIKI BOŞLUK (`docs/118` E3).
+
+        Dolgu `--space-3` iken ölçüldü (320 px): marka 62 + düğme 133 + menü
+        95 + boşluklar 16 = 306 piksel ve kullanılabilir genişlik 296 — çubuk
+        ikinci satıra sarıyordu. Küçülen şey HEDEF değil ÖLÜ ALAN: yükseklik
+        44 pikselde kaldı, genişlik 44'ün çok üstünde.
+    */
+    padding-inline: var(--space-2);
+    border-radius: var(--radius-md);
+    color: var(--fg-secondary);
+    font-weight: 500;
+}
+
+.site-header-cta:hover {
+    background: var(--surface-hover);
+}
+
+.site-header-cta:focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: 2px;
+}
+
+/*
+    BİRİNCİL EYLEM DOLU, İKİNCİSİ DÜZ.
+
+    İki eylem yan yana durduğunda hangisinin birincil olduğunu ağırlık tek
+    başına söylemez — ikisi de bir düğme gibi görünür. Ayrımı marka mürekkebi
+    taşır ve o çift SABİTTİR: `--color-action` üstüne `--color-action-fg`
+    (atlama bağlantısıyla aynı karar, FF-125). Sarı üstüne beyaz ~1.75:1'di.
+*/
+.site-header-cta[data-emphasis='true'] {
+    background: var(--color-action);
+    color: var(--color-action-fg);
+    font-weight: 600;
+}
+
+.site-header-cta[data-emphasis='true']:hover {
+    /* Dolu bir düğmede tonla vurgu zemini siler; opaklık hem açık hem koyu
+       temada aynı yönde çalışır. */
+    opacity: 0.9;
+    background: var(--color-action);
+}
+
 /* --- Menü (betiksiz açılır bölme) --------------------------------------- */
 
 .site-menu {
@@ -129,7 +218,8 @@
     align-items: center;
     gap: var(--space-2);
     min-height: var(--control-height);
-    padding-inline: var(--space-3);
+    /* Aynı ölçüm, aynı karar: hedef büyük kalır, ölü alan daralır. */
+    padding-inline: var(--space-2);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
     color: var(--fg);
@@ -211,6 +301,25 @@
     list-style: none;
 }
 
+/*
+    GRUP BAŞLIĞI GÖRÜNÜR (FF-237).
+
+    FF-232'de grup adı yalnız `aria-label`daydı: ekran okuyucu iki bölge
+    duyuyordu, gözle bakan biri sekiz bağlantıyı tek bir yığın olarak
+    görüyordu. Başlık küçültülmedi — yoğunluk fontu küçülterek değil,
+    boşluk ve hiyerarşiyle sağlanır (`docs/118` E3); ayrımı renk taşıyor.
+*/
+.site-menu-heading {
+    display: flex;
+    align-items: center;
+    min-height: var(--control-height);
+    margin: 0;
+    padding-inline: var(--space-2);
+    font-size: inherit;
+    font-weight: 600;
+    color: var(--fg-secondary);
+}
+
 .site-menu-group > li {
     display: flex;
 }
@@ -243,28 +352,36 @@
     font-weight: 600;
 }
 
-/* --- Alt çubuk ---------------------------------------------------------- */
+/* --- Alt çubuk: ALTI SATIR (FF-237, `docs/141` §3) ----------------------- */
 
+/*
+    Altbilgi artık altı satırdır ve her satırın bir işi vardır: marka,
+    bağlantı grupları, pSEO bandı, yasal, kurumsal kimlik, alt satır.
+
+    Satırlar arasındaki tek görsel ayrım bir saç teli çizgidir. Alternatifi
+    her satıra zemin rengi vermekti; altı farklı zemin, altı farklı bölüm
+    izlenimi verir ve altbilgi bir sayfaya dönüşürdü.
+*/
 .site-footer {
     border-top: 1px solid var(--border);
     margin-top: var(--space-fluid-lg);
-}
-
-.site-footer-inner {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-fluid-md);
-    padding-block: var(--space-fluid-md);
     color: var(--fg-secondary);
 }
+
+.site-footer-row {
+    padding-block: var(--space-3);
+}
+
+.site-footer-row + .site-footer-row {
+    border-block-start: 1px solid var(--border);
+}
+
+/* --- 1. Marka satırı ---------------------------------------------------- */
 
 .site-footer-brand {
     display: flex;
     flex-direction: column;
     gap: var(--space-1);
-    /* Marka satırı dar ekranda tam genişlik alır; iki sütuna sıkışan bir
-       slogan kelime ortasından kırılırdı. */
-    flex: 1 1 16rem;
 }
 
 .site-footer-brand-name {
@@ -272,8 +389,17 @@
     color: var(--fg);
 }
 
+.site-footer-tagline {
+    /* Bir cümle satır satır okunur; ölçüsüz uzun bir satır gözü kaybettirir.
+       320 pikselde bu sınır zaten devrede değil, geniş ekranda devreye girer
+       — ve ikinci bir düzen değil, aynı düzenin tavanıdır. */
+    max-inline-size: 34rem;
+}
+
+/* --- 2. Bağlantı grupları ızgarası -------------------------------------- */
+
 /*
-    GRUP IZGARASI — kırılma noktası YOK (`MP-05`).
+    KIRILMA NOKTASI YOK (`MP-05`).
 
     daisyUI'nin kendi `footer-horizontal` / `footer-vertical` sınıfları bir
     SEÇİM ister: ya hep tek sütun, ya hep yan yana. İkisi de yanlış — biri
@@ -289,21 +415,63 @@
     (`docs/118` E3): hedefler büyük kalır, ölü alan küçülür.
 */
 .site-footer-grid {
-    flex: 3 1 18rem;
+    display: grid;
     grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
-    gap: var(--space-5) var(--space-4);
+    gap: var(--space-4);
+    align-items: start;
 }
 
 /* Grup, sütununun tamamını kaplar — `place-items: start` yalnız hizalar,
    genişlik vermez ve verilmediğinde her satır sözcüğü kadar daralır. */
-.site-footer-grid > nav {
+.site-footer-grid > .site-footer-group,
+.site-footer-group {
     width: 100%;
 }
 
-.site-footer-heading {
+/* --- Katlanabilir grup (tek çizim, `footer-group.blade.php`) ------------- */
+
+/*
+    KATLAMAK GİZLEMEK DEĞİLDİR.
+
+    Yasal satırın on üç bağlantısı var; hepsi açık çizilseydi tek başına
+    572 piksel, yani 320×480'de bir ekrandan uzun olurdu. `<details>` onu
+    tek satıra indirir ve içindeki her bağlantı sunucu HTML'inde DURUR —
+    arama motoru ve betiksiz ziyaretçi hepsini görür (`docs/118` E8).
+
+    Hangi grubun kapalı başlayacağı GENİŞLİKTEN değil grubun kendi boyundan
+    çıkar (`SiteNavigation::OPEN_ITEM_CEILING`): bu dosyada tek bir
+    "mobilde gizle" kuralı, tek bir `max-width` bastırması yoktur.
+*/
+.site-footer-fold-toggle {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    /* Parmak imleç değildir: açılır kapanır satırın tamamı bir hedeftir. */
     min-height: var(--control-height);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    /* Tarayıcının kendi üçgen işareti kaldırılıyor: yerine Phosphor'un
+       kendi kareti geliyor ve iki tarayıcıda aynı görünüyor. */
+    list-style: none;
+}
+
+.site-footer-fold-toggle::-webkit-details-marker {
+    display: none;
+}
+
+.site-footer-fold-toggle:focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: 2px;
+}
+
+/* Açıldığında ok yukarı bakar: durum RENKLE değil YÖNLE anlatılır. */
+.site-footer-fold[open] > .site-footer-fold-toggle .site-icon,
+.site-footer-content[open] > .site-footer-fold-toggle .site-icon {
+    transform: rotate(180deg);
+}
+
+.site-footer-heading {
     margin: 0;
     font-size: inherit;
     font-weight: 600;
@@ -311,14 +479,13 @@
 }
 
 /*
-    SATIR TAM GENİŞLİKTE — ölçülmüş bir düzeltme.
+    SATIR TAM GENİŞLİKTE — ölçülmüş bir düzeltme (FF-232'de kaldı).
 
     daisyUI'nin `.footer > *` kuralı `place-items: start` verir; sonuç, liste
     öğesinin İÇERİĞİ kadar daralmasıdır. Ölçüldü (2026-09-08,
     `scripts/mobile-ux-audit --width 1280`): "Help" bağlantısı 30 piksel
-    genişliğe düşüyor ve komşusuyla arasında 0 piksel kalıyor —
-    `small-target` + `tight-gap`. Kısa bir sözcük, kısa bir hedef demek
-    DEĞİLDİR; parmak sözcüğü değil satırı arar.
+    genişliğe düşüyor ve komşusuyla arasında 0 piksel kalıyordu. Kısa bir
+    sözcük, kısa bir hedef demek DEĞİLDİR; parmak sözcüğü değil satırı arar.
 */
 .site-footer-list {
     display: flex;
@@ -351,66 +518,105 @@
     outline-offset: -2px;
 }
 
+.site-footer-link[data-emphasis='true'] {
+    color: var(--fg);
+    font-weight: 600;
+}
+
+/* --- 3. pSEO içerik menüleri bandı (FF-232, korunuyor) ------------------- */
+
 /*
-    pSEO İÇERİK MENÜLERİ BANDI (FF-232).
-
     KAPALI başlar ve bu bir dar ekran kararıdır (`docs/118` E1): kütükteki
-    sayfalar yayına alındıkça bu bant onlarca satıra çıkabilir ve altbilgi,
-    dar ekranda sayfanın en uzun parçası hâline gelir. Kapalı bir `<details>`
-    tek satırdır; içindeki her bağlantı yine HTML'dedir, yani arama motoru ve
-    betiksiz ziyaretçi hepsini görür (`SHELL-SINGLE-SOURCE-04`).
+    sayfalar yayına alındıkça bu bant onlarca satıra çıkabilir. Kapalı bir
+    `<details>` tek satırdır; içindeki her bağlantı yine HTML'dedir, yani
+    arama motoru ve betiksiz ziyaretçi hepsini görür
+    (`SHELL-SINGLE-SOURCE-04`, `FOOTER-CONTENT-05`).
 
-    Geniş ekranda da kapalı başlar — tek kod yolu. İkinci bir davranış yazmak,
-    ölçülmemiş bir varsayımı (geniş ekranda yer boldur) kurala çevirmek olurdu.
+    Geniş ekranda da kapalı başlar — tek kod yolu. İkinci bir davranış
+    yazmak, ölçülmemiş bir varsayımı kurala çevirmek olurdu.
 */
-.site-footer-content {
-    border-top: 1px solid var(--border);
+.site-footer-content > .site-footer-grid {
+    padding-block: var(--space-3);
+}
+
+/* --- 4. Yasal satır: on üç belge ---------------------------------------- */
+
+/*
+    On üç bağlantı 320 pikselde tek sütundur ve grup kapalı başlar. Geniş
+    ekranda aynı liste kendiliğinden sütunlara ayrılır: aynı akışkan kural,
+    ikinci bir düzen değil. `14rem` bir tahmin değil, en uzun belge adının
+    ("Electronic Commercial Message Consent") iki satıra sığdığı ölçü.
+*/
+.site-footer-legal .site-footer-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    column-gap: var(--space-4);
+}
+
+/* --- 5. Kurumsal kimlik satırı ------------------------------------------ */
+
+.site-footer-identity .site-company-identity {
     padding-block: var(--space-2);
 }
 
-.site-footer-content-toggle {
+/* --- 6. Alt satır ------------------------------------------------------- */
+
+.site-footer-bottom {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: var(--space-2);
+}
+
+/*
+    GERİ DÖNÜŞ YOLU bir süs değil bir ölçü sonucu: altbilgi 320×480'de bir
+    ekrandan uzun ve sonuna varan kişinin gezintiye dönmek için parmağıyla
+    geri kaydırması gerekirdi.
+*/
+.site-footer-top-link {
+    display: inline-flex;
+    align-items: center;
     min-height: var(--control-height);
     padding-inline: var(--space-2);
     border-radius: var(--radius-md);
-    color: var(--fg);
-    font-weight: 600;
-    cursor: pointer;
-    list-style: none;
+    color: var(--fg-secondary);
 }
 
-.site-footer-content-toggle::-webkit-details-marker {
-    display: none;
+.site-footer-top-link:hover {
+    text-decoration: underline;
 }
 
-.site-footer-content-toggle:focus-visible {
+.site-footer-top-link:focus-visible {
     outline: 2px solid var(--fg);
     outline-offset: 2px;
-}
-
-/* Açıldığında ok yukarı bakar: durum RENKLE değil YÖNLE anlatılır. */
-.site-footer-content[open] > .site-footer-content-toggle .site-icon {
-    transform: rotate(180deg);
-}
-
-.site-footer-content > .site-footer-grid {
-    padding-block: var(--space-4);
 }
 
 /* --- Sayfa gövdesi ------------------------------------------------------ */
 
 .site-main {
     width: 100%;
-    max-width: 64rem;
+    max-width: var(--zc-measure-page);
     margin-inline: auto;
     /* Kabuğun içi ile aynı dolgu: iki farklı değer olsaydı üst çubuktaki
        marka ile sayfa başlığı aynı hizada durmazdı. */
-    padding-inline: var(--space-3);
-    padding-block: var(--space-fluid-lg);
+    padding-inline: var(--zc-gutter);
+    padding-block: var(--zc-rhythm-tight);
 }
+
+/*
+    GEÇİŞ KURALI KALDIRILDI (2026-09-08, `docs/146`).
+
+    Burada `main[class~='max-w-5xl']` için yazılmış bir köprü duruyordu ve
+    kendi metni onun ne zaman sileceğini söylüyordu: *"Gövde kabı
+    `.site-measure-page`e taşındığı gün bu blok SİLİNİR — bir geçiş
+    kuralının en kötü hâli, kalıcı olduğunun unutulmasıdır."*
+
+    O gün geldi. `home.blade.php` sahne motoruyla yeniden yazıldı ve artık
+    kabını `.site-measure-page` / `.site-measure-stage` ile kuruyor; depoda
+    `max-w-5xl` yazan başka bir görünüm yok. `docs/145` §7 aynı silmeyi
+    şart koşuyordu.
+*/
 
 .site-page-title {
     margin: 0;
@@ -594,6 +800,36 @@
     --motion-depth-far: 56px;
 
     /*
+        YATAY MESAFE — sahibin "sağlı sollu hareket eden landing page"i
+        (`docs/146` §9 madde 5).
+
+        Döngü 1'de yatay hareket YALNIZ iki akan şeritti: sayfanın kendisi
+        yerinde duruyordu. Bu üç jeton, kaydırma ilerledikçe katmanların
+        birbirinin TERSİNE yana süzülmesini ölçer. Dikey mesafelerden büyük
+        olmaları kasıtlı: yatay hareket dikey kaydırmayla YARIŞMAZ, onu
+        tamamlar — göz zaten aşağı gidiyorken yanal fark ancak belirgin
+        olduğunda okunur.
+
+        Dar ekranda küçülürler ve bu bir tercih değil bir zorunluluk: 320
+        pikselde 140 piksellik bir yanal öteleme, katmanı ekranın dışına
+        atardı. `clamp()` alt sınırı 320'de ölçüldü.
+    */
+    --motion-drift-near: clamp(10px, 2.2vw, 28px);
+    --motion-drift-mid: clamp(18px, 5vw, 72px);
+    --motion-drift-far: clamp(28px, 9vw, 150px);
+
+    /*
+        YÖN ÇARPANI. Yatay öteleme fiziksel bir eksendir; `translate3d`in
+        mantıksal karşılığı yoktur. Sağdan sola yazılan bir dilde kompozisyon
+        aynalanmalı, yoksa "dışarı açılan" katman "içeri kapanan" olur.
+    */
+    --scene-axis: 1;
+}
+
+[dir='rtl'] {
+    --scene-axis: -1;
+
+    /*
         KATMAN SIRASI — TEK yer.
 
         Kabukta bugün üç yığın var: menü bölmesi (20), çerez şeridi (30) ve
@@ -622,6 +858,15 @@
 .site-stage {
     position: relative;
     isolation: isolate;
+    /*
+        DOKUNMA KAMERASI KAYDIRMAYI ÇALMAZ (`docs/146` §9 madde 6).
+
+        Sahnenin üstünde başlayan bir sürükleme kamerayı çevirir
+        (`runtime.ts`), ama `pan-y` tarayıcıya dikey kaydırmanın HER ZAMAN
+        onun olduğunu söyler: betik `preventDefault()` çağırmaz, çağıramaz.
+        Bir sahne, sayfayı okumanın önüne geçemez.
+    */
+    touch-action: pan-y;
     /* `clip`, `hidden`den farklı olarak yeni bir kaydırma kabı YARATMAZ:
        sayfa içi çıpalar ve `position: sticky` çalışmaya devam eder. */
     overflow: clip;
@@ -695,9 +940,9 @@
 */
 .site-legal {
     width: 100%;
-    max-width: 44rem;
+    max-width: var(--zc-measure-prose);
     margin-inline: auto;
-    padding-inline: var(--space-3);
+    padding-inline: var(--zc-gutter);
     padding-block: var(--space-fluid-lg);
     display: flex;
     flex-direction: column;

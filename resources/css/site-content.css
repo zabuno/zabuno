@@ -14,7 +14,7 @@
 
     On blok türü (`App\Domain\Content\Block\BlockType`). Hepsi aynı sayfada,
     hepsi farklı bir OKUMA İŞİ yapıyor — ve bu yüzden aynı görünmüyorlar.
-    Hangi türün hangi işi yaptığı ve neden öyle çizildiği `docs/146`da
+    Hangi türün hangi işi yaptığı ve neden öyle çizildiği `docs/148`da
     yazılı; burada yalnız kararın kendisi duruyor.
 
     Kanca sınıf adı değil, blok türünün KENDİSİ: her blok en dış öğesinde

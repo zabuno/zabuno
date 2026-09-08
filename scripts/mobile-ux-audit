@@ -47,6 +47,8 @@
         php artisan site:export-static --out=<dizin>
         node scripts/mobile-ux-audit <dizin> [--json rapor.json] [--fail]
 
+    Ölçülen çerçeve: `--width` ve `--height` (varsayılan 320×568).
+
     İkinci kip, dizinde `index.json` OLMAMASINDAN anlaşılır. Kurumsal sitenin
     kabuğu bir React hikâyesi değil, Blade'dir; onu ölçmek için elle bir
     hikâye yazmak, ölçtüğünü sandığı şeyden sessizce ayrışan bir düzenek
@@ -123,9 +125,9 @@ if (CHROME === undefined) {
     ölçüp geniş ekranı hiç açmamak, o dağılmayı sahibin ekranında keşfetmek
     demekti.
 
-    Yükseklik genişlikle birlikte gelir: 320×568 bir telefon, 1280×800 bir
-    dizüstü. Yükseklik ayrı bir bayrak DEĞİL, çünkü ikisini bağımsız
-    seçmek "ölçtüğüm cihaz hangisi" sorusunu cevapsız bırakırdı.
+    Yükseklik genişlikten TÜRER: 320×568 bir telefon, 1280×800 bir dizüstü.
+    Türetilen değer varsayılandır ve varsayılan olarak kalır; `--height` onu
+    açıkça değiştirmek isteyene bir kapı açar (aşağıya bak).
 */
 const widthFlag = process.argv.indexOf('--width');
 const WIDTH = widthFlag > -1 ? Number.parseInt(process.argv[widthFlag + 1] ?? '', 10) : 320;
@@ -146,7 +148,38 @@ if (!Number.isInteger(WIDTH) || WIDTH < 320 || WIDTH > 3840) {
     giriş kipinde.
 */
 const MOBILE = WIDTH < 768;
-const HEIGHT = MOBILE ? 568 : 800;
+
+/*
+    YÜKSEKLİK — genişlikten TÜRER, ama `--height` ile açıkça söylenebilir.
+
+    2026-09-08'e kadar yükseklik yalnız türetiliyordu (320 → 568, geniş →
+    800) ve gerekçesi şuydu: ikisini bağımsız seçmek "ölçtüğüm cihaz
+    hangisi" sorusunu cevapsız bırakır. Gerekçe hâlâ doğru; eksik olan,
+    türetilen tek yüksekliğin bir SEÇİM olduğunu görmekti.
+
+    568, iPhone SE'nin (2016) boyudur. Sahibin tabanı bir adım daha
+    dardır — *"iPhone 4 first"* — ve iPhone 4'ün görüntü alanı **320×480**.
+    Aradaki 88 piksel önemsiz değil: 480'de bir "hero" sahnesi ekranı
+    doldurup içeriği katlanmanın altına iterse, 568'de bunu yapmayabilir.
+    Yani ölçülmeyen bir yükseklikte kusur GÖRÜNMEZ, YOK olmaz.
+
+    Bayrak sırayı DEĞİŞTİRMEZ: 320×568 hâlâ türetilen taban, CI kapısı hâlâ
+    onu koşuyor. `--height` ikinci bir soruyu sorulabilir kılar: *aynı ilk
+    ekran, 88 piksel daha kısa bir telefonda da içerik gösteriyor mu?*
+
+    Ölçülen yükseklik raporun BAŞLIĞINDA ve JSON çıktısında zaten yazıyor;
+    "hangi cihaz" sorusu bu yüzden cevapsız kalmıyor.
+*/
+const heightFlag = process.argv.indexOf('--height');
+const HEIGHT =
+    heightFlag > -1 ? Number.parseInt(process.argv[heightFlag + 1] ?? '', 10) : MOBILE ? 568 : 800;
+
+if (!Number.isInteger(HEIGHT) || HEIGHT < 320 || HEIGHT > 2160) {
+    console.error(
+        `mobile-ux-audit: --height 320 ile 2160 arasında bir tam sayı olmalı (gelen: ${process.argv[heightFlag + 1]}).`,
+    );
+    process.exit(2);
+}
 
 /** Dokunma hedefinin asgarisi (CSS pikseli). */
 const MIN_TARGET = 44;
@@ -404,6 +437,28 @@ const MEASURE = `(() => {
       dolguların toplamıdır. Sahibin şikâyeti birebir bu: "grid gap ve grid
       margin mobil cihazlarda fazla çalıyor ekrandan."
   */
+  /*
+      SÜS, İÇERİK DEĞİLDİR (2026-09-08 eklendi).
+
+      Ölçüm "içerik en solda nereden başlıyor, en sağda nerede bitiyor"
+      sorusunu soruyor. aria-hidden="true" bir alt ağaç bu sorunun cevabına
+      giremez: orada duran şey tanımı gereği OKUNMAYAN bir katmandır.
+
+      Somut arıza: kurumsal ana sayfanın akan bandı (docs/146 §4) iki özdeş
+      kopya taşır — döngünün dikişsiz olması için — ve ikincisi görüntü
+      alanının dışındadır. Bant overflow:clip ile kırpılıyor, yani ziyaretçi
+      hiçbir zaman yatay kaydırmıyor; ama getBoundingClientRect kırpılmayı
+      bilmez ve şeridin ikinci kopyası "içerik 320 piksel yerine 2764 piksel
+      kullanıyor" dedirtiyordu. Sonuç bir HATA değil, daha kötüsüydü: oran
+      eşiğin (%72) çok üstüne çıktığı için yoğunluk kuralı o sayfada
+      SESSİZCE devre dışı kalıyordu.
+
+      Kapsam DAR: yalnız bu ölçüm. Yatay taşma, kırpılma ve dokunma hedefi
+      kuralları aria-hidden bir öğeyi eskisi gibi görür — dekoratif bir
+      katman sayfayı yatay kaydırıyorsa bu yine bir kusurdur.
+  */
+  const isDecorative = (el) => el.closest('[aria-hidden="true"]') !== null;
+
   let minLeft = Infinity;
   let maxRight = -Infinity;
 
@@ -411,6 +466,7 @@ const MEASURE = `(() => {
     if (el.children.length > 0) continue;
     if ((el.textContent || '').trim() === '') continue;
     if (inHorizontalScroller(el)) continue;
+    if (isDecorative(el)) continue;
     if (inClosedDetails(el)) continue;
     const r = el.getBoundingClientRect();
     if (r.width <= 0 || r.height <= 0) continue;
@@ -574,7 +630,8 @@ const targetDir = process.argv[2] ? resolve(process.argv[2]) : process.argv[2];
 if (!targetDir || !existsSync(targetDir)) {
     console.error(
         'kullanım: scripts/mobile-ux-audit <storybook-static-dizini|html-dizini> ' +
-            '[--json rapor.json] [--fail] [--baseline liste.json]',
+            '[--json rapor.json] [--fail] [--baseline liste.json] ' +
+            '[--width 320] [--height 480] [--direction ltr|rtl]',
     );
     process.exit(2);
 }

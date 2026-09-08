@@ -4,7 +4,7 @@
 > 3. ve 4. adımı UYGULANDI (FF-210); 5 hâlâ yalnız karardır.**
 >
 > Bugün kodda karşılığı olan: `GET /api/admin/modules`
-> (`EnsurePlatformSuperAdmin` arkasında) ve `/engineering/modules` ekranı;
+> (`EnsurePlatformSuperAdmin` arkasında) ve `/platform/engineering/modules` ekranı;
 > uç artık 16 CORE kaydına ek olarak 62 modül tanımının **ölçülmüş** kod
 > karşılığını ve tanımı olmayan kod bağlamlarını da taşıyor.
 >
@@ -92,23 +92,24 @@ bakıp aramayı bırakır.
 
 ## 2. Sayfa nereye konur
 
-**Karar: `/engineering/modules`.** `/platform` değil.
+**Karar: `/platform/engineering/modules`.** Ticari `/platform` bölümlerinin
+arasında değil.
 
 Gerekçe deponun kendi cümlesinde yazılı
 (`resources/js/components/platform/PlatformApp.tsx`):
 
-> Release readiness ve denetim izi buradan ÇIKTI: `/engineering`.
+> Release readiness ve denetim izi buradan ÇIKTI: `/platform/engineering`.
 > Aynı kişi olabilir, aynı iş değil.
 
 `/platform` **ticari** kabuktur: plan, abonelik, sağlayıcı anahtarı —
 para ve satış. Modül envanteri para değil, **mühendislik kanıtıdır**;
-`/engineering` altında bugün zaten sürüm hazırlığı ve AI denetim izi
+`/platform/engineering` altında bugün zaten sürüm hazırlığı ve AI denetim izi
 duruyor. Modüller oraya komşudur.
 
 İki kabuk da `OpsShell` üzerinde durur ve bölüm **adresten** gelir,
 fragment'ten değil (`docs/38` §4, `zabuno-tenant-analytics-locked-rule`).
 Yeni bölüm bu kuralı bozmaz: `EngineeringSection` birliğine `'modules'`
-eklenir, `basePath="/engineering"` değişmez.
+eklenir, `basePath="/platform/engineering"` değişmez.
 
 Yetki mevcut olandır: `EnsurePlatformSuperAdmin`, enumeration-safe 404.
 Yeni bir izin türetilmez — `modules/core-module-registry.md` `module.manage`
@@ -422,7 +423,8 @@ yalnız `config/core-modules.php` + `config/module-dependency-dag.json`.
 Neden önce: bu ikisi bugün **doğrulanmış** tek kaynak (§3.1, §3.2). 16
 satırlık dürüst bir cevap, 62 satırlık belirsiz bir cevaptan iyidir.
 
-**2. Ekran — `/engineering/modules`. — UYGULANDI (FF-168).**
+**2. Ekran — `/platform/engineering/modules`. — UYGULANDI (FF-168; adres
+FF-248'de `/platform` altına taşındı, eski adres 301 ile yaşıyor).**
 `EngineeringSection` birliğine `'modules'`, `OpsShell` bölüm listesine
 bir giriş. Bölüm adresten gelir. Neden ikinci: uç olmadan ekranın
 gösterecek verisi olmaz, ve uydurma veriyle çizilen bir ekran sonra
@@ -470,7 +472,7 @@ Her madde bir testle donar; testsiz kural eklenmez
 1. **Uç yalnız gerçek kaynağı okur.** `config/core-modules.php` dışında
    bir CORE alanı üreten kod yoktur; test, dosyaya eklenen bir satırın
    uçta göründüğünü ve çıkarılan bir satırın kaybolduğunu doğrular.
-2. **Yetki.** Superadmin olmayan bir kullanıcı `/engineering/modules` ve
+2. **Yetki.** Superadmin olmayan bir kullanıcı `/platform/engineering/modules` ve
    `GET /api/admin/modules` için düz 404 alır (mevcut enumeration-safe
    davranış).
 3. **Boş alan boş kalır.** Sürümü olmayan bir modül satırında sürüm
@@ -482,7 +484,7 @@ Her madde bir testle donar; testsiz kural eklenmez
 5. **Bağımlılık kanıtı taşınır.** Çizilen her kenar,
    `config/module-dependency-dag.json` içindeki `evidence.path` değerini
    de gösterir.
-6. **Adres fragment değildir.** `/engineering/modules` doğrudan
+6. **Adres fragment değildir.** `/platform/engineering/modules` doğrudan
    açıldığında modüller bölümü çizilir; bilinmeyen bölüm varsayılana
    düşer (`docs/38` §4).
 7. **`modules/*.md` durum iddiası hiçbir yerde okunmaz.** Test,

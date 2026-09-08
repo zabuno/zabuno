@@ -1,0 +1,154 @@
+#!/usr/bin/env node
+/*
+    SAHNE AĞIRLIK KAPISI — `SITE-SCENE-BUDGET-01`.
+
+    ═══ NEDEN VAR ═══
+
+    Sahibin emri sahneyi zorunlu kıldı; eski tavan onu taşıyamıyordu ve
+    yükseltildi (`docs/146` §3). Ama bir bütçe KALDIRILMADI: kaldırılan bir
+    bütçe, bir gün "bir kütüphane daha ekleyelim" denildiğinde kimsenin
+    fark etmeyeceği bir yerdir. Yükseltilmiş bir bütçe ise bir SORU sorar:
+    bu bayt neyin karşılığında geldi?
+
+    ═══ NE ÖLÇÜYOR ═══
+
+    Vite manifest'inden kurumsal giriş noktasının kendisini VE ona bağlı
+    bütün parçaları toplar, her birini gzip'ler ve `scene-budget.json`
+    içindeki tavanla karşılaştırır. Toplama zinciri ÖNEMLİ: yalnız giriş
+    dosyasını ölçmek, bir kütüphaneyi ayrı bir parçaya iterek bütçeyi
+    "geçmiş" göstermeyi mümkün kılardı.
+
+    ═══ NEDEN GZIP ═══
+
+    Ziyaretçi ham baytı indirmez. Ham boyutu ölçen bir bütçe, sıkışan bir
+    kütüphaneyi olduğundan pahalı, sıkışmayan bir varlığı olduğundan ucuz
+    gösterir.
+
+    ═══ KULLANIM ═══
+
+        npm run build
+        node scripts/scene-budget-gate            # raporlar
+        node scripts/scene-budget-gate --fail     # aşımda kırılır
+*/
+
+import { existsSync, readFileSync } from 'node:fs';
+import { gzipSync } from 'node:zlib';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const MANIFEST = join(REPO_ROOT, 'public/build/manifest.json');
+const BUDGET = join(REPO_ROOT, 'scripts/scene-budget.json');
+
+/** Kurumsal sayfanın indirdiği giriş noktaları. */
+const SITE_ENTRY = 'resources/js/site.ts';
+const SITE_CSS = 'resources/css/app.css';
+
+const shouldFail = process.argv.includes('--fail');
+
+if (!existsSync(MANIFEST)) {
+    console.error(
+        'scene-budget-gate: `public/build/manifest.json` yok — ÖLÇÜM YAPILMADI.\n' +
+            '  Önce `npm run build`. Ölçülmemiş bir bütçe yeşil gösterilmez.',
+    );
+    process.exit(2);
+}
+
+const manifest = JSON.parse(readFileSync(MANIFEST, 'utf8'));
+const budget = JSON.parse(readFileSync(BUDGET, 'utf8'));
+
+/**
+ * Bir girişin indirdiği BÜTÜN parçalar.
+ *
+ * `imports` özyinelemeli izlenir: bir parça başka bir parçayı çekiyorsa
+ * ziyaretçi ikisini de indirir. Döngüye karşı görülenler kümesi tutuluyor —
+ * Vite bugün döngü üretmiyor ama bir gün üretirse bu araç askıda kalmaz,
+ * doğru cevabı verir.
+ */
+function collect(key, seen = new Set()) {
+    if (seen.has(key) || manifest[key] === undefined) {
+        return seen;
+    }
+
+    seen.add(key);
+
+    for (const imported of manifest[key].imports ?? []) {
+        collect(imported, seen);
+    }
+
+    return seen;
+}
+
+function gzipBytes(file) {
+    const path = join(REPO_ROOT, 'public/build', file);
+
+    if (!existsSync(path)) {
+        return null;
+    }
+
+    return gzipSync(readFileSync(path), { level: 9 }).length;
+}
+
+const findings = [];
+const report = { requirement: budget.requirement, measurements: {}, findings: [] };
+
+/* --- Kurumsal betik ---------------------------------------------------- */
+
+if (manifest[SITE_ENTRY] === undefined) {
+    findings.push(
+        `SITE-SCENE-BUDGET-01: \`${SITE_ENTRY}\` manifest'te yok — sahne motoru ` +
+            'paketlenmemiş. Kurumsal sayfa onu isteyecek ve 404 alacak.',
+    );
+} else {
+    let total = 0;
+    const parts = [];
+
+    for (const key of collect(SITE_ENTRY)) {
+        const size = gzipBytes(manifest[key].file);
+
+        if (size === null) {
+            findings.push(`SITE-SCENE-BUDGET-01: ${manifest[key].file} diskte yok.`);
+            continue;
+        }
+
+        total += size;
+        parts.push({ file: manifest[key].file, gzip: size });
+    }
+
+    report.measurements.siteEntryGzipBytes = total;
+    report.measurements.siteEntryParts = parts;
+
+    if (total > budget.limits.siteEntryGzipBytes) {
+        findings.push(
+            `SITE-SCENE-BUDGET-01: kurumsal betik ${total} bayt gzip — tavan ` +
+                `${budget.limits.siteEntryGzipBytes}. Tavanı YÜKSELTMEK bir seçenek, ama ` +
+                'gerekçesi `scripts/scene-budget.json` içine yazılır; sessizce aşmak değil.',
+        );
+    }
+}
+
+/* --- Kurumsal stil ------------------------------------------------------ */
+
+if (manifest[SITE_CSS] === undefined) {
+    findings.push(`SITE-SCENE-BUDGET-01: \`${SITE_CSS}\` manifest'te yok.`);
+} else {
+    const css = manifest[SITE_CSS].file;
+    const size = gzipBytes(css);
+
+    report.measurements.corporateCssGzipBytes = size;
+
+    if (size !== null && size > budget.limits.corporateCssGzipBytes) {
+        findings.push(
+            `SITE-SCENE-BUDGET-01: kurumsal stil ${size} bayt gzip — tavan ` +
+                `${budget.limits.corporateCssGzipBytes}.`,
+        );
+    }
+}
+
+report.findings = findings;
+
+console.log(JSON.stringify(report, null, 2));
+
+if (findings.length > 0 && shouldFail) {
+    process.exit(1);
+}

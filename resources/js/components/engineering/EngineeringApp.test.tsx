@@ -93,7 +93,7 @@ describe('EngineeringApp', () => {
     });
 
     it('opens on release readiness with an Engineering landmark and a way to the platform shell', async () => {
-        history.replaceState(null, '', '/engineering');
+        history.replaceState(null, '', '/platform/engineering');
         const { EngineeringApp } = await importApp();
 
         render(<EngineeringApp />);
@@ -117,7 +117,7 @@ describe('EngineeringApp', () => {
     });
 
     it('reads the AI audit trail from the address and renders both tables without inventing an actor', async () => {
-        history.replaceState(null, '', '/engineering/ai-audit');
+        history.replaceState(null, '', '/platform/engineering/ai-audit');
         const { EngineeringApp } = await importApp();
 
         render(<EngineeringApp />);
@@ -145,8 +145,8 @@ describe('EngineeringApp', () => {
      * (`docs/38` §4, kiracı ölçüm kuralı). Modül envanteri bu kuralın
      * dışında tutulmaz.
      */
-    it('draws the module inventory when /engineering/modules is opened directly', async () => {
-        history.replaceState(null, '', '/engineering/modules');
+    it('draws the module inventory when /platform/engineering/modules is opened directly', async () => {
+        history.replaceState(null, '', '/platform/engineering/modules');
         const { EngineeringApp } = await importApp();
 
         render(<EngineeringApp />);
@@ -164,7 +164,7 @@ describe('EngineeringApp', () => {
     });
 
     it('falls back to the default section when the address names an unknown one', async () => {
-        history.replaceState(null, '', '/engineering/modul-envanteri');
+        history.replaceState(null, '', '/platform/engineering/modul-envanteri');
         const { EngineeringApp } = await importApp();
 
         render(<EngineeringApp />);

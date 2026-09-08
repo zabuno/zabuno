@@ -8,7 +8,7 @@
 
      Bunun tersi de doğru ve bu paketin bütün meselesi o: bir blok türünün
      görünümüne dokunmak, on sekiz sayfaya birden dokunmaktır. Hangi türün
-     hangi okuma işini yaptığı ve neden öyle çizildiği `docs/146`da yazılı;
+     hangi okuma işini yaptığı ve neden öyle çizildiği `docs/148`da yazılı;
      çizimin kendisi `resources/css/site-content.css`te.
 
      Kabuk (`public.layout`, header, footer) BAŞKA bir pakete aittir ve
@@ -51,8 +51,18 @@
                             <span class="site-doc-trail-separator" aria-hidden="true">/</span>
                         @endunless
                         @if ($crumb->isLinkable() && ! $loop->last)
-                            {{-- Dokunulabilen tek basamak budur ve bu yüzden
-                                 44 pikselin altına inmez (`docs/117` K1). --}}
+                            {{-- DOKUNMA HEDEFİ 44 PİKSELDEN KÜÇÜK OLAMAZ
+                                 (`docs/117` K1). Ölçüldü
+                                 (`scripts/mobile-ux-audit`, 320×568,
+                                 2026-09-08): kırıntı bağlantısı 112×20'ydi.
+                                 20 piksel bir imleç için yeter, parmak için
+                                 yetmez: hedefe basamayan kişi geri gidemez.
+
+                                 Boy `site-doc-trail-link` içinde
+                                 `--control-height` ile kuruluyor; şablonda
+                                 ölçü YAZILMIYOR, çünkü bu ölçü on sekiz
+                                 sayfanın ortak kararıdır ve tek yerde durur.
+                                 Dokunulabilen tek basamak budur. --}}
                             <a href="{{ $crumb->path }}" class="site-doc-trail-link">{{ $crumb->label }}</a>
                         @elseif ($loop->last)
                             {{-- Bulunduğun sayfa bir BAĞLANTI DEĞİLDİR: tıklayınca

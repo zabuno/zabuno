@@ -92,7 +92,7 @@ esnetilen tek şey **paket kapsamı** (bkz. §6).
 | 1 ✅ | **FF-63 Readiness kanıtı** | host-capability HTTP ucu + ekran; `release_evidence` genel kayıt tablosu (QR fiziksel tarama, RPO/RTO kararı, ASVS raporu) + `platform:evidence:record` komutu + ekran; sahibin gerçek taramasını kaydet | 6 maddenin 6'sı gerçek kayıttan okunur; kayıtsız madde dürüstçe "Unavailable" |
 | 2 ✅ | **FF-64 Rota boşlukları** | menü-geneli stok, brand/logo ve QR destination doğrulaması; bilinçli-eski rotalar belgeli | Tur 1 listesi sıfır "doğrulanacak" |
 | 3 ✅ | **FF-65 Envanter tazeleme** | `docs/61` G4/G5, E9/E10, A2 güncellemesi; FF-49..62'nin izi | envanter gerçeği söylüyor |
-| 4 ✅ | **FF-66 Engineering kabuğu** | `/engineering/*` ayrı kabuk: readiness, güvenlik kanıtı, yedek tatbikatı, host-capability, AI denetim izi | `docs/69` madde 3 ✅ |
+| 4 ✅ | **FF-66 Engineering kabuğu** | `/platform/engineering/*` ayrı kabuk (adres FF-248'de taşındı; eski `/engineering` 301 ile yaşıyor): readiness, güvenlik kanıtı, yedek tatbikatı, host-capability, AI denetim izi | `docs/69` madde 3 ✅ |
 | 5 ✅ | **FF-67 Superadmin estetiği (Metronic-esinli)** | uygulama: yoğunluk, kart/tablo dili, rozet sistemi, sol rail, üst çubuk; Zabuno token'larıyla (plan belgesi 2026-09-05'te kaldırıldı — sahip tasarımı kendisi veriyor) | platform ve engineering kabukları aynı dili konuşur |
 | 6 ✅ | **FF-68 DAM Faz 2** | upload session + idempotency, magic-bytes/decoder doğrulama, karantina zinciri, SVG reddi, `fixtures/malicious` CI kapısı | `docs/49` Faz 2 kabulü |
 | 7 ✅ | **FF-69 DAM Faz 3** | immutable original, non-destructive version, `320..1600w` rendition seti, checksum + yinelenen tespiti, reprocess | INV-01..07 yeşil, rollback |

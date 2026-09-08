@@ -551,29 +551,53 @@ final class DeploymentContractTest extends TestCase
         );
     }
 
+    // --- DEPLOY-PROVES-RELEASE-13 -----------------------------------------
+
     /**
-     * ÜRETİM HANGİ COMMIT'İ SUNUYOR — `docs/87`.
+     * ÜRETİM HANGİ COMMIT'İ SUNUYOR — `docs/87`, `docs/142`.
      *
-     * Deploy `.image.env`'e yalnız imaj etiketini yazıyordu ve konteynere
-     * hiçbir revizyon geçmiyordu: canlı sayfa boş bir build kimliği
-     * basıyordu. "Baktığım şey gerçekten yazdığım kod mu" sorusu —
-     * `preview-truth` kapısının cevaplamak için var olduğu soru — üretimde
-     * cevapsızdı, ve geri alma kördü.
+     * İlk hâlde deploy `.image.env`'e yalnız imaj etiketini yazıyordu ve
+     * konteynere hiçbir revizyon geçmiyordu: canlı sayfa boş bir build
+     * kimliği basıyordu. O kusur kapatıldı — ama YANLIŞ kaynaktan
+     * kapatıldı, ve bu kapının ilk hâli yanlışı DONDURDU: değer
+     * `github.sha` idi ve kapı tam o dizgeyi arıyordu.
+     *
+     * `workflow_run` bağlamında `github.sha` DALIN O ANKİ UCUDUR, deploy
+     * edilen commit değil. Akışın kendi yorumu bunu zaten söylüyor ve imaj
+     * etiketi doğru kaynaktan (`workflow_run.head_sha`) türüyordu; yalnız
+     * revizyon etiketi ötekinden geliyordu.
+     *
+     * ÖLÇÜLDÜ (2026-09-08, deploy koşumu 34179388196): `c1414278` main'e
+     * 01:56'da, `c59d499b` 02:08'de girdi; `c1414278`'in CI'ı ise 02:14'te
+     * bitti. Deploy `c1414278`'i derledi ve yayına aldı (adım günlüğü:
+     * `sha="c1414278…"`), ama `github.sha` o an `c59d499b` olduğu için
+     * canlı uygulama 02:16'dan 02:28'e kadar `c59d499b` çalıştırdığını
+     * SÖYLEDİ. Sahibi sayfayı yeniledi, hiçbir şey değişmemişti, ve sürüm
+     * etiketi ona "en güncelsin" diyordu.
+     *
+     * Etiket, imajın DERLENDİĞİ commit'ten türemek zorunda.
      */
-    public function test_the_deploy_hands_the_commit_to_the_container(): void
+    public function test_the_deploy_labels_the_image_with_the_commit_it_actually_built(): void
     {
         $workflow = $this->read('.github/workflows/deploy.yml');
 
         self::assertStringContainsString(
+            'ZABUNO_BUILD_REVISION: ${{ steps.meta.outputs.sha }}',
+            $workflow,
+            'DEPLOY-PROVES-RELEASE-13: revizyon etiketi, derlenen commit\'ten türemeli.'
+        );
+
+        self::assertStringNotContainsString(
             'ZABUNO_BUILD_REVISION: ${{ github.sha }}',
             $workflow,
-            'Deploy, çalıştırdığı commit\'i imaja geçirmeli.'
+            'DEPLOY-PROVES-RELEASE-13: `github.sha` `workflow_run` içinde dalın ucudur; '
+            .'etiket olarak kullanılırsa imaj bir commit\'ten gelir, etiket başkasını söyler.'
         );
 
         self::assertStringContainsString(
             'ZABUNO_BUILD_REVISION=$3',
             $workflow,
-            'Revizyon `.image.env` içine yazılmalı; yoksa compose onu göremez.'
+            'DEPLOY-PROVES-RELEASE-13: revizyon `.image.env` içine yazılmalı; yoksa compose onu göremez.'
         );
 
         // Ve compose onu konteynere GEÇİRMELİ: akışa yazmak tek başına
@@ -581,8 +605,250 @@ final class DeploymentContractTest extends TestCase
         self::assertMatchesRegularExpression(
             '/ZABUNO_BUILD_REVISION:\s*\$\{ZABUNO_BUILD_REVISION/',
             $this->read('docker-compose.yml'),
-            'Compose, revizyonu uygulamanın ortamına geçirmeli.'
+            'DEPLOY-PROVES-RELEASE-13: compose, revizyonu uygulamanın ortamına geçirmeli.'
         );
+    }
+
+    /**
+     * VARLIKLARIN KENDİ KİMLİĞİ OLMALI.
+     *
+     * Revizyon etiketi yalnız PHP tarafını anlatır ve bugünkü arıza öteki
+     * yarıydı: 2026-09-08'de canlı site `/about` ve `/delivery` sayfalarını
+     * 200 döndürürken derlenmiş CSS daisyUI'den ÖNCEKİ 126.594 baytlık
+     * dosyaydı. Bir sürüm alanı bunu yapısal olarak gösteremez — hangisini
+     * söylerse söylesin öbür yarıyı gizler.
+     *
+     * Damga `npm run build` ile AYNI komutta yazılır: varlıklar ile kimliği
+     * tek katmanda doğar ve ayrışamazlar. Ayrı bir `RUN` olsaydı, önbellek
+     * birini tazeleyip ötekini bırakabilirdi.
+     */
+    public function test_the_image_stamps_the_assets_with_the_commit_they_were_built_from(): void
+    {
+        $dockerfile = $this->read('docker/Dockerfile');
+
+        self::assertMatchesRegularExpression(
+            '/npm run build[^\n]*\\\\\s*\n\s*&&\s*printf[^\n]*revision\.txt/',
+            $dockerfile,
+            'DEPLOY-PROVES-RELEASE-13: damga, varlıkları üreten komutun kendisinde yazılmalı.'
+        );
+
+        self::assertStringContainsString(
+            'ARG ZABUNO_RELEASE_SHA',
+            $dockerfile,
+            'DEPLOY-PROVES-RELEASE-13: derlenen commit imaja bir derleme argümanı olarak girmeli.'
+        );
+
+        /*
+         * İSİM BİLEREK FARKLI. Derleme argümanları `RUN` içinde ortam
+         * değişkeni olarak görünür ve `vite.config.ts`
+         * `ZABUNO_BUILD_REVISION`'ı okuyup değeri PAKETİN İÇİNE gömer.
+         * Aynı adı kullansaydık her dağıtımda JavaScript parça özetleri
+         * değişir, ziyaretçi hiç değişmemiş paketleri yeniden indirirdi.
+         */
+        self::assertStringNotContainsString(
+            'ARG ZABUNO_BUILD_REVISION',
+            $dockerfile,
+            'DEPLOY-PROVES-RELEASE-13: bu ad paketin içine gömülür ve her dağıtımda tüm paket özetlerini değiştirir.'
+        );
+
+        $workflow = $this->read('.github/workflows/deploy.yml');
+
+        self::assertStringContainsString(
+            'ZABUNO_RELEASE_SHA=${{ steps.meta.outputs.sha }}',
+            $workflow,
+            'DEPLOY-PROVES-RELEASE-13: akış, derlenen commit\'i imaja geçirmeli; yoksa damga boş kalır.'
+        );
+    }
+
+    /**
+     * YEŞİL BİR DAĞITIM, CANLININ GÜNCEL OLDUĞUNU GÖSTERMELİ.
+     *
+     * Sağlık kontrolünün sorduğu soru "bir şey 200 dönüyor mu?"dur ve eski
+     * sürüm de 200 döner. 2026-09-08'de dağıtım her adımı — sağlık kontrolü
+     * dâhil — yeşil tamamladı ve canlı site birleştirilen commit'i
+     * çalıştırmıyordu; hiçbir kapı bunu görmedi ve sahibi saatlerce
+     * "ben mi yanlış yaptım" diye baktı.
+     *
+     * Kapı sağlık kontrolünden SONRA gelmeli: uygulama cevap vermeden ne
+     * çalıştırdığı sorulamaz.
+     */
+    public function test_the_deploy_proves_what_it_actually_released(): void
+    {
+        $workflow = $this->read('.github/workflows/deploy.yml');
+
+        $health = strpos($workflow, 'Sağlık kontrolü');
+        $proof = strpos($workflow, 'Dağıtım ne dağıttı?');
+
+        self::assertIsInt(
+            $proof,
+            'DEPLOY-PROVES-RELEASE-13: dağıtım ne dağıttığını kanıtlamıyor; yeşil bir koşum eski bir siteyi gizler.'
+        );
+        self::assertIsInt($health, 'Sağlık kontrolü adımı kaybolmuş.');
+        self::assertGreaterThan(
+            (int) $health,
+            (int) $proof,
+            'DEPLOY-PROVES-RELEASE-13: kanıt, uygulama cevap vermeye başladıktan SONRA aranmalı.'
+        );
+
+        // Kanıt canlı uçtan okunmalı — akışın kendi değişkeninden değil.
+        self::assertStringContainsString(
+            '/up/build',
+            $workflow,
+            'DEPLOY-PROVES-RELEASE-13: kanıt canlı uygulamadan okunmalı.'
+        );
+
+        // İKİ yarı da karşılaştırılmalı. Yalnız birine bakan bir kapı,
+        // 2026-09-08'deki arızayı yine kaçırırdı.
+        foreach (['.revision', '.assets_revision'] as $field) {
+            self::assertStringContainsString(
+                $field,
+                $workflow,
+                "DEPLOY-PROVES-RELEASE-13: `{$field}` karşılaştırılmıyor; yarısı bayat bir site yeşil geçer."
+            );
+        }
+
+        // Ve uyuşmazlık KIRMIZI olmalı. `::error::` yazıp 0 ile çıkan bir
+        // adım, kırmızıdan beter: uyarı verir ve kimse bakmaz.
+        self::assertMatchesRegularExpression(
+            '/Dağıtım ne dağıttı\?.*\n(.*\n)*?.*exit 1/U',
+            $workflow,
+            'DEPLOY-PROVES-RELEASE-13: uyuşmazlık dağıtımı KIRMIZI döndürmeli.'
+        );
+    }
+
+    /**
+     * ESKİ BİR COMMIT'İN BAŞARILI DAĞITIMI, "SİTE GÜNCEL" DEMEK DEĞİLDİR.
+     *
+     * `workflow_run` her CI koşumu için ayrı tetiklenir. Yeni bir commit
+     * main'e girdikten sonra ESKİ bir commit'in CI'ı bitebilir ve onun
+     * dağıtımı yeşil tamamlanır — 2026-09-08 02:16'da tam olarak bu oldu.
+     * O koşum kendi işini doğru yaptı; yanlış olan, sahibinin onu
+     * "birleştirdiğim şey yayında" diye okumasıydı.
+     *
+     * Bu KIRMIZI değildir: yapılacak bir iş yoktu ve daha yeni bir dağıtım
+     * zaten yolda. Ama sessiz de kalamaz.
+     */
+    public function test_a_release_that_is_behind_the_branch_tip_says_so(): void
+    {
+        $workflow = $this->read('.github/workflows/deploy.yml');
+
+        self::assertMatchesRegularExpression(
+            '/Dağıtım ne dağıttı\?.*\n(.*\n)*?.*::warning::/U',
+            $workflow,
+            'DEPLOY-PROVES-RELEASE-13: dalın ucundan geride bir yayın sessiz kalmamalı.'
+        );
+
+        self::assertStringContainsString(
+            'GITHUB_STEP_SUMMARY',
+            $workflow,
+            'DEPLOY-PROVES-RELEASE-13: canlıda ne çalıştığı koşum özetinde yazmalı; sahibi günlük okumaz.'
+        );
+    }
+
+    /**
+     * KANIT, SIRRI SIZDIRMADAN OKUNUR.
+     *
+     * Sağlık adresi bir secret'tır ve GitHub yalnız DEĞERİN KENDİSİNİ
+     * maskeler; ondan türetilmiş bir parça (kök adres) maskelenmez. Yeni
+     * kapı o adresi kullanır ama BASMAZ.
+     *
+     * Ayrıca yeni bir secret İSTEMEZ: isteseydi, kurulumu bugün çalışan
+     * makinede kapı sessizce kapalı kalırdı — yani kapının var olmadığı
+     * hâlin aynısı, ama var sanıldığı için daha kötüsü.
+     */
+    public function test_the_proof_step_needs_no_new_secret_and_prints_no_address(): void
+    {
+        $workflow = $this->read('.github/workflows/deploy.yml');
+
+        self::assertSame(
+            1,
+            preg_match('/- name: Dağıtım ne dağıttı\?\n(?<step>(?: {8}.*\n|\n)*)/', $workflow, $step),
+            'DEPLOY-PROVES-RELEASE-13: kanıt adımı okunamadı.'
+        );
+
+        preg_match_all('/secrets\.([A-Z_]+)/', $step['step'], $secrets);
+
+        self::assertSame(
+            ['DEPLOY_HEALTH_URL'],
+            array_values(array_unique($secrets[1])),
+            'DEPLOY-PROVES-RELEASE-13: kapı var olan sağlık adresiyle çalışmalı; yeni bir secret onu sessizce kapatır.'
+        );
+
+        self::assertDoesNotMatchRegularExpression(
+            '/echo[^\n]*\$\{?(DEPLOY_HEALTH_URL|origin)\b/',
+            $step['step'],
+            'DEPLOY-PROVES-RELEASE-13: secret\'tan türetilmiş adres günlüğe basılıyor; maskeleme onu kapsamaz.'
+        );
+    }
+
+    /**
+     * SESSİZ ATLAMA KORUNUR — kayıtlı ve doğru bir karar.
+     *
+     * Sunucu secret'ları tanımlı değilse dağıtım BAŞARISIZ OLMAZ, ATLANIR.
+     * Gerekçe akışta yazılı: her birleşmede kırmızı bir X görmek
+     * "kırmızıyı görmezden gel" alışkanlığı yaratır ve o alışkanlık gerçek
+     * arızaları da gizler.
+     *
+     * Yeni kanıt kapısı bu ayrımı bozmamalı: `deploy` işinin İÇİNDE durur,
+     * yani yalnız gerçekten dağıtım yapıldığında çalışır.
+     */
+    public function test_a_machine_without_deploy_secrets_is_skipped_not_failed(): void
+    {
+        $workflow = $this->read('.github/workflows/deploy.yml');
+
+        self::assertSame(
+            1,
+            preg_match('/- name: Sunucu tanımlı mı\?\n(?<step>(?: {8}.*\n|\n)*)/', $workflow, $server),
+            'Sunucu kontrolü adımı okunamadı.'
+        );
+
+        self::assertStringContainsString(
+            'configured=false',
+            $server['step'],
+            'Sunucu yoksa akış bunu bir DURUM olarak bildirmeli.'
+        );
+        self::assertStringNotContainsString(
+            'exit 1',
+            $server['step'],
+            'Sunucu yokluğu bir arıza değil; kırmızı vermemeli.'
+        );
+
+        // Ve dağıtımın tamamı — kanıt adımı dâhil — o karara bağlı olmalı.
+        self::assertStringContainsString(
+            "if: needs.guard.outputs.should_deploy == 'true'",
+            $workflow,
+            'Dağıtım işi, atlama kararına bağlı olmalı.'
+        );
+
+        self::assertSame(
+            1,
+            preg_match_all('/^  deploy:\n/m', $workflow),
+            'Kanıt adımı ayrı bir işe taşınmış olabilir; atlama kararının dışında kalırsa sessiz atlama kırmızıya döner.'
+        );
+    }
+
+    /**
+     * SAĞLIK KONTROLÜ ZAYIFLAMAZ.
+     *
+     * Yeni kapı onun YERİNE geçmez, ÜSTÜNE gelir. Sağlık kontrolü hâlâ
+     * uygulamanın cevap verdiğini bekler ve vermezse kırmızı döner;
+     * "zaten kanıt adımı var" diyerek gevşetilirse, cevap vermeyen bir
+     * sitede kanıt adımı da anlamsız bir hatayla ölür ve arızanın ne
+     * olduğu kaybolur.
+     */
+    public function test_the_health_check_still_fails_a_site_that_does_not_answer(): void
+    {
+        $workflow = $this->read('.github/workflows/deploy.yml');
+
+        self::assertSame(
+            1,
+            preg_match('/- name: Sağlık kontrolü\n(?<step>(?: {8}.*\n|\n)*)/', $workflow, $health),
+            'Sağlık kontrolü adımı okunamadı.'
+        );
+
+        self::assertStringContainsString('DEPLOY_HEALTH_URL', $health['step']);
+        self::assertStringContainsString('curl -fsS', $health['step']);
+        self::assertStringContainsString('exit 1', $health['step']);
     }
 
     /**
@@ -729,20 +995,43 @@ final class DeploymentContractTest extends TestCase
     }
 
     /**
-     * DAĞITIM BİR YAYIN KARARI VERMEZ — `docs/128`.
+     * DAĞITIM ÖLÇÜMDEN BİR YAYIN KARARI TÜRETMEZ — `docs/128`, `docs/147`.
      *
-     * Kütüğü doldurmak ile bir sayfayı yayına almak AYRI işlerdir ve
-     * ikincisi bir insanın kararıdır (yönerge §20: içerik onayı, tasarım,
-     * SEO, erişilebilirlik, QA). `site:sync-content-status` bu kararın
-     * bir kademe altını — "içeriği yazılmış" ölçümünü — yürütür ve tavanı
-     * bilerek `content_draft`tır; ama her dağıtımda KENDİLİĞİNDEN yürüyen
-     * bir durum ilerletici, o tavanı bir gün yükseltmenin en kolay yolunu
-     * açardı.
+     * Kural ilk yazıldığında tek cümleydi: *"giriş betiği kütüğü DOLDURUR,
+     * durumu İLERLETMEZ."* Sebebi hâlâ yerinde ve hâlâ doğru:
+     * `site:sync-content-status` bir ÖLÇÜM yapar ("bu sayfanın metni
+     * yazılmış mı?") ve ölçümden bir durum türetir. Hiçbir insan devrede
+     * değildir. Her dağıtımda kendiliğinden yürüyen böyle bir ilerletici,
+     * `content_draft` tavanını bir gün yükseltmenin en kolay yolunu açardı —
+     * *"bir betiğin her seferinde geçtiği kalite kapısı, kapı değildir."*
      *
-     * Bu yüzden kural: giriş betiği kütüğü DOLDURUR, durumu İLERLETMEZ.
-     * İlerletme elle ve bilerek çalıştırılır.
+     * ── Yasak DARALTILDI, sebebi ölçüldü (`docs/147`) ─────────────────────
+     *
+     * `docs/144` yasağı ikinci bir komuta, `site:apply-publication-decisions`
+     * ile genişletmişti, ve o genişletme bir DAĞITIM BOŞLUĞU üretti: sahip
+     * bir sayfayı yayına aldığında, birisi sunucuya SSH ile girip komutu
+     * elle koşana kadar sayfa canlıda YOKTU. Dağıtım yeşil yanıyor, sağlık
+     * kontrolü geçiyor, ve kararın kendisi uygulanmamış duruyordu.
+     *
+     * Sahibin kararı (2026-09-08): dağıtım kendi başına tamamlanmalı.
+     * DEPLOY-GATED-04'te olduğu gibi kapı sessizce silinmedi, YENİDEN
+     * YAZILDI — ve daraltmanın gerekçesi, komutun kendi belgesinin zaten
+     * söylediği ayrımdır:
+     *
+     *   `sync-content-status` bir ölçümden karar TÜRETİR — insan yok, tavan
+     *   var, dağıtımda çalışamaz.
+     *
+     *   `apply-publication-decisions` bir kararı UYGULAR. Kararı veren
+     *   dosya (`config/content-publication-decisions.php`) sayfaları adıyla
+     *   sayar, her satırda kararı vereni ve sebebini taşır, ve kod
+     *   incelemesinden geçer. Kapıdan geçen şey bir betik değil, bir
+     *   İNSANDIR; kapı da bu dosyanın incelemesidir. O kapı dağıtıma
+     *   taşınmadı — dağıtım yalnız verilmiş kararı taşır.
+     *
+     * Toptan bir "her şeyi yayınla" yolu hâlâ YOK: komut yalnız kararlar
+     * dosyasında adı geçen satırlara dokunur.
      */
-    public function test_the_deploy_fills_the_ledger_without_advancing_a_publication_decision(): void
+    public function test_the_deploy_never_derives_a_publication_decision_from_a_measurement(): void
     {
         // Yorumlar ELENİR — bu dosyanın iki kez öğrendiği ders (bkz.
         // DEPLOY-SENDS-EVERY-TOPOLOGY-10 ve DEPLOY-GATED-04): yasağı
@@ -751,11 +1040,223 @@ final class DeploymentContractTest extends TestCase
         // NEDEN konmadığını anlatan yorum, kapıyı düşürüyordu.
         $entrypoint = preg_replace('/^\s*#.*$/m', '', $this->read('docker/entrypoint.sh')) ?? '';
 
-        self::assertStringNotContainsString(
-            'site:sync-content-status',
+        foreach (self::BANNED_FROM_DEPLOY as $advancer) {
+            self::assertStringNotContainsString(
+                $advancer,
+                $entrypoint,
+                "DEPLOY-PAGE-LEDGER-12: dağıtım `{$advancer}` ile bir ÖLÇÜMDEN yayın "
+                .'durumu türetiyor; bir betiğin her seferinde geçtiği kalite kapısı, '
+                .'kapı değildir.'
+            );
+        }
+    }
+
+    /** Ölçümden karar türeten, dolayısıyla dağıtımda çalışamayacak komutlar. */
+    private const BANNED_FROM_DEPLOY = ['site:sync-content-status'];
+
+    /**
+     * Verilmiş bir kararı UYGULAYAN, dolayısıyla dağıtımda çalışması gereken
+     * komutlar. Listeye girmek bedavaya değil: her satırın kararı bir insana
+     * ve kod incelemesinden geçen bir dosyaya dayanmak zorunda.
+     */
+    private const APPLIES_A_HUMAN_DECISION = ['site:apply-publication-decisions'];
+
+    /**
+     * DURUMU İLERLETEBİLEN HER KOMUT SINIFLANDIRILMIŞ OLMALI — DEPLOY-PAGE-LEDGER-13.
+     *
+     * Üstteki kapı dizge listeleri tutuyor ve dizge listeleri eskir: üçüncü
+     * bir komut yazıldığı gün, kimse listelere eklemeyi hatırlamazsa kural
+     * onun için hiç var olmamış olur. Bu kapı listeleri ÖLÇÜME bağlar —
+     * kütüğün yayın durumuna dokunabilen her `site:` komutu İKİ listeden tam
+     * olarak birinde olmak zorundadır.
+     *
+     * "Tam olarak birinde" şart: bir komut hem yasaklı hem izinli olamaz,
+     * ve sınıflandırılmamış bir komut sessizce dağıtıma sızamaz. Sınıflama
+     * bir düşünme adımıdır — karar ölçümden mi türüyor, yoksa bir insandan
+     * mı geliyor?
+     */
+    public function test_every_command_that_can_advance_a_page_is_classified(): void
+    {
+        $banned = self::BANNED_FROM_DEPLOY;
+        $allowed = self::APPLIES_A_HUMAN_DECISION;
+
+        self::assertSame(
+            [],
+            array_intersect($banned, $allowed),
+            'DEPLOY-PAGE-LEDGER-13: bir komut hem yasaklı hem izinli olamaz.'
+        );
+
+        foreach (array_keys(Artisan::all()) as $name) {
+            if (! str_starts_with((string) $name, 'site:')) {
+                continue;
+            }
+
+            $source = (string) file_get_contents(
+                (new \ReflectionClass(Artisan::all()[$name]))->getFileName() ?: __FILE__
+            );
+
+            // Kütüğün durum alanına YAZAN bir komut, yayın kararını
+            // ilerletebilir demektir.
+            if (! str_contains($source, '->publication_status =')) {
+                continue;
+            }
+
+            self::assertContains(
+                (string) $name,
+                array_merge($banned, $allowed),
+                "DEPLOY-PAGE-LEDGER-13: `{$name}` yayın durumunu ilerletebiliyor ama "
+                .'sınıflandırılmamış: ölçümden mi türüyor (yasak), yoksa verilmiş bir '
+                .'insan kararını mı uyguluyor (dağıtımda çalışır)?'
+            );
+        }
+    }
+
+    // --- DEPLOY-PUBLICATION-APPLIED-14 ------------------------------------
+
+    /**
+     * DAĞITIM KENDİ BAŞINA TAMAMLANIR — `docs/147`.
+     *
+     * Ölçülen boşluk (2026-09-08): `config/content-publication-decisions.php`
+     * içindeki karar main'e girip dağıtıldığında bile canlıda hiçbir şey
+     * değişmiyordu. `ShowCorporatePageController` kütükteki durumu okur; durum
+     * `planned` kaldığı için sayfa 404 dönüyordu. Kararı uygulayan komut
+     * depoda vardı, testleri de vardı — onu üretimde çalıştıran tek yol bir
+     * insanın SSH ile girip elle koşmasıydı.
+     *
+     * Bu, DEPLOY-PAGE-LEDGER-12 ve DEPLOY-SEED ile tam olarak aynı sınıftan
+     * bir kusur: şema değil VERİ eksik, ve veri eksikliği hiçbir yerde
+     * kırmızı göstermiyor. Dağıtım yeşil, konteyner ayakta, sayfa yok.
+     *
+     * Kapı üç şeyi birden ölçer, çünkü üçünden biri eksikse adım anlamsız:
+     *
+     *   1. Adım VAR.
+     *   2. Göçlerden ve kütük içe aktarımından SONRA — komut ikisini de
+     *      bekler ve kütükte olmayan bir satır için YÜKSEK SESLE durur.
+     *   3. Uygulama trafiğe açılmadan ÖNCE. Giriş betiği supervisord'u
+     *      `exec` ile devraldığı anda site cevap vermeye başlar; sağlık
+     *      kontrolünün geçebildiği ilk an odur. Adım o satırdan sonra
+     *      olsaydı, sağlık kontrolü kararı uygulanmamış bir siteyi yeşil
+     *      sayardı.
+     */
+    public function test_the_deployment_applies_publication_decisions_before_it_serves_traffic(): void
+    {
+        $entrypoint = preg_replace('/^\s*#.*$/m', '', $this->read('docker/entrypoint.sh')) ?? '';
+
+        $applied = strpos($entrypoint, 'artisan site:apply-publication-decisions');
+
+        self::assertIsInt(
+            $applied,
+            'DEPLOY-PUBLICATION-APPLIED-14: dağıtım yayın kararlarını uygulamıyor; '
+            .'sahibin yayına aldığı sayfa, birisi sunucuda elle komut koşana kadar '
+            .'canlıda yok.'
+        );
+
+        $migrated = strpos($entrypoint, 'artisan migrate --force');
+        $imported = strpos($entrypoint, 'artisan site:import-map');
+        $serving = strpos($entrypoint, 'exec supervisord');
+
+        self::assertIsInt($migrated, 'DEPLOY-PUBLICATION-APPLIED-14: göç adımı okunamadı.');
+        self::assertIsInt($imported, 'DEPLOY-PUBLICATION-APPLIED-14: kütük adımı okunamadı.');
+        self::assertIsInt($serving, 'DEPLOY-PUBLICATION-APPLIED-14: trafiğe açılma satırı okunamadı.');
+
+        self::assertLessThan(
+            $applied,
+            $migrated,
+            'DEPLOY-PUBLICATION-APPLIED-14: kararlar göçlerden ÖNCE uygulanıyor; tablo henüz yok.'
+        );
+
+        self::assertLessThan(
+            $applied,
+            $imported,
+            'DEPLOY-PUBLICATION-APPLIED-14: kararlar kütük dolmadan ÖNCE uygulanıyor; '
+            .'komut "kütükte yok" diyerek durur ve konteyner hiç açılmaz.'
+        );
+
+        self::assertGreaterThan(
+            $applied,
+            $serving,
+            'DEPLOY-PUBLICATION-APPLIED-14: kararlar site cevap vermeye başladıktan SONRA '
+            .'uygulanıyor; sağlık kontrolü kararı uygulanmamış bir siteyi yeşil sayar.'
+        );
+    }
+
+    /**
+     * KOMUT KIRMIZI VERİRSE DAĞITIM KIRMIZI VERİR.
+     *
+     * Sessizce atlanan bir adım, hiç olmayan bir adımdan kötüdür: yeşil bir
+     * dağıtım sahibe "kararın uygulandı" der. Giriş betiği `set -e` ile
+     * koştuğu için başarısız komut konteyneri hiç açtırmaz, sağlık kontrolü
+     * de 120 saniyede geçemeyip dağıtımı kırmızıya çeker.
+     *
+     * `|| true`, `|| :` ya da `set +e` ile yumuşatılmış bir çağrı bu zinciri
+     * koparır; kapı özellikle onu arar.
+     */
+    public function test_a_failing_publication_step_cannot_be_swallowed(): void
+    {
+        $entrypoint = preg_replace('/^\s*#.*$/m', '', $this->read('docker/entrypoint.sh')) ?? '';
+
+        self::assertStringContainsString(
+            'set -euo pipefail',
             $entrypoint,
-            'DEPLOY-PAGE-LEDGER-12: dağıtım yayın durumunu ilerletiyor; '
-            .'bir betiğin her seferinde geçtiği kalite kapısı, kapı değildir.'
+            'DEPLOY-PUBLICATION-APPLIED-14: giriş betiği hatada durmuyor; '
+            .'başarısız bir adım sessizce geçer.'
+        );
+
+        self::assertSame(
+            0,
+            preg_match('/^\s*set\s+\+e/m', $entrypoint),
+            'DEPLOY-PUBLICATION-APPLIED-14: betik bir yerde hatada durmayı kapatıyor.'
+        );
+
+        self::assertSame(
+            1,
+            preg_match(
+                '/^php artisan site:apply-publication-decisions\s*$/m',
+                $entrypoint
+            ),
+            'DEPLOY-PUBLICATION-APPLIED-14: yayın adımı ya yok ya da `|| true` benzeri '
+            .'bir kaçışla yumuşatılmış; kırmızısı dağıtıma ulaşmaz.'
+        );
+
+        // Ve sağlık kontrolü, konteyner yayına alındıktan SONRA gelmeli:
+        // sıra bozulursa yukarıdaki zincirin son halkası kopar.
+        $workflow = $this->read('.github/workflows/deploy.yml');
+
+        self::assertLessThan(
+            (int) strpos($workflow, 'name: Sağlık kontrolü'),
+            (int) strpos($workflow, 'name: Yeni imajı yayına al'),
+            'DEPLOY-PUBLICATION-APPLIED-14: sağlık kontrolü konteyner yayına alınmadan '
+            .'önce koşuyor.'
+        );
+    }
+
+    /**
+     * SUNUCU SECRET'I YOKSA, ATLANAN ŞEY ADIYLA SÖYLENİR.
+     *
+     * Akışın bilinen tuzağı: sunucu secret'ları tanımlı değilse deploy işi
+     * kırmızı vermeden atlanır (bilinçli — bkz. `guard` işi). Bu doğru bir
+     * karar, ama sessiz kaldığı sürece tehlikeli: sahip yeşil bir CI görür ve
+     * yayın kararının uygulandığını sanar. Oysa kütük de dolmamıştır, göçler
+     * de koşmamıştır.
+     *
+     * Kapı, atlamanın ADIYLA duyurulmasını şart koşar.
+     */
+    public function test_a_skipped_deploy_says_the_publication_decisions_were_not_applied(): void
+    {
+        $workflow = $this->read('.github/workflows/deploy.yml');
+
+        self::assertStringContainsString(
+            'ADIM ATLANDI',
+            $workflow,
+            'DEPLOY-PUBLICATION-APPLIED-14: sunucu tanımsızken atlama sessiz; '
+            .'yeşil bir koşum "kararın uygulandı" der.'
+        );
+
+        self::assertStringContainsString(
+            'site:apply-publication-decisions',
+            $workflow,
+            'DEPLOY-PUBLICATION-APPLIED-14: atlama bildirimi, uygulanmayan kararı '
+            .'adıyla söylemiyor.'
         );
     }
 }
