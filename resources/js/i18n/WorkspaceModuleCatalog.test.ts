@@ -37,8 +37,6 @@ const FROZEN_MODULE_FILENAMES = [
     'team.ts',
 ];
 
-const FROZEN_LEGACY_KEY_COUNT = 1671;
-
 // FF-137: panel v3 — on ekran ve medya modülü yenilendi, Mutfak rolü doğdu.
 // FF-138d: ekipten çıkarmanın iki ayrı reddi (sahip değilsin / o üyelik yok)
 // kendi cümlelerini kazandı; tek bir "tekrar deneyin" ikisini de yanlış
@@ -236,14 +234,59 @@ const FROZEN_LEGACY_KEY_COUNT = 1671;
 // yerelleştirme bu üç metnin dönüşmediğini gösterdi (`docs/121` §4).
 // ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
 // msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
+// FF-218 (`docs/122` Y7, `docs/133`): SEKİZ anahtar ve hepsi TEK bir
+// cümlenin parçaları — "platform ekibinden biri hesabınıza baktı".
+// `docs/122` §5 kaydın kiracının GÖREBİLECEĞİ biçimde yazılmasını şart
+// koşuyor; sahibin okuyacağı metnin katalogdan geçmesi o şartın kendisidir,
+// yan etkisi değil. Sekiz anahtar: kaynak etiketi, bölüm başlığı, ne
+// yapılamadığını anlatan yardım metni, açık ve kapalı oturumun zaman
+// cümleleri, sebep, kim ve failin bilinmediği hâli.
+// ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırları yazıldı.
+// FF-219: 1660 → 1694, otuz dört anahtar — ABONELİĞİN EKSİK YARISI
+// (docs/107 Faz 1.3, docs/134). İptal, iptalden cayma, plan düşürme,
+// ödemesiz süre ve askı. Bu grubun ayırt edici yanı, cümlelerin bir DURUM
+// değil bir TARİH ve bir SONUÇ söylemesidir: "aboneliğiniz güncellendi"
+// diye bir anahtar yok; "X tarihine kadar kullanmaya devam edeceksiniz",
+// "X tarihinde şunları kaybedeceksiniz", "X tarihinden beri kapalı" var.
+// İki cümle bilerek MİSAFİRİ anlatıyor — sahibin en çok korktuğu şey,
+// ödeme sorununun masadaki müşterisine yansımasıdır ve cevabı ("yansımaz")
+// ekranda yazılı.
+// ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
+// msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
+// FF-224: 1705 → 1706, TEK anahtar ve yeni bir yüzey değil — ADI OLMAYAN
+// BİR YUVANIN adı. `menuImportSource`, yükleme sihirbazının açılır
+// listesinde ZATEN duruyordu (uç nokta onu döndürüyor, çünkü sihirbazın
+// seçtirebildiği biçimleri taşıyor) ama etiketi hiç yazılmamıştı: `t()`
+// eksik anahtarı KENDİSİ olarak döndürür, yani sahip listede
+// "workspace.media.upload.field.assetSlot.menuImportSource" okuyordu.
+// Bunu asıl pahalı yapan, ürünün BAŞKA bir ekranda o yuvayı adıyla
+// istemesiydi ("önce Medya sayfasından yükleyin — yuva: Import source"):
+// tarif edilen yol, tarif edildiği hâliyle yürünemiyordu. Sayı bir ekran
+// büyüdüğü için değil, var olan bir seçeneğin okunabilir olması için arttı;
+// `SlotNameIsReadableTest` bundan sonra adsız yuvayı hiç doğurtmuyor.
+// ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
+// msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
+// FF-225: Medya > Ayarlar'daki güvenlik önlemleri ANAHTAR olmaktan çıktı
+// (sahibin kararı, 2026-09-08: "switch butonlar saçma, UI hatası"). Anahtar
+// hem "değiştirebilirsin" diyordu hem de altında "kapatılamaz" yazıyordu;
+// kullanıcı dokunuyor, hiçbir şey olmuyordu. Anahtarın tek bakışta
+// cevapladığı soru ("açık mı?") kaybolmasın diye hâl artık KELİMEDİR ve üç
+// anahtar bunun için doğdu: "On", "Partly on", "Not running here". Dördüncü
+// bir "Off" anahtarı YOK — bu dört önlemin kapalı diye bir hâli yok; olmayan
+// bir durumu adlandırmak, bir gün onu mümkün sanmaya yol açardı.
+// ÇEVİRİ YAPILMADI: yalnız İngilizce kaynak satırı yazıldı, öteki dillerin
+// msgstr'leri boş ve `shipped_locales` hâlâ ['en'].
+
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '33f65fe40d6c199c4c10bdff364ef0fdafde2971f2dfa0488263000c1c74b82d';
+    '4ab6eddc6f10f557906e7a98d2927a102c14cd19f592dd3db5add086715afa53';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
     const normalized = sortedKeys.map((key) => `${key}=${entries[key]}`).join('\n');
     return createHash('sha256').update(normalized, 'utf8').digest('hex');
 }
+
+const FROZEN_LEGACY_KEY_COUNT = 1672;
 
 describe('workspace i18n modular catalog contract', () => {
     // Başlıktaki SAYI kaldırıldı ve bir daha yazılmayacak: liste zaten

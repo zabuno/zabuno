@@ -153,6 +153,35 @@ export function QrPrintLookStep({
             </div>
 
             {/*
+                KODUN RENGİ KARTIN RENGİYLE DEĞİŞMEZ — ve bu SÖYLENİR.
+
+                Şeritteki maket bunu zaten çiziyor (yukarıdaki kod karesi her
+                tasarımda koyu modül / açık zemin), ama çizmek anlatmak
+                değildir: sahip koyu kartın içinde açık zeminli bir kod görüp
+                maketi bozuk sanabilir ya da tam tersini varsayıp — "koyu kart,
+                koyu kod" — kırk kart bastırdıktan sonra telefonların kodu
+                okumadığını öğrenebilir.
+
+                KOŞULSUZ ÇİZİLİR. Yalnız `dark`/`signage` seçiliyken
+                görünseydi, o iki tasarıma iliştirilmiş bir uyarı gibi
+                okunurdu ("koyuyu seçtin, dikkat"); oysa kural beş tasarımın
+                tamamı için geçerli ve cümlenin kendi sözü de bunu söylüyor:
+                "kart nasıl görünürse görünsün". Koşullu çizim, cümleyi kendi
+                ifadesiyle çelişkiye düşürürdü.
+
+                BURADA, ÖNİZLEMEDE DEĞİL. Soru tasarımın SEÇİLDİĞİ anda
+                doğuyor, sonucun görüldüğü anda değil. Önizleme paneli ayrıca
+                yanlış ev olurdu: oradaki görsel `qr.design.manage` yetkisi
+                ister ve yetkisiz kullanıcıda hiç yüklenmez — kısıt, onu en çok
+                okuması gereken kişide sessizce kaybolurdu. O panelin taşıdığı
+                cümleler ÖLÇÜLMÜŞ sayılardır (`lib/qrCardGeometry`); bu ise
+                ölçülen değil, değişmeyen bir kural.
+            */}
+            <p className="text-meta text-fg-secondary">
+                {t('workspace.publication.qrScreen.codeAlwaysDark')}
+            </p>
+
+            {/*
                 MARKA RENGİ YOKSA SÖYLENİR. "Markalı" ve "Tabela" seçili olduğu
                 hâlde renk kurulmamışsa sunucu sessizce mürekkep siyahına düşer;
                 sessizlik, sahibin markalı bir kart beklerken siyah bir kart
