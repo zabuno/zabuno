@@ -1007,6 +1007,24 @@ final class DeploymentContractTest extends TestCase
      *
      * Bu yüzden kural: giriş betiği kütüğü DOLDURUR, durumu İLERLETMEZ.
      * İlerletme elle ve bilerek çalıştırılır.
+     *
+     * ── Kural GENİŞLETİLDİ (`docs/144`) ──────────────────────────────────
+     *
+     * Kapı ilk yazıldığında durumu ilerletebilen tek bir komut vardı ve
+     * yasak onun ADINA yazılmıştı. Artık ikincisi var:
+     * `site:apply-publication-decisions`, sahibin adıyla sayılmış yayın
+     * kararlarını uygular.
+     *
+     * Yeni komutun yasağa dahil edilmesi, bu paketin kendi işini
+     * zorlaştırıyor — ve tam olarak bu yüzden doğru. Kuralın metni "giriş
+     * betiği durumu ilerletmez" diyordu ama ölçümü tek bir dizgeyi
+     * arıyordu; ikinci komut, kuralı hiç değiştirmeden yanından geçebilirdi.
+     * Kapının GEVŞEMESİ böyle olur: yasak eskir, kod yenilenir, ve kimse
+     * bir şey değiştirmemiş olur.
+     *
+     * Sonucu açıkça kaydedilsin: yayın kararı üretimde ELLE uygulanır
+     * (`docs/144` §Nasıl uygulanır). Bir dağıtım siteyi kendiliğinden
+     * açmaz.
      */
     public function test_the_deploy_fills_the_ledger_without_advancing_a_publication_decision(): void
     {
@@ -1017,11 +1035,52 @@ final class DeploymentContractTest extends TestCase
         // NEDEN konmadığını anlatan yorum, kapıyı düşürüyordu.
         $entrypoint = preg_replace('/^\s*#.*$/m', '', $this->read('docker/entrypoint.sh')) ?? '';
 
-        self::assertStringNotContainsString(
+        foreach ([
             'site:sync-content-status',
-            $entrypoint,
-            'DEPLOY-PAGE-LEDGER-12: dağıtım yayın durumunu ilerletiyor; '
-            .'bir betiğin her seferinde geçtiği kalite kapısı, kapı değildir.'
-        );
+            'site:apply-publication-decisions',
+        ] as $advancer) {
+            self::assertStringNotContainsString(
+                $advancer,
+                $entrypoint,
+                "DEPLOY-PAGE-LEDGER-12: dağıtım `{$advancer}` ile yayın durumunu ilerletiyor; "
+                .'bir betiğin her seferinde geçtiği kalite kapısı, kapı değildir.'
+            );
+        }
+    }
+
+    /**
+     * DURUMU İLERLETEBİLEN HER KOMUT YASAĞA DAHİL OLMALI — DEPLOY-PAGE-LEDGER-13.
+     *
+     * Üstteki kapı bir dizge listesi tutuyor ve dizge listeleri eskir: üçüncü
+     * bir komut yazıldığı gün, kimse listeye eklemeyi hatırlamazsa yasak onun
+     * için hiç var olmamış olur. Bu kapı listeyi ÖLÇÜME bağlar — kütüğün
+     * yayın durumuna dokunabilen her `site:` komutu listede olmak zorundadır.
+     */
+    public function test_every_command_that_can_advance_a_page_is_covered_by_the_ban(): void
+    {
+        $covered = ['site:sync-content-status', 'site:apply-publication-decisions'];
+
+        foreach (array_keys(Artisan::all()) as $name) {
+            if (! str_starts_with((string) $name, 'site:')) {
+                continue;
+            }
+
+            $source = (string) file_get_contents(
+                (new \ReflectionClass(Artisan::all()[$name]))->getFileName() ?: __FILE__
+            );
+
+            // Kütüğün durum alanına YAZAN bir komut, yayın kararını
+            // ilerletebilir demektir.
+            if (! str_contains($source, '->publication_status =')) {
+                continue;
+            }
+
+            self::assertContains(
+                (string) $name,
+                $covered,
+                "DEPLOY-PAGE-LEDGER-13: `{$name}` yayın durumunu ilerletebiliyor ama "
+                .'giriş betiği yasağının listesinde yok.'
+            );
+        }
     }
 }
