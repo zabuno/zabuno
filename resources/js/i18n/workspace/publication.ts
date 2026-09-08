@@ -476,6 +476,35 @@ export const publication = {
         cümleyle taşıyor, `docs/109` §238 kararı tabloda tutuyor ve
         `QrCardSvgTest` onu teste bağlıyor.
     */
+    /*
+        ...VE CÜMLE GERİ GELDİ, çünkü o üç yer de GELİŞTİRİCİNİN okuduğu
+        yerlerdir. Sahip ne `CardTheme`'i açıyor, ne karar tablosunu, ne de
+        testi. Kısıt kayıtlı olmakla söylenmiş olmuyor.
+
+        Geri getiren şey, kısıtın yeni ekranda ilk kez GÖRÜNÜR bir çelişki
+        üretmesi: aynı ekran artık "Koyu" ve "Tabela" tasarımlarını sunuyor,
+        sahip koyu kartı seçiyor ve maketin içinde kodun hâlâ açık zeminde
+        durduğunu görüyor. Açıklanmayan bu görüntü ya bozukluk sanılır ya da
+        tam tersi varsayılır ("koyu kart koyu kod demek") — ikinci yanlış,
+        kırk kart basıldıktan sonra telefonlar kodu okumayınca anlaşılır.
+
+        ADI DEĞİŞTİ ve değişmeliydi. `noDarkTheme` — "koyu tasarım yoktur" —
+        artık yalan bir ad: koyu tasarım VAR. Eski ad bir YOKLUĞU
+        adlandırıyordu; anlatılan şey ise bir KURAL. Yeni ad kuralın kendisini
+        söylüyor.
+
+        METİN KORUNDU. Cümle zaten bir kez, tam da bu an için yeniden
+        yazılmıştı: "kart nasıl görünürse görünsün" ifadesi koyu tasarımlar
+        doğduğunda doğru kalsın diye seçilmişti. Ölen şey cümle değil,
+        üzerinde durduğu paneldi. Doğru bir cümleyi yalnız "yeni" olsun diye
+        değiştirmek, sınanmış bir metni sınanmamışla takas etmek olurdu.
+
+        Çizildiği yer üçüncü adım (`QrPrintLookStep`), önizleme paneli değil:
+        soru tasarımın SEÇİLDİĞİ anda doğuyor ve önizlemenin görseli
+        yetkisiz kullanıcıda hiç yüklenmiyor.
+    */
+    'workspace.publication.qrScreen.codeAlwaysDark':
+        'Whatever the card looks like, the code itself is always printed dark-on-light: scanners assume that, and an inverted code is not read at all by many phones.',
     'workspace.publication.qrScreen.empty':
         'No table code yet. Create the codes for your tables below.',
     'workspace.publication.qrScreen.loading': 'Loading table codes…',
