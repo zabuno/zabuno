@@ -73,7 +73,20 @@ final class PublicMasterpageContractTest extends TestCase
 
     public function test_header_and_footer_are_the_same_on_every_page(): void
     {
-        $normalise = static fn (string $fragment): string => preg_replace('#href="/?\#[a-z-]+"#', 'href="ANCHOR"', $fragment);
+        $normalise = static function (string $fragment): string {
+            // The shared language form intentionally returns to its current page.
+            $fragment = (string) preg_replace_callback(
+                '#<form\b[^>]*class="site-language-switcher"[^>]*>.*?</form>#s',
+                static fn (array $form): string => (string) preg_replace(
+                    '#(<input type="hidden" name="return_to" value=")[^"]*(">)#',
+                    '${1}CURRENT_PAGE${2}',
+                    $form[0],
+                ),
+                $fragment,
+            );
+
+            return (string) preg_replace('#href="/?\#[a-z-]+"#', 'href="ANCHOR"', $fragment);
+        };
 
         $reference = null;
 
@@ -111,6 +124,7 @@ final class PublicMasterpageContractTest extends TestCase
      */
     public function test_navigation_labels_come_from_the_catalogue_and_only_for_shipped_languages(): void
     {
+        config(['i18n.shipped_locales' => ['en']]);
         $english = $this->extract($this->html('/pricing'), 'header');
 
         self::assertStringContainsString('>Help<', $english);

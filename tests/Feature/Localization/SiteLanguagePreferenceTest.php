@@ -11,6 +11,17 @@ final class SiteLanguagePreferenceTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_actual_configuration_ships_english_then_turkish_with_english_default(): void
+    {
+        self::assertSame(['en', 'tr'], config('i18n.shipped_locales'));
+        self::assertSame('en', config('i18n.source_locale'));
+        self::assertSame('en', config('app.locale'));
+        self::assertSame('en', config('app.fallback_locale'));
+        $this->get('/')->assertOk()->assertSee('<html lang="en"', false);
+        $this->withUnencryptedCookie('zbn_language', 'unsupported')->withHeader('Accept-Language', 'xx')
+            ->get('/')->assertOk()->assertSee('<html lang="en"', false);
+    }
+
     public function test_english_is_default_and_unshipped_turkish_cannot_be_selected(): void
     {
         config(['i18n.shipped_locales' => ['en']]);
@@ -48,7 +59,6 @@ final class SiteLanguagePreferenceTest extends TestCase
 
     public function test_choice_persists_across_pages_and_reload_and_can_return_to_english(): void
     {
-        config(['i18n.shipped_locales' => ['en', 'tr']]);
         $response = $this->post('/language', ['language' => 'tr', 'return_to' => '/pricing']);
         $response->assertRedirect('/pricing')->assertPlainCookie('zbn_language', 'tr');
         $cookie = $response->getCookie('zbn_language', false);

@@ -20,9 +20,9 @@ return [
     | olması bir dilin sunulduğu anlamına gelmez: bugün altı katalog
     | derleniyor ama yalnız bu listedeki diller ürüne girer.
     |
-    | Owner kararı (2026-08-27): şimdilik yalnız İngilizce. Çeviriyi sahibi
-    | olgunluk sonrasında PO dosyalarından kendisi yazacak (`docs/13` §6) ve
-    | bir dil, kataloğu tamamlanmadan sunulmaz.
+    | Owner kararı (2026-09-08): İngilizce kaynak ve varsayılan, Türkçe ikinci
+    | arayüz dilidir. Katalog ve katalog dışı gövdelerin kabulü birlikte
+    | gerekir; bu aday gövde paketleriyle birlikte yayımlanmalıdır.
     |
     | Sebebi gözle görüldü: uygulama `APP_LOCALE=tr` ile çalışırken `menu`
     | alanı çevriliydi, `workspace` alanı değildi. Ekranda "Kategori adı"
@@ -34,7 +34,7 @@ return [
     |
     */
 
-    'shipped_locales' => ['en'],
+    'shipped_locales' => ['en', 'tr'],
 
     /*
      * TÜRKÇE 2026-09-05'te LİSTEYE GİRDİ ve bunun tek şartı vardı: katalog

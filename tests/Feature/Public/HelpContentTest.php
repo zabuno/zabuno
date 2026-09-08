@@ -97,4 +97,14 @@ final class HelpContentTest extends TestCase
         self::assertMatchesRegularExpression('#<html lang="en"#', $english);
         self::assertNotSame($turkish, $english, 'İki dil aynı metni veriyorsa çeviri yoktur.');
     }
+
+    public function test_explicit_language_choice_controls_both_help_article_and_chrome(): void
+    {
+        foreach ([['en', 'tr', 'Your first 15 minutes', 'Help'], ['tr', 'en', 'İlk 15 dakikanız', 'Yardım']] as [$choice, $browser, $title, $navigation]) {
+            $response = $this->withUnencryptedCookie('zbn_language', $choice)
+                ->withHeader('Accept-Language', $browser)->get('/help');
+            $response->assertOk()->assertSee('<html lang="'.$choice.'"', false)
+                ->assertSee($title)->assertSee('>'.$navigation.'<', false);
+        }
+    }
 }
