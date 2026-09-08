@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Public;
 
+use App\Application\Localization\Port\TranslationPort;
 use App\Support\Localization\HelpLibrary;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -96,5 +97,28 @@ final class HelpContentTest extends TestCase
         self::assertMatchesRegularExpression('#<html lang="tr"#', $turkish);
         self::assertMatchesRegularExpression('#<html lang="en"#', $english);
         self::assertNotSame($turkish, $english, 'İki dil aynı metni veriyorsa çeviri yoktur.');
+    }
+
+    public function test_turkish_instructions_name_the_actual_turkish_controls_and_keep_csv_columns(): void
+    {
+        $translator = app(TranslationPort::class);
+        $article = (string) file_get_contents(HelpLibrary::pathFor('tr'));
+        foreach ([
+            ['workspace', 'workspace.shell.nav.menu'],
+            ['menu', 'menu.export.download'],
+            ['menu', 'menu.import.label'],
+            ['workspace', 'workspace.shell.nav.publication'],
+            ['menu', 'menu.item.price.edit.short'],
+            ['workspace', 'workspace.publication.history.title'],
+            ['menu', 'menu.item.stock.out.short'],
+        ] as [$domain, $key]) {
+            $label = $translator->translate($domain, $key, 'tr');
+            self::assertNotSame($key, $label, 'Missing Turkish control label.');
+            self::assertStringContainsString('<strong>'.e($label).'</strong>', $article, $key);
+        }
+        self::assertStringContainsString('category, product, price, currency, allergens, description, visible', $article);
+        foreach (['help-import', 'help-qr', 'help-price'] as $anchor) {
+            self::assertStringContainsString('id="'.$anchor.'"', $article);
+        }
     }
 }
