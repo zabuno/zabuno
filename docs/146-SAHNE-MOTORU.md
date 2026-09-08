@@ -627,8 +627,14 @@ sayfada ölçüm YAPILMIYOR ve "geçti" de denmiyor.
 
 Ve iki küçük borç:
 
-4. `scene-visual-gate` yalnız bu makinede koştu. Farklı bir rasterleştiricide
-   8/255 toleransının yetip yetmediği **bilinmiyor**; CI'da ilk koşuda görülecek.
-5. Önsöz bandının `orbit`/`grid`/`conduit` yüzleri **ekran görüntüsüyle**
+4. **Hiçbir sahne kapısı CI'da koşmuyor.** `scene-budget-gate`,
+   `scene-perf-gate` ve `scene-visual-gate` bir iş akışı dosyasında geçmiyor;
+   üçü de elle çalıştırılıyor. Bu Döngü 1'den devralınan bir durum ve Döngü 2
+   onu düzeltmedi — ama gizlemesi daha kötü olurdu: **koşulmayan bir kapı
+   yoktur.** Üçü de Chrome gerektiriyor, yani CI'ya girmeleri ayrı bir karar
+   (koşucuda tarayıcı, koşu süresi, hangi olayda) ve o karar ölçülmedi.
+5. `scene-visual-gate` yalnız bu makinede koştu. Farklı bir rasterleştiricide
+   8/255 toleransının yetip yetmediği **bilinmiyor**.
+6. Önsöz bandının `orbit`/`grid`/`conduit` yüzleri **ekran görüntüsüyle**
    seçildi, göz kararıyla değil — ama üçünün de dar ekranda (320) ne kadar
    görünür kaldığı yalnız `motion` PNG'lerinde bakıldı, imzayla ölçülmedi.
