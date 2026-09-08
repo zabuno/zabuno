@@ -119,9 +119,26 @@ final class ServiceLevelTerms
         return [new LegalSection('The availability commitment', [
             'The operator commits to making the service available for at least '.$commitment->availabilityTargetPercent().'% of each calendar month, measured as described in the next section.',
             'The measurement is published at: '.$commitment->measurementSource().'. You can read it yourself; you do not have to ask for it.',
-            'Where the service is unavailable, the operator will tell the affected customers within '.$commitment->incidentNotificationHours().' hours of becoming aware of it.',
-            'Where the target is missed in a calendar month, a service credit of '.$commitment->serviceCreditPercent().'% of that month\'s fee for the affected plan is applied to a following period, on the terms in the section on remedies below.',
+            'Where the service is unavailable, the operator will tell the affected customers within '.$commitment->incidentNotificationMinutes().' minutes of becoming aware of it.',
+            self::creditSentence($commitment),
         ])];
+    }
+
+    /**
+     * Hizmet kredisi cümlesi — SIFIR susmaz, söylenir.
+     *
+     * Kredi verilmediği bir karardır ve müşteri bunu sözleşmeyi imzalamadan
+     * ÖNCE bilmelidir. Sıfır olduğunda bölümü atlamak, "söylenmemiş bir
+     * yok" üretirdi ve söylenmemiş bir yok her zaman müşterinin aleyhine
+     * çalışır: okuyan taraf bir telafi olduğunu varsayar.
+     */
+    private static function creditSentence(ServiceLevelCommitment $commitment): string
+    {
+        if ($commitment->serviceCreditPercent() === 0) {
+            return 'Where the target is missed in a calendar month, no service credit is paid. This service offers no financial remedy for missed availability; your remedy is to cancel, under the cancellation terms.';
+        }
+
+        return 'Where the target is missed in a calendar month, a service credit of '.$commitment->serviceCreditPercent().'% of that month\'s fee for the affected plan is applied to a following period, on the terms in the section on remedies below.';
     }
 
     /**
@@ -135,7 +152,7 @@ final class ServiceLevelTerms
         $labels = [
             'availability_target_percent' => 'the availability percentage to be committed for a calendar month',
             'measurement_source' => 'the public address at which that percentage can be read and checked',
-            'incident_notification_hours' => 'how quickly affected customers are told about an outage',
+            'incident_notification_minutes' => 'how quickly affected customers are told about an outage',
             'service_credit_percent' => 'the share of the month\'s fee credited when the target is missed',
         ];
 

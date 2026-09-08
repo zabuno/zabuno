@@ -26,14 +26,14 @@ final class ServiceLevelCommitment
     public const FIELDS = [
         'availability_target_percent',
         'measurement_source',
-        'incident_notification_hours',
+        'incident_notification_minutes',
         'service_credit_percent',
     ];
 
     private function __construct(
         private readonly ?string $availabilityTargetPercent,
         private readonly ?string $measurementSource,
-        private readonly ?int $incidentNotificationHours,
+        private readonly ?int $incidentNotificationMinutes,
         private readonly ?int $serviceCreditPercent,
     ) {}
 
@@ -42,7 +42,7 @@ final class ServiceLevelCommitment
         return new self(
             self::percent(config('sla.availability_target_percent')),
             self::text(config('sla.measurement_source')),
-            self::positiveInt(config('sla.incident_notification_hours')),
+            self::positiveInt(config('sla.incident_notification_minutes')),
             self::percentInt(config('sla.service_credit_percent')),
         );
     }
@@ -57,9 +57,9 @@ final class ServiceLevelCommitment
         return $this->measurementSource;
     }
 
-    public function incidentNotificationHours(): ?int
+    public function incidentNotificationMinutes(): ?int
     {
-        return $this->incidentNotificationHours;
+        return $this->incidentNotificationMinutes;
     }
 
     public function serviceCreditPercent(): ?int
@@ -88,8 +88,8 @@ final class ServiceLevelCommitment
             $missing[] = 'measurement_source';
         }
 
-        if ($this->incidentNotificationHours === null) {
-            $missing[] = 'incident_notification_hours';
+        if ($this->incidentNotificationMinutes === null) {
+            $missing[] = 'incident_notification_minutes';
         }
 
         if ($this->serviceCreditPercent === null) {
@@ -124,11 +124,29 @@ final class ServiceLevelCommitment
         return ((float) $value) > 0.0 && ((float) $value) <= 100.0 ? $value : null;
     }
 
+    /**
+     * Yüzde alanı — SIFIR geçerli ve KASITLI bir değerdir.
+     *
+     * "Hizmet kredisi yok" bir karardır, bir boşluk değil. `positiveInt`
+     * kullanılsaydı `0` girildiğinde alan "girilmedi" sayılır, sayfa
+     * susardı ve müşteri sözleşmeyi imzalarken kredi olmadığını
+     * ÖĞRENEMEZDİ. Söylenmemiş bir "yok", müşterinin aleyhine çalışır.
+     *
+     * Boşluk hâlâ boşluktur: alan hiç yazılmamışsa `null` döner.
+     */
     private static function percentInt(mixed $raw): ?int
     {
-        $value = self::positiveInt($raw);
+        if (is_int($raw)) {
+            return $raw >= 0 && $raw <= 100 ? $raw : null;
+        }
 
-        return $value !== null && $value <= 100 ? $value : null;
+        if (! is_string($raw) || preg_match('/^\d+$/', trim($raw)) !== 1) {
+            return null;
+        }
+
+        $value = (int) trim($raw);
+
+        return $value <= 100 ? $value : null;
     }
 
     private static function positiveInt(mixed $raw): ?int

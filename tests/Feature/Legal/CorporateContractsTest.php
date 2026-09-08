@@ -314,7 +314,7 @@ final class CorporateContractsTest extends TestCase
         $this->withSla([
             'availability_target_percent' => null,
             'measurement_source' => null,
-            'incident_notification_hours' => null,
+            'incident_notification_minutes' => null,
             'service_credit_percent' => null,
         ]);
 
@@ -340,7 +340,7 @@ final class CorporateContractsTest extends TestCase
         $this->withSla([
             'availability_target_percent' => '99.5',
             'measurement_source' => null,
-            'incident_notification_hours' => '4',
+            'incident_notification_minutes' => '4',
             'service_credit_percent' => '10',
         ]);
 
@@ -356,7 +356,7 @@ final class CorporateContractsTest extends TestCase
         $this->withSla([
             'availability_target_percent' => 'yes',
             'measurement_source' => '   ',
-            'incident_notification_hours' => '0',
+            'incident_notification_minutes' => '0',
             'service_credit_percent' => '400',
         ]);
 
@@ -369,7 +369,7 @@ final class CorporateContractsTest extends TestCase
         $this->withSla([
             'availability_target_percent' => '99.5',
             'measurement_source' => 'https://status.example.test',
-            'incident_notification_hours' => '4',
+            'incident_notification_minutes' => '4',
             'service_credit_percent' => '10',
         ]);
 
@@ -377,9 +377,36 @@ final class CorporateContractsTest extends TestCase
 
         self::assertStringContainsString('at least 99.5% of each calendar month', $text);
         self::assertStringContainsString('https://status.example.test', $text);
-        self::assertStringContainsString('within 4 hours', $text);
+        self::assertStringContainsString('within 4 minutes', $text);
         self::assertStringContainsString('service credit of 10%', $text);
         self::assertStringNotContainsString('no availability percentage', strtolower($text));
+    }
+
+    /**
+     * SIFIR KREDİ SUSMAZ (`docs/140`).
+     *
+     * "Hizmet kredisi yok" bir karardır ve müşteri bunu sözleşmeyi
+     * imzalamadan önce okumalıdır. Sıfır girildiğinde bölümün atlanması,
+     * söylenmemiş bir "yok" üretirdi — ve söylenmemiş bir yok her zaman
+     * müşterinin aleyhine çalışır, çünkü okuyan taraf bir telafi olduğunu
+     * varsayar. Sıfırın "girilmedi" sayılmadığı da burada ölçülüyor.
+     */
+    public function test_a_zero_service_credit_is_stated_not_omitted(): void
+    {
+        $this->withSla([
+            'availability_target_percent' => '99.8',
+            'measurement_source' => 'https://status.example.test',
+            'incident_notification_minutes' => '60',
+            'service_credit_percent' => '0',
+        ]);
+
+        self::assertSame([], ServiceLevelCommitment::fromConfig()->missing());
+
+        $text = $this->text('sla');
+
+        self::assertStringContainsString('no service credit is paid', $text);
+        self::assertStringNotContainsString('service credit of 0%', $text);
+        self::assertStringContainsString('within 60 minutes', $text);
     }
 
     // --- CONTRACTS-06: lisans listesi TÜRETİLİR --------------------------

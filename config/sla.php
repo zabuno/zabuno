@@ -57,9 +57,9 @@ return [
 
     /*
      * Bir kesinti fark edildikten sonra müşterinin haberdar edileceği azami
-     * süre, SAAT olarak (tam sayı, sıfırdan büyük).
+     * süre, DAKİKA olarak (tam sayı, sıfırdan büyük).
      */
-    'incident_notification_hours' => env('SLA_INCIDENT_NOTIFICATION_HOURS'),
+    'incident_notification_minutes' => env('SLA_INCIDENT_NOTIFICATION_MINUTES'),
 
     /*
      * Hedef tutturulamadığında o ayın ücretine uygulanacak telafi oranı,

@@ -179,7 +179,7 @@ vaattir ve kimse onu vermedi.
 | --- | --- | --- |
 | `SLA_AVAILABILITY_TARGET_PERCENT` | Takvim ayı başına taahhüt edilen kullanılabilirlik yüzdesi (ör. `99.5`) | **Sahip**, hukuki inceleme sonrası |
 | `SLA_MEASUREMENT_SOURCE` | O yüzdenin **müşterinin kendisinin** okuyabileceği kamuya açık adres (durum sayfası) | **Sahip** — ama önce Faz 3.4'ün yapılması gerekir |
-| `SLA_INCIDENT_NOTIFICATION_HOURS` | Kesinti fark edildikten sonra müşterinin haberdar edilme süresi (saat) | **Sahip** |
+| `SLA_INCIDENT_NOTIFICATION_MINUTES` | Kesinti fark edildikten sonra müşterinin haberdar edilme süresi (dakika) | **60 — sahip verdi (2026-09-08)** |
 | `SLA_SERVICE_CREDIT_PERCENT` | Hedef tutmadığında o ayın ücretine uygulanacak telafi oranı (yüzde) | **Sahip** |
 
 ### 4.3 Dördü BİRLİKTE ya da hiçbiri
@@ -471,9 +471,32 @@ sayfası tek bir yüzde işareti bile yazmıyor:
 | Alan | Ne demek | Neden bekliyor |
 | --- | --- | --- |
 | `SLA_MEASUREMENT_SOURCE` | Oranın okunacağı **kamuya açık** adres | Durum sayfası (`docs/107` Faz 3.4) henüz kurulmadı. Müşterinin kendi doğrulayamadığı bir oran taahhüt değil beyandır |
-| `SLA_INCIDENT_NOTIFICATION_HOURS` | Kesinti fark edildikten sonra müşteriye haber verme süresi | Ticari karar |
-| `SLA_SERVICE_CREDIT_PERCENT` | Oran tutmadığında verilecek kredi | Ticari karar |
+| `SLA_INCIDENT_NOTIFICATION_MINUTES` | Kesinti fark edildikten sonra müşteriye haber verme süresi | **60 dakika — verildi** |
+| `SLA_SERVICE_CREDIT_PERCENT` | Oran tutmadığında verilecek kredi | **0 — verildi, ve sayfa bunu SUSARAK değil yazarak söylüyor** |
 
 **Sıra önemli:** ölçüm kaynağı durum sayfasına bağlı. Durum sayfası yayına
 girmeden yazılan bir oran, tutulup tutulmadığı kimsenin doğrulayamayacağı bir
 sözdür — ve ilk itirazda savunulamaz.
+
+## Sahibin verdiği üç değer (2026-09-08) ve biri neden hâlâ eksik
+
+| Alan | Değer | Kaynak |
+| --- | --- | --- |
+| Kullanılabilirlik | **%99.8** | Sahibin ölçümü: aynı yazılım netcup'ta beş aydan uzun süredir çalışıyor |
+| Bildirim süresi | **60 dakika** | Sahibin kararı |
+| Hizmet kredisi | **0** | Sahibin kararı |
+| Ölçüm kaynağı | — | Durum sayfası yayına girince (`status.zabuno.com`) |
+
+**Birim saatten dakikaya çevrildi.** Alan "saat" olarak tanımlanmıştı; sahip
+kararını dakikayla verdi ve haklıydı — saat cinsi bir alan ileride "30 dakika"
+diyemez, kararı birime uydurmak zorunda bırakırdı.
+
+**Sıfır kredi bir karardır, bir boşluk değil — ve bu ayrım kodda yaşıyor.**
+Doğrulama `0`ı "girilmedi" sayıyordu; artık saymıyor. Sayfa sıfır kredide
+susmuyor, açıkça yazıyor: *"no service credit is paid… your remedy is to
+cancel."* Söylenmemiş bir "yok" her zaman müşterinin aleyhine çalışır, çünkü
+okuyan taraf bir telafi olduğunu varsayar.
+
+**Sayfa hâlâ hiçbir rakam göstermiyor** ve göstermemeli: dördü birlikte ya da
+hiçbiri. Ölçüm kaynağı olmadan yazılan bir oran, müşterinin kendi
+doğrulayamayacağı bir sözdür.
