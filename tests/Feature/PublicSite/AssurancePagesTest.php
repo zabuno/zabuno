@@ -57,6 +57,25 @@ final class AssurancePagesTest extends TestCase
         ];
     }
 
+    /**
+     * YALNIZ ADRES İSTEYEN TESTLER İÇİN AYRI SAĞLAYICI.
+     *
+     * PHPUnit, sağlayıcının verdiği argüman sayısı test yönteminin
+     * aldığından fazlaysa testi HATA sayar — ve bu doğrudur: kullanılmayan
+     * bir argüman, sağlayıcıyla testin ayrıştığının işaretidir. Dört test
+     * anahtarı gerçekten kullanmıyor; onlara ikinci bir değer uydurmak
+     * yerine ne istediklerini söyleyen bir sağlayıcı verildi.
+     *
+     * @return list<array{0: string}>
+     */
+    public static function assurancePagePaths(): array
+    {
+        return array_map(
+            static fn (array $row): array => [$row[0]],
+            self::assurancePages(),
+        );
+    }
+
     private function xpath(string $uri): DOMXPath
     {
         $response = $this->get($uri);
@@ -90,7 +109,7 @@ final class AssurancePagesTest extends TestCase
 
     // --- GÜVENCE-02 --------------------------------------------------------
 
-    #[DataProvider('assurancePages')]
+    #[DataProvider('assurancePagePaths')]
     public function test_every_claim_states_its_kind_in_words_not_only_in_colour(string $path): void
     {
         $xpath = $this->xpath($path);
@@ -225,7 +244,7 @@ final class AssurancePagesTest extends TestCase
 
     // --- GÜVENCE-07 --------------------------------------------------------
 
-    #[DataProvider('assurancePages')]
+    #[DataProvider('assurancePagePaths')]
     public function test_the_page_is_reachable_from_the_footer_and_from_the_sitemap(string $path): void
     {
         /*
@@ -258,7 +277,7 @@ final class AssurancePagesTest extends TestCase
 
     // --- GÜVENCE-08 --------------------------------------------------------
 
-    #[DataProvider('assurancePages')]
+    #[DataProvider('assurancePagePaths')]
     public function test_the_top_level_address_is_reserved_against_a_business_slug(string $path): void
     {
         /*
@@ -302,7 +321,7 @@ final class AssurancePagesTest extends TestCase
 
     // --- GÜVENCE-10 --------------------------------------------------------
 
-    #[DataProvider('assurancePages')]
+    #[DataProvider('assurancePagePaths')]
     public function test_the_scene_stays_calm_one_canvas_and_nothing_over_the_text(string $path): void
     {
         /*
