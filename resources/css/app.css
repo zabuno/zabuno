@@ -30,11 +30,35 @@
 @import './fonts.css';
 
 /*
+    KURUMSAL GÖRSEL KİMLİK — sitenin KENDİ paleti, ölçeği ve yüzey dili
+    (`docs/145`).
+
+    Sahibin kararı (2026-09-08): *"temanın mevcut marka jetonlarını sikerim,
+    yeter artık."* Kurumsal site artık panelin `--aep-*` jetonlarından
+    türemiyor; kendi `--zc-*` jetonlarını taşıyor.
+
+    AEP katmanından SONRA gelir ve bu sıra ZORUNLUDUR, bir üslup değil:
+    dosya `--surface`, `--fg`, `--color-surface` gibi semantik takma adları
+    `.site-shell` kapsamında yeniden bağlıyor. AEP'den önce gelseydi, AEP'nin
+    `:root` tanımları aynı adları sonradan yazardı — ama `.site-shell`
+    seçicisi `:root`tan daha özgül olduğu için sonuç yine doğru çıkardı.
+    Yani sıra doğruluğu değil OKUNURLUĞU sağlıyor: önce ürünün ortak zemini,
+    sonra kurumsal yüzeyin kendi kararı.
+
+    PANEL ETKİLENMEZ: kural `.site-shell` sınıfına bağlı ve o sınıf yalnız
+    `views/public/layout.blade.php` gövdesinde var. Kapı:
+    `CorporateIdentityScopeTest`.
+*/
+@import './site-identity.css';
+
+/*
     KURUMSAL SİTENİN KABUĞU (`docs/100` §2).
 
     Ayrı dosya, çünkü kabuk artık deponun TEK kurumsal header/footer'ı ve her
     kurumsal adres onu giyiyor. Görünümü panel CSS'inin arasına dağılsaydı,
     "tek yerde değiştir, her yerde değişsin" sözü yalnız HTML için tutulurdu.
+
+    KİMLİK KATMANINDAN SONRA gelir: kabuk jetonları TÜKETİR, tanımlamaz.
 */
 @import './site-shell.css';
 
@@ -43,33 +67,63 @@
 
     Sahibin kararı (2026-09-08): *"daisyUI kullan, baştan yarat."*
 
-    AEP katmanından SONRA gelir ve bu sıra kasıtlı: daisyUI teması hiçbir
-    renk seçmez, yalnız `--aep-*` jetonlarına işaret eder. Önce gelseydi de
-    aynı çözülürdü (özel değişkenler sırayla değil, kullanıldıkları yerde
-    çözülür) — ama okuyan kişi için sıra bir niyet bildirir: önce markanın
-    kendi jetonları, sonra onları giyen bileşen kütüphanesi.
+    Kimlik katmanından SONRA gelir ve bu sıra kasıtlı: daisyUI teması hiçbir
+    renk seçmez, yalnız `--zc-*` KURUMSAL jetonlarına işaret eder (2026-09-08
+    akşamı verilen ezme kararı — `docs/145`). Önce gelseydi de aynı
+    çözülürdü (özel değişkenler sırayla değil, kullanıldıkları yerde
+    çözülür) — ama okuyan kişi için sıra bir niyet bildirir: önce kurumsal
+    kimliğin kendi jetonları, sonra onları giyen bileşen kütüphanesi.
 
     PANEL ETKİLENMEZ. Panel `flowbite-react` + AEP üzerine kurulu ve kendi
-    olgunluk belgesi var (`docs/102`); daisyUI oraya bir tek sınıf sokmaz.
-    İkisinin aynı ürün gibi görünmesi, ikisinin de AYNI marka jetonlarından
-    beslenmesiyle sağlanır — ortak bir bileşen kütüphanesiyle değil.
+    olgunluk belgesi var (`docs/102`); daisyUI oraya bir tek sınıf sokmaz ve
+    bu tema artık bir tek `--aep-*` jetonu bile anmaz.
 */
 @import './daisy-theme.css';
 
 /*
-    FİYAT SAYFASININ YOĞUNLUĞU (FF-239, `docs/139`).
+    SAHNE — KURUMSAL SİTENİN HAREKET KATMANI (`docs/146`).
 
-    daisyUI'den SONRA gelmek ZORUNDA: bu dosyanın tek işi daisyUI'nin masaüstü
-    ölçülerini (kart dolgusu 24px, kart gövdesi 14px, açılır satır 16px) 320
-    piksele çekmek ve dokunma hedeflerini 44 piksele oturtmaktır. Önce
-    gelseydi hiçbir şey ezmezdi.
+    Sahibin emri (2026-09-08): *"Bir uzay teknolojileri şirketi gibi, abartı
+    dursun, görünsün, hissettirsin."*
 
-    Kabuk dosyası (`site-shell.css`) aynı işi üst çubuk ve altbilgi için
-    yapıyor; ayrı bir dosya olmasının sebebi kapsam: kabuk her kurumsal
-    adreste, bu kurallar YALNIZ fiyat sayfasında geçerli ve bir gün silinmesi
-    gerekirse silinecek yer bellidir.
+    KİMLİK VE KABUK KATMANLARINDAN SONRA gelir ve bu sıra bir üslup değil bir
+    ZORUNLULUK: sahne, kabuğun tanımladığı hareket jetonlarını (`--motion-*`,
+    `--layer-scene-*`) ve kimliğin paletini TÜKETİR. Hiçbirini tanımlamaz.
+
+    AYRI DOSYA, çünkü kimlik katmanının kendi kuralı şu: *"Hiçbiri hareket
+    etmez. Hareket ayrı bir paketin işi."* İkisini tek dosyada birleştirmek,
+    "sayfa hareketsizken nasıl görünüyor" sorusunu bir daha okunamaz hâle
+    getirirdi — oysa `prefers-reduced-motion` diyen ziyaretçinin gördüğü şey
+    tam olarak odur.
+
+    PANEL ETKİLENMEZ: her kuralı ya `.site-shell` kapsamında ya da yalnız
+    kurumsal sayfalarda yazılan `scene-*` sınıflarında yaşar.
 */
-@import './site-pricing.css';
+@import './site-scene.css';
+
+/*
+    ANA SAYFANIN DÜZENİ (`docs/146` §5).
+
+    Sayfaya ÖZGÜ düzen, kabuğun ve kimliğin dışında ayrı bir dosyada. Sebep
+    bir sonraki döngüde görünür olacak: motor öteki kurumsal sayfalara
+    yayıldığında her sayfa kendi düzen dosyasını getirir, ama hepsi AYNI
+    yüzey dilini ve AYNI hareket sözleşmesini tüketir. Düzen kabuğa
+    yazılsaydı, ikinci sayfa birincinin ölçülerini miras alır ve ayrışma
+    ancak ekranda fark edilirdi.
+*/
+@import './site-home.css';
+
+/*
+    ÖTEKİ KURUMSAL SAYFALARIN DÜZENİ (`docs/146` §10, Döngü 2).
+
+    Bir üstteki bloğun kendi cümlesi bu dosyanın ne zaman doğacağını
+    söylüyordu: *"motor öteki kurumsal sayfalara yayıldığında her sayfa kendi
+    düzen dosyasını getirir, ama hepsi AYNI yüzey dilini ve AYNI hareket
+    sözleşmesini tüketir."* O gün geldi: önsöz bandı, fiyat ızgarası ve
+    iletişim formu artık burada ve üçü de `site-scene.css`in dağarcığını
+    tüketiyor, kendi hareketini uydurmuyor.
+*/
+@import './site-pages.css';
 
 /*
     AEP `base.css` her `<a>` etiketini MAVİ ve ALTI ÇİZİLİ yapar — bu, bir

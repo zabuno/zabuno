@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Application\Billing\UseCase\ListPlanCatalog;
 use App\Support\Localization\SiteText;
 use App\Support\Money\PriceLabel;
+use App\Support\Site\HomeStory;
 use App\Support\Site\SiteShell;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
@@ -39,6 +40,7 @@ final class FoundationStatusController extends Controller
         private readonly ListPlanCatalog $plans,
         private readonly SiteText $siteText,
         private readonly SiteShell $shell,
+        private readonly HomeStory $story,
     ) {}
 
     public function __invoke(Request $request): View
@@ -70,7 +72,18 @@ final class FoundationStatusController extends Controller
             return view('public.pricing', $shared);
         }
 
-        return view('public.home', $shared);
+        /*
+            ANA SAYFANIN ÜÇ LİSTESİ (`docs/138`).
+
+            Fiyat sayfasına GEÇMEZ: orada zincir de parça listesi de
+            görünmüyor ve okunmayacak 25 maddeyi her istekte çözmek,
+            hiçbir şeyin görünmediği bir iş demekti.
+        */
+        return view('public.home', $shared + [
+            'story' => $this->story->lists(
+                SiteText::pick($request->getPreferredLanguage(['en', 'tr'])),
+            ),
+        ]);
     }
 
     /**

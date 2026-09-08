@@ -140,6 +140,12 @@ export const siteTranslations = {
        arada durduğunu buradan öğrenir. */
     'site.nav.account': 'Account',
     'site.footer.product': 'Product',
+    /*
+        ŞİRKET GRUBU (FF-237). "Hakkımızda" ve "İletişim" FF-232'de `Ürün`
+        başlığının altındaydı; ikisi de ürün değil, SATICI hakkındadır ve
+        ödeme kuruluşunun üye iş yeri incelemesi onları o adla arar.
+    */
+    'site.footer.company': 'Company',
     'site.footer.legal': 'Legal',
     'site.footer.terms': 'Terms',
     'site.footer.privacy': 'Privacy',
@@ -153,6 +159,30 @@ export const siteTranslations = {
     'site.footer.delivery': 'Delivery and Performance Terms',
     'site.footer.refundPolicy': 'Cancellation and Refund Policy',
     'site.footer.cookies': 'Cookie Policy',
+    /*
+        ON ÜÇ BELGENİN TAMAMI ALTBİLGİDE (FF-237).
+
+        Aşağıdaki beş etiket FF-232'de yoktu ve karşılıkları olan beş sayfa
+        canlıda 200 dönüyordu — yani yazılmış, incelenmiş ve yayınlanmış bir
+        sözleşme, onu arayan kişinin bakacağı tek yerde bulunamıyordu.
+
+        Etiketler belgelerin KENDİ başlıklarıyla aynı sözcüklerdir
+        (`app/Infrastructure/Legal/Documents`): altbilgide bir ad, sayfada
+        başka bir ad görmek, aynı belgenin iki olduğunu düşündürür.
+    */
+    'site.footer.marketingConsent': 'Electronic Commercial Message Consent',
+    'site.footer.dataProcessing': 'Data Processing Agreement',
+    'site.footer.sla': 'Service Level Terms',
+    'site.footer.acceptableUse': 'Acceptable Use Policy',
+    'site.footer.thirdPartyLicenses': 'Third-Party Licences',
+    /*
+        ALT SATIRIN GERİ DÖNÜŞ YOLU (FF-237). Altbilgi 320 pikselde bir
+        ekran boyundan uzun; sonuna varan kişinin gezintiye dönmek için
+        parmağıyla geri kaydırması gerekirdi. Hedef `#main-content`:
+        atlama bağlantısının zaten kullandığı çıpa, yani ikinci bir kimlik
+        icat edilmedi.
+    */
+    'site.footer.backToTop': 'Back to top',
     'site.footer.tagline': 'Your menu behind a QR code, kept up to date by your own team.',
     /*
         pSEO içerik menüleri bandını AÇAN sözcük (FF-232). Bandın içindeki
@@ -496,35 +526,139 @@ export const siteTranslations = {
     'site.home.meta.title': 'Restaurant menu & workspace',
     'site.home.meta.description':
         "Zabuno gives your team a shared workspace to manage a restaurant's menu and catalog, publish it as a stable QR-linked page, and keep it updated as things change.",
-    'site.home.hero.heading': "Run your restaurant's menu and workspace from one place",
+
+    /*
+        BAŞLIK KISALDI — ÖLÇÜLMÜŞ bir düzeltme (`docs/138` §4).
+
+        Eski başlık ("Run your restaurant's menu and workspace from one
+        place") 320 pikselde 28 punto ile DÖRT satırdı: 134 piksel. Üst
+        çubuk (56) ve sahne dolgusuyla birlikte, iPhone 4'ün 480 piksellik
+        görüntü alanının %40'ı başlığa gidiyordu ve giriş cümlesi
+        katlanmanın altında kalıyordu.
+
+        "workspace" da düştü. Bir kebapçı o kelimeyi bilmez; ürünün kendi
+        `/urun/` sayfası aynı şeyi *"you write a menu, publish it, print a
+        code for each table"* diye anlatıyor.
+    */
+    'site.home.hero.heading': "Run your restaurant's menu from one place",
     'site.home.hero.lead':
-        "Zabuno gives your team a shared workspace to manage a restaurant's menu and catalog, publish it as a stable QR-linked page, and keep it updated as things change.",
+        'Write a menu, publish it, print a code for each table. Guests read it in the browser already on their phone.',
     'site.home.hero.actions.label': 'Account actions',
-    'site.home.hero.openApp': 'Open workspace app',
-    'site.home.features.heading': 'Features',
-    'site.home.features.workspace.title': 'Restaurant & workspace context',
-    'site.home.features.workspace.body':
-        "Keep a restaurant's workspace, team, and settings organized in one tenant-scoped place.",
-    'site.home.features.menu.title': 'Menu & catalog operations',
-    'site.home.features.menu.body':
-        'Create and edit menu items, categories, and catalog details from the workspace app.',
-    'site.home.features.publication.title': 'Publication & stable QR',
-    'site.home.features.publication.body':
-        'Publish a menu to a stable, shareable page that a printed QR code can keep pointing to.',
-    'site.home.features.media.title': 'Media intake & analytics',
-    'site.home.features.media.body':
-        'Media uploads go through quarantined media intake and review before they are available, alongside basic usage analytics for the published page.',
-    'site.home.howItWorks.heading': 'How it works',
-    'site.home.howItWorks.setup.title': 'Set up',
-    'site.home.howItWorks.setup.body': 'complete your workspace and restaurant setup.',
-    'site.home.howItWorks.build.title': 'Build the menu',
-    'site.home.howItWorks.build.body':
-        'add categories, items, prices, visibility, and allergens to your catalog.',
-    'site.home.howItWorks.publish.title': 'Publish & get a QR',
-    'site.home.howItWorks.publish.body': 'publish the menu to a stable page with a QR code.',
-    'site.home.howItWorks.update.title': 'Update anytime',
-    'site.home.howItWorks.update.body':
-        'edit the menu and the published page and QR code stay the same.',
+    'site.home.hero.openApp': 'Open the app',
+    'site.home.hero.register': 'Create an account',
+    /* Ücretsiz zincir bir VAAT değil, ölçülmüş bir olgu: kayıt, menü,
+       yayın ve baskı `PlanCatalogueSeeder`da ücretsiz kademededir. */
+    'site.home.hero.note': 'No plan needed to build a menu, publish it and print codes.',
+
+    // --- Zincir: hesaptan masadaki koda (`ProductOverviewPage` HowItWorks) --
+    /*
+        ALTI ADIM, ÜRÜNÜN KENDİ SIRASI. Metin burada, OLGU
+        `app/Infrastructure/Content/Pages/ProductOverviewPage.php` içinde:
+        her adımın karşılığı olan denetleyici orada kayıtlı ve
+        `HomeSceneContractTest` (HOME-REAL-07) ikisinin ayrışmasını kırar.
+    */
+    'site.home.chain.heading': 'From an empty account to a code on the table',
+    'site.home.chain.lead':
+        'Six steps, in this order. Every one of them works before you pay anything.',
+    'site.home.chain.label': 'The six steps, side by side',
+    'site.home.chain.step1.title': 'Create an account and a business',
+    'site.home.chain.step1.body':
+        'An email address, then the name, language, currency and time zone of your business.',
+    'site.home.chain.step2.title': 'Add a branch',
+    'site.home.chain.step2.body':
+        'A branch has an address and its own clock. One restaurant is a business with one branch.',
+    'site.home.chain.step3.title': 'Write the menu',
+    'site.home.chain.step3.body':
+        'Categories, dishes, prices, photos and declared allergens, in a draft guests cannot see.',
+    'site.home.chain.step4.title': 'Publish a version',
+    'site.home.chain.step4.body':
+        'Publishing freezes a numbered snapshot. An earlier one can be restored.',
+    'site.home.chain.step5.title': 'Print a code for each table',
+    'site.home.chain.step5.body':
+        'Export a card, a poster or a sheet to cut up, and repoint it later without reprinting.',
+    'site.home.chain.step6.title': 'Guests scan',
+    'site.home.chain.step6.body':
+        'The code opens the menu in the browser already on the phone. No app, no account.',
+
+    // --- Parçalar (`ProductOverviewPage` Capabilities) ---------------------
+    /*
+        ON İKİ PARÇA. Başlıkları ürünün kendi genel bakış sayfasındaki
+        terimlerle BİREBİR aynıdır ve bir test bunu donduruyor: pazarlama
+        metni ile ürün envanteri arasında ikinci bir gerçek kaynak
+        doğamaz.
+    */
+    'site.home.parts.heading': 'What is in the product',
+    'site.home.parts.lead':
+        'Twelve parts of one account. Each has its own page where it is explained in full.',
+    'site.home.parts.qrMenu.title': 'QR menu',
+    'site.home.parts.qrMenu.body':
+        'Photo, description, price, allergens and sold-out state, at a permanent address that fits on a card.',
+    'site.home.parts.menuManagement.title': 'Menu management',
+    'site.home.parts.menuManagement.body':
+        'Categories, dishes, prices and stock, edited in a draft and released as numbered versions.',
+    'site.home.parts.tables.title': 'Tables and QR codes',
+    'site.home.parts.tables.body':
+        'A code per table, read back by a decoder before it becomes a file, printed as vector cards.',
+    'site.home.parts.branding.title': 'Design and branding',
+    'site.home.parts.branding.body':
+        'A logo and two colours, frozen into each publication so a menu never changes under a guest.',
+    'site.home.parts.media.title': 'Images and media',
+    'site.home.parts.media.body':
+        'Photos are scanned, resized once and served small; the original is kept so copies can be remade.',
+    'site.home.parts.languages.title': 'Languages and currency',
+    'site.home.parts.languages.body':
+        'The guest page follows the guest, dish names stay in your language, prices follow your currency.',
+    'site.home.parts.branches.title': 'Multiple branches',
+    'site.home.parts.branches.body':
+        'Any number of branches under one business, each with its own menus, prices, codes and hours.',
+    'site.home.parts.analytics.title': 'Analytics',
+    'site.home.parts.analytics.body':
+        'Scans, menu opens, dish views, searches that found nothing and orders sent, counted by the server.',
+    'site.home.parts.ai.title': 'Zabuno AI',
+    'site.home.parts.ai.body':
+        'A photo of a printed menu becomes a draft you approve, and dishes typed twice are found.',
+    'site.home.parts.ordering.title': 'Ordering from the table',
+    'site.home.parts.ordering.body':
+        'Where you switch it on, guests build a basket and send it to a kitchen screen.',
+    'site.home.parts.team.title': 'A team with roles',
+    'site.home.parts.team.body':
+        'Editors, managers and a kitchen role that marks allergens and sold-out dishes and sees nothing else.',
+    'site.home.parts.ratings.title': 'Ratings from the table',
+    'site.home.parts.ratings.body':
+        'A guest who scanned a code can rate a dish, and you can reply.',
+
+    // --- Ne DEĞİL (`ProductOverviewPage` Limitations) ----------------------
+    /*
+        SINIRLAR SAYFADA, SÖZLEŞMEDE DEĞİL. Bir restoran sahibinin yanlış
+        varsayımının bedeli SERVİS SIRASINDA ödenir — var sandığı bir
+        özelliğin olmadığını, hiçbir şeyi değiştiremeyeceği saatte
+        öğrenir. Bu bölüm o anı öne çeker.
+    */
+    'site.home.limits.heading': 'What Zabuno is not',
+    'site.home.limits.lead':
+        'Shorter than the parts list, and the part most software will not put on its home page.',
+    'site.home.limits.till.title': 'Not a till and not a payment system',
+    'site.home.limits.till.body':
+        'Guests do not pay through Zabuno, and nothing here prints a bill or reports your takings.',
+    'site.home.limits.reservations.title': 'No reservations, delivery or loyalty',
+    'site.home.limits.reservations.body':
+        'There is no table booking, no courier integration and no points card.',
+    'site.home.limits.integrations.title': 'No third-party integrations',
+    'site.home.limits.integrations.body':
+        'Nothing connects to a till, an accounting package or a food marketplace. Your menu leaves and returns as a spreadsheet.',
+    'site.home.limits.store.title': 'No app in a store',
+    'site.home.limits.store.body':
+        'There is no iPhone or Android app for you or your guests; both sides are web pages.',
+    'site.home.limits.dishNames.title': 'Dish names are written once',
+    'site.home.limits.dishNames.body':
+        'The interface around the menu speaks two languages; the dishes are written in yours and are not translated.',
+    'site.home.limits.oneBrand.title': 'One brand per account',
+    'site.home.limits.oneBrand.body':
+        'An account holds one business with many branches, not several businesses.',
+    'site.home.limits.sectors.title': 'No sector editions',
+    'site.home.limits.sectors.body':
+        'No cafe version, bakery version or hotel version. One kind of business: places that serve food and drink.',
+
     'site.home.faq.heading': 'FAQ',
     'site.home.faq.what.question': 'What is Zabuno?',
     'site.home.faq.what.answer':
@@ -534,6 +668,12 @@ export const siteTranslations = {
     'site.home.faq.cost.question': 'What does it cost?',
     'site.home.faq.cost.answer':
         'Prices come from our plan catalogue, so what you read there is what we charge.',
+    'site.home.faq.install.question': 'Do guests install anything?',
+    'site.home.faq.install.answer':
+        'No. The code opens a web page in the browser already on the phone.',
+    'site.home.faq.pos.question': 'Is Zabuno a point-of-sale system?',
+    'site.home.faq.pos.answer':
+        'No. It shows the menu and can carry an order to the kitchen. It does not take payment and does not know your takings.',
     'site.home.contact.lead':
         'Ask about pricing, a pilot, or anything that is in your way. We keep every message; you get a confirmation on screen.',
     'site.home.contact.cta': 'Write to us',

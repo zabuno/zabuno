@@ -38,7 +38,23 @@
                             <span aria-hidden="true">/</span>
                         @endunless
                         @if ($crumb->isLinkable() && ! $loop->last)
-                            <a href="{{ $crumb->path }}" class="underline">{{ $crumb->label }}</a>
+                            {{-- DOKUNMA HEDEFİ 44 PİKSELDEN KÜÇÜK OLAMAZ.
+
+                                 Ölçüldü (`scripts/mobile-ux-audit`, 320×568,
+                                 2026-09-08): kırıntı bağlantısı 112×20'ydi.
+                                 Bu sayfalar yayına alınana kadar kusur hiçbir
+                                 yerde görünmüyordu — ölçülen tek şey ekranda
+                                 GERÇEKTEN olan sayfalardır ve bu sayfaların
+                                 hiçbiri açılmamıştı.
+
+                                 20 piksel bir imleç için yeter, parmak için
+                                 yetmez: hedefe basamayan kişi geri gidemez.
+                                 Aynı çözüm bu şablon ailesinde zaten var
+                                 (`content.blocks.related`, `content.blocks.cta`);
+                                 ikinci bir yol açmak, iki farklı hedef boyu
+                                 üretirdi. --}}
+                            <a href="{{ $crumb->path }}"
+                               class="inline-flex min-h-[44px] items-center underline">{{ $crumb->label }}</a>
                         @elseif ($loop->last)
                             {{-- Bulunduğun sayfa bir BAĞLANTI DEĞİLDİR: tıklayınca
                                  aynı yerde kalan bir bağlantı, klavye ve ekran
