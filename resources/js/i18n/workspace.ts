@@ -1,3 +1,6 @@
+import { createTranslator } from './translator';
+import { overridesFor } from './generated-overrides';
+
 const modules = import.meta.glob<{ default?: never; [key: string]: unknown }>('./workspace/*.ts', {
     eager: true,
 });
@@ -36,15 +39,24 @@ export interface WorkspaceTranslationCatalog {}
 
 export type WorkspaceTranslationKey = keyof WorkspaceTranslationCatalog;
 
-export function t(key: WorkspaceTranslationKey, vars?: Record<string, string>): string {
-    const template: string = en[key] ?? key;
+/*
+    Çeviri zinciri — MEDIA-C2 (`FF-226`).
 
-    if (!vars) {
-        return template;
-    }
+    Burası uzun süre YALNIZ İngilizce tabanı okudu. Toplayıcı on üç modülü
+    birleştirip anahtar çakışmasını yakalıyordu, ama üretilmiş
+    `generated/workspace.<locale>.json` projeksiyonlarını hiç sormuyordu —
+    oysa `menu`, `dashboard`, `auth`, `platform` ve `theme` çoktan ortak
+    `createTranslator(en, overridesFor(alan))` yolunu kullanıyordu.
 
-    return Object.entries(vars).reduce<string>(
-        (result, [name, value]) => result.replaceAll(`{${name}}`, value),
-        template,
-    );
-}
+    Sahibin gördüğü kusur şuydu: paneli Türkçeye alan restoran sahibi menüde
+    ve faturada Türkçe okuyor, çalışma alanı ekranlarında İngilizce
+    görüyordu. Çeviri EKSİK DEĞİLDİ; `workspace.tr.json` bin sekiz yüzden
+    fazla satırla diskte duruyor ve hiç okunmuyordu.
+
+    Davranış sözleşmesi değişmedi: kaynak locale'de taban aynen döner,
+    çevirisi olmayan anahtar tabana düşer, hiç tanınmayan anahtar kendi adını
+    döndürür ve `{name}` yer tutucuları aynı kurala göre dolar — hepsi artık
+    tek bir yerde, `translator.ts` içinde.
+*/
+export const t: (key: WorkspaceTranslationKey, vars?: Record<string, string>) => string =
+    createTranslator(en, overridesFor('workspace'));
