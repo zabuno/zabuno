@@ -207,10 +207,48 @@ baskın hareketli arka plan kuralı yerinde durur.
 
 **Sahibin kararı:** *"daisyUI kullan, baştan yarat… bu kararım kesin."*
 
-Kurumsal kabuk daisyUI 5 üzerine yeniden yazıldı. Tema **marka jetonlarından
-türer** (bir tek renk elle yazılmaz), sınıflar `dz-` önekiyle gelir ve panel
+Kurumsal kabuk daisyUI 5 üzerine yeniden yazıldı. Tema **jetonlardan türer**
+(bir tek renk elle yazılmaz), sınıflar `dz-` önekiyle gelir ve panel
 etkilenmez — panel `flowbite-react` + AEP üzerinde kalır (`docs/102`).
 Ayrıntı, ölçüm ve sonraki ajanlara talimat: **`docs/136`**.
+
+**Bu maddenin "marka jetonları" kısmı aynı gün akşam E10 ile ezildi**; daisyUI
+kararının kendisi kesindir ve durmaktadır.
+
+### E10 — Kurumsal sitenin RENK KAYNAĞI: panelden AYRILDI (2026-09-08 akşamı)
+
+**Ezilen karar:** E9 ve `docs/136` §3 — *"tema marka jetonlarından
+(`--aep-*`) türer"*.
+
+**Sahibin kararı:** *"temanın mevcut marka jetonlarını sikerim, yeter
+artık."* Ve tekrarlanan hedef: *"bir uzay teknolojileri şirketi gibi, abartı
+dursun, görünsün, hissettirsin."*
+
+**Neden ezildi — ölçüldü.** Kural uygulandı, daisyUI kuruldu, kapı yeşile
+döndü ve **ekranda hiçbir şey değişmedi**. Sebep kimsenin hatası değil:
+panelin jetonları sekiz saat bakılan bir ekran için seçilmişti (sakin, düz,
+gölgesiz — `docs/102` §1). Kurumsal sayfanın işi tam tersidir; bir kez
+bakılır ve hatırlanması gerekir. Aynı jetonu ikisine vermek ikisini de
+ortalamaktı.
+
+**Yürürlükteki karar:**
+
+> Kurumsal sitenin renk kaynağı `--zc-*` jetonlarıdır ve tek tanımı
+> `resources/css/site-identity.css`. Panelin `--aep-*` jetonlarına hiç
+> bakmaz. Panel değişmez.
+
+Panelle kalan tek kasıtlı bağ marka altınıdır — ve o da artık bir düğme
+rengi değil, bir vurgu: kurumsal birincil düğme elektrik moru oldu, çünkü
+sarının üstündeki beyaz yazı **1,73:1** ölçülmüştü (WCAG asgarisi 4,5) ve
+yeni değeri **5,84:1**.
+
+**Ne DEĞİŞMEDİ:** E1 (dar ekran taban), E3 (büyük hedef + sıkı boşluk), E6
+(emoji yasak, Phosphor ilk), E8 (taban HTML, tavan serbest), daisyUI kararı,
+`dz-` öneki, hazır temaların kapalılığı ve panelin dokunulmazlığı.
+
+**Zorlayıcı karşılığı:** `CorporateIdentityContrastTest` (KIMLIK-01/02/03) ve
+`CorporateIdentityScopeTest` (KIMLIK-04/05/06/07). Ayrıntı, palet, gerekçe ve
+bütün ölçümler: **`docs/145`**.
 
 ## 2. Değişmeden korunan kararlar
 

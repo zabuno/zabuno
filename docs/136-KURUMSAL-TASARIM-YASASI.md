@@ -8,6 +8,33 @@
 
 # Kurumsal tasarım yasası — daisyUI, tema türetimi, ikon dili, hareket zemini
 
+> ## EZİLDİ — §3 (tema türetimi), aynı gün akşam
+>
+> **Sahibin kararı (2026-09-08, FF-238):** *"temanın mevcut marka jetonlarını
+> sikerim, yeter artık."*
+>
+> Bu belgenin §3'ü daisyUI temasının **panelin** marka jetonlarından
+> (`--aep-*`) türemesini şart koşuyordu. O şart **kaldırıldı**. Kurumsal
+> sitenin artık kendi paleti var: `--zc-*`, tek tanımı
+> `resources/css/site-identity.css`.
+>
+> **Neden:** kural uygulandı, kapı yeşile döndü ve ekranda hiçbir şey
+> değişmedi — çünkü panelin jetonları sekiz saat bakılan bir ekran için
+> seçilmişti (sakin, düz, gölgesiz) ve kurumsal sayfanın işi tam tersi.
+>
+> **Ne DEĞİŞMEDİ:** daisyUI kararı (§1, §2), `themes: false`, `dz-` öneki,
+> `light`/`dark` tema adları, `prefersdark` yokluğu, ikon dili (§4),
+> yoğunluk kararı (§5), altbilgi kuralı (§6), hareket zemini (§7) ve §9'un
+> yasak listesi. Kural da değişmedi, yalnız ADRESİ: tema hâlâ ham renk
+> yazmaz, yalnız artık `--zc-*` jetonlarına işaret eder.
+>
+> **Ayrıntı, palet, gerekçe, kontrast tabloları ve yeni kapılar:
+> `docs/145-KURUMSAL-GORSEL-KIMLIK.md`.** `docs/118` E10.
+>
+> §3, §5 ve §8'in aşağıdaki metni **tarihsel kayıttır** ve düzeltilmemiştir:
+> bir kararın hangi ölçümden çıktığını gizlemek, kararın kendisini
+> anlaşılmaz yapar.
+
 ## 1. Sahibin kararı ve bu belgenin kapsamı
 
 2026-09-08, aynı cümlede iki şey:
@@ -88,6 +115,12 @@ yazılmadan) 140.061 bayt. Öneğin tek başına kazandırdığı: **96.286 bayt
 ---
 
 ## 3. Tema marka jetonlarından TÜRER — ve bir test bunu sabitliyor
+
+> **EZİLDİ (2026-09-08 akşamı, FF-238).** Yürürlükteki kural: tema
+> **kurumsal** jetonlara (`--zc-*`, `site-identity.css`) işaret eder;
+> panelin `--aep-*` jetonlarına değil. `DaisyThemeDerivationTest` bugün tam
+> olarak bunu ölçüyor ve temada bir `--aep-` dizesi bulursa kırılıyor.
+> Gerekçe ve palet: `docs/145` §1. Aşağısı tarihsel kayıttır.
 
 ### 3.1 Kural
 
@@ -183,6 +216,13 @@ Yeni bir glif eklemek, paketten kopyalayıp ICON-02'yi geçirmek demektir.
 ---
 
 ## 5. Tipografi, boşluk ve yoğunluk
+
+> **KISMEN EZİLDİ (FF-238).** Gövde tabanı, boşluk ölçeği ve dokunma
+> geometrisi **aynen geçerli** — bu tablodaki üç satırın hiçbiri
+> değişmedi. Eklenen şey bir BAŞLIK ölçeğidir (`--zc-display-*`, 320'de
+> 32 px, geniş ekranda 72 px) ve bir ÖLÇÜ merdivenidir (`--zc-measure-*`,
+> sayfa kabı 64 rem'den 82 rem'e). Yoğunluk kararı ihlal edilmedi: küçülen
+> hiçbir şey yok. `docs/145` §4.
 
 Hiçbiri bu pakette **yeniden** tanımlanmadı; kaynak zaten depoda:
 
@@ -354,6 +394,12 @@ yönlü bir kapı — betik bu kararı geri alamaz.
 
 ## 8. CSS ağırlığı — ÖLÇÜLDÜ
 
+> **GÜNCEL RAKAM BURADA DEĞİL (FF-238).** Aşağıdaki tablo bu belgenin
+> yazıldığı andaki teslimi ölçüyor (161.175 B ham / 28.029 B gzip) ve
+> tarihsel kayıt olarak duruyor. Kurumsal kimlik katmanı eklendikten sonraki
+> ölçüm: **175.861 B ham / 30.410 B gzip** — net +14.686 ham, +2.381 gzip
+> (gzip'te %8,5). Ayrıntı ve geniş ekran ölçümleri: `docs/145` §8.
+
 `php artisan view:clear && rm -rf public/build && npm run build`, sonra
 `public/build/assets/app-*.css`.
 
@@ -433,8 +479,11 @@ paketin ürettiği bir şey değil.
 
 **Yasak:**
 
-- Tema dosyasına **ham renk** yazmak. Renk gerekiyorsa önce marka jetonu
-  eklenir, sonra tema ona işaret eder.
+- Tema dosyasına **ham renk** yazmak. Renk gerekiyorsa önce KURUMSAL jeton
+  eklenir (`site-identity.css` §1), sonra tema ona işaret eder. (FF-238:
+  "marka jetonu" ifadesi artık `--zc-*` anlamına gelir, `--aep-*` değil.)
+- Kurumsal yüzeyde `--aep-*` jetonu okumak — panelin jetonu panelindir
+  (`docs/145` §9).
 - daisyUI'nin hazır temalarını açmak (`themes:` değerini değiştirmek).
 - Öneki kaldırmak ya da panele daisyUI sınıfı sokmak.
 - Kırılma noktası jetonu (`sm:` …) kullanmak — `MP-05` kırar.

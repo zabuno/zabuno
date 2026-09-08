@@ -30,11 +30,35 @@
 @import './fonts.css';
 
 /*
+    KURUMSAL GÖRSEL KİMLİK — sitenin KENDİ paleti, ölçeği ve yüzey dili
+    (`docs/145`).
+
+    Sahibin kararı (2026-09-08): *"temanın mevcut marka jetonlarını sikerim,
+    yeter artık."* Kurumsal site artık panelin `--aep-*` jetonlarından
+    türemiyor; kendi `--zc-*` jetonlarını taşıyor.
+
+    AEP katmanından SONRA gelir ve bu sıra ZORUNLUDUR, bir üslup değil:
+    dosya `--surface`, `--fg`, `--color-surface` gibi semantik takma adları
+    `.site-shell` kapsamında yeniden bağlıyor. AEP'den önce gelseydi, AEP'nin
+    `:root` tanımları aynı adları sonradan yazardı — ama `.site-shell`
+    seçicisi `:root`tan daha özgül olduğu için sonuç yine doğru çıkardı.
+    Yani sıra doğruluğu değil OKUNURLUĞU sağlıyor: önce ürünün ortak zemini,
+    sonra kurumsal yüzeyin kendi kararı.
+
+    PANEL ETKİLENMEZ: kural `.site-shell` sınıfına bağlı ve o sınıf yalnız
+    `views/public/layout.blade.php` gövdesinde var. Kapı:
+    `CorporateIdentityScopeTest`.
+*/
+@import './site-identity.css';
+
+/*
     KURUMSAL SİTENİN KABUĞU (`docs/100` §2).
 
     Ayrı dosya, çünkü kabuk artık deponun TEK kurumsal header/footer'ı ve her
     kurumsal adres onu giyiyor. Görünümü panel CSS'inin arasına dağılsaydı,
     "tek yerde değiştir, her yerde değişsin" sözü yalnız HTML için tutulurdu.
+
+    KİMLİK KATMANINDAN SONRA gelir: kabuk jetonları TÜKETİR, tanımlamaz.
 */
 @import './site-shell.css';
 
@@ -43,16 +67,16 @@
 
     Sahibin kararı (2026-09-08): *"daisyUI kullan, baştan yarat."*
 
-    AEP katmanından SONRA gelir ve bu sıra kasıtlı: daisyUI teması hiçbir
-    renk seçmez, yalnız `--aep-*` jetonlarına işaret eder. Önce gelseydi de
-    aynı çözülürdü (özel değişkenler sırayla değil, kullanıldıkları yerde
-    çözülür) — ama okuyan kişi için sıra bir niyet bildirir: önce markanın
-    kendi jetonları, sonra onları giyen bileşen kütüphanesi.
+    Kimlik katmanından SONRA gelir ve bu sıra kasıtlı: daisyUI teması hiçbir
+    renk seçmez, yalnız `--zc-*` KURUMSAL jetonlarına işaret eder (2026-09-08
+    akşamı verilen ezme kararı — `docs/145`). Önce gelseydi de aynı
+    çözülürdü (özel değişkenler sırayla değil, kullanıldıkları yerde
+    çözülür) — ama okuyan kişi için sıra bir niyet bildirir: önce kurumsal
+    kimliğin kendi jetonları, sonra onları giyen bileşen kütüphanesi.
 
     PANEL ETKİLENMEZ. Panel `flowbite-react` + AEP üzerine kurulu ve kendi
-    olgunluk belgesi var (`docs/102`); daisyUI oraya bir tek sınıf sokmaz.
-    İkisinin aynı ürün gibi görünmesi, ikisinin de AYNI marka jetonlarından
-    beslenmesiyle sağlanır — ortak bir bileşen kütüphanesiyle değil.
+    olgunluk belgesi var (`docs/102`); daisyUI oraya bir tek sınıf sokmaz ve
+    bu tema artık bir tek `--aep-*` jetonu bile anmaz.
 */
 @import './daisy-theme.css';
 

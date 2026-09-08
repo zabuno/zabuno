@@ -68,14 +68,30 @@
     font-size: inherit;
 }
 
-/* Kabuğun ortak içerik kolonu. Dolgu BİR kez uygulanır; iç kaplar kendi
-   dolgusunu üstüne eklemez (`docs/117` K2: dolgu birikmesi 320 pikselde
-   ekranın yarısını yiyordu). */
+/*
+    Kabuğun ortak içerik kolonu. Dolgu BİR kez uygulanır; iç kaplar kendi
+    dolgusunu üstüne eklemez (`docs/117` K2: dolgu birikmesi 320 pikselde
+    ekranın yarısını yiyordu).
+
+    ── GENİŞLİK: 64 rem'DEN 82 rem'E (`docs/145` §4) ──
+
+    Ölçüldü (2026-09-08, `scripts/mobile-ux-audit --width 1440`): 64 rem'lik
+    kolon 1440 piksellik bir ekranda sağda ve solda 208'er piksel BOŞ
+    bırakıyordu; 1920'de 448'er piksel. Sahibin ifadesi birebir buydu.
+
+    320 pikselde HİÇBİR ŞEY DEĞİŞMEZ: `min(100%, 82rem)` orada `100%`e
+    çözülür, yani tavan devreye bile girmez. Geniş ekran zenginleştirmedir,
+    taban değil.
+
+    Dolgu da artık akışkan (`--zc-gutter`) ve alt sınırı yine `--space-3` —
+    dar ekranda önceki değerle bire bir aynı, geniş ekranda 48 piksele
+    kadar açılıyor.
+*/
 .site-shell-inner {
     width: 100%;
-    max-width: 64rem;
+    max-width: var(--zc-measure-page);
     margin-inline: auto;
-    padding-inline: var(--space-3);
+    padding-inline: var(--zc-gutter);
 }
 
 /* --- Üst çubuk ---------------------------------------------------------- */
@@ -404,12 +420,38 @@
 
 .site-main {
     width: 100%;
-    max-width: 64rem;
+    max-width: var(--zc-measure-page);
     margin-inline: auto;
     /* Kabuğun içi ile aynı dolgu: iki farklı değer olsaydı üst çubuktaki
        marka ile sayfa başlığı aynı hizada durmazdı. */
-    padding-inline: var(--space-3);
-    padding-block: var(--space-fluid-lg);
+    padding-inline: var(--zc-gutter);
+    padding-block: var(--zc-rhythm-tight);
+}
+
+/*
+    GEÇİŞ KURALI — sayfa gövdeleri henüz `.site-main` kullanmıyor.
+
+    `home.blade.php` sayfa kabını Tailwind ile yazıyor (`mx-auto max-w-5xl`)
+    ve BU PAKET O DOSYAYA DOKUNMUYOR: orada başka bir ajan çalışıyor
+    (`docs/145` §7). Ama üst çubuk 82 rem'e açılıp gövde 64 rem'de kalsaydı,
+    marka adı ile sayfa başlığı aynı hizada durmazdı — yani genişletme
+    kusuru düzeltmek yerine ikiye bölerdi.
+
+    Kural bu yüzden TEK bir sınıfa bağlı: `max-w-5xl` (64 rem). O sınıf bu
+    depoda yalnız SAYFA KABI anlamında kullanılıyor. Okuma ölçüsünü bilerek
+    seçen sayfalar (`max-w-3xl` = iletişim, fiyat, kütükten çizilen makale;
+    `.site-legal` = sözleşme) hiç eşleşmez ve 48/44 rem'de kalır — bir
+    sözleşme 82 rem genişliğinde okunmaz, satır başına ~180 karakter düşerdi.
+
+    Katmansız kural, `@layer utilities` içindeki `max-w-5xl`i yener;
+    `!important` gerekmiyor ve kullanılmıyor.
+
+    Gövde kabı `.site-measure-page`e taşındığı gün bu blok SİLİNİR — bir
+    geçiş kuralının en kötü hâli, kalıcı olduğunun unutulmasıdır.
+*/
+.site-shell main[class~='max-w-5xl'] {
+    max-width: var(--zc-measure-page);
+    padding-inline: var(--zc-gutter);
 }
 
 .site-page-title {
@@ -695,9 +737,9 @@
 */
 .site-legal {
     width: 100%;
-    max-width: 44rem;
+    max-width: var(--zc-measure-prose);
     margin-inline: auto;
-    padding-inline: var(--space-3);
+    padding-inline: var(--zc-gutter);
     padding-block: var(--space-fluid-lg);
     display: flex;
     flex-direction: column;

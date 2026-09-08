@@ -7,34 +7,46 @@ namespace Tests\Feature\PublicSite;
 use Tests\TestCase;
 
 /**
- * DAISY-THEME-01…05 — daisyUI teması MARKA JETONLARINDAN türer.
+ * DAISY-THEME-01…05 — daisyUI teması KURUMSAL JETONLARDAN türer.
  *
- * ── Neden bu kapı var ────────────────────────────────────────────────────
+ * ── SAHİBİN EZMESİ (2026-09-08 akşamı) ───────────────────────────────────
  *
- * Depoda zaten bir jeton sistemi var (`resources/css/aep/tokens/*`) ve panel
- * onun üstünde duruyor. daisyUI'nin de kendi tema değişkenleri var. İkisini
- * yan yana koyup "aynı renkleri yazarız" demek, aynı sayının iki yerde
- * yaşaması demekti — ve iki kopya bir gün ayrışır. O gün kurumsal site ile
- * panel iki ayrı şirket gibi görünür ve hiçbir test kırmızıya dönmez, çünkü
- * ikisi de kendi içinde tutarlıdır.
+ * Bu kapı ilk yazıldığında (aynı günün sabahı) temanın PANELİN marka
+ * jetonlarından (`--aep-*`) türemesini şart koşuyordu. Sahip akşam o kısıtı
+ * kaldırdı: *"temanın mevcut marka jetonlarını sikerim, yeter artık."*
  *
- * Kullanıcı yolculuğu: sahip marka sarısını bir ton koyulaştırmak ister.
- * Tek bir jeton dosyası değişir (`aep/tokens/colors.css`) ve o gün hem panel
- * hem kurumsal site birlikte döner. Bu testler o cümlenin kanıtıdır.
+ * Sebep ölçülmüştü: daisyUI kuruldu, tema kuruldu, bu kapı yeşile döndü ve
+ * ekranda hiçbir şey değişmedi — çünkü panelin jetonları sekiz saat bakılan
+ * bir ekran için seçilmişti. Ayrıntı ve gerekçe: `docs/145`.
+ *
+ * ── Kapının kendisi DEĞİŞMEDİ, yalnız ADRESİ değişti ─────────────────────
+ *
+ * Kural hâlâ tek cümle: temada ham bir renk yoktur, her renk var olan bir
+ * jetona işaret eder. Değişen tek şey, o jetonların hangi dosyada yaşadığı:
+ * `resources/css/aep/tokens/*` yerine `resources/css/site-identity.css`.
+ *
+ * Kullanıcı yolculuğu: sahip kurumsal sitenin morunu bir ton koyulaştırmak
+ * ister. Tek bir dosya değişir (`site-identity.css` §1) ve o gün kurumsal
+ * sitenin tamamı döner — PANEL ise dönmez, çünkü artık aynı kaynağa
+ * bakmıyorlar ve bu bilinçli bir karardır.
  *
  * ── Ne ölçülüyor, ne ölçülmüyor ──────────────────────────────────────────
  *
- * Ölçülen: temada ham bir renk YOK, her renk var olan bir `--aep-*` jetonuna
- * işaret ediyor, daisyUI'nin hazır temaları kapalı, 28 değişkenin hepsi iki
- * temada da yazılmış, ve derlenmiş CSS'te ÖNEKSİZ bir daisyUI sınıfı yok.
+ * Ölçülen: temada ham bir renk YOK, her renk var olan bir `--zc-*` jetonuna
+ * işaret ediyor, tema panelin `--aep-*` jetonlarından bir tekini bile
+ * ANMIYOR, daisyUI'nin hazır temaları kapalı, 28 değişkenin hepsi iki temada
+ * da yazılmış, ve derlenmiş CSS'te ÖNEKSİZ bir daisyUI sınıfı yok.
  *
- * Ölçülmeyen: rengin GÜZEL olup olmadığı ve kontrast oranları. Kontrast
- * jeton katmanının kendi işidir ve orada ölçülür; burada ölçülen şey,
- * kurumsal sitenin o katmandan BESLENDİĞİ.
+ * Ölçülmeyen: rengin GÜZEL olup olmadığı. Kontrast oranları ise artık
+ * ölçülüyor ama burada değil — `CorporateIdentityContrastTest` (KIMLIK-02/03)
+ * onları jeton katmanının kendisinde hesaplar.
  */
 final class DaisyThemeDerivationTest extends TestCase
 {
     private const THEME_FILE = 'resources/css/daisy-theme.css';
+
+    /** Kurumsal jetonların TEK tanımı (`docs/145`). */
+    private const IDENTITY_FILE = 'resources/css/site-identity.css';
 
     /**
      * daisyUI 5'in bir temada beklediği DEĞİŞKENLERİN TAMAMI.
@@ -111,9 +123,25 @@ final class DaisyThemeDerivationTest extends TestCase
                 $needle,
                 $css,
                 "DAISY-THEME-01: temada ham bir renk ifadesi var ([{$needle}]). "
-                .'Her renk `var(--aep-…)` olmak zorunda; aksi hâlde depoda ikinci bir renk kaynağı doğar.'
+                .'Her renk `var(--zc-…)` olmak zorunda; aksi hâlde depoda ikinci bir renk kaynağı doğar.'
             );
         }
+
+        /*
+            PANELİN JETONLARI TEMADA ANILMAZ.
+
+            Bu satır sahibin ezme kararının kapıdaki karşılığıdır ve tersi de
+            doğrudur: kurumsal tema bir gün yeniden `--aep-*` okumaya
+            başlarsa, o an sessizce panelin görsel diline geri dönmüş olur.
+            Böyle bir dönüş bir KARAR olmalı, bir kopyala-yapıştır değil.
+        */
+        self::assertStringNotContainsString(
+            '--aep-',
+            $css,
+            'DAISY-THEME-01: kurumsal tema panelin marka jetonlarına (`--aep-*`) geri bağlanmış. '
+            .'Sahibin 2026-09-08 kararı bunu kaldırdı (`docs/145` §1); kurumsal renk kaynağı '
+            .'`site-identity.css`tir.'
+        );
     }
 
     // --- DAISY-THEME-02 --------------------------------------------------------
@@ -132,15 +160,15 @@ final class DaisyThemeDerivationTest extends TestCase
             foreach ($declarations as [, $variable, $value]) {
                 self::assertSame(
                     1,
-                    preg_match('#^var\((--aep-[a-z0-9-]+)\)$#', trim($value), $reference),
-                    "DAISY-THEME-02: [{$name}] temasında [{$variable}] bir marka jetonuna işaret etmiyor: {$value}"
+                    preg_match('#^var\((--zc-[a-z0-9-]+)\)$#', trim($value), $reference),
+                    "DAISY-THEME-02: [{$name}] temasında [{$variable}] bir kurumsal jetona işaret etmiyor: {$value}"
                 );
 
                 self::assertContains(
                     $reference[1],
                     $defined,
-                    "DAISY-THEME-02: [{$name}] temasındaki [{$variable}], `aep/tokens/` altında TANIMSIZ olan "
-                    ."[{$reference[1]}] jetonuna işaret ediyor — zincir kopuk."
+                    "DAISY-THEME-02: [{$name}] temasındaki [{$variable}], `site-identity.css` içinde TANIMSIZ "
+                    ."olan [{$reference[1]}] jetonuna işaret ediyor — zincir kopuk."
                 );
             }
         }
@@ -204,9 +232,9 @@ final class DaisyThemeDerivationTest extends TestCase
     {
         /*
             `partials/theme-bootstrap.blade.php` kök öğeye `data-theme` yazar ve
-            `aep/tokens/colors.css` koyu değerlerine `[data-theme="dark"]` ile
+            `site-identity.css` koyu değerlerine `[data-theme="dark"]` ile
             geçer. daisyUI teması başka bir adla anılsaydı, ziyaretçi koyu
-            temaya geçtiğinde AEP koyulaşır, daisyUI açık kalırdı.
+            temaya geçtiğinde kurumsal jetonlar koyulaşır, daisyUI açık kalırdı.
         */
         $bootstrap = (string) file_get_contents(
             resource_path('views/partials/theme-bootstrap.blade.php')
@@ -230,19 +258,20 @@ final class DaisyThemeDerivationTest extends TestCase
     // --- Yardımcılar -----------------------------------------------------------
 
     /**
-     * `aep/tokens/` altında GERÇEKTEN tanımlı jetonlar.
+     * `site-identity.css` içinde GERÇEKTEN tanımlı kurumsal jetonlar.
+     *
+     * Tek dosya, çünkü kurumsal kimliğin tek tanımı orada (`docs/145` §1).
+     * Bir gün ikinci bir dosyaya bölünürse bu yardımcı da onunla birlikte
+     * genişletilir — ama bölünme bir karar olarak görünür olur.
      *
      * @return list<string>
      */
     private function brandTokens(): array
     {
-        $tokens = [];
+        $css = (string) file_get_contents(base_path(self::IDENTITY_FILE));
 
-        foreach ((array) glob(resource_path('css/aep/tokens/*.css')) as $file) {
-            preg_match_all('#(--aep-[a-z0-9-]+):#', (string) file_get_contents((string) $file), $names);
-            $tokens = [...$tokens, ...$names[1]];
-        }
+        preg_match_all('#(--zc-[a-z0-9-]+):#', $css, $names);
 
-        return array_values(array_unique($tokens));
+        return array_values(array_unique($names[1]));
     }
 }
