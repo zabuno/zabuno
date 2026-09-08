@@ -61,6 +61,7 @@
     KİMLİK KATMANINDAN SONRA gelir: kabuk jetonları TÜKETİR, tanımlamaz.
 */
 @import './site-shell.css';
+@import './site-language.css';
 
 /*
     daisyUI — KURUMSAL SİTENİN BİLEŞEN KATMANI (`docs/136`).

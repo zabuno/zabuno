@@ -58,6 +58,9 @@
         @endforeach
 
         <div class="site-header-actions">
+            <div class="site-language-desktop" data-language-presentation="desktop">
+                @include('public.partials.language-switcher')
+            </div>
             {{-- BİRİNCİL EYLEM ÇUBUKTA, İKİNCİSİ BÖLMEDE.
 
                  Hangisinin çubukta kalacağı bir zevk değil bir sıra sorusu:
@@ -137,6 +140,9 @@
                             </ul>
                         </nav>
                     @endforeach
+                    <div class="site-language-menu" data-language-presentation="menu">
+                        @include('public.partials.language-switcher')
+                    </div>
                 </div>
             </details>
         </div>

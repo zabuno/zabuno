@@ -26,6 +26,7 @@ use App\Http\Controllers\PublicSite\ShowLegalDocumentController;
 use App\Http\Controllers\PublicSite\ShowTrustCentreController;
 use App\Http\Controllers\PublicSite\StoreContactMessageController;
 use App\Http\Controllers\PublicSite\StoreMeasurementConsentController;
+use App\Http\Controllers\PublicSite\StoreSiteLanguageController;
 use App\Http\Controllers\QrDestination\RedirectQrTokenController;
 use App\Http\Controllers\QrDestination\ShowPublicMenuByKeyController;
 use App\Http\Controllers\QrDestination\ShowPublicMenuController;
@@ -72,6 +73,8 @@ Route::get('/', [FoundationStatusController::class, '__invoke'])->name('foundati
  */
 // Fiyat KAYDOLMADAN görülür (`docs/88`): fiyatı görmek için kaydolmak
 // gereken bir ürün, kaydolmayı fiyatı görmeye bağlı kılar.
+Route::post('/language', StoreSiteLanguageController::class)->name('public.language');
+
 Route::get('/pricing', [FoundationStatusController::class, '__invoke'])->name('public.pricing');
 
 /*
