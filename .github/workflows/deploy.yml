@@ -52,7 +52,47 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Branch-only incident inspection. The same concurrency group keeps this
+  # read-only snapshot separate from an active production deployment.
+  diagnose:
+    if: github.event_name == 'workflow_dispatch' && inputs.confirm == 'DIAGNOSE'
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 3
+    steps:
+      - name: Load the existing pinned SSH connection
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Read container identity and state only
+        env:
+          DEPLOY_TARGET: ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT || '22' }}
+        run: |
+          set -euo pipefail
+          timeout 90s ssh -i ~/.ssh/id_ed25519 -p "$DEPLOY_PORT" \
+            -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=10 \
+            -o ServerAliveInterval=15 -o ServerAliveCountMax=2 \
+            "$DEPLOY_TARGET" bash -s <<'REMOTE'
+          set -euo pipefail
+          docker compose version
+          docker ps -a --no-trunc --filter name=zabuno --format 'table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}'
+          while IFS= read -r container_id; do
+            [ -n "$container_id" ] || continue
+            docker inspect --format 'id={{.Id}} name={{json .Name}} image={{json .Config.Image}} status={{json .State.Status}} running={{.State.Running}} paused={{.State.Paused}} restarting={{.State.Restarting}} exitCode={{.State.ExitCode}} started={{json .State.StartedAt}} finished={{json .State.FinishedAt}} project={{json (index .Config.Labels "com.docker.compose.project")}} service={{json (index .Config.Labels "com.docker.compose.service")}} mountDestinations={{range .Mounts}}{{json .Destination}} {{end}}' "$container_id"
+          done < <(docker ps -aq --no-trunc --filter name=zabuno)
+          REMOTE
+
   guard:
+    if: github.event_name != 'workflow_dispatch' || inputs.confirm != 'DIAGNOSE'
     runs-on: ubuntu-latest
     outputs:
       # Son söz `forward` adımınındır: geriye giden bir yayın burada
