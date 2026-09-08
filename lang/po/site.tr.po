@@ -422,11 +422,11 @@ msgstr "Hesap işlemleri"
 
 #: site:site.home.hero.heading
 msgid "site.home.hero.heading"
-msgstr "Restoranınızın menüsünü ve çalışma alanını tek yerden yönetin"
+msgstr "Restoranınızın menüsünü tek yerden yönetin"
 
 #: site:site.home.hero.lead
 msgid "site.home.hero.lead"
-msgstr "Zabuno ekibinize ortak bir çalışma alanı verir: restoranın menüsünü ve kataloğunu yönetin, karekoda bağlı sabit bir sayfa olarak yayınlayın, değiştikçe güncel tutun."
+msgstr "Menüyü yazın, yayımlayın ve her masa için bir kod yazdırın. Misafirler menüyü telefonlarında zaten bulunan tarayıcıdan okur."
 
 #: site:site.home.hero.note
 msgid "site.home.hero.note"

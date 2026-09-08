@@ -86,7 +86,7 @@ msgstr "Özet yükleniyor…"
 
 #: dashboard:dashboard.now.allDone
 msgid "dashboard.now.allDone"
-msgstr "Her şey hazır. Misafirleriniz menüyü okutabilir."
+msgstr "Menünüz yayında. Masalarınız için kodları yazdırın."
 
 #: dashboard:dashboard.now.brand
 msgid "dashboard.now.brand"
