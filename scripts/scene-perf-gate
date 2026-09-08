@@ -287,7 +287,15 @@ try {
                 minOpacity: 1,
                 inFirstScreen: null,
             };
+            let probeFrame = null;
+            let stopped = false;
+            window.__stopFirstScreenProbe = () => {
+                stopped = true;
+                if (probeFrame !== null) cancelAnimationFrame(probeFrame);
+                probeFrame = null;
+            };
             const tick = () => {
+                if (stopped) return;
                 /*
                     ÖLÇÜLEN ŞEY SAHNENİN KENDİ EYLEMİ.
 
@@ -335,11 +343,11 @@ try {
                 }
 
                 if (performance.now() < 4000) {
-                    requestAnimationFrame(tick);
+                    probeFrame = requestAnimationFrame(tick);
                 }
             };
 
-            requestAnimationFrame(tick);
+            probeFrame = requestAnimationFrame(tick);
         `,
     });
 
@@ -353,7 +361,16 @@ try {
         })`,
     );
 
-    report.firstScreen = await evaluate(ws, 'window.__firstScreen ?? null');
+    /* Sonucu dondurduktan sonra gözlemcinin stil/düzen okumaları artık
+       kullanılmıyor. Kaydırmalı kare ölçümüne bu ek işi taşımayalım;
+       opaklık, tıklanabilirlik ve eksik ölçüm kontrolleri aşağıda aynıdır. */
+    report.firstScreen = await evaluate(
+        ws,
+        `(() => {
+            window.__stopFirstScreenProbe?.();
+            return window.__firstScreen ?? null;
+        })()`,
+    );
 
     if (report.firstScreen !== null && report.firstScreen.inFirstScreen !== null) {
         const { opaqueAt, hitAt, firstSeenAt, inFirstScreen, minOpacity } = report.firstScreen;

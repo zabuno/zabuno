@@ -1067,3 +1067,42 @@ Yeni CI koşusunun sonucu hâlâ ayrı kabul kapısıdır.
 Platform istisnası varken toplu `--update` yazmadan ve tarayıcı açmadan reddedilir;
 eski kanıtı yeni görüntünün kanıtı gibi taşımamak için hedefli, gözden geçirilmiş
 imza ve kaynak kaydı birlikte yenilenmelidir.
+
+
+### 14.2 Kare ölçümünün kendi gözlemcisi (2026-09-08)
+
+CI `34248482317` görsel kapıyı geçti; sonraki kare ölçümü 220 karede
+p95 33,3 ms ile 22 ms bütçesini aştı (`reduced`, CPU ×4). İlk ekran ve
+azaltılmış hareket kontrolleri geçti. Bu, daha önce görsel kapı nedeniyle
+çalışmayan performans adımının ilk gözlenen sonucudur.
+
+İlk ekran gözlemcisi, sonucu alındıktan sonra da belge yaşı dört saniyeye
+ulaşana kadar her karede düğmenin kutusunu ve atalarının opaklığını okuyordu.
+Kaydırmalı örnekleme ise fontlar hazır olduktan 600 ms sonra başlıyordu.
+Böylece artık kullanılmayan stil/düzen okumaları performans ölçümüne ek iş
+katıyordu. Sonuç alınırken gözlemci artık durdurulur ve bekleyen RAF iptal
+edilir. Sonuç alanları, eksik opaklık/tıklanabilirlik RED kontrolleri,
+örnekleme süresi, kaydırma yolu, 22 ms bütçesi ve ürün motoru değişmedi.
+
+Hedefli kontrol, eski betikte sonuç alındıktan sonra bir RAF kaldığını
+(RED), düzeltmede ise bekleyen RAF ve durdurma sonrası düzen okuması
+sayısının sıfır olduğunu gösterdi. Opaklığı sıfır olan düğme hem 500 ms'de
+hem dört saniyelik süre dolduğunda mevcut iki RED bulgusunu vermeye devam
+etti. Betik sözdizimi ve Prettier kontrolü geçti.
+
+Aynı yerel ürün sunucusunda, başka tarayıcı ölçümü çalışmazken, 320×480 ve
+CPU ×4 ile sıralı bir önce/sonra karşılaştırması yapıldı:
+
+| Ölçüm | Önce | Sonra |
+| --- | --- | --- |
+| Kare sayısı | 237 | 239 |
+| p95 | 16,8 ms | 16,8 ms |
+| En uzun kare | 66,6 ms | 33,3 ms |
+| 50 ms üstü kare | 1 | 0 |
+| Derece | full | full |
+| Bulgu | 0 | 0 |
+
+Bu karşılaştırma Ubuntu'daki p95 hatasını yeniden üretmedi. Tek koşunun
+maksimum farkı performans kazanımı kanıtı sayılmaz; düzeltme, ölçümün kendi
+kullanılmayan işini kaldırır. Linux p95'in düzeldiği iddiası yeni CI sonucu
+olmadan kurulamaz. Geri alma yalnız bu betik değişikliğini ve bu kaydı kapsar.
