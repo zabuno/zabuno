@@ -39,7 +39,7 @@
      `<details>`tir, betiksiz çalışır ve içindeki her bağlantı sunucu
      HTML'inde ZATEN durur. Bu dosyada tek bir `max-*` bastırması, tek bir
      "mobilde gizle" ve tek bir kırılma noktası jetonu yoktur (`MP-05`). --}}
-<footer class="site-footer">
+<footer class="site-footer"{!! $lang->chromeAttributes() !!}>
     {{-- 1. MARKA SATIRI. Ürünün ne olduğunu söyleyen tek cümle katalogdan
          gelir; kimin sattığını 5. satır söyler. --}}
     <div class="site-shell-inner site-footer-row site-footer-brand">

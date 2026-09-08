@@ -6,7 +6,6 @@ namespace App\Http\Controllers\PublicSite;
 
 use App\Http\Controllers\Controller;
 use App\Support\Contact\ResponseCommitment;
-use App\Support\Localization\SiteText;
 use App\Support\Site\InvestorDossier;
 use App\Support\Site\PublicPlans;
 use App\Support\Site\SiteShell;
@@ -77,8 +76,16 @@ final class ShowInvestorPageController extends Controller
         $path = rtrim($request->getPathInfo(), '/');
         [$view, $pageKey] = self::PAGES[$path] ?? self::PAGES['/investors'];
 
-        $locale = SiteText::pick($request->getPreferredLanguage(['en', 'tr']));
         $shell = $this->shell->context($request, $pageKey, $path);
+
+        /*
+            DİL KABUKTAN GELİR, burada İKİNCİ KEZ pazarlık edilmez (FF-249).
+
+            Kabuğun seçtiği dil zaten SUNULAN bir dildir (`PageLanguage`,
+            `i18n.shipped_locales`); elle yazılmış ikinci bir liste, aynı
+            ekranda iki dil üretiyordu ve ölçüldü.
+        */
+        $locale = $shell['lang']->ui;
         $facts = $this->dossier->facts($locale);
 
         return view($view, $shell + [

@@ -84,7 +84,6 @@ final class ShowCorporatePageController extends Controller
             abort(404);
         }
 
-        $locale = SiteText::pick($page->locale);
         $stage = $delivery->stage;
 
         /*
@@ -100,6 +99,18 @@ final class ShowCorporatePageController extends Controller
         // bir sayfa `/tr/urun/qr-menu/`den başka bir yola taşınsa bile
         // geçmiş raporlar ikiye bölünmemeli (`docs/100` Faz 3).
         $shell = $this->shell->context($request, $page->page_key, $page->canonical_path, $page->locale);
+
+        /*
+            AŞAMA ETİKETİ SAYFANIN DEĞİL, ÜRÜNÜN dilindedir (FF-249).
+
+            "Hazırlanıyor" bir kurumsal sayfanın YAZILMIŞ metni değil, ürünün
+            kendi etiketidir ve katalogdan gelir; katalog ise yalnız sunulan
+            dillerde tamdır (`i18n.shipped_locales`). Burada `$page->locale`
+            kullanılıyordu: `/tr/…` altındaki bir kayıt, Türkçe kataloğun 227
+            metninden 135'i boşken yarım Türkçe bir kabuk çizerdi. Sayfanın
+            kendi dili `<html lang>`de duruyor ve orada doğrudur.
+        */
+        $locale = $shell['lang']->ui;
 
         /*
             `mode === 'content'` ise metnin VAR OLDUĞU zaten kararın içinde:

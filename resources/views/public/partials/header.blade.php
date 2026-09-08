@@ -41,7 +41,7 @@
      düğmesidir, klavyeyle çalışır, durumunu ekran okuyucuya söyler ve betik
      olmadan açılır.
      Kapı: `SHELL-SINGLE-SOURCE-04` sayfayı betiksiz çizip her hedefi arar. --}}
-<header class="site-header">
+<header class="site-header"{!! $lang->chromeAttributes() !!}>
     <div class="dz-navbar site-shell-inner site-header-bar">
         <a href="/" class="site-brand">{{ $st['brand'] }}</a>
 
