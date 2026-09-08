@@ -97,7 +97,11 @@
     --zc-glass-blurred: var(--zc-deep-raised);
     flex: 1 1 24rem;
     min-inline-size: 0;
-    padding: clamp(1rem, 2vw, 2rem);
+    /* Dolgu alt sınırı 1 rem'den 0,875'e indi: kart ZATEN bir ölçü kabının
+       (`site-measure-stage`) içinde duruyor ve iki dolgu ÜST ÜSTE biniyor
+       (`docs/117` K2). Ölçülen kayıp iki tarafta 4'er piksel, yani dar
+       ekranda iki sütunun arasındaki nefesin yarısı kadar. */
+    padding: clamp(0.875rem, 2vw, 2rem);
     border-radius: var(--zc-radius-xl);
     border-block-start: 2px solid var(--zc-deep-accent);
 }
@@ -109,26 +113,68 @@
     line-height: 1.2;
 }
 
+/*
+    ÜRÜN HARİTASI DAR EKRANDA İKİ SÜTUN (`docs/118` E3).
+
+    ── ÖLÇÜLDÜ (2026-09-08, 390×844, Chrome) ──
+
+    Kart 565 piksel, kahraman 914 piksel ediyordu — yani ilk ekranın iki
+    katından fazlası tek bir özete gidiyordu. Sebep `auto-fit`ti:
+    `minmax(min(100%, 10rem), 1fr)` iki sütun için 320 piksel + boşluk
+    istiyor, kartın içinde 330 piksel var ve 16 pikselik boşlukla toplam
+    336 — yani 390'da bile ızgara TEK sütuna iniyordu. Altı adım alt alta.
+
+    ── NEDEN SİLMEK DEĞİL SIKIŞTIRMAK ──
+
+    Altı adımın hiçbiri atılmadı ve atılamazdı: aynı altı başlık birkaç
+    santim aşağıda kendi bandında (`home-rail`) gövdeleriyle birlikte
+    tekrar ediyor, yani kahramandaki liste o bandın İÇİNDEKİLERİNİ haber
+    veriyor. Yarısını silmek, haberi yarım bırakırdı; bandın tamamını
+    beklemek ise ziyaretçiyi 900 piksel aşağı iterdi.
+
+    Sabit iki sütun bir kırılma noktası DEĞİLDİR: `1fr` her genişlikte
+    tanımlıdır, 320'de sütun 128 pikseldir ve geniş ekranda kendiliğinden
+    açılır. `auto-fit` ise ara genişliklerde (kartın tam kanadığı ~700
+    piksel civarı) beş sütuna kadar çıkıp adımları birer sözcüğe
+    kırpıyordu.
+
+    ── NUMARA KENDİ SATIRINI YEMİYOR ──
+
+    Rozet eskiden `flex-direction: column` ile başlığın ÜSTÜNDE duruyordu:
+    altı adımda altı satır, yani boşluklarla birlikte ~130 piksel yalnız
+    iki haneli sayılara gidiyordu. Şimdi satırın başında akıyor ve yalnız
+    İLK satırın 28 pikselini kullanıyor. Ekran okuyucu için değişen bir şey
+    yok — rozet `aria-hidden`, sıra `<ol>`den okunuyor.
+*/
 .home-product-map-flow {
     list-style: none;
-    margin: var(--space-5) 0;
+    /* Ritim de cihaza göre daralır: 320'de 12, geniş ekranda 32 piksel.
+       Sabit `--space-5` (24) dar ekranda iki kez ödeniyordu. */
+    margin-block: clamp(var(--space-3), 2.5vw, var(--space-6));
+    margin-inline: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
-    gap: var(--space-4);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(var(--space-2), 2vw, var(--space-4)) clamp(var(--space-2), 1.5vw, var(--space-4));
 }
 
 .home-product-map-flow li {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
+    /* Akış kipi: rozet ve başlık AYNI satırda başlar, başlık sarınca
+       sütunun tamamını kullanır. `flex` burada olamaz — flex kutusu rozeti
+       başlıktan ayrı bir kutu yapar ve sarma kazancı kaybolur. */
+    display: block;
     border-inline-start: 1px solid var(--zc-edge-lit);
-    padding-inline-start: var(--space-3);
+    padding-inline-start: clamp(var(--space-2), 1vw, var(--space-3));
     font-weight: var(--zc-weight-strong);
+    line-height: 1.35;
     overflow-wrap: anywhere;
+    text-wrap: pretty;
 }
 
 .home-product-map-index {
+    /* Mantıksal kenar: sağdan sola yazılan bir dilde rozet kendiliğinden
+       satırın sağ başına geçer. */
+    margin-inline-end: var(--space-2);
     font-size: var(--zc-eyebrow);
     font-variant-numeric: tabular-nums;
     color: var(--zc-deep-accent);
@@ -406,10 +452,47 @@
         background: var(--site-desktop-ink);
     }
 
+    /*
+        METİN VE KART DENGESİ (ÖLÇÜLDÜ: 2026-09-08, Chrome, 1024→1440).
+
+        ── ÖLÇÜLEN KUSUR ──
+
+        Metin sütunu görüntü alanının PAYIYLA (`1.25fr`) büyüyordu; içindeki
+        her şey ise `ch` ile SABİT kapaklıydı (başlık 11ch, giriş 38ch,
+        dipnot 42ch). İki büyüme yasası aynı sütunda çakışınca sütunun boş
+        kalan kısmı ekranla birlikte açılıyordu:
+
+          1024 px → sütun 515, en geniş metin 378 → 137 piksel BOŞLUK
+          1280 px → sütun 645, en geniş metin 378 → 267 piksel
+          1440 px → sütun 727, en geniş metin 409 → 318 piksel
+
+        Yani ekran genişledikçe kazanılan yer okunan metne de karta da
+        gitmiyordu; ikisinin ARASINDA bir deliğe gidiyordu. Kart ise tam ters
+        yönde sıkışıyordu: 64 rem'de 412 piksel, yani altı adımın iki sütunu
+        için kalan en dar hâl.
+
+        ── KARAR ──
+
+        Pay eşitlendi (1fr/1fr) ve metnin kendi kapakları sütununa yaklaştı.
+        İki sütun HÂLÂ kabın iki kenarına dayanıyor — bu önemli: kahramanın
+        sol kenarı, altındaki her bandın (`site-measure-page`) sol kenarıyla
+        aynı çizgide kalmalı. Ortalamak deliği kapatırdı ama kahramanı
+        sayfanın geri kalanından kaydırırdı.
+
+        ── ÖLÇÜLEN SONUÇ (aynı koşucu, değişiklikten sonra) ──
+
+          1024 px → sütun 467, en geniş metin 415 →  52 piksel (137'den)
+          1280 px → sütun 586, en geniş metin 472 → 114 piksel (267'den)
+          1440 px → sütun 660, en geniş metin 531 → 129 piksel (318'den)
+
+        Kart aynı genişliklerde 412→467, 516→586, 582→660 piksele çıktı;
+        başlık 64 rem'de dört satırdan üçe indi (228→171 piksel). Dar ekran
+        tabanı bu bloğun DIŞINDA ve değişmedi.
+    */
     .home-hero-inner {
         display: grid;
-        grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
-        gap: clamp(2rem, 4vw, 5rem);
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: clamp(2rem, 3.2vw, 4.5rem);
         padding-block: 5rem;
         align-items: center;
     }
@@ -418,13 +501,18 @@
         font-size: clamp(3.5rem, 5.3vw, 5.75rem);
         line-height: 1.02;
         letter-spacing: -0.065em;
-        max-inline-size: 11ch;
+        /* 11ch, sütununun yarısını kullanan bir afiş ölçüsüydü. 13ch hâlâ
+           bir afiştir — `text-wrap: balance` satırları dengelemeye devam
+           ediyor — ama artık kendi sütununu okuyor. */
+        max-inline-size: 13ch;
         color: var(--site-desktop-cream);
         text-wrap: balance;
     }
 
     .home-hero .site-lede {
-        max-inline-size: 38ch;
+        /* Giriş ve dipnot AYNI ölçüde: iki farklı kapak, metin bloğunun sağ
+           kenarını 13 piksel tırtıklı bırakıyordu (ölçüldü: 365 ve 378). */
+        max-inline-size: 44ch;
         font-size: clamp(1.125rem, 1.4vw, 1.375rem);
         line-height: 1.6;
         color: var(--site-desktop-muted);
@@ -491,7 +579,7 @@
 
     .home-hero-note {
         color: var(--site-desktop-muted);
-        max-inline-size: 42ch;
+        max-inline-size: 44ch;
     }
 
     .home-hero .scene-canvas {
