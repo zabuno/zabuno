@@ -416,6 +416,34 @@ try {
                 await cdp(ws, 'Page.navigate', { url: `${BASE}${page.path}` });
                 await settle(ws, 700);
 
+                /*
+                    SAYFA GERÇEKTEN ÇİZİLDİ Mİ.
+
+                    Ölçüldü (2026-09-08): geliştirme sunucusu koşunun ortasında
+                    öldü ve Chrome her adreste aynı hata sayfasını gösterdi.
+                    Kapı bunu bir GERİLEME olarak bildirdi — her görünüm için
+                    "tabandan 250/255 saptı" dedi. Yön doğruydu (kırmızı yandı)
+                    ama SEBEP yanlıştı ve yanlış sebep, yanlış yerde saat
+                    harcatır: taban güncellenirdi ve hata sayfası taban olurdu.
+
+                    Kabuğun kökü aranıyor: bir hata sayfasında o yok. Ölçüm
+                    yapılamadıysa sonuç "geçti" de değil "gerileme" de değil,
+                    BİLİNMİYOR.
+                */
+                const rendered = await cdp(ws, 'Runtime.evaluate', {
+                    expression: 'document.querySelector(".site-shell") !== null',
+                    returnByValue: true,
+                });
+
+                if (rendered.result.value !== true) {
+                    findings.push(
+                        `SAHNE-GORSEL: [${view}] sayfa ÇİZİLMEDİ — kurumsal kabuk yok. ` +
+                            'Sunucu ayakta mı? Ölçüm yapılmadı; bu bir gerileme DEĞİL.',
+                    );
+                    report.views[view] = { compared: false, drift: null, reason: 'not-rendered' };
+                    continue;
+                }
+
                 const first = await cdp(ws, 'Page.captureScreenshot', { format: 'png' });
                 const firstImage = decodePng(Buffer.from(first.data, 'base64'));
                 const firstSignature = signature(firstImage);

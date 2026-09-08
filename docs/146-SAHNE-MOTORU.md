@@ -767,6 +767,19 @@ Sunucunun payı 204–371 ms arasında dalgalanırken sahnenin payı **her koşu
 bütçesi payı: bir giriş animasyonunun kuyruğuna girmek 700 ms'lik geçişiyle
 burayı anında aşar. Toplam süre raporda duruyor ama kapı değil.
 
+### 12.4b Kapı, ÖLÇEMEDİĞİNDE "gerileme" demiyor
+
+Bu da bir kaza sonucu ölçüldü. Geliştirme sunucusu bir koşunun ortasında öldü
+ve Chrome her adreste aynı hata sayfasını gösterdi. `scene-visual-gate` bunu
+bir GERİLEME olarak bildirdi: kırk görünümün her biri için "tabandan 250/255
+saptı". Yön doğruydu — kapı kırmızı yandı — ama SEBEP yanlıştı, ve yanlış
+sebep en pahalı hatayı davet eder: taban güncellenir ve **hata sayfası taban
+olur**.
+
+Kapı artık her karede kurumsal kabuğun kökünü (`.site-shell`) arıyor. Bulamazsa
+o görünüm karşılaştırılmıyor; bulgu "gerileme" değil **"sayfa çizilmedi —
+sunucu ayakta mı"**. Ölçüm yapılamadıysa sonuç geçti de değildir, gerileme de.
+
 ### 12.5 Üç kapı CI'da koşuyor
 
 `.github/workflows/ci.yml`, `npm run build`ten ve mobil denetimden sonra:
@@ -928,11 +941,11 @@ paketinki — ve ikisinin arasında `php artisan view:clear` koştu.
 
 | Ölçüt | `origin/main` | Bu paketle | Fark | Tavan |
 | --- | --- | --- | --- | --- |
-| Kurumsal betik (gzip) | 4.700 | **4.700** | **+0** | 6.144 |
-| Kurumsal stil (gzip) | 35.275 | **35.373** | **+98** | 40.960 |
+| Kurumsal betik (gzip) | 4.983 | **4.983** | **+0** | 6.144 |
+| Kurumsal stil (gzip) | 35.385 | **35.485** | **+100** | 40.960 |
 
 Betik hiç büyümedi ve bu tesadüf değil: Döngü 3 motora tek satır eklemedi.
-Sakin bant bir YOKLUKTUR — çizilmeyen katmanın kodu da yoktur. Stildeki 98 bayt
+Sakin bant bir YOKLUKTUR — çizilmeyen katmanın kodu da yoktur. Stildeki 100 bayt
 beş kuralın tamamı: `.site-prologue-calm`, `.site-prologue-inset`,
 `.site-prologue-inset .scene-canvas`, `.scene-still`, `.site-inline-action`.
 
