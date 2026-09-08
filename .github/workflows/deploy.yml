@@ -22,19 +22,48 @@ on:
 
 # Registry'ye yazma yetkisi YOK ve gerekmiyor: imaj GHCR'a itilmez, var
 # olan SSH kanalindan sunucuya aktarilir (bkz. `docs/42`).
+#
+# `actions: read` YAZMA DEĞİL OKUMA yetkisidir ve tek bir soru için var:
+# "main'in ucundaki commit'in CI'ı geçti mi?". Bu soru sorulamazsa dağıtım
+# hangi commit'i yayına alacağını bilemez (bkz. `docs/149`).
 permissions:
   contents: read
+  actions: read
 
 concurrency:
-  # Aynı anda iki deploy, sunucuda yarış demektir.
+  # Aynı anda iki deploy, sunucuda yarış demektir: ikisi de aynı
+  # `.image.env`'i yazar ve aynı yığını yeniden kurar.
   group: deploy-production
+
+  # `cancel-in-progress: false` BİLİNÇLİ.
+  #
+  # `true` olsaydı, yeni bir dağıtım koşarken devam edeni ÖLDÜRÜRDÜ — ve
+  # devam eden, tam da imajı SSH ile aktarıyor ya da `docker compose up`
+  # çalıştırıyor olabilir. Yarıda kesilmiş bir `up`, üretimde yarım bir
+  # yığın bırakır: bazı konteynerler yeni imajda, bazıları eskisinde.
+  # Hızlanmak için üretimi kırma hakkımız yok.
+  #
+  # `false` ile GitHub sırayı şöyle tutar: koşan biter, bekleyenler
+  # arasından yalnız EN YENİSİ hayatta kalır (yeni bir koşum kuyruğa
+  # girdiğinde önceki bekleyen iptal edilir). Yani sıra beklemek, eski bir
+  # commit'in yayına çıkmasına yol açmaz — üstelik hangi commit'in
+  # dağıtılacağı koşum BAŞLADIĞINDA çözülür (`Hangi commit yayına
+  # alınmalı?`), kuyruğa girdiğinde değil.
   cancel-in-progress: false
 
 jobs:
   guard:
     runs-on: ubuntu-latest
     outputs:
-      should_deploy: ${{ steps.decide.outputs.should_deploy }}
+      # Son söz `forward` adımınındır: geriye giden bir yayın burada
+      # durdurulur. O adım atlandıysa (sunucu yok, CI geçmedi) `decide`'ın
+      # kararı geçerlidir.
+      should_deploy: ${{ steps.forward.outputs.should_deploy || steps.decide.outputs.should_deploy }}
+      # Yayına alınacak commit — tetikleyen koşumun commit'i DEĞİL,
+      # dağıtılabilir en yeni commit.
+      target_sha: ${{ steps.target.outputs.sha }}
+      # Kararın verildiği andaki `main` ucu; kanıt adımı bunu bildirir.
+      tip_sha: ${{ steps.target.outputs.tip }}
     steps:
       - name: Sunucu tanımlı mı?
         id: server
@@ -106,6 +135,172 @@ jobs:
 
           echo "should_deploy=true" >> "$GITHUB_OUTPUT"
 
+      # DAĞITILAN COMMIT, TETİKLEYEN KOŞUMUN COMMIT'İ OLAMAZ — `docs/149`.
+      #
+      # ÖLÇÜLDÜ (2026-09-08, dağıtım koşumu 34210847469): koşum GitHub
+      # arayüzünde `8085ab18`'e ait görünüyordu ama yayına aldığı
+      # `ad02fc21`'di — main'in ucu değil, bir öncekiydi. `/up/build` de
+      # bunu doğruladı. Aynı gün beş kez oldu.
+      #
+      # Sebep: `workflow_run` HER CI koşumu için ayrı tetiklenir ve
+      # tetikleyen koşumun commit'ini taşır. Arka arkaya birleşmelerde
+      # koşumlar birbirini geçer; ESKİ bir commit'in CI'ı, YENİ bir
+      # commit'in dağıtımından SONRA bitebilir ve onun dağıtımı canlıyı
+      # geriye alır. Sonuç: en son birleşme, ancak BİR SONRAKİ birleşme
+      # geldiğinde yayına çıkar. Günün son birleşmesi gece boyu yayında
+      # olmaz — ve ertesi gün bir sonraki birleşme kusuru kendiliğinden
+      # örter, yani kusur kendini gizler.
+      #
+      # Düzeltme: hedef, tetikleyici değil **dağıtılabilir en yeni
+      # commit**tir. `main`'in ucu CI'dan GEÇMİŞSE o, geçmemişse elimizdeki
+      # en yeni yeşil commit olan tetikleyen commit yayına alınır.
+      #
+      # Elle tetikleme BU YOLA GİRMEZ: `workflow_dispatch` geri alma
+      # yoludur ve orada eski bir commit'i seçmek İSTENİR. Ucun peşine
+      # takılsaydı, geri alma sessizce geri alınamaz olurdu.
+      - name: Hangi commit yayına alınmalı?
+        id: target
+        if: steps.decide.outputs.should_deploy == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TRIGGER_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+          BRANCH: ${{ github.event.workflow_run.head_branch || github.ref_name }}
+        run: |
+          set -uo pipefail
+
+          short() { printf '%s' "$(printf '%s' "$1" | cut -c1-8)"; }
+
+          if [ "${GITHUB_EVENT_NAME}" != "workflow_run" ]; then
+            # Elle tetikleme: seçilen ref neyse o. Geri alma yolu budur.
+            echo "sha=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+            echo "tip=" >> "$GITHUB_OUTPUT"
+            echo "Elle tetikleme: $(short "${GITHUB_SHA}") yayına alınacak."
+            exit 0
+          fi
+
+          tip="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${BRANCH}" --jq '.sha' 2>/dev/null || true)"
+          target="${TRIGGER_SHA}"
+
+          if [ -n "${tip}" ] && [ "${tip}" != "${TRIGGER_SHA}" ]; then
+            # Uç başka bir commit. Yalnız CI'ı GEÇMİŞSE alınabilir; yoksa
+            # test edilmemiş kod yayına çıkardı ve `workflow_run`'ın bütün
+            # varlık sebebi ortadan kalkardı.
+            green="$(gh api \
+              "repos/${GITHUB_REPOSITORY}/actions/workflows/ci.yml/runs?head_sha=${tip}&status=success&per_page=1" \
+              --jq '.workflow_runs | length' 2>/dev/null || true)"
+
+            if [ "${green:-0}" -gt 0 ] 2>/dev/null; then
+              target="${tip}"
+              echo "::notice::Ucun ($(short "${tip}")) CI'ı geçmiş; tetikleyen $(short "${TRIGGER_SHA}") yerine uç yayına alınıyor."
+            else
+              echo "::notice::Ucun ($(short "${tip}")) CI'ı henüz geçmedi; dağıtılabilir en yeni commit $(short "${TRIGGER_SHA}")."
+            fi
+          fi
+
+          echo "sha=${target}" >> "$GITHUB_OUTPUT"
+          echo "tip=${tip}" >> "$GITHUB_OUTPUT"
+          echo "Yayına alınacak: $(short "${target}") (uç: $(short "${tip}"))"
+
+      # GERİYE GİTME YASAK — `docs/149`.
+      #
+      # Yukarıdaki çözüm yarışın çoğunu kapatır ama hepsini kapatamaz:
+      # koşumlar arasında saniyeler vardır ve API'nin cevabı bir an
+      # öncesine aittir. Bu yüzden karar, canlının KENDİ söylediği commit
+      # ile de ölçülür — `/up/build` (`docs/142`).
+      #
+      # Hedef, canlıda çalışanın ATASI ise (yani daha eski) dağıtım
+      # YAPILMAZ. Ata olup olmadığını GitHub'ın karşılaştırma ucu söyler:
+      # `compare/<canlı>...<hedef>` → `behind`, `git merge-base
+      # --is-ancestor <hedef> <canlı>` ile aynı ölçüm, ama checkout
+      # gerektirmez.
+      #
+      # KIRMIZI DEĞİL, DURDURMA. Ortada arıza yok: canlı zaten daha yeni
+      # kodu çalıştırıyor ve yapılacak bir iş kalmamış. Her yarışta kırmızı
+      # bir X basmak, bu deponun başka yerlerde bilerek kaçındığı
+      # "kırmızıyı görmezden gel" alışkanlığını yaratırdı. Ama sessiz de
+      # kalmaz: uyarı ve koşum özeti yazılır.
+      #
+      # Elle tetikleme yine muaf: geri alma TANIMI GEREĞİ geriye gitmektir.
+      - name: Geriye gitme yasak
+        id: forward
+        if: steps.decide.outputs.should_deploy == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          # Yeni secret İSTENMEZ: var olan sağlık adresinden kök adres
+          # türetilir. ADRES HİÇBİR YERE BASILMAZ — GitHub yalnız secret'ın
+          # KENDİ değerini maskeler, ondan türetilmiş bir parçayı değil.
+          DEPLOY_HEALTH_URL: ${{ secrets.DEPLOY_HEALTH_URL }}
+          TARGET_SHA: ${{ steps.target.outputs.sha }}
+        run: |
+          set -uo pipefail
+
+          short() {
+            if [ -z "$1" ]; then printf 'BİLİNMİYOR'; else printf '%s' "$(printf '%s' "$1" | cut -c1-8)"; fi
+          }
+
+          if [ "${GITHUB_EVENT_NAME}" != "workflow_run" ]; then
+            echo "Elle tetikleme: geri alma yolu; ileri/geri kontrolü uygulanmaz."
+            echo "should_deploy=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          origin="$(printf '%s' "${DEPLOY_HEALTH_URL}" | sed -E 's#^(https?://[^/]+).*#\1#')"
+
+          live=""
+          live_assets=""
+          if [ -n "${origin}" ]; then
+            proof="$(curl -fsS --max-time 15 "${origin}/up/build" 2>/dev/null || true)"
+            live="$(printf '%s' "${proof}" | jq -r '.revision // ""' 2>/dev/null || true)"
+            live_assets="$(printf '%s' "${proof}" | jq -r '.assets_revision // ""' 2>/dev/null || true)"
+          fi
+
+          # BİLİNMEYEN UYDURULMAZ ve bilinmeyen bir şey yüzünden dağıtım
+          # kilitlenmez. Canlı sürüm okunamıyorsa (ilk kurulum, uç geçici
+          # olarak cevapsız) karşılaştırma YAPILAMAZ; dağıtım sürer ve
+          # kanıt adımı zaten sonucu ölçer.
+          if [ -z "${live}" ] || [ "${live}" = "null" ]; then
+            echo "::notice::Canlı sürüm okunamadı; ileri/geri karşılaştırması yapılamadı. Dağıtım sürüyor, sonucu kanıt adımı ölçecek."
+            echo "should_deploy=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # İKİ YARI DA AYNI OLMALI. Yalnız `.revision`'a bakıp atlamak,
+          # "PHP güncel, varlıklar bayat" hâlini (`docs/142` §2) onarılamaz
+          # kılardı: yeniden dağıtım her seferinde "zaten canlıda" diyerek
+          # atlanır, bayat CSS orada kalırdı.
+          if [ "${live}" = "${TARGET_SHA}" ] && [ "${live_assets}" = "${TARGET_SHA}" ]; then
+            echo "::notice::Canlı zaten $(short "${TARGET_SHA}") çalıştırıyor; yapılacak iş yok."
+            {
+              echo "### Yapılacak iş yok"
+              echo
+              echo "Canlı uygulama zaten \`$(short "${TARGET_SHA}")\` çalıştırıyor. Bu koşum hiçbir şeyi değiştirmedi."
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "should_deploy=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          status="$(gh api "repos/${GITHUB_REPOSITORY}/compare/${live}...${TARGET_SHA}" --jq '.status' 2>/dev/null || true)"
+
+          if [ "${status}" = "behind" ]; then
+            echo "::warning::DAĞITIM DURDURULDU — hedef $(short "${TARGET_SHA}"), canlıda çalışan $(short "${live}") commit'inden ESKİ. Canlı geriye alınmadı."
+            {
+              echo "### Dağıtım durduruldu — geriye gidecekti"
+              echo
+              echo "| | commit |"
+              echo "| --- | --- |"
+              echo "| Bu koşumun yayına alacağı | \`$(short "${TARGET_SHA}")\` |"
+              echo "| Canlıda çalışan | \`$(short "${live}")\` |"
+              echo
+              echo "Hedef, canlıda çalışanın **atası** — yani daha eski. Yayına alınsaydı site geriye giderdi."
+              echo "Bu bir arıza **değil**: canlı zaten daha yeni kodu çalıştırıyor. Ayrıntı: \`docs/149\`."
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "should_deploy=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "İleri gidiliyor: $(short "${live}") → $(short "${TARGET_SHA}") (karşılaştırma: ${status:-BİLİNMİYOR})."
+          echo "should_deploy=true" >> "$GITHUB_OUTPUT"
+
   deploy:
     needs: guard
     if: needs.guard.outputs.should_deploy == 'true'
@@ -115,7 +310,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          # Tetikleyen koşumun commit'i DEĞİL, kapının çözdüğü hedef.
+          ref: ${{ needs.guard.outputs.target_sha }}
 
       - name: Set up Buildx
         uses: docker/setup-buildx-action@v3
@@ -124,8 +320,11 @@ jobs:
         id: meta
         run: |
           # `workflow_run` bağlamında GITHUB_SHA varsayılan dalın ucudur;
-          # deploy edilmesi gereken, CI'ın GEÇTİĞİ commit'tir.
-          sha="${{ github.event.workflow_run.head_sha || github.sha }}"
+          # deploy edilmesi gereken, CI'ın GEÇTİĞİ EN YENİ commit'tir — ve
+          # onu kapı çözdü. Burada yeniden hesaplanmaz: iki yerde iki kez
+          # hesaplanan bir değer, er geç iki farklı cevap verir ve checkout
+          # bir commit'ten, etiket başkasından gelir (`docs/149`).
+          sha="${{ needs.guard.outputs.target_sha }}"
           echo "sha=${sha}" >> "$GITHUB_OUTPUT"
           # Etiket yerel: registry adı YOK. İmaj bir kayıt defterine
           # uğramadan, doğrudan sunucuya gider.
@@ -308,7 +507,11 @@ jobs:
           # hâlin aynısı, ama var sanıldığı için daha kötüsü.
           DEPLOY_HEALTH_URL: ${{ secrets.DEPLOY_HEALTH_URL }}
           EXPECTED_SHA: ${{ steps.meta.outputs.sha }}
-          BRANCH_TIP_SHA: ${{ github.sha }}
+          # `github.sha` DEĞİL. Uç, kararın verildiği anda ÖLÇÜLDÜ; olayın
+          # taşıdığı `github.sha` ise koşum kuyrukta beklerken eskimiş
+          # olabilir. Uyarının anlamı "bu koşum ucu almadı"dır ve o soru
+          # ancak ölçülmüş uçla doğru cevaplanır.
+          BRANCH_TIP_SHA: ${{ needs.guard.outputs.tip_sha || github.sha }}
         run: |
           set -uo pipefail
 
@@ -381,17 +584,23 @@ jobs:
 
           # ESKİ BİR COMMIT'İN BAŞARILI DAĞITIMI "SİTE GÜNCEL" DEMEK DEĞİL.
           #
-          # `workflow_run` her CI koşumu için ayrı tetiklenir; yeni bir
-          # commit main'e girdikten SONRA eski bir commit'in CI'ı bitebilir
-          # ve onun dağıtımı yeşil tamamlanır. 2026-09-08 02:16'da tam
-          # olarak bu oldu. Bu bir arıza DEĞİL — daha yeni bir dağıtım
-          # zaten yolda — ama sessiz kalırsa sahibi yeşili "birleştirdiğim
-          # şey yayında" diye okur. Kırmızı değil, söylenmiş olur.
+          # BU UYARI KALDIRILMAZ. Kusuru görünür kılan tek şey oydu: 8 Eylül
+          # 2026'da beş dağıtım ucun gerisinde kaldı ve bunu söyleyen başka
+          # hiçbir şey yoktu (`docs/149`).
+          #
+          # Anlamı DARALDI. Eskiden "yayına alınan, tetikleyen koşumun
+          # commit'iydi" demekti ve bu, ucun HİÇ yayına çıkmaması anlamına
+          # gelebiliyordu. Artık hedef, dağıtılabilir en yeni commit'tir;
+          # bu uyarı yalnız ucun CI'ının HENÜZ bitmemiş olduğunu söyler.
+          # Yani kalıcı bir gerilik değil, geçici bir gerilik: ucun kendi
+          # dağıtımı onu alacak ve başka bir birleşme GEREKMEYECEK.
+          #
+          # Kırmızı değil — yapacak bir iş yoktu — ama sessiz de değil.
           if [ -n "$BRANCH_TIP_SHA" ] && [ "$BRANCH_TIP_SHA" != "$EXPECTED_SHA" ]; then
-            echo "::warning::Bu dağıtım $(short "$EXPECTED_SHA") commit'ini yayına aldı, ama main'in ucu $(short "$BRANCH_TIP_SHA"). Site HENÜZ en son birleşmeyi çalıştırmıyor; onun dağıtımı kendi CI'ı bitince koşacak."
+            echo "::warning::Bu dağıtım $(short "$EXPECTED_SHA") commit'ini yayına aldı, ama main'in ucu $(short "$BRANCH_TIP_SHA"). Site HENÜZ en son birleşmeyi çalıştırmıyor; ucun CI'ı bitmemiş. Onu kendi dağıtımı alacak; yeni bir birleşme GEREKMEZ."
             {
               echo
-              echo "> Bu koşum **main'in ucunu değil**, \`$(short "$EXPECTED_SHA")\` commit'ini yayına aldı."
-              echo "> En son birleşme (\`$(short "$BRANCH_TIP_SHA")\`) kendi CI'ı bitince ayrı bir dağıtımla gelecek."
+              echo "> Bu koşum **main'in ucunu değil**, \`$(short "$EXPECTED_SHA")\` commit'ini yayına aldı — ucun (\`$(short "$BRANCH_TIP_SHA")\`) CI'ı henüz bitmemişti."
+              echo "> Uç, kendi CI'ı bitince ayrı bir dağıtımla gelecek. **Yeni bir birleşme gerekmez**; beklemek yeterli (\`docs/149\`)."
             } >> "$GITHUB_STEP_SUMMARY"
           fi
