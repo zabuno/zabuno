@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Support\Site;
 
 use App\Domain\Url\CanonicalUrl;
+use App\Support\Localization\PageLanguage;
 use App\Support\Localization\SiteText;
 use Illuminate\Http\Request;
 
@@ -34,25 +35,40 @@ final class SiteShell
     /**
      * @param  string  $pageKey  Ölçüm kimliği; adresten TÜREMEZ (`docs/100` Faz 3).
      * @param  string|null  $canonicalPath  Kütükten çizilen sayfalarda kaydın kendi yolu.
-     * @param  string|null  $pageLocale  Kurumsal sayfanın dili ADRESTEN gelir (`docs/118` E4);
-     *                                   yaşayan sayfalarda dil tarayıcıyla pazarlıkla seçilir.
+     * @param  string|null  $contentLocale  Sayfanın YAZILMIŞ metninin dili — kurumsal
+     *                                      kaydın `locale`i (`docs/118` E4) ya da yardım
+     *                                      makalesinin dosya dili. Böyle bir metin yoksa
+     *                                      `null` ve belge dili arayüzünkine eşittir.
      * @return array<string, mixed>
      */
     public function context(
         Request $request,
         string $pageKey,
         ?string $canonicalPath = null,
-        ?string $pageLocale = null,
+        ?string $contentLocale = null,
     ): array {
         /*
-            DİLİN İKİ KAYNAĞI VAR VE İKİSİ DE DOĞRU (`docs/118` E4).
+            DİLİN İKİ KAVRAMI VAR VE İKİSİ DE DOĞRU (`docs/118` E4) — ama
+            kaynağı TEKTİR (`PageLanguage`).
 
-            Kütükten çizilen kurumsal sayfada dil ADRESTEDİR: `/tr/…` Türkçe
-            okunur, ziyaretçinin tarayıcısı ne derse desin. Bugün yayında
-            olan `/pricing` gibi adreslerde dil segmenti yok, dolayısıyla
-            tarayıcıyla pazarlık edilir.
+            Burada şu satır duruyordu:
+
+                SiteText::pick($pageLocale ?? $request->getPreferredLanguage(['en', 'tr']))
+
+            Yani kabuk, uygulamanın zaten yaptığı pazarlığı (`NegotiateLocale`,
+            `i18n.shipped_locales`) görmezden gelip elle yazılmış bir listeyle
+            İKİNCİ bir pazarlık yapıyordu. Ölçülen sonuç (2026-09-08):
+            `shipped_locales` yalnız `en` iken `Accept-Language: tr-TR` ile
+            gelen ana sayfa `<html lang="en">` ilan edip Türkçe gövde
+            basıyordu — üstelik Türkçe `site` kataloğunun 135 metni boş
+            olduğu için gövdenin kendisi de iki dilliydi.
+
+            Artık arayüz dili pazarlıktan gelir, belge dili ise sayfanın
+            YAZILMIŞ metninden; ikisi tek nesnede doğduğu için ayrışamazlar.
         */
-        $locale = SiteText::pick($pageLocale ?? $request->getPreferredLanguage(['en', 'tr']));
+        $language = PageLanguage::for($contentLocale);
+
+        $locale = $language->ui;
 
         $path = $canonicalPath ?? $request->getPathInfo();
 
@@ -69,8 +85,14 @@ final class SiteShell
             'anchorPrefix' => $anchorPrefix,
             'pageKey' => $pageKey,
             'coreModuleCount' => count((array) config('core-modules')),
-            // `null` ise belge dili uygulamanınkine düşer (`docs/89`).
-            'pageLocale' => $pageLocale,
+            /*
+                Kabuk, `<html lang>` için ikinci bir kaynağa DÜŞMEZ. Eskiden
+                şablonda `$pageLocale ?? DocumentLocale::tag()` yazıyordu ve o
+                `??` kusurun kendisiydi: soldaki `null` olduğunda sağdaki,
+                metnin çizildiği dilden BAĞIMSIZ bir değer veriyordu. Artık
+                metnin dili de belgenin dili de bu nesnenin içinde.
+            */
+            'lang' => $language,
             'nav' => $this->navigation->forShell($anchorPrefix, $locale),
         ];
     }

@@ -236,6 +236,7 @@ use App\Infrastructure\Tenancy\Profile\Persistence\EloquentBrandRepository;
 use App\Infrastructure\Tenancy\Profile\Persistence\EloquentLocationRepository;
 use App\Infrastructure\Workspace\EloquentSetupProgress;
 use App\Infrastructure\Workspace\EloquentWorkspaceAuditTrail;
+use App\Support\Localization\PageLanguage;
 use App\Support\Localization\PseudoLocalizer;
 use App\Support\Localization\SiteText;
 use App\Support\Site\HomeStory;
@@ -822,6 +823,29 @@ final class AppServiceProvider extends ServiceProvider
 
             if (! array_key_exists('st', $data)) {
                 $view->with('st', app(SiteText::class)->all());
+            }
+
+            /*
+                SAYFANIN DİLİ DE HER ZAMAN VAR — aynı gerekçe, aynı desen
+                (FF-249).
+
+                Kabuk `<html lang>`i tek bir nesneden yazar ve o nesne
+                geçirilmediğinde sayfa `Undefined variable $lang` ile çökerdi
+                — ölçüldü, görünümü doğrudan çizen tema önyükleme sözleşmesi
+                dört testte kırıldı.
+
+                VARSAYILAN, KUSURU GERİ GETİRMEZ: içerik dili verilmediğinde
+                `PageLanguage` belge dilini arayüzün diline EŞİTLER. Yani
+                varsayılan hâlde ayrışma diye bir şey yoktur; eskiden buradaki
+                boşluk `DocumentLocale::tag()`e düşülerek kapatılıyordu ve
+                kusur tam olarak oradaydı.
+
+                Elle verilen değer KAZANIR: `SiteShell` yazılmış bir metnin
+                dilini (yardım makalesi, `/tr/…` kurumsal sayfa) zaten
+                geçirmiştir.
+            */
+            if (! array_key_exists('lang', $data)) {
+                $view->with('lang', PageLanguage::for());
             }
 
             if (! array_key_exists('plans', $data)) {

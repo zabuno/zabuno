@@ -33,7 +33,7 @@
      olmadan açılır. Yarın bir mega menü, arama ya da hareket eklemek
      serbesttir — o eklemeler bu tabanı SİLEMEZ.
      Kapı: `SHELL-SINGLE-SOURCE-04` sayfayı betiksiz çizip her hedefi arar. --}}
-<header class="site-header">
+<header class="site-header"{!! $lang->chromeAttributes() !!}>
     <div class="dz-navbar site-shell-inner site-header-bar">
         <a href="/" class="site-brand">{{ $st['brand'] }}</a>
 

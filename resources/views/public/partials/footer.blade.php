@@ -34,7 +34,7 @@
      parmakla açılır, betiksiz çalışır ve içindeki her bağlantı HTML'de zaten
      durur (`SHELL-SINGLE-SOURCE-04`). Tek kod yolu — medya sorgusuyla
      gizlenen ikinci bir kopya yok (`docs/118` E2). --}}
-<footer class="site-footer">
+<footer class="site-footer"{!! $lang->chromeAttributes() !!}>
     <div class="site-shell-inner site-footer-inner">
         <div class="site-footer-brand">
             <span class="site-footer-brand-name">{{ $st['brand'] }}</span>
