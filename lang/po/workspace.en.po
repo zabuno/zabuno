@@ -4412,6 +4412,50 @@ msgstr "{count} ×"
 msgid "workspace.orders.queue.count"
 msgstr "{count} waiting"
 
+#: workspace:workspace.orders.queue.desktop.bulkConfirm
+msgid "workspace.orders.queue.desktop.bulkConfirm"
+msgstr "Approve {count}"
+
+#: workspace:workspace.orders.queue.desktop.bulkReason
+msgid "workspace.orders.queue.desktop.bulkReason"
+msgstr "Why are you rejecting these {count} orders?"
+
+#: workspace:workspace.orders.queue.desktop.bulkRegion
+msgid "workspace.orders.queue.desktop.bulkRegion"
+msgstr "Actions for the selected orders"
+
+#: workspace:workspace.orders.queue.desktop.bulkReject
+msgid "workspace.orders.queue.desktop.bulkReject"
+msgstr "Reject {count}"
+
+#: workspace:workspace.orders.queue.desktop.clearSelection
+msgid "workspace.orders.queue.desktop.clearSelection"
+msgstr "Clear selection"
+
+#: workspace:workspace.orders.queue.desktop.detail.empty
+msgid "workspace.orders.queue.desktop.detail.empty"
+msgstr "Pick an order from the list to read its lines here."
+
+#: workspace:workspace.orders.queue.desktop.detail.region
+msgid "workspace.orders.queue.desktop.detail.region"
+msgstr "Selected order"
+
+#: workspace:workspace.orders.queue.desktop.menu
+msgid "workspace.orders.queue.desktop.menu"
+msgstr "Order actions"
+
+#: workspace:workspace.orders.queue.desktop.outcome
+msgid "workspace.orders.queue.desktop.outcome"
+msgstr "{ok} approved, {failed} did not go through."
+
+#: workspace:workspace.orders.queue.desktop.selected
+msgid "workspace.orders.queue.desktop.selected"
+msgstr "{count} selected"
+
+#: workspace:workspace.orders.queue.desktop.shortcuts
+msgid "workspace.orders.queue.desktop.shortcuts"
+msgstr "Arrow keys move · Space selects · Enter approves · R rejects"
+
 #: workspace:workspace.orders.queue.empty.closed.description
 msgid "workspace.orders.queue.empty.closed.description"
 msgstr "Guests can read the menu but cannot send an order. Turn ordering on under Settings."
