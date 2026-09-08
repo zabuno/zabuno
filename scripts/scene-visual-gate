@@ -238,7 +238,9 @@ const STATES = {
 
 /* Yalnız kanıtı kaydedilmiş platform/görünüm çifti varsayılanı değiştirebilir. */
 function selectBaseline(baseline, view, currentPlatform) {
-    return baseline.platformOverrides?.[currentPlatform]?.[view]?.signature ?? baseline.views?.[view];
+    return (
+        baseline.platformOverrides?.[currentPlatform]?.[view]?.signature ?? baseline.views?.[view]
+    );
 }
 
 /* --- PNG çözücü ---------------------------------------------------------
@@ -379,7 +381,9 @@ async function settle(ws, ms) {
 const baseline = existsSync(BASELINE) ? JSON.parse(readFileSync(BASELINE, 'utf8')) : { views: {} };
 
 if (SHOULD_UPDATE && Object.keys(baseline.platformOverrides ?? {}).length > 0) {
-    console.error('SAHNE-GORSEL: --update refused: reviewed platform overrides require a targeted refresh with new provenance.');
+    console.error(
+        'SAHNE-GORSEL: --update refused: reviewed platform overrides require a targeted refresh with new provenance.',
+    );
     process.exit(1);
 }
 
@@ -572,7 +576,9 @@ if (SHOULD_UPDATE && findings.every((finding) => !finding.includes('ölçüm yap
                 cells: { x: CELLS_X, y: CELLS_Y },
                 writtenOn: PLATFORM,
                 views: next.views,
-                ...(baseline.platformOverrides ? { platformOverrides: baseline.platformOverrides } : {}),
+                ...(baseline.platformOverrides
+                    ? { platformOverrides: baseline.platformOverrides }
+                    : {}),
             },
             null,
             4,
