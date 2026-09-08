@@ -21,6 +21,7 @@ use App\Http\Controllers\PublicSite\ShowAboutController;
 use App\Http\Controllers\PublicSite\ShowAccessibilityStatementController;
 use App\Http\Controllers\PublicSite\ShowContactFormController;
 use App\Http\Controllers\PublicSite\ShowHelpController;
+use App\Http\Controllers\PublicSite\ShowInvestorPageController;
 use App\Http\Controllers\PublicSite\ShowLegalDocumentController;
 use App\Http\Controllers\PublicSite\ShowTrustCentreController;
 use App\Http\Controllers\PublicSite\StoreContactMessageController;
@@ -110,6 +111,22 @@ Route::get('/trust', ShowTrustCentreController::class)->name('public.trust');
     ilgili — arayüzü kullanamayan biri oturum da açamıyor olabilir.
 */
 Route::get('/accessibility', ShowAccessibilityStatementController::class)->name('public.accessibility');
+
+/*
+    YATIRIMCI İLİŞKİLERİ (FF-251) — dört adres, tek denetleyici.
+
+    Sahibin isteği: *"yatırımcı ilişkileri, pitch deck vb. bilgiler için
+    sayfalar olmalı"* ve *"tabii ki uydurulmuş rakamla değil"*.
+
+    ADRESLER TEK TEK YAZILI, bir `{section?}` deseni DEĞİL: bir desen
+    `/investors/kadraj` gibi hiç yazılmamış bir adrese de 200 döndürür ve o
+    sayfa var olmayan bir bölümün sözünü verir. Dördü de oturum istemez ve
+    yatırımcı olguları için veritabanına dokunmaz (`ShowInvestorPageController`).
+*/
+Route::get('/investors', ShowInvestorPageController::class)->name('public.investors');
+Route::get('/investors/product', ShowInvestorPageController::class)->name('public.investors.product');
+Route::get('/investors/deck', ShowInvestorPageController::class)->name('public.investors.deck');
+Route::get('/investors/contact', ShowInvestorPageController::class)->name('public.investors.contact');
 
 Route::get('/contact', ShowContactFormController::class)->name('public.contact');
 Route::post('/contact', StoreContactMessageController::class)

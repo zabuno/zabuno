@@ -108,6 +108,18 @@ final class ShowSitemapController extends Controller
         '/acceptable-use',
         '/third-party-licenses',
         /*
+            YATIRIMCI İLİŞKİLERİ (FF-251). Dördü de kütükte DEĞİL — kurumsal
+            kapı yalnız dil dizini altında çalışır — ve dördü de bugün 200
+            dönüyor. Satıcı kimliği kuralına tabi değiller: bu sayfalar bir
+            sözleşme değil, ürünün kendi envanterinin okunmuş hâli; kimlik
+            girilmemişken de doğrudurlar ve `/investors/contact` eksik alanı
+            zaten "girilmedi" diye yazar.
+        */
+        '/investors',
+        '/investors/product',
+        '/investors/deck',
+        '/investors/contact',
+        /*
             GÜVEN MERKEZİ VE ERİŞİLEBİLİRLİK BEYANI (FF-252, `docs/107` Faz 3).
 
             İkisi de bugün 200 dönüyor, kütükte değil ve kendi denetleyicileri

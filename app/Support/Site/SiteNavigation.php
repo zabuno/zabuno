@@ -187,6 +187,16 @@ final class SiteNavigation
                     ['labelKey' => 'site.nav.about', 'path' => '/about'],
                     ['labelKey' => 'site.nav.contact', 'path' => '/contact'],
                     /*
+                        YATIRIMCI İLİŞKİLERİ (FF-251). Yaşayan bir rotadır ve
+                        bugün 200 döner; altbilgide durmasının sebebi, onu
+                        arayan kişinin ürün gezintisinde gezinmemesi — "kim
+                        bu şirket" sorusunun yanıtlarını aynı başlık altında
+                        arar. Alt sayfaları burada YOK ve bilerek yok: dört
+                        bağlantı bir grubu on üç satırlık yasal satıra
+                        çevirirdi; giriş sayfası üçüne de bağlanıyor.
+                    */
+                    ['labelKey' => 'site.nav.investors', 'path' => '/investors'],
+                    /*
                         GÜVEN MERKEZİ VE ERİŞİLEBİLİRLİK BEYANI (FF-252).
 
                         YASAL SATIRDA DEĞİL, ŞİRKET GRUBUNDA — ve bu bir yer
@@ -197,10 +207,13 @@ final class SiteNavigation
                         yapılandırmadan doğar. Onları sözleşmelerin arasına
                         koymak, okuyucuya imzalanacak bir şey gibi gösterirdi.
 
-                        Grup böylece DÖRT maddeye çıkıyor — `OPEN_ITEM_CEILING`
-                        tam olarak dört, yani grup hâlâ AÇIK başlıyor ve dar
-                        ekranda bir dokunuş eklemiyor. Beşinci bir madde
-                        eklendiği gün kendiliğinden katlanır.
+                        Grup böylece BEŞ maddeye çıkıyor ve `OPEN_ITEM_CEILING`
+                        dört olduğu için KAPALI başlıyor. Bu bir kayıp değil
+                        kuralın kendisi (`docs/118` E1): beş bağlantı 320
+                        pikselde 220 piksel eder ve altbilgi zaten altı satır.
+                        Katlamak GİZLEMEK DEĞİLDİR — beş bağlantının beşi de
+                        sunucu HTML'inde duruyor, betiksiz açılıyor ve arama
+                        motoru hepsini görüyor.
                     */
                     ['labelKey' => 'site.nav.trust', 'path' => '/trust'],
                     ['labelKey' => 'site.nav.accessibility', 'path' => '/accessibility'],

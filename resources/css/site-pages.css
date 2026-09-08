@@ -181,7 +181,21 @@
     color: var(--fg-muted);
 }
 
-.site-pricing-entitlements {
+/*
+    İMLEÇ GERİ GELİYOR — ölçülmüş bir kayıp.
+
+    Tailwind'in preflight'ı her `ul` için `list-style: none` yazar. Kendi
+    sınıfına geçen bir liste onu sessizce kaybeder ve 320 pikselde altı tane
+    madde imsiz cümle, bir liste değil bir paragraf yığını gibi okunur. Gözün
+    "bunlar ayrı maddeler" demesini sağlayan tek şey odur.
+
+    İKİ LİSTE TEK KURAL: haklar (`-entitlements`) ve yokluklar (`-absences`)
+    aynı biçimde çizilir. Ayrı yazılsalardı biri gün gelir ötekinden ayrışır
+    ve aynı sayfada iki liste dili doğardı — oysa ikisi de "planın içinde ne
+    var, ne yok" sorusunun aynı cümlesidir.
+*/
+.site-pricing-entitlements,
+.site-pricing-absences {
     display: flex;
     flex-direction: column;
     gap: var(--space-1);
@@ -204,15 +218,73 @@
     bağlantı dar ekranda 18-42 piksel yüksekliğinde kalıyor ve parmakla
     ıskalanıyor (`docs/117` K1).
 */
-.site-pricing-payment {
+/*
+    ÖDEME (bölümde) ve ÇIKIŞ YOLU (`/pricing` gövdesinde) AYNI kalıptır:
+    bir cümle, altında kendi satırında duran bir bağlantı. İkisi ayrı
+    yazılsaydı "nasıl öderim" ile "nasıl çıkarım" iki farklı ağırlıkta
+    okunurdu — oysa satın alma kararında ikisi de aynı sorunun yarısı.
+*/
+.site-pricing-payment,
+.site-pricing-exit {
     display: flex;
     flex-direction: column;
     gap: var(--space-1);
     color: var(--fg-muted);
 }
 
-.site-pricing-payment p {
+.site-pricing-payment p,
+.site-pricing-exit p {
     margin: 0;
+}
+
+/*
+    SSS — TEK SÜTUN ve `<details>`.
+
+    Izgara değil: yedi soru iki sütuna dizilince göz hangi cevabın hangi
+    soruya ait olduğunu kaybeder ve açılan bir bölme yanındaki sütunu aşağı
+    iter. Kapalı başlamak 480 piksellik bir ekranda okuyucuya hangi soruyu
+    açacağını SEÇTİRİR; yedisi birden açık olsaydı fiyatın altı bir duvar
+    olurdu.
+
+    Kap `site-panel`: kurumsal yüzey dili. `site-lit` YOK — ışıma bir
+    VURGUDUR ve vurgu plan kartlarının hakkı; her yerde olan bir vurgu vurgu
+    değildir (`site-identity.css` §7).
+*/
+.site-pricing-faq {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin: 0;
+}
+
+.site-pricing-faq-item {
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--zc-radius-lg);
+}
+
+/*
+    ÖZET BİR DOKUNMA HEDEFİDİR (`docs/117` K1): 44 pikselin altına inmez.
+    `list-style` kapatılmıyor — tarayıcının kendi üçgeni durumu (açık/kapalı)
+    renk olmadan da anlatır ve bu, rengi göremeyen okuyucunun tek ipucudur.
+*/
+.site-pricing-faq-question {
+    display: flex;
+    align-items: center;
+    min-block-size: var(--control-height);
+    font-weight: var(--zc-weight-strong);
+    cursor: pointer;
+}
+
+.site-pricing-faq-question:focus-visible {
+    outline: 2px solid var(--zc-focus);
+    outline-offset: 2px;
+}
+
+.site-pricing-faq-answer {
+    margin: 0;
+    padding-block-start: var(--space-2);
+    color: var(--fg-secondary);
+    line-height: 1.6;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -318,4 +390,123 @@
 .site-cta:focus-visible {
     outline: 2px solid var(--zc-focus);
     outline-offset: 2px;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §6 — YATIRIMCI SAYFALARININ DÜZENİ (FF-251).
+   ══════════════════════════════════════════════════════════════════════════
+
+   Dört sayfa (`/investors`, `/investors/product`, `/investors/deck`,
+   `/investors/contact`) aynı üç yapıyı kullanıyor: bir bölüm başlığı, bir
+   kart ızgarası ve bir olgu listesi. Üçü de `site-` önekindedir ve bu
+   BİLİNÇLİ — `home-*` sınıflarını buraya taşımak, adıyla içeriği ayrışan
+   ilk sınıfı üretirdi (`docs/146` §10.2, `.home-action` → `.site-cta` ile
+   aynı gerekçe).
+
+   ── KIRILMA NOKTASI YOK ──
+
+   Tek bir `@media (min-width: …)` yok. Her ölçü `clamp()` ya da
+   `minmax(min(100%, …), 1fr)`: 320 pikselde alt sınır, geniş ekranda üst
+   sınır, aradaki her genişlikte tanımlı (`HOME-SCENE-01`).
+
+   ── DOSYA YOLLARI VE TAŞMA ──
+
+   Bu sayfalar kanıt olarak DOSYA YOLU basıyor ve bazıları uzun
+   (`database/migrations/2026_08_19_000001_create_brands_and_locations_tables.php`
+   → 74 karakter). 320 pikselde bölünemeyen tek bir sözcük, bütün sayfayı
+   yatay olarak kaydırır: kırılma noktası olmayan bir düzende bile taşma
+   TEK bir uzun dizeden doğabilir. `overflow-wrap: anywhere` bu yüzden bir
+   süs değil, kanıt basmanın bedeli.
+*/
+.site-band {
+    padding-block: var(--zc-rhythm);
+}
+
+.site-section-head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    max-width: min(100%, 52rem);
+    margin-block-end: var(--zc-rhythm-tight);
+}
+
+/* Bölümün giriş cümlesi. `site-lede`den küçük: kahramanın vaadi ile bir
+   bölümün açıklaması aynı ağırlıkta olamaz. */
+.site-section-lead {
+    margin: 0;
+    color: var(--fg-secondary);
+}
+
+.site-ledger {
+    /* Liste işareti kapatılıyor: `role="list"` anlamı taşır, nokta taşımaz. */
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+    gap: var(--space-4);
+}
+
+.site-ledger-card {
+    /* Yükseklikler eşitlenir: farklı boylu kartlar bir ızgarada dalgalı
+       okunur ve göz sırayı kaybeder. */
+    block-size: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    border-radius: var(--zc-radius-lg);
+}
+
+.site-ledger-body {
+    margin: 0;
+    color: var(--fg-secondary);
+}
+
+/*
+    KANIT SATIRI — iddianın arkasındaki dosya.
+
+    Küçüktür ama gizli değildir: bir kanıt, okunacak kadar görünür olmak
+    zorunda. `overflow-wrap` yukarıdaki gerekçe.
+*/
+.site-ledger-note {
+    margin: 0;
+    margin-block-start: auto;
+    padding-block-start: var(--space-2);
+    border-block-start: 1px solid var(--zc-edge);
+    color: var(--fg-secondary);
+    font-size: var(--zc-eyebrow);
+    overflow-wrap: anywhere;
+}
+
+/* Sıra rozeti. Numara ekran okuyucuya `<ol>` üzerinden zaten ulaşır; rozet
+   onu İKİNCİ kez söylemez (`aria-hidden`). */
+.site-ledger-index {
+    font-variant-numeric: tabular-nums;
+    color: var(--fg-secondary);
+    letter-spacing: 0.08em;
+}
+
+/*
+    OLGU LİSTESİ — ad/rol/veri/yer gibi kısa çiftler.
+
+    Izgara DEĞİL, akış: 320 pikselde iki sütunluk bir tanım listesi, değeri
+    dört karakterlik bir şeride sıkıştırır.
+*/
+.site-facts {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.site-facts-term {
+    margin: 0;
+    color: var(--fg-secondary);
+    font-size: var(--zc-eyebrow);
+}
+
+.site-facts-value {
+    margin: 0;
+    overflow-wrap: anywhere;
 }

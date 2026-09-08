@@ -180,6 +180,42 @@ final class SiteText
             'free' => 'site.pricing.free',
             'perMonth' => 'site.pricing.perMonth',
             'adds' => 'site.pricing.adds',
+            /*
+                FİYAT SAYFASININ GÖVDESİ (FF-239, `docs/139`).
+
+                Kime uygun, ne dahil değil, SSS ve iptal yolu. Hepsi burada,
+                çünkü fiyat sayfasının kendi şablonunda tek bir sabit dize
+                yok (I18N-SSR-RATCHET-16) ve olmamalı: bunlar bir gün
+                çevrilecek metinlerin en önemlileri.
+            */
+            'pricingPlansHeading' => 'site.pricing.plans.heading',
+            'pricingTermsHeading' => 'site.pricing.terms.heading',
+            'audienceLabel' => 'site.pricing.audience',
+            'excludedHeading' => 'site.pricing.excluded.heading',
+            'excludedLead' => 'site.pricing.excluded.lead',
+            'excludedPayment' => 'site.pricing.excluded.payment',
+            'excludedPos' => 'site.pricing.excluded.pos',
+            'excludedDelivery' => 'site.pricing.excluded.delivery',
+            'excludedKitchenHardware' => 'site.pricing.excluded.kitchenHardware',
+            'excludedCampaign' => 'site.pricing.excluded.campaign',
+            'excludedCurrency' => 'site.pricing.excluded.currency',
+            'pricingFaqHeading' => 'site.pricing.faq.heading',
+            'pricingFaqStopQuestion' => 'site.pricing.faq.stop.question',
+            'pricingFaqStopAnswer' => 'site.pricing.faq.stop.answer',
+            'pricingFaqCancelQuestion' => 'site.pricing.faq.cancel.question',
+            'pricingFaqCancelAnswer' => 'site.pricing.faq.cancel.answer',
+            'pricingFaqRefundQuestion' => 'site.pricing.faq.refund.question',
+            'pricingFaqRefundAnswer' => 'site.pricing.faq.refund.answer',
+            'pricingFaqChangeQuestion' => 'site.pricing.faq.change.question',
+            'pricingFaqChangeAnswer' => 'site.pricing.faq.change.answer',
+            'pricingFaqTrialQuestion' => 'site.pricing.faq.trial.question',
+            'pricingFaqTrialAnswer' => 'site.pricing.faq.trial.answer',
+            'pricingFaqBranchQuestion' => 'site.pricing.faq.branch.question',
+            'pricingFaqBranchAnswer' => 'site.pricing.faq.branch.answer',
+            'pricingFaqReprintQuestion' => 'site.pricing.faq.reprint.question',
+            'pricingFaqReprintAnswer' => 'site.pricing.faq.reprint.answer',
+            'cancellation' => 'site.pricing.cancellation',
+            'cancellationCta' => 'site.pricing.cancellation.cta',
             'contactHeading' => 'site.contact.heading',
             'contactLead' => 'site.contact.lead',
             'contactSent' => 'site.contact.sent',
@@ -261,6 +297,96 @@ final class SiteText
             'homeFaqPosAnswer' => 'site.home.faq.pos.answer',
             'homeContactLead' => 'site.home.contact.lead',
             'homeContactCta' => 'site.home.contact.cta',
+            /*
+                YATIRIMCI İLİŞKİLERİ (FF-251).
+
+                Dört sayfanın metni katalogda, OLGULARI `InvestorDossier`de.
+                Buradaki dizelerin bir kısmı `{parts}` gibi yer tutucular
+                taşır ve onları denetleyici ÖLÇÜLEN değerle doldurur: bir
+                rakamı katalog metnine yazmak, `INVESTOR-HONEST-01` kapısını
+                kırar — ki maksat tam olarak budur.
+            */
+            'navInvestors' => 'site.nav.investors',
+            'investorsMetaTitle' => 'site.investors.meta.title',
+            'investorsMetaDescription' => 'site.investors.meta.description',
+            'investorsHeading' => 'site.investors.heading',
+            'investorsLead' => 'site.investors.lead',
+            'investorsRulesHeading' => 'site.investors.rules.heading',
+            'investorsRulesBody' => 'site.investors.rules.body',
+            'investorsRulesBody2' => 'site.investors.rules.body2',
+            'investorsChainHeading' => 'site.investors.chain.heading',
+            'investorsChainLead' => 'site.investors.chain.lead',
+            'investorsChainLabel' => 'site.investors.chain.label',
+            'investorsBuiltHeading' => 'site.investors.built.heading',
+            'investorsBuiltLead' => 'site.investors.built.lead',
+            'investorsBuiltCta' => 'site.investors.built.cta',
+            'investorsLimitsHeading' => 'site.investors.limits.heading',
+            'investorsLimitsLead' => 'site.investors.limits.lead',
+            'investorsCommitmentHeading' => 'site.investors.commitment.heading',
+            'investorsCommitmentOpen' => 'site.investors.commitment.open',
+            'investorsCommitmentMissingLabel' => 'site.investors.commitment.missingLabel',
+            'investorsCommitmentSet' => 'site.investors.commitment.set',
+            'investorsCommitmentCta' => 'site.investors.commitment.cta',
+            'investorsInfrastructureHeading' => 'site.investors.infrastructure.heading',
+            'investorsInfrastructureLead' => 'site.investors.infrastructure.lead',
+            'investorsInfrastructureUnreadable' => 'site.investors.infrastructure.unreadable',
+            'investorsInfrastructureRoleLabel' => 'site.investors.infrastructure.roleLabel',
+            'investorsInfrastructureDataLabel' => 'site.investors.infrastructure.dataLabel',
+            'investorsInfrastructureLocationLabel' => 'site.investors.infrastructure.locationLabel',
+            'investorsVerificationHeading' => 'site.investors.verification.heading',
+            'investorsVerificationLead' => 'site.investors.verification.lead',
+            'investorsVerificationGates' => 'site.investors.verification.gates',
+            'investorsVerificationPresent' => 'site.investors.verification.present',
+            'investorsVerificationMissing' => 'site.investors.verification.missing',
+            'investorsContactHeading' => 'site.investors.contact.heading',
+            'investorsContactLead' => 'site.investors.contact.lead',
+            'investorsContactCta' => 'site.investors.contact.cta',
+            'investorsDeckCta' => 'site.investors.deckCta',
+            'investorsProductMetaTitle' => 'site.investors.product.meta.title',
+            'investorsProductMetaDescription' => 'site.investors.product.meta.description',
+            'investorsProductHeading' => 'site.investors.product.heading',
+            'investorsProductLead' => 'site.investors.product.lead',
+            'investorsProductSourceLabel' => 'site.investors.product.sourceLabel',
+            'investorsProductSourceMissing' => 'site.investors.product.sourceMissing',
+            'investorsProductSourceNone' => 'site.investors.product.sourceNone',
+            'investorsDeckMetaTitle' => 'site.investors.deck.meta.title',
+            'investorsDeckMetaDescription' => 'site.investors.deck.meta.description',
+            'investorsDeckHeading' => 'site.investors.deck.heading',
+            'investorsDeckLead' => 'site.investors.deck.lead',
+            'investorsDeckEvidenceLabel' => 'site.investors.deck.evidenceLabel',
+            'investorsDeckWhatHeading' => 'site.investors.deckWhat.heading',
+            'investorsDeckWhatBody' => 'site.investors.deckWhat.body',
+            'investorsDeckWhatEvidence' => 'site.investors.deckWhat.evidence',
+            'investorsDeckBuiltHeading' => 'site.investors.deckBuilt.heading',
+            'investorsDeckBuiltBody' => 'site.investors.deckBuilt.body',
+            'investorsDeckBuiltEvidence' => 'site.investors.deckBuilt.evidence',
+            'investorsDeckNotBuiltHeading' => 'site.investors.deckNotBuilt.heading',
+            'investorsDeckNotBuiltBody' => 'site.investors.deckNotBuilt.body',
+            'investorsDeckNotBuiltEvidence' => 'site.investors.deckNotBuilt.evidence',
+            'investorsDeckPriceHeading' => 'site.investors.deckPrice.heading',
+            'investorsDeckPriceBody' => 'site.investors.deckPrice.body',
+            'investorsDeckPriceEvidence' => 'site.investors.deckPrice.evidence',
+            'investorsDeckCommitmentHeading' => 'site.investors.deckCommitment.heading',
+            'investorsDeckCommitmentBody' => 'site.investors.deckCommitment.body',
+            'investorsDeckRunsHeading' => 'site.investors.deckRuns.heading',
+            'investorsDeckRunsBody' => 'site.investors.deckRuns.body',
+            'investorsDeckRunsEvidence' => 'site.investors.deckRuns.evidence',
+            'investorsDeckCheckedHeading' => 'site.investors.deckChecked.heading',
+            'investorsDeckCheckedBody' => 'site.investors.deckChecked.body',
+            'investorsDeckCheckedEvidence' => 'site.investors.deckChecked.evidence',
+            'investorsDeckUnknownHeading' => 'site.investors.deckUnknown.heading',
+            'investorsDeckUnknownBody' => 'site.investors.deckUnknown.body',
+            'investorsDeckUnknownEvidence' => 'site.investors.deckUnknown.evidence',
+            'investorsContactPageMetaTitle' => 'site.investors.contactPage.meta.title',
+            'investorsContactPageMetaDescription' => 'site.investors.contactPage.meta.description',
+            'investorsContactPageHeading' => 'site.investors.contactPage.heading',
+            'investorsContactPageLead' => 'site.investors.contactPage.lead',
+            'investorsContactPageWhatHeading' => 'site.investors.contactPage.what.heading',
+            'investorsContactPageWhatBody' => 'site.investors.contactPage.what.body',
+            'investorsContactPageIdentityHeading' => 'site.investors.contactPage.identity.heading',
+            'investorsContactPageIdentityBody' => 'site.investors.contactPage.identity.body',
+            'investorsContactPageCommitmentAbsent' => 'site.investors.contactPage.commitment.absent',
+            'investorsContactPageCta' => 'site.investors.contactPage.cta',
         ];
 
         $out = [];
@@ -302,6 +428,34 @@ final class SiteText
         ];
 
         return isset($map[$key]) ? $this->get($map[$key], $locale) : null;
+    }
+
+    /**
+     * Bir plan kademesinin KİME UYGUN olduğu — FF-239 (`docs/139`).
+     *
+     * "Pro" bir şey anlatmaz: telefonundan bakan bir restoran sahibi kademe
+     * adından hangisini alacağını çıkaramaz. Ölçüt kademenin adı değil, onun
+     * kendi durumudur ve cümleler `PlanCatalogueSeeder`'ın kendi
+     * gerekçesinden türetildi (`docs/90`) — pazarlama için sonradan yazılmış
+     * ikinci bir gerekçe değil.
+     *
+     * `entitlementLabel()` ile AYNI DAVRANIŞ: tanınmayan bir kod `null`
+     * döner ve sayfa o plan için hiçbir cümle çizmez. Sahibin panelden açtığı
+     * dördüncü bir plana uydurulmuş bir kitle yakıştırmak, bu bölümün
+     * engellemek için var olduğu şeyin tam kendisi olurdu. Kademe eklendiği
+     * gün burası bilinçli olarak güncellenir ve
+     * `PricingPageContentTest` kataloğun her kodunun burada karşılığı
+     * olmasını ölçer — sessiz düşüş bir kapıya çarpar.
+     */
+    public function planAudienceLabel(string $code, ?string $locale = null): ?string
+    {
+        $map = [
+            'starter' => 'site.plan.audience.starter',
+            'restaurant' => 'site.plan.audience.restaurant',
+            'team' => 'site.plan.audience.team',
+        ];
+
+        return isset($map[$code]) ? $this->get($map[$code], $locale) : null;
     }
 
     /**
