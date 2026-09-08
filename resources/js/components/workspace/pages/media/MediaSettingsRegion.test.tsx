@@ -15,6 +15,19 @@ import { MediaSettingsRegion } from './MediaSettingsRegion';
  *   - Uygulanmayan bir anahtarı çalışıyormuş gibi göstermek YASAK. Bağlı
  *     olmayan bir anahtar ya çizilmez ya "henüz yok" der.
  *
+ * SAHİBİN İKİNCİ KARARI (2026-09-08): "switch butonlar saçma, UI hatası."
+ *
+ * Kapatılamayan önlemler ANAHTAR biçiminde çiziliyordu ve altlarında
+ * "Cannot be switched off" yazıyordu. Ekran aynı anda iki şey söylüyordu:
+ * anahtarın kendisi "değiştirebilirsin", cümle "değiştiremezsin" diyordu.
+ * Kullanıcı dokunuyor, hiçbir şey olmuyor — ve dokunmanın işe yaramadığını
+ * ancak DENEYEREK öğreniyordu.
+ *
+ * Çözüm anahtarı ÇALIŞTIRMAK DEĞİL: bu dört şey kapatılamaz ve kapatılabilir
+ * olmamalı. Çözüm onları doğru anlatmak — ayar değil OLGU olduklarını. Aynı
+ * sayfanın üst yarısı bunu zaten doğru yapıyor ("Nothing here is a choice, so
+ * there is nothing to save"); desen oradan alındı.
+ *
  * Bir ayar ekranındaki her kontrol bir SÖZDÜR: kullanıcı onu çevirdiğinde
  * bir şeyin değişeceğini söyler. Bu depoda desenler değiştirilemez ve
  * güvenlik önlemleri kapatılamaz; o yüzden burada KAYDETME KUTUSU yoktur.
@@ -70,17 +83,44 @@ describe('MediaSettingsRegion — her kontrol bir sözdür', () => {
         expect(await screen.findByText(/storage address is never rewritten/i)).toBeInTheDocument();
     });
 
-    it('virüs taraması anahtar olarak görünür, açıktır ve KAPATILAMAZ', async () => {
+    it('güvenlik bölümünde HİÇBİR anahtar ya da onay kutusu YOKTUR', async () => {
         mount();
 
-        const toggle = await screen.findByRole('switch', { name: /Virus scan/i });
+        await screen.findByText('Watermark');
 
-        expect(toggle).toHaveAttribute('aria-checked', 'true');
-        expect(toggle).toBeDisabled();
+        /*
+            Kusurun kendisi buydu: dört anahtar çizilip dördü de devre dışı
+            bırakılmıştı. Devre dışı bir anahtar hâlâ bir anahtardır —
+            "değiştirilebilir" diye çizilmiş, "değiştirilemez" diye
+            davranan bir şey.
+        */
+        expect(screen.queryAllByRole('switch')).toHaveLength(0);
+        expect(screen.queryAllByRole('checkbox')).toHaveLength(0);
+    });
 
-        const row = toggle.closest('li');
-        expect(row).not.toBeNull();
-        expect(within(row as HTMLElement).getByText('Cannot be switched off')).toBeInTheDocument();
+    it('güvenlik bölümünde tıklanacak ya da odaklanacak hiçbir şey yoktur', async () => {
+        mount();
+
+        const heading = await screen.findByText('Security and privacy');
+        const block = heading.parentElement as HTMLElement;
+
+        // Odak alan bir öğe, klavye kullanıcısına "burada bir iş var" der.
+        expect(
+            block.querySelectorAll('button, input, select, textarea, a[href], [tabindex]'),
+        ).toHaveLength(0);
+    });
+
+    it('virüs taraması AÇIK okunur ve kapatılamayacağı yazılır', async () => {
+        mount();
+
+        const label = await screen.findByText('Virus scan');
+        const row = label.closest('li') as HTMLElement;
+
+        expect(within(row).getByText('On')).toBeInTheDocument();
+        expect(within(row).getByText('Cannot be switched off')).toBeInTheDocument();
+        expect(
+            within(row).getByText(/Every file is scanned before it enters the library/i),
+        ).toBeInTheDocument();
     });
 
     it('tarayıcı bu ortamda yoksa "kapalı" değil "çalışmıyor" denir', async () => {
@@ -92,50 +132,50 @@ describe('MediaSettingsRegion — her kontrol bir sözdür', () => {
             ],
         });
 
-        const toggle = await screen.findByRole('switch', { name: /Virus scan/i });
+        const label = await screen.findByText('Virus scan');
+        const row = label.closest('li') as HTMLElement;
 
-        expect(toggle).toHaveAttribute('aria-checked', 'false');
-        expect(toggle).toBeDisabled();
         /*
             "Kapalı" bir KULLANICI KARARIDIR; burada olan bir ORTAM
             gerçeğidir. İkisini aynı kelimeyle söylemek, sahibin kapattığını
             sanmasına yol açardı.
         */
+        expect(within(row).getByText('Not running here')).toBeInTheDocument();
         expect(
             screen.getByText(/No scanner is connected in this environment/i),
         ).toBeInTheDocument();
+
+        /*
+            Çalışmayan bir önlemin altına "kapatılamaz" yazmak, açıklamanın
+            söylediğiyle çelişir: zaten kapalı ve açılamıyor. O satır yalnız
+            GERÇEKTEN yürüyen önlemin altında durur.
+        */
+        expect(within(row).queryByText('Cannot be switched off')).toBeNull();
     });
 
     it('yarım uygulanan önlem "tamamen açık" gibi gösterilmez', async () => {
         mount();
 
-        const toggle = await screen.findByRole('switch', { name: /Strip embedded data/i });
+        const label = await screen.findByText('Strip embedded data');
+        const row = label.closest('li') as HTMLElement;
 
-        expect(toggle).toHaveAttribute('aria-checked', 'true');
+        expect(within(row).getByText('Partly on')).toBeInTheDocument();
         expect(
             screen.getByText(/original file is kept exactly as you uploaded it/i),
         ).toBeInTheDocument();
     });
 
-    it('filigran için ANAHTAR ÇİZİLMEZ; "henüz yok" yazılır', async () => {
+    it('filigran için DURUM da yazılmaz; "henüz yok" tek cümledir', async () => {
         mount();
 
-        expect(await screen.findByText('Watermark')).toBeInTheDocument();
-        expect(screen.getByText('Not built yet.')).toBeInTheDocument();
-        expect(screen.queryByRole('switch', { name: /Watermark/i })).toBeNull();
-    });
+        const label = await screen.findByText('Watermark');
+        const row = label.closest('li') as HTMLElement;
 
-    it('hiçbir anahtar tıklanabilir değildir: hepsi salt okunur', async () => {
-        mount();
-
-        await screen.findByText('Watermark');
-
-        const switches = screen.getAllByRole('switch');
-
-        expect(switches).toHaveLength(4);
-        switches.forEach((toggle) => {
-            expect(toggle).toBeDisabled();
-        });
+        expect(within(row).getByText('Not built yet.')).toBeInTheDocument();
+        // Olmayan bir şeyin "durumu" olmaz; ikinci bir hâl kelimesi
+        // aynı yokluğu iki kez söylerdi.
+        expect(within(row).queryByText('Cannot be switched off')).toBeNull();
+        expect(within(row).queryByText('On')).toBeNull();
     });
 
     it('uç okunamazsa bölüm sessizce çekilir', async () => {
