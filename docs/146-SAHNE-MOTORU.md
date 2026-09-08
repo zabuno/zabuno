@@ -1106,3 +1106,38 @@ Bu karşılaştırma Ubuntu'daki p95 hatasını yeniden üretmedi. Tek koşunun
 maksimum farkı performans kazanımı kanıtı sayılmaz; düzeltme, ölçümün kendi
 kullanılmayan işini kaldırır. Linux p95'in düzeldiği iddiası yeni CI sonucu
 olmadan kurulamaz. Geri alma yalnız bu betik değişikliğini ve bu kaydı kapsar.
+
+
+### 14.3 Yalnız RED sonrasında ayrı Linux teşhis penceresi (2026-09-08)
+
+Gözlemci düzeltmesinden sonra `34250476694` ve şirket sayfasının
+`34250526237` koşuları aynı ana sayfa ölçümünde p95 33,3 ms ile durdu.
+Bu sonuç, önceki düzeltmenin Linux performans hatasını kapatmadığını gösterir.
+Kalan maliyetin betik, stil, düzen, boyama veya GPU tarafında olduğu henüz
+ayırt edilmedi; bu paket bir performans iyileşmesi iddiası taşımaz.
+
+`--diagnostics <dizin>` isteğe bağlıdır ve yalnız mevcut kabul ölçümünün
+bulguları varsa çalışır. Önce değişmeyen kabul raporu `baseline.json` olarak
+saklanır. Ardından aynı tarayıcıda sayfa yeniden yüklenir ve ayrı dört
+saniyelik kaydırma penceresi izlenir. Trace başlamadan önce ilk ekran
+izleyicisi yine durdurulur. Bu ikinci pencerenin p95 değeri kabul kararı
+vermez: trace ek yük taşır ve hiçbir sonuç ilk RED'i GREEN'e çeviremez.
+
+Beklenen kanıt, `trace.json` içindeki script/style/layout/paint ve GPU/compositor
+olayları; `diagnostic.json` içindeki sıralı kare süreleri, kaydırma konumu,
+derece, tarayıcı sürümü ve varsa mevcut WebGL bağlamının renderer kimliğidir.
+İki `scene-diagnostic-*` zaman işareti, kare günlüğünü trace aralığına bağlar.
+GPU bilgisi okunamıyorsa boş kalır; yeni bir WebGL bağlamı oluşturulmaz.
+Trace veri kaybı ayrıca raporlanır. Kanıt henüz Linux'ta alınmadı.
+
+Teşhis toplam 45 saniye, her CDP çağrısı en fazla 10 saniye ve trace çıktısı
+32 MiB ile sınırlıdır. Tamamlanma/okuma hatası teşhis raporuna yazılır; ilk
+bulgular ve başarısız çıkış kodu korunur. CI, başarılı ya da başarısız adımın
+kabul raporunu ve mevcut teşhis dosyalarını yedi günlük artifact olarak saklar.
+
+Hedefli kontrollere göre GREEN'de veya bayrak yokken teşhis çağrısı yoktur;
+RED'de önce rapor saklanır. Başarılı trace, tamamlanma zaman aşımı, okuma
+zaman aşımı ve boyut sınırı senaryoları ilk sonucu değiştirmedi. Mevcut
+örnekleyici metni önceki commit ile birebir aynıdır. 22 ms, CPU ×4, dört
+saniye, kaydırma yolu ve ürün hareketi değiştirilmedi. Tam QA çalıştırılmadı.
+Geri alma bu teşhis kodu, workflow bağlantısı ve bu kaydı birlikte kapsar.

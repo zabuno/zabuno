@@ -215,7 +215,18 @@ jobs:
 
       # KARE SURESI ve ILK EKRAN. 320x480 taban; CPU dortte bire kisilmis.
       - name: Scene frame budget (320x480, real browser)
-        run: node scripts/scene-perf-gate --url http://127.0.0.1:8291/ --width 320 --height 480 --cpu 4 --fail
+        run: |
+          mkdir -p storage/app/scene-perf
+          node scripts/scene-perf-gate --url http://127.0.0.1:8291/ --width 320 --height 480 --cpu 4 --fail --json storage/app/scene-perf/baseline.json --diagnostics storage/app/scene-perf
+
+      - name: Preserve scene performance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scene-perf-${{ github.run_id }}-${{ github.run_attempt }}
+          path: storage/app/scene-perf
+          if-no-files-found: ignore
+          retention-days: 7
 
       # MERDIVEN GERCEKTEN INIYOR MU: iki cekirdekli bir cihazda tuval
       # boyanmamali. Bu, kapinin en onemli iddiasi -- "yavas cihazda yavas"

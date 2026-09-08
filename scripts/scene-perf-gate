@@ -52,7 +52,8 @@
             --width 320 --height 480 --cpu 4 --json rapor.json [--fail]
 */
 
-import { writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 import {
     cdp,
@@ -136,6 +137,7 @@ const SCENE_DELAY_MS = Number(flag('scene-delay-budget', '120'));
 const CONCURRENCY = flag('concurrency', null);
 const EXPECT_TIER = flag('expect-tier', null);
 const JSON_OUT = flag('json', null);
+const DIAGNOSTICS_DIR = flag('diagnostics', null);
 const SHOULD_FAIL = process.argv.includes('--fail');
 
 /* CDP ve tarayıcı yaşam döngüsü ortak modülde (`browser-session.mjs`). */
@@ -222,6 +224,168 @@ const sampler = (seconds) => `new Promise((resolve) => {
 
     requestAnimationFrame(step);
 })`;
+
+/* Yalnız RED sonrasında, ayrı sayfa yüklemesi ve örnekleme penceresi.
+   Trace ve kare günlüğü ölçümü yavaşlatabilir; kabul sonucu değildir. */
+async function diagnoseFailure(ws, directory) {
+    mkdirSync(directory, { recursive: true });
+    const diagnostic = {
+        acceptance: false,
+        purpose: 'attribute-baseline-failure',
+        limits: { deadlineMs: 45000, callTimeoutMs: 10000, traceBytes: 32 * 1024 * 1024 },
+    };
+    const deadline = Date.now() + diagnostic.limits.deadlineMs;
+    const call = async (method, params = {}) => {
+        const remaining = Math.min(diagnostic.limits.callTimeoutMs, deadline - Date.now());
+        if (remaining <= 0) throw new Error('Diagnostic deadline exceeded');
+        let timer;
+        try {
+            return await Promise.race([
+                cdp(ws, method, params),
+                new Promise((_, reject) => {
+                    timer = setTimeout(
+                        () => reject(new Error(`Diagnostic timeout: ${method}`)),
+                        remaining,
+                    );
+                }),
+            ]);
+        } finally {
+            clearTimeout(timer);
+        }
+    };
+    const inspect = async (expression) => {
+        const response = await call('Runtime.evaluate', {
+            expression,
+            awaitPromise: true,
+            returnByValue: true,
+        });
+        if (response.exceptionDetails)
+            throw new Error(response.exceptionDetails.text ?? 'Diagnostic evaluation failed');
+        return response.result.value;
+    };
+    let tracing = false;
+    let completionListener;
+    let completionTimer;
+
+    try {
+        diagnostic.browser = await call('Browser.getVersion');
+        await call('Emulation.setEmulatedMedia', {
+            features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }],
+        });
+        await call('Page.navigate', { url: URL_UNDER_TEST });
+        await inspect(
+            `new Promise((resolve) => {
+            const check = () => document.readyState === 'complete'
+                ? document.fonts.ready.then(() => setTimeout(resolve, 600))
+                : setTimeout(check, 100);
+            check();
+        })`,
+        );
+        diagnostic.environment = await inspect(
+            `(() => {
+            window.__stopFirstScreenProbe?.();
+            const canvas = document.querySelector('[data-scene="field"]');
+            const gl = canvas?.dataset.sceneRenderer === 'webgl' ? canvas.getContext('webgl') : null;
+            const debug = gl?.getExtension('WEBGL_debug_renderer_info');
+            return {
+                platform: navigator.platform, userAgent: navigator.userAgent,
+                cores: navigator.hardwareConcurrency, memory: navigator.deviceMemory,
+                dpr: devicePixelRatio, width: innerWidth, height: innerHeight,
+                scrollHeight: document.body.scrollHeight,
+                dark: matchMedia('(prefers-color-scheme: dark)').matches,
+                renderer: canvas?.dataset.sceneRenderer ?? null,
+                gpuVendor: debug ? gl.getParameter(debug.UNMASKED_VENDOR_WEBGL) : null,
+                gpuRenderer: debug ? gl.getParameter(debug.UNMASKED_RENDERER_WEBGL) : null,
+            };
+        })()`,
+        );
+        await call('Tracing.start', {
+            categories:
+                'devtools.timeline,disabled-by-default-devtools.timeline,blink.user_timing,v8,cc,gpu,viz',
+            transferMode: 'ReturnAsStream',
+        });
+        tracing = true;
+        await inspect(
+            `(() => {
+            window.__sceneDiagnosticFrames = [];
+            const started = performance.now();
+            let previous = started;
+            const tick = (now) => {
+                window.__sceneDiagnosticFrames.push({
+                    elapsedMs: now - started, deltaMs: now - previous,
+                    scrollY, tier: document.documentElement.dataset.sceneTier ?? null,
+                });
+                previous = now;
+                window.__sceneDiagnosticFrame = requestAnimationFrame(tick);
+            };
+            performance.mark('scene-diagnostic-start');
+            window.__sceneDiagnosticFrame = requestAnimationFrame(tick);
+        })()`,
+        );
+        diagnostic.sample = await inspect(sampler(SECONDS));
+        diagnostic.frames = await inspect(
+            `(() => {
+            cancelAnimationFrame(window.__sceneDiagnosticFrame);
+            performance.mark('scene-diagnostic-end');
+            return window.__sceneDiagnosticFrames;
+        })()`,
+        );
+    } catch (error) {
+        diagnostic.error = error.message;
+    } finally {
+        if (tracing) {
+            try {
+                const completed = new Promise((resolve, reject) => {
+                    completionListener = (event) => {
+                        const message = JSON.parse(event.data);
+                        if (message.method === 'Tracing.tracingComplete') resolve(message.params);
+                    };
+                    ws.addEventListener('message', completionListener);
+                    completionTimer = setTimeout(
+                        () => reject(new Error('Trace completion timed out')),
+                        Math.max(1, Math.min(15000, deadline - Date.now())),
+                    );
+                });
+                /* Attach the rejection handler before waiting for Tracing.end. */
+                completed.catch(() => {});
+                await call('Tracing.end');
+                const { stream, dataLossOccurred } = await completed;
+                diagnostic.traceDataLoss = Boolean(dataLossOccurred);
+                if (!stream) throw new Error('Trace stream missing');
+                const chunks = [];
+                let bytes = 0;
+                try {
+                    for (let count = 0; ; count++) {
+                        if (count >= 32) throw new Error('Trace exceeds 32 MiB diagnostic limit');
+                        const chunk = await call('IO.read', { handle: stream, size: 1048576 });
+                        const data = Buffer.from(
+                            chunk.data,
+                            chunk.base64Encoded ? 'base64' : 'utf8',
+                        );
+                        bytes += data.length;
+                        if (bytes > diagnostic.limits.traceBytes)
+                            throw new Error('Trace exceeds 32 MiB diagnostic limit');
+                        chunks.push(data);
+                        if (chunk.eof) break;
+                    }
+                    writeFileSync(join(directory, 'trace.json'), Buffer.concat(chunks));
+                    diagnostic.trace = 'trace.json';
+                } finally {
+                    await call('IO.close', { handle: stream });
+                }
+            } catch (error) {
+                diagnostic.traceError = error.message;
+            } finally {
+                clearTimeout(completionTimer);
+                if (completionListener) ws.removeEventListener('message', completionListener);
+            }
+        }
+        writeFileSync(
+            join(directory, 'diagnostic.json'),
+            `${JSON.stringify(diagnostic, null, 2)}\n`,
+        );
+    }
+}
 
 const { chrome, profileDir, profilePath } = launchChrome(CHROME, 'scene-perf-');
 
@@ -631,6 +795,21 @@ try {
             'SAHNE-PERF: azaltılmış hareket açıkken sayfada hiç bölüm ya da başlık yok — ' +
                 'ölçülen şey bir sayfa değil.',
         );
+    }
+
+    if (DIAGNOSTICS_DIR !== null && findings.length > 0) {
+        /* Kabul sonucu trace başlamadan diske alınır ve bir daha değiştirilmez.
+           Teşhis başarılı olsa da hata verse de RED, RED olarak kalır. */
+        mkdirSync(DIAGNOSTICS_DIR, { recursive: true });
+        writeFileSync(
+            join(DIAGNOSTICS_DIR, 'baseline.json'),
+            `${JSON.stringify({ ...report, findings }, null, 2)}\n`,
+        );
+        try {
+            await diagnoseFailure(ws, DIAGNOSTICS_DIR);
+        } catch (error) {
+            console.error(`SAHNE-TEŞHİS: ${error.message}; kabul sonucu değişmedi.`);
+        }
     }
 
     ws.close();
