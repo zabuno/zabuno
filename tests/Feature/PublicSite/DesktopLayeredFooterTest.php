@@ -38,8 +38,10 @@ final class DesktopLayeredFooterTest extends TestCase
 
     public function test_mobile_keeps_native_closed_legal_and_identity_disclosures(): void
     {
+        /* C3: künye satırı `/information-society-services` sayfasına taşındı;
+           katlanabilir kalan tek satır yasal satırdır. */
         $xpath = $this->footer();
-        foreach (['site-footer-legal', 'site-footer-identity'] as $class) {
+        foreach (['site-footer-legal'] as $class) {
             $nodes = $xpath->query('//*[@data-mobile-footer]//*[contains(concat(" ", @class, " "), " '.$class.' ")]//details');
             self::assertGreaterThan(0, $nodes->length);
             foreach ($nodes as $details) {
@@ -49,12 +51,26 @@ final class DesktopLayeredFooterTest extends TestCase
         }
     }
 
-    public function test_missing_seller_information_is_visible_in_the_desktop_footer(): void
+    public function test_the_desktop_footer_leads_to_the_seller_identity_page_instead_of_repeating_it(): void
     {
+        /*
+            C3: künye iki altbilgi sunumundan da KALDIRILDI ve kendi
+            sayfasına taşındı. Geniş sunum onu tekrar etmez, ona BAĞLANIR —
+            bağlantı da elle yazılmadı, `SiteNavigation`ün şirket grubundan
+            geliyor, dolayısıyla iki sunum ayrışamaz.
+        */
         $xpath = $this->footer();
-        self::assertSame(1, $xpath->query('//*[@data-desktop-footer]//*[@data-company-identity]')->length);
-        self::assertGreaterThan(0, $xpath->query('//*[@data-desktop-footer]//*[@data-missing="true"]')->length);
-        self::assertSame(1, $xpath->query('//*[@data-desktop-footer]//*[@data-footer-identity-warning]')->length);
+
+        self::assertSame(0, $xpath->query('//*[@data-desktop-footer]//*[@data-company-identity]')->length);
+        self::assertSame(
+            1,
+            $xpath->query('//*[@data-desktop-footer]//a[@href="/information-society-services"]')->length
+        );
+
+        /* Eksik alanlar hâlâ görünür — yalnız artık kendi sayfasında. */
+        $page = (string) $this->get('/information-society-services')->assertOk()->getContent();
+        self::assertStringContainsString('data-missing="true"', $page);
+        self::assertStringContainsString('data-legal-alert="seller-identity"', $page);
     }
 
     public function test_only_one_footer_presentation_is_displayed_and_no_native_details_are_forced_open(): void

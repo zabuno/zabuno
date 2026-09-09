@@ -349,24 +349,72 @@
 }
 
 /*
-    DERİN BANT — tema TANIMAZ.
+    DERİN BANT — ARTIK TEMAYI TANIYOR (C2).
 
-    Kahraman bölümü ve harekete çağrı bandı, ziyaretçi hangi kipte olursa
-    olsun DERİN kalır. Gerekçe: sahibin istediği "uzay" hissi koyu bir
-    zeminde yaşar ve açık kipte sayfanın tamamını koyulaştırmak, açık kipi
-    seçmiş kişinin kararını yok saymak olurdu. Bu yüzden karar ikiye
-    ayrılıyor:
+    ── Geri alınan karar ve NİÇİN ──
 
-        okunan metin ziyaretçinin kipinde  ·  sahne her zaman derin
+    Buradaki eski kural şuydu: *"sahne her zaman derin"* — kahraman bandı ve
+    harekete çağrı bandı, ziyaretçi açık kipi seçse bile neredeyse siyah
+    kalırdı. Gerekçesi güzeldi (aydınlık bir müzede planetaryum salonu
+    karanlıktır) ama ÖLÇÜLEN sonucu değildi: açık kipte sayfa
+    `rgb(243,241,251)` bir zeminden `rgb(4,3,14)` bir banda düşüyordu.
+    Yan yana iki bölüm arasında 239 basamaklık bir sıçrama, bir tasarım
+    kararı gibi değil bir hata gibi okunur — sahibin sözü buydu: bölümler
+    arasında ani koyudan beyaza geçişler istemiyorum.
 
-    Aynı numara gerçek hayatta da var: aydınlık bir müzede planetaryum
-    salonu karanlıktır. Ziyaretçi ışığı seçer, sahne kendi ışığını taşır.
+    Müze benzetmesinin tuttuğu yer, tuttuğu kadarıydı: planetaryum salonuna
+    KAPIDAN girilir, bir koridorun ortasında ışık sönmez.
 
-    Bandın İÇİNDEKİ metin bu yüzden `--zc-deep-text`tir, `--zc-text` değil —
-    açık kipte `--zc-text` koyu mürekkeptir ve derin bandın üstünde
-    okunmazdı.
+    ── Yeni kural ──
+
+        Kip ziyaretçinindir; DERİNLİK bir kip değil, bir KATMAN farkıdır.
+
+    Bant hâlâ sayfanın geri kalanından ayrı okunur — ama ayrımı artık
+    karanlık DEĞİL, bir basamak taşıyor: açık kipte zemin merdiveninin bir
+    adım gömülü basamağı (`halo-200`), koyu kipte en dip basamağı
+    (`void-1000`). Uzay hissi kaybolmaz, çünkü onu taşıyan şey siyah değil
+    ışıma ve yıldız alanıdır; ikisi de aşağıdaki jetonlarla kipin gücüne
+    göre kısılır.
+
+    Bandın İÇİNDEKİ metin yine `--zc-deep-text`tir, `--zc-text` değil: iki
+    ad ayrı kalır, çünkü bandın mürekkebi bandın zemininden türer ve bir gün
+    ikisi yeniden ayrışabilir.
 */
 :root {
+    --zc-deep-canvas: var(--zc-halo-200);
+    --zc-deep-raised: var(--zc-white);
+    --zc-deep-text: var(--zc-ink);
+    --zc-deep-text-soft: var(--zc-ink-soft);
+    --zc-deep-edge: var(--zc-halo-300);
+    --zc-deep-accent: var(--zc-signal-700);
+    --zc-deep-support: var(--zc-beam-700);
+
+    /*
+        BANDIN KENDİ IŞIMASI. Açık kipte kısıktır — beyazın üstünde bir
+        parıltı ışımaz, kirletir (§2'deki aynı gerekçe).
+    */
+    --zc-deep-glow-action: color-mix(in oklab, var(--zc-pulse-500) 16%, transparent);
+    --zc-deep-glow-beam: color-mix(in oklab, var(--zc-beam-500) 14%, transparent);
+    --zc-deep-glow-signal: color-mix(in oklab, var(--zc-signal-500) 16%, transparent);
+    --zc-deep-sheen: color-mix(in oklab, var(--zc-white) 90%, transparent);
+    --zc-deep-edge-lit: color-mix(in oklab, var(--zc-white) 70%, transparent);
+
+    /*
+        YILDIZ MÜREKKEBİ — açık kipte KOYU.
+
+        Bir yıldız alanı "parlak nokta" değil, ZEMİNDEN AYRIŞAN nokta
+        demektir. Açık bir zeminde beyaz yıldız görünmez; aynı desen koyu
+        mürekkeple çizildiğinde aynı derinliği verir. Değerler düz palet
+        basamaklarına bağlı kalır: sahne motoru bunları `getComputedStyle`
+        ile okuyor ve `color-mix()` sonucunu çözemez (`site-scene.css` §1).
+    */
+    --zc-deep-star-core: var(--zc-void-500);
+    --zc-deep-star-beam: var(--zc-beam-500);
+    --zc-deep-star-pulse: var(--zc-pulse-500);
+    --zc-deep-star-signal: var(--zc-signal-700);
+}
+
+[data-theme='dark'] {
     --zc-deep-canvas: var(--zc-void-1000);
     --zc-deep-raised: var(--zc-void-800);
     --zc-deep-text: var(--zc-starlight);
@@ -374,6 +422,18 @@
     --zc-deep-edge: var(--zc-void-600);
     --zc-deep-accent: var(--zc-signal-400);
     --zc-deep-support: var(--zc-beam-300);
+
+    /* Koyu kipte ışıma gerçekten ışır; oranlar §2'nin koyu bloğuyla aynı. */
+    --zc-deep-glow-action: color-mix(in oklab, var(--zc-pulse-400) 34%, transparent);
+    --zc-deep-glow-beam: color-mix(in oklab, var(--zc-beam-300) 22%, transparent);
+    --zc-deep-glow-signal: color-mix(in oklab, var(--zc-signal-400) 24%, transparent);
+    --zc-deep-sheen: color-mix(in oklab, var(--zc-white) 10%, transparent);
+    --zc-deep-edge-lit: color-mix(in oklab, var(--zc-white) 16%, transparent);
+
+    --zc-deep-star-core: var(--zc-starlight);
+    --zc-deep-star-beam: var(--zc-beam-300);
+    --zc-deep-star-pulse: var(--zc-pulse-400);
+    --zc-deep-star-signal: var(--zc-signal-400);
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -727,12 +787,16 @@ body.site-shell {
     --zc-raised: var(--zc-deep-raised);
     --zc-edge: var(--zc-deep-edge);
     --zc-edge-strong: var(--zc-deep-edge);
-    /* Derin bantta ışıma her zaman koyu kip gücündedir. */
-    --zc-glow-action: color-mix(in oklab, var(--zc-pulse-400) 34%, transparent);
-    --zc-glow-beam: color-mix(in oklab, var(--zc-beam-300) 22%, transparent);
-    --zc-glow-signal: color-mix(in oklab, var(--zc-signal-400) 24%, transparent);
-    --zc-sheen: color-mix(in oklab, var(--zc-white) 10%, transparent);
-    --zc-edge-lit: color-mix(in oklab, var(--zc-white) 16%, transparent);
+    /*
+        Bandın ışıması artık KİPE bağlı (C2): oranlar burada elle yazılmıyor,
+        `--zc-deep-glow-*` üzerinden geliyor. Sabit koyu-kip oranları açık
+        kipte bandı gri bir bulutla kaplıyordu.
+    */
+    --zc-glow-action: var(--zc-deep-glow-action);
+    --zc-glow-beam: var(--zc-deep-glow-beam);
+    --zc-glow-signal: var(--zc-deep-glow-signal);
+    --zc-sheen: var(--zc-deep-sheen);
+    --zc-edge-lit: var(--zc-deep-edge-lit);
 }
 
 /*

@@ -1,0 +1,334 @@
+/*
+    ═══════════════════════════════════════════════════════════════════════
+    KURUMSAL DİZİN SAYFALARI — site haritası ağacı ve künye sayfası (C3).
+    ═══════════════════════════════════════════════════════════════════════
+
+    İki sayfa, tek dosya: `/site-map` ve `/information-society-services`.
+    Ortak noktaları bir tasarım fikri değil bir İŞ — ikisi de bir LİSTEYİ
+    okunur kılıyor ve ikisi de kabuğun geri kalanına hiç dokunmuyor. Palet,
+    tipografi ve zemin `site-shell.css` ile `site-pages.css` içindeki
+    jetonlardan gelir; burada ham bir renk YOKTUR.
+
+    ── DAR EKRAN TABANDIR (`TOUCH-FIRST-INTERFACE` madde 1) ──
+
+    Bütün taban kurallar koşulsuz yazılır ve 320×480'de geçerlidir. Ağacın
+    girintisi bir `clamp()`: 320 pikselde alt sınır, geniş ekranda üst
+    sınır, aradaki her genişlikte tanımlı.
+
+    Site haritasının BİR kırılma noktası var (`min-width: 64rem`) ve o
+    nokta ölçülmüş bir kusurdan doğdu: beş grup ve yirmi yedi bağlantı tek
+    sütunda, geniş ekranda okunur bir ilişki şeması değil metrelerce
+    kaydırılan bir şerit oluyordu. Kural taban ağacın ÜSTÜNE ekleniyor —
+    dar ekran için yazılmış hiçbir kural geri alınmıyor, hiçbir şey
+    "mobilde gizle" ile bastırılmıyor.
+
+    ── ÇİZGİLER DEKORDUR ──
+
+    Bağlayıcı çizgiler `::before` ile çizilir: hiçbiri bir öğe değil, hiçbiri
+    erişilebilirlik ağacına girmez, hiçbiri tıklanmaz. Boyanmasalar da liste
+    okunur ve her bağlantı çalışır (`docs/118` E8: taban HTML, tavan
+    serbest). Bir çizim kütüphanesi YOK: kurumsal site React yüklemiyor ve
+    bir listeyi çizmek için sayfaya kilobayt eklemek, ölçülmüş bir kazancı
+    geri vermek olurdu.
+*/
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §1 — SİTE HARİTASI AĞACI.
+   ══════════════════════════════════════════════════════════════════════════
+
+   GİRİNTİ TEK BİR YERDE. Kollar ve gövde parçaları girintiyi NEGATİFİYLE
+   geri sayar; ikisi ayrı yazılsaydı biri değiştiğinde öteki sessizce
+   kayardı. Kart düzeni bu değişkeni kendi içinde daraltır — kural değil,
+   değer değişir. */
+
+.site-map-tree {
+    --site-map-indent: clamp(0.75rem, 0.35rem + 2.5vw, 1.5rem);
+    /* Kolun düğüm ortasına denk geldiği yer: 2.75rem'lik hedefin yarısı. */
+    --site-map-arm-offset: 1.375rem;
+}
+
+/*
+    LİSTE İŞARETİ GİDER, GİRİNTİ GİTMEZ.
+
+    Eskiden burada `margin: 0; padding: 0` da vardı. `.site-map-tree ul`
+    bir sınıf ARTI bir öğedir; `.site-map-branch` yalnız bir sınıf. Yani
+    reset, dalların kendi girintisini her zaman yeniyordu: 1280'de ölçüldü,
+    dalın margin'i de padding'i de 0'dı, satırlar tam genişlikte düzleşiyor
+    ve negatiften çizilen kollar listenin SOLUNA kaçıyordu. Sıfırlama artık
+    yalnız gerçekten istenen şeyi yapıyor.
+*/
+.site-map-tree ul {
+    list-style: none;
+}
+
+.site-map-root {
+    margin: 0;
+    padding: 0;
+}
+
+.site-map-tree li {
+    position: relative;
+}
+
+/*
+    DÜĞÜM — dokunma hedefi 44 pikselde KALIR (`TOUCH-FIRST-INTERFACE` madde 3).
+
+    Küçülen şey hedef değil ÖLÜ ALAN: dolgu dar ekranda daralır, satır
+    yüksekliği daralmaz. Komşu düğümler arasında `--space-1`lik bir ayrım
+    var; yanlış dokunma tam olarak buradan doğar, çünkü ağaçta hedefler alt
+    alta dizilir.
+*/
+.site-map-node {
+    display: flex;
+    align-items: center;
+    min-block-size: 2.75rem;
+    padding-block: var(--space-1);
+    padding-inline: var(--space-2);
+    border-radius: var(--radius-lg);
+    /* Metin kelime ortasından kesilmez; uzun bir etiket sarar. */
+    overflow-wrap: anywhere;
+}
+
+a.site-map-node {
+    color: var(--fg);
+    text-decoration: none;
+    border: 1px solid var(--zc-edge);
+}
+
+a.site-map-node:hover {
+    border-color: var(--zc-action);
+}
+
+a.site-map-node:focus-visible {
+    outline: 2px solid var(--zc-focus);
+    outline-offset: 2px;
+}
+
+/* Kök: ağacın başladığı yer, bir sayfa olduğu için tıklanabilir. */
+.site-map-home {
+    font-weight: 600;
+}
+
+/*
+    GRUP ADI BİR BAĞLANTI DEĞİLDİR ve öyle görünmemeli: çerçevesi yok,
+    mürekkebi ikincil. Tıklanabilir görünen ama tıklanmayan bir şey, sayfanın
+    verdiği ilk sözü tutmaması olurdu.
+*/
+.site-map-group {
+    color: var(--fg-secondary);
+    font-size: 0.875rem;
+    letter-spacing: var(--zc-eyebrow-tracking, normal);
+    text-transform: uppercase;
+}
+
+.site-map-branch,
+.site-map-leaves {
+    /* Girinti 320'de dar, geniş ekranda ferah — ikisi arasında sürekli. */
+    margin: 0;
+    margin-inline-start: var(--site-map-indent);
+    padding: 0;
+    padding-inline-start: var(--site-map-indent);
+    position: relative;
+}
+
+/*
+    ÇİZGİLER DÜĞÜMÜN KENDİSİNDE, KABINDA DEĞİL.
+
+    Gövde eskiden kabın tek bir `::before`'uydu ve son çocuğun altındaki
+    fazlalık `--surface` renginde bir maskeyle örtülüyordu. Maske, altında
+    duran zemin ne olursa olsun aynı rengi boyayacağına söz veriyordu —
+    kart düzeninde bu söz tutulamaz. Şimdi her düğüm kendi gövde PARÇASINI
+    çiziyor: son çocuk kolun hizasında bitiriyor, örtülecek bir şey kalmıyor.
+
+    `inset-inline-start` mantıksal: sağdan sola yazılan bir dilde ağaç
+    kendiliğinden aynalanır ve ikinci bir kural gerekmez.
+*/
+.site-map-branch > li::before,
+.site-map-leaves > li::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0;
+    /* Son çocuk: gövde kolda biter, ağaç orada biter. */
+    block-size: var(--site-map-arm-offset);
+    inset-inline-start: calc(var(--site-map-indent) * -1);
+    inline-size: 1px;
+    background: var(--zc-edge);
+}
+
+.site-map-branch > li:not(:last-child)::before,
+.site-map-leaves > li:not(:last-child)::before {
+    block-size: auto;
+    inset-block-end: 0;
+}
+
+/* YATAY KOL: gövdeden düğüme giden çizgi, düğümün dikey ortasında. */
+.site-map-branch > li::after,
+.site-map-leaves > li::after {
+    content: '';
+    position: absolute;
+    inset-block-start: var(--site-map-arm-offset);
+    inset-inline-start: calc(var(--site-map-indent) * -1);
+    inline-size: var(--site-map-indent);
+    block-size: 1px;
+    background: var(--zc-edge);
+}
+
+/*
+    ── GENİŞ EKRAN: GRUPLAR YAN YANA KART ──
+
+    Taban ağaç değişmez; yalnız BİRİNCİ kat bir ızgaraya girer. Tek sütunda
+    beş grup ve yirmi yedi bağlantı, 1280'de ekranın onda birini kullanan
+    iki metre uzunluğunda bir şeride dönüşüyordu — okunur bir ilişki şeması
+    değil, kaydırılan bir liste.
+
+    Kollar burada ÇİZİLMEZ. Izgara satır sardığında (dar bir dizüstünde beş
+    kart iki satıra iner) ikinci satırın kolu bağlanacak bir gövde bulamaz;
+    hiçbir yere gitmeyen bir çizgi, yanlış bir ilişki söyler. Kartın kendi
+    sınırı bunu zaten söylüyor, kökten inen tek sap da hepsinin nereden
+    geldiğini.
+*/
+@media (min-width: 64rem) {
+    .site-map-branch {
+        display: grid;
+        /* Sığdığı kadar sütun; `min(100%, …)` dar bir kapta taşmayı önler. */
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+        gap: var(--space-2);
+        margin-inline-start: 0;
+        padding-inline-start: 0;
+        /* Sapın çizildiği boşluk. */
+        padding-block-start: var(--space-3);
+    }
+
+    /* KÖKTEN KART ALANINA İNEN TEK SAP. */
+    .site-map-branch::before {
+        content: '';
+        position: absolute;
+        inset-block-start: 0;
+        block-size: var(--space-3);
+        inset-inline-start: var(--space-2);
+        inline-size: 1px;
+        background: var(--zc-edge);
+    }
+
+    .site-map-branch > li::before,
+    .site-map-branch > li::after {
+        display: none;
+    }
+
+    .site-map-branch > li {
+        /* Kartın İÇİNDE girinti daralır: sayfa + kart + satır dolgusu
+           üst üste binerse bağlantı metni dar bir şeride sıkışır
+           (`TOUCH-FIRST-INTERFACE` madde 3). */
+        --site-map-indent: 0.75rem;
+        border: 1px solid var(--zc-edge);
+        border-radius: var(--radius-lg);
+        padding: var(--space-2);
+    }
+
+    /* Kart başlığının dolgusu kartın dolgusuna EKLENMEZ. */
+    .site-map-branch > li > .site-map-group {
+        padding-inline: 0;
+    }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §2 — BİLGİ TOPLUMU HİZMETLERİ SAYFASI.
+   ══════════════════════════════════════════════════════════════════════════
+
+   Künye tablosunun kendisi `site-shell.css` içindeki `.site-company-identity`
+   kurallarını kullanmaya devam ediyor — tablo taşındı, ÇİZİMİ değişmedi.
+   Burada yalnız o sayfaya özgü iki liste var. */
+
+.site-iss-documents {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    /* Sığdığı kadar sütun: 320'de tek, geniş ekranda birkaç. İkinci bir
+       düzen ve bir kırılma noktası yok (`HOME-FLUID-04` ile aynı kural). */
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: var(--space-1);
+}
+
+.site-iss-documents a {
+    display: flex;
+    align-items: center;
+    min-block-size: 2.75rem;
+    color: var(--fg);
+    overflow-wrap: anywhere;
+}
+
+.site-iss-data-request {
+    color: var(--fg-secondary);
+    font-size: 0.875rem;
+}
+
+/* Etiket KENDİ SATIRINDA: araya sabit bir iki nokta yazmak, şablona
+   çevrilemez bir noktalama gömerdi (yasal sayfalarla aynı karar). */
+.site-iss-data-request-label {
+    display: block;
+    color: var(--fg);
+    font-weight: 500;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   §3 — SOSYAL ŞERİT (kabukta, iki sunum).
+   ══════════════════════════════════════════════════════════════════════════
+
+   Şerit üç yerde çizilebiliyor (üst çubuk, menü bölmesi, iki altbilgi) ama
+   AYNI ANDA yalnız biri görünür. Gizlenen sunum `display: none` ile
+   erişilebilirlik ağacından ve odak sırasından tamamen çıkar — görünmeyen
+   bir bağlantının içinden klavyeyle geçmek, kullanıcıyı olmayan bir şeye
+   götürür (dil ve görünüm denetimleriyle birebir aynı kural). */
+
+.site-social {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+/*
+    HEDEF 44×44 — İKON KÜÇÜK OLSA DA.
+
+    Dokunmalı cihazda vurgu (`hover`) yoktur ve tek başına duran bir ikon,
+    dokunulduğunda parmağın altında kalır. Bu yüzden hedef ikonun boyutuyla
+    değil parmağın boyutuyla ölçülür.
+*/
+.site-social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
+    border-radius: var(--radius-lg);
+    color: currentColor;
+}
+
+.site-social-link:focus-visible {
+    outline: 2px solid var(--zc-focus);
+    outline-offset: 2px;
+}
+
+.site-social-link .site-icon {
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+}
+
+/* Dar düzende şerit MENÜ BÖLMESİNDE: 320 pikselde çubuk ölçülmüş sınırında
+   ve üçüncü bir ikon onu sardırırdı (`docs/141` §4). */
+.site-social-desktop {
+    display: none;
+}
+
+@media (min-width: 80rem) {
+    .site-social-menu {
+        display: none;
+    }
+
+    .site-social-desktop {
+        display: block;
+    }
+}

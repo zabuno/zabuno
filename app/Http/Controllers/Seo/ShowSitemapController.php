@@ -74,6 +74,13 @@ final class ShowSitemapController extends Controller
         */
         '/data-processing',
         '/sla',
+        /*
+            BİLGİ TOPLUMU HİZMETLERİ (C3). Sayfanın KONUSU satıcının
+            kimliğidir: kimlik girilmemişken sitemap'e girmesi, arama
+            motoruna "burada satıcının künyesi var" demek ve boş bir künye
+            göstermek olurdu. `/about` ile aynı karar, aynı gerekçe.
+        */
+        '/information-society-services',
     ];
 
     /**
@@ -135,6 +142,19 @@ final class ShowSitemapController extends Controller
         */
         '/trust',
         '/accessibility',
+        /*
+            C3'ün iki yeni adresi. İkisi de bugün 200 dönüyor, kütükte
+            değil ve kendi denetleyicileri var — bu listenin tanımı.
+
+            `/site-map` bir sitemap DOSYASI değil, bir SAYFADIR ve
+            indekslenmesinde bir çelişki yok: arama motoru onu da bir sayfa
+            olarak okur, `sitemap.xml` ise makine dosyası olarak kalır.
+            `/information-society-services` ayrıca satıcı kimliği kuralına
+            tabidir (yukarıdaki liste): kimlik eksikken hem sayfa `noindex`
+            döner hem de bu dosyadan düşer, yani iki sinyal aynı şeyi söyler.
+        */
+        '/information-society-services',
+        '/site-map',
     ];
 
     public function __construct(

@@ -21,8 +21,9 @@
           sözünü vermektir.
        4. YASAL — on üç belge, kendi satırında. Bir sözleşmeyi arayan kişi
           ürün gezintisinde gezinmez; "yasal" başlığını arar.
-       5. KURUMSAL KİMLİK — satıcının kim olduğu. Girilmemiş alan ATLANMAZ,
-          "girilmedi" diye YAZILIR (`CompanyIdentity`).
+       5. BAĞLANTI — doğrulanmış dış profil. Şirket künyesi C3'te
+          `/information-society-services` sayfasına taşındı; bağlantısı
+          2. satırdaki şirket grubunda duruyor.
        6. ALT SATIR — telif ve gezintiye dönüş yolu.
 
      Süs olsun diye satır yok: her satır ya bir soruyu yanıtlıyor ya bir
@@ -43,7 +44,8 @@
     {{-- The original mobile presentation remains native; desktop has its own open navigation. --}}
     <div class="site-mobile-footer" data-mobile-footer>
     {{-- 1. MARKA SATIRI. Ürünün ne olduğunu söyleyen tek cümle katalogdan
-         gelir; kimin sattığını 5. satır söyler. --}}
+         gelir; kimin sattığını şirket grubundaki
+         `/information-society-services` sayfası söyler. --}}
     <div class="site-shell-inner site-footer-row site-footer-brand">
         <span class="site-footer-brand-name">{{ $st['brand'] }}</span>
         <span class="site-footer-tagline">{{ $st['footerTagline'] }}</span>
@@ -98,24 +100,24 @@
         @endforeach
     </div>
 
-    {{-- 5. KURUMSAL KİMLİK SATIRI (FF-237).
+    {{-- 5. BAĞLANTI SATIRI — kimlik ARTIK BURADA DEĞİL (C3).
 
-         `/about` ve `/contact` aynı olguları GÖVDESİNDE gösteriyor; burada
-         her kurumsal adreste. Liste aynı `CompanyIdentity::rows()`
-         çağrısından çıkar (`SiteShell`), dolayısıyla ikisi ayrışamaz.
+         Bu satırda yedi satırlık şirket künyesi duruyordu, katlanmış bir
+         `<details>` içinde. Künye `/information-society-services`
+         sayfasına TAŞINDI ve altbilgide onun adı ve bağlantısı kaldı
+         (şirket grubunda, 2. satırda) — sebebi ölçülebilir: kanunun
+         istediği şey bir altbilgi satırı değil, ADIYLA aranabilen bir
+         sayfa; bir denetim "Bilgi Toplumu Hizmetleri" diye arar ve
+         katlanmış bir altbilgi listesi o aramanın hiçbir sonucunu vermez.
+         Değerler kaybolmadı: aynı `CompanyIdentity::rows()` çağrısı,
+         aynı "girilmedi" kuralı, artık kendi sayfasında.
 
-         Yedi satır dörtten çok, o yüzden KAPALI başlar — aynı kural, ayrı
-         bir istisna değil. Katlanmış olması gizlemek değildir: değerler
-         belgede durur ve girilmemiş alan "girilmedi" diye YAZILIR. --}}
-    <div class="site-shell-inner site-footer-row site-footer-identity">
-        <details class="site-footer-fold">
-            <summary class="site-footer-fold-toggle">
-                <h2 class="site-footer-heading">{{ $st['aboutSellerHeading'] }}</h2>
-                <x-phosphor name="caret-down" />
-            </summary>
-
-            @include('public.partials.company-identity')
-        </details>
+         Yerinde duran şey doğrulanmış tek dış adres: GitHub profili.
+         Doğrulanmamış hiçbir platform burada YOKTUR ve ikonu da yoktur —
+         hiçbir yere gitmeyen bir ikon, ürünün geri kalanına da gölge
+         düşürür (`SocialProfiles`). --}}
+    <div class="site-shell-inner site-footer-row site-footer-connect">
+        @include('public.partials.social-links', ['socialPresentation' => 'footer'])
     </div>
 
     {{-- 6. ALT SATIR.
@@ -137,6 +139,10 @@
          bu yazılım başka alan adlarında da çalışır (`SAAS-DOMAIN`). --}}
     <div class="site-shell-inner site-footer-row site-footer-bottom">
         <span>&copy; {{ now()->year }} {{ $st['brand'] }}</span>
+        {{-- Görünüm tercihi altbilgide de var (C2): sayfanın sonuna kadar
+             okuyan biri yukarı dönmeden kipini değiştirebilsin. Aynı parça,
+             aynı durum — üst çubuktaki kopyayla anında eşleşir. --}}
+        @include('public.partials.theme-control')
         <a href="#main-content" class="site-footer-top-link">{{ $st['footerBackToTop'] }}</a>
     </div>
     </div>

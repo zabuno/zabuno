@@ -107,6 +107,14 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
+    /*
+        TEK BOŞLUK ÖLÇEĞİ (C1).
+
+        Çubuğun içindeki her aralık — bölgeler arası, küme içi, ikon ile
+        sözcük arası — aynı iki adımdan (`--space-2`, `--space-3`) beslenir.
+        Önce her küme kendi sayısını taşıyordu ve sonuç, 320 pikselde göze
+        çarpmayan ama geniş ekranda dağınık duran bir ritimdi.
+    */
     gap: var(--space-2);
     padding-block: var(--space-1);
     /*
@@ -161,6 +169,8 @@
 .site-header-cta {
     display: inline-flex;
     align-items: center;
+    /* İkon ile sözcük arası, çubuğun geri kalanıyla aynı adımdan gelir. */
+    gap: var(--space-2);
     /* Parmak imleç değildir (`docs/118` E3). */
     min-height: var(--control-height);
     /*
@@ -171,10 +181,60 @@
         ikinci satıra sarıyordu. Küçülen şey HEDEF değil ÖLÜ ALAN: yükseklik
         44 pikselde kaldı, genişlik 44'ün çok üstünde.
     */
+    /*
+        DOLGU TABANDA DAR, GENİŞ EKRANDA GENİŞ (C2 ölçümü).
+
+        320×480'de ölçüldü (2026-09-09, gerçek Chrome): marka 59 + eylem 149
+        + menü 94 + aralıklar = 319 px, kullanılabilir genişlik 291 px.
+        Çubuk İKİ satıra çıkıyor ve 105 piksel — 480 piksellik ilk ekranın
+        %22'si — içerikten önce doluyordu.
+
+        Taban bu yüzden dar yazılıyor ve genişlik 30rem'den SONRA ekleniyor;
+        tersi (geniş yaz, dar ekranda geri al) aynı pikseli iki kez yazmak
+        ve borcu dar ekranda biriktirmek olurdu.
+    */
     padding-inline: var(--space-2);
+    /*
+        ÇERÇEVE ŞEFFAF AMA VAR: menü düğmesiyle aynı geometriyi paylaşır,
+        böylece ikisi yan yana dururken bir piksel kaymazlar.
+    */
+    border: 1px solid transparent;
     border-radius: var(--radius-md);
     color: var(--fg-secondary);
     font-weight: 500;
+    /*
+        ESKİ İÇ GÖLGE GİTTİ (C1).
+
+        daisyUI'nin `dz-btn`i her düğmeye bir `inset` parlaklık koyar; o
+        parlaklık 2010'ların kabartma düğmesinden kalmadır ve kabuğun düz
+        yüzey dilinde bir düğmeyi ötekinden farklı gösteriyordu. Ayrım artık
+        dolgu ve mürekkeple anlatılır, sahte bir ışıkla değil.
+    */
+    box-shadow: none;
+}
+
+/*
+    İKON TABANDA YOK, 30rem'DEN SONRA VAR.
+
+    İkon eylemin cinsini söyler ama SÖZCÜK zaten oradadır ve hedefi tek
+    başına taşır; 320 pikselde 28 piksel (glif + aralık) o sözcüğü ikinci
+    satıra iten şeydir. Gizlenen bir süs değil, ÖLÇÜLMÜŞ bir seçim: dar
+    ekranda kıt olan kaynak ekran alanıdır (`docs/118` E3).
+
+    Ekran okuyucu bundan etkilenmez — ikon zaten `aria-hidden` (`ICON-03`).
+*/
+.site-header-cta .site-icon {
+    display: none;
+}
+
+@media (min-width: 30rem) {
+    .site-header-cta {
+        padding-inline: var(--space-3);
+    }
+
+    .site-header-cta .site-icon {
+        display: block;
+    }
 }
 
 .site-header-cta:hover {
@@ -226,9 +286,17 @@
     color: var(--fg);
     font-weight: 500;
     cursor: pointer;
+    /* Aynı karar, aynı gerekçe: kabartma yok (bkz. `.site-header-cta`). */
+    box-shadow: none;
     /* Tarayıcının kendi üçgen işareti kaldırılıyor: yerine geometrik bir
        artı/eksi geliyor ve iki tarayıcıda aynı görünüyor. */
     list-style: none;
+}
+
+@media (min-width: 30rem) {
+    .site-menu-toggle {
+        padding-inline: var(--space-3);
+    }
 }
 
 .site-menu-toggle::-webkit-details-marker {
@@ -269,11 +337,50 @@
     outline-offset: 2px;
 }
 
+/*
+    BÖLMENİN GENİŞLİĞİ ÇUBUKTAN GELİR — ölçülmüş bir düzeltme (C2).
+
+    Kural "bölme çubuğun altına TAM GENİŞLİKTE açılır" diyordu ama
+    `position: absolute` bir öğe en yakın KONUMLANDIRILMIŞ atasına göre
+    ölçülür ve o ata `<details class="dz-dropdown">`in kendisiydi — yani
+    menü DÜĞMESİ. Ölçüldü (2026-09-09, gerçek Chrome, 320×480): bölme 82
+    piksel genişliğindeydi ve içindeki dil düğmeleri 328 pikselde, yani
+    ekranın dışında bitiyordu. 64rem üstünde de aynı: `min(26rem, 100%)`
+    içindeki `100%` 86 pikseli gösteriyordu.
+
+    Çözüm konumlandırmayı ÇUBUĞA taşımak. Menü artık kendi ölçüsünü
+    dayatmıyor; bölme gerçekten çubuğun altına, çubuğun genişliğinde açılıyor.
+*/
+.site-header-bar {
+    position: relative;
+}
+
+.site-menu {
+    position: static;
+}
+
 .site-menu-panel {
     /* Bölme çubuğun ALTINA, tam genişlikte açılır. Dar ekranda bir açılır
        menüyü sağa yaslamak, parmağın ekranın kenarına sıkışması demektir. */
     position: absolute;
-    inset-inline: 0;
+    /*
+        GENİŞLİK KONUMLANDIRMA KUTUSUNDAN DEĞİL, GÖRÜNTÜ ALANINDAN.
+
+        `inset-inline: 0` "çubuk kadar geniş" demek için yazılmıştı ama
+        daisyUI'nin açılır menü katmanı bölmeyi menü DÜĞMESİNİN kutusuna
+        bağlıyor; ölçüldü (2026-09-09, gerçek Chrome, 320x480): bölme 82
+        piksel genişliğindeydi, içindeki gezinti bağlantıları 74 piksellik
+        kutulara sıkışıyor ve dil düğmeleri kabından taşıyordu. Yüzde de,
+        `inset-inline: 0` da o kutuyu ölçtüğü için çare olmadı.
+
+        Bölme bu yüzden BİTİŞ kenarından çıpalanır (menü düğmesinin sağ
+        kenarı = çubuğun içerik kenarı) ve ölçüsünü doğrudan görüntü
+        alanından alır. 320'de 304 piksel, geniş ekranda 26rem: iki değer de
+        tek bir ifadede ve ikinci bir kırılma noktası gerekmiyor.
+    */
+    inset-inline-start: auto;
+    inset-inline-end: 0;
+    inline-size: min(26rem, calc(100vw - 2 * var(--space-2)));
     top: 100%;
     z-index: 20;
     display: flex;
@@ -281,8 +388,11 @@
     gap: var(--space-3);
     padding: var(--space-3);
     border: 1px solid var(--border);
-    border-radius: var(--radius-md);
+    /* Bölme çubuktan büyük bir yüzeydir; yarıçap da bir adım büyür —
+       kabuğun geri kalanı gibi jetondan, elle yazılmış bir sayıdan değil. */
+    border-radius: var(--radius-lg);
     background: var(--surface);
+    box-shadow: var(--zc-lift-2);
     /* Menü ekrandan uzunsa KENDİ kabında kayar; sayfayı kaydırmaz. */
     max-height: 70vh;
     overflow-y: auto;
@@ -1310,12 +1420,193 @@
     }
 }
 
+/*
+    GÖRÜNÜM TERCİHİ (`site-theme-control`) — dil denetimiyle AYNI dil (C2).
+
+    İki denetim yan yana duruyor ve ikisi de "bir grup içinde bölünmüş
+    seçenek" kalıbıdır: tek çerçeve, çerçevesiz seçenekler, dolu zeminle
+    işaretlenen seçili hâl. Ayrı görünmeleri, ziyaretçiye olmayan bir fark
+    anlatırdı.
+
+    ── BETİK BAĞLANANA KADAR YOK ──
+
+    `hidden` sunucudan gelir ve yalnız `resources/js/site/theme.ts` onu
+    kaldırır. Kural burada da yazılı, çünkü `display: inline-flex`
+    tarayıcının kendi `[hidden]` davranışını ezerdi ve betiksiz ziyaretçi
+    çalışmayan üç düğme görürdü.
+
+    ── SEÇİLİ HÂL YALNIZ RENKLE ANLATILMAZ ──
+
+    Dolu zemin + kalın sözcük + `aria-pressed`: üç sinyal. Dokunmalı bir
+    cihazda vurgu (`hover`) YOKTUR ve tek başına renge bağlanan bir durum,
+    renk ayrımı zayıf bir ekranda ya da renk körlüğünde kaybolur.
+*/
+.site-theme-control {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    max-inline-size: 100%;
+    min-inline-size: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    box-shadow: none;
+}
+
+/*
+    ÖZGÜLLÜK BİLEREK YÜKSEK.
+
+    Aşağıda menü sunumu denetimi `display: flex` yapıyor ve o seçici bununla
+    AYNI özgüllükte, üstelik daha sonra geliyordu: betiksiz ziyaretçi menü
+    bölmesinde çalışmayan üç düğme görürdü. Gizleme kuralı bu yüzden bir
+    adım daha özgül — `[hidden]` bir istisna değil, bir KAPIDIR.
+*/
+.site-shell [data-theme-control][hidden] {
+    display: none;
+}
+
+.site-theme-option {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* İkon ile sözcük arası, çubuğun geri kalanıyla aynı adımdan gelir. */
+    gap: var(--space-2);
+    /* Parmak imleç değildir (`docs/118` E3): hedef 44 pikselin altına inmez. */
+    min-block-size: var(--control-height);
+    padding-inline: var(--space-2);
+    color: var(--fg-secondary);
+    /* Seçenekler ORTAK çerçevenin içindedir: çerçeve içinde çerçeve olmaz. */
+    background: transparent;
+    border: 0;
+    border-radius: var(--radius-sm);
+    box-shadow: none;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.site-theme-option:hover {
+    color: var(--fg);
+    background: var(--surface-hover);
+}
+
+.site-theme-option[aria-pressed='true'] {
+    color: var(--fg);
+    background: var(--surface-hover);
+    font-weight: 700;
+}
+
+.site-theme-option:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: -2px;
+}
+
+/*
+    KİP DEĞİŞİMİ ANİDEN DEĞİL — ama isteyene aniden.
+
+    Zeminin ve mürekkebin kısa bir geçişle dönmesi, sahibin şikâyet ettiği
+    "ani sıçrama" hissinin ikinci yarısıdır: bir sayfanın bir karede
+    beyazdan siyaha atlaması, bir arıza gibi okunur. Geçiş yalnız
+    `no-preference` diyen ziyaretçide açılır ve yalnız RENGİ kapsar —
+    hiçbir kutu kıpırdamaz, hiçbir şey yer değiştirmez.
+*/
+@media (prefers-reduced-motion: no-preference) {
+    .site-shell,
+    .site-shell .site-header,
+    .site-shell .site-footer,
+    .site-shell .site-deep,
+    .site-shell .site-desktop-footer {
+        transition:
+            background-color 180ms ease,
+            color 180ms ease;
+    }
+}
+
+/*
+    İKİ SUNUM, TEK ODAK SIRASI — dil denetimiyle birebir aynı kural.
+
+    Gizlenen sunum `display: none` ile erişilebilirlik ağacından ve odak
+    sırasından TAMAMEN çıkar; `visibility` ya da `opacity` bırakılsaydı
+    klavye kullanıcısı görünmeyen üç düğmenin içinden geçerdi.
+*/
+.site-theme-desktop {
+    display: none;
+}
+
+.site-theme-menu .site-theme-control {
+    display: flex;
+    inline-size: 100%;
+}
+
+.site-theme-menu .site-theme-option {
+    flex: 1 1 0;
+}
+
+/* Dil denetimiyle AYNI eşik ve aynı gerekçe (`site-language.css`): iki ayar
+   denetimi çubuğa 80rem'de çıkar, o genişliğe kadar menü bölmesinde durur. */
+@media (min-width: 80rem) {
+    .site-theme-menu {
+        display: none;
+    }
+
+    .site-theme-desktop {
+        display: block;
+        min-inline-size: 0;
+    }
+}
+
+@media (min-width: 64rem) {
+    /*
+        Masaüstü çubuğunda denetim aynı denetimdir, yalnız mürekkebi kabuğun
+        zemininden gelir — bir gün o zemin değişirse çerçeve de onunla döner.
+    */
+    .site-theme-desktop .site-theme-control {
+        background: transparent;
+        border-color: color-mix(in srgb, var(--site-desktop-cream) 25%, transparent);
+    }
+
+    .site-theme-desktop .site-theme-option {
+        /* Hedef 44 pikselde KALIR; daralan yalnız yatay ölü alan. */
+        gap: var(--space-1);
+        padding-inline: var(--space-1);
+        color: var(--site-desktop-cream);
+    }
+
+    .site-theme-desktop .site-theme-option:hover,
+    .site-theme-desktop .site-theme-option[aria-pressed='true'] {
+        color: var(--site-desktop-ink);
+        background: var(--site-desktop-cream);
+    }
+}
+
 /* Owner direction, 2026-09-08: a visible desktop shell above the fluid base.
    Palette lives here for public desktop surfaces only; app themes are untouched. */
 .site-desktop-primary {
     display: none;
 }
 
+/*
+    MASAÜSTÜ KABUĞUNUN PALETİ ARTIK KİPİ TAKİP EDİYOR (C2).
+
+    ── Ölçülen kusur ──
+
+    Bu altı ad her koşulda geçerliydi ve `--site-desktop-ink: #111824` açık
+    kipte de uygulanıyordu. 1440 pikselde ölçüldü (2026-09-09, gerçek Chrome,
+    `zabuno-theme: light`): gövde `rgb(243,241,251)`, üst çubuk ve altbilgi
+    `rgb(17,24,36)`. Yani açık kipi seçmiş bir ziyaretçi, açık bir sayfanın
+    üstünde ve altında iki siyah şerit görüyordu — kip seçimi sayfanın
+    ortasında kalıyor, kenarlarına hiç ulaşmıyordu.
+
+    ── Altı ad KOYU kipin tabanı olarak kaldı ──
+
+    Aşağıdaki blok kabuğun TEK ham renk istisnasıdır ve öyle kalıyor
+    (`KIMLIK-01`): koyu masaüstü kabuğunun ölçülmüş 7:1 çiftleri burada
+    yaşıyor. Yeni olan şey, AÇIK kipte aynı adların kimlik jetonlarına
+    yeniden bağlanması — ham renkle değil, `var()` ile. Böylece çubuk,
+    altbilgi ve derin bant tek bir zemin ailesinden çıkar: koyu kipte üçü de
+    koyu, açık kipte üçü de birbirine yakın açık yüzeyler. "Ani koyudan
+    beyaza geçiş" tam olarak bu üç yüzeyin ayrı kaynaklardan beslenmesiyle
+    doğuyordu.
+*/
 @media (min-width: 64rem) {
     .site-shell {
         --site-desktop-ink: #111824;
@@ -1325,12 +1616,50 @@
         --site-desktop-coral: #ff937d;
         --site-desktop-coral-ink: #942f23;
     }
+}
 
+/*
+    DOLU MERCAN DÜĞMENİN MÜREKKEBİ — ayrı bir ad, ayrı bir gerekçe.
+
+    Eskiden dolu düğmenin yazısı `--site-desktop-ink` idi: koyu kipte doğru
+    (açık mercan üstüne koyu mürekkep), açık kipte YANLIŞ olurdu — orada
+    `ink` açık bir yüzeydir ve koyu mercanın üstüne açık yazı basardı.
+    Mürekkep bu yüzden zeminle birlikte döner.
+*/
+.site-shell {
+    --site-desktop-on-coral: var(--site-desktop-ink);
+}
+
+/*
+    AÇIK KİP — ham renk YOK, yalnız kimlik jetonları.
+
+    Seçici `html:not([data-theme='dark'])`: tema önyükleyicisi açık kipte
+    `data-theme="light"` yazar, betiği engellenmiş ziyaretçide ise hiçbir şey
+    yazmaz. İkisi de açık kiptir ve bu seçici ikisini birden yakalar —
+    `[data-theme='light']` yazsaydık, betiksiz ziyaretçi koyu masaüstü
+    paletiyle açık bir gövde görürdü.
+*/
+html:not([data-theme='dark']) .site-shell {
+    --site-desktop-ink: var(--zc-deep-canvas);
+    --site-desktop-panel: var(--zc-deep-raised);
+    --site-desktop-cream: var(--zc-deep-text);
+    --site-desktop-muted: var(--zc-deep-text-soft);
+    /* Marka mercanının açık zemin basamağı; ikinci bir ham renk değil. */
+    --site-desktop-coral: var(--site-desktop-coral-ink);
+    --site-desktop-on-coral: var(--zc-white);
+}
+
+@media (min-width: 64rem) {
+    /*
+        Bant, çubuk ve altbilgi aynı zemini paylaştığı için burada yalnız
+        vurgu yeniden bağlanıyor. Eski satırlar `--zc-deep-raised`i
+        `--site-desktop-panel`e bağlıyordu; o ad artık aynı jetondan
+        türediği için bağ döngüsel olurdu ve tarayıcı ikisini birden
+        geçersiz sayardı.
+    */
     .site-shell .site-deep {
         --zc-deep-accent: var(--site-desktop-coral);
         --zc-accent: var(--site-desktop-coral);
-        --zc-deep: var(--site-desktop-ink);
-        --zc-deep-raised: var(--site-desktop-panel);
     }
 
     .site-header {
@@ -1340,8 +1669,36 @@
     }
 
     .site-header-bar {
-        min-block-size: 5.5rem;
-        column-gap: clamp(1rem, 2vw, 2rem);
+        /*
+            ÜÇ BÖLGE, TEK HİZA (C1).
+
+            5.5rem (88 px) çubuk, 1440 pikselde ilk ekranın altıda birini
+            içerikten önce dolduruyordu. 4.5rem (72 px) aynı hedefleri —
+            44 pikselin altına inmeden — taşır ve içeriğe 16 piksel geri
+            verir. Bölgeler arası aralık akışkan kalır: 1024'te sıkışmaz,
+            1920'de dağılmaz.
+        */
+        min-block-size: 4.5rem;
+        /*
+            BÖLGE ARALIĞI DARALDI (C2 ölçümü).
+
+            Çubuk artık dört şey taşıyor (marka, gezinti, araçlar; araçların
+            içinde dil VE görünüm denetimi). 1440'ta ölçüldü: kullanılabilir
+            içerik genişliği 1238 px, doğal toplam 1244 px — yani çubuk altı
+            piksel yüzünden iki satıra çıkıyor ve yüksekliği 73'ten 117'ye
+            fırlıyordu. Küçülen şey yine hedef değil ÖLÜ ALAN.
+        */
+        /*
+            ÖLÇÜLDÜ, TEKRAR (İNGİLİZCE EN UZUN DİZE).
+
+            1280'de İngilizce çubuk hâlâ ~20 piksel taşıyor ve iki satıra
+            (106 px) çıkıyordu; Türkçe aynı çubukta tek satırda (73 px)
+            duruyordu. Fark hedeflerde değil ARALIKTA: 1.4vw geniş ekranda
+            bölge başına 18 piksel ölü alan bırakıyor. 0.8vw aynı üç bölge
+            ayrımını korur, 1280'de bölge başına ~8 piksel geri verir ve
+            taban (--space-2) hiçbir zaman 8 pikselin altına inmez.
+        */
+        column-gap: clamp(var(--space-2), 0.8vw, var(--space-4));
     }
 
     .site-header .site-brand {
@@ -1351,13 +1708,37 @@
         letter-spacing: -0.06em;
     }
 
+    /*
+        GEZİNTİ ORTADA, ARAÇLAR SAĞDA (C1).
+
+        Önce gezinti `margin-inline-start: auto` ile sağa itiliyordu ve
+        hesap eylemiyle dil denetiminin hemen yanına yapışıyordu: geniş
+        ekranda "nereye gidilir" ile "ne yapılır" tek bir yığın gibi
+        okunuyordu. İki yanına da otomatik boşluk verilince gezinti
+        ortalanır ve üç bölge — marka, gezinti, araçlar — birbirinden
+        ayrılır.
+    */
     .site-desktop-primary {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
         justify-content: center;
-        gap: clamp(0.75rem, 1.4vw, 1.5rem);
-        margin-inline-start: auto;
+        /*
+            Gezinti bağlantıları arası aralık aynı ölçümün ikinci yarısı:
+            altı bağlantı arasındaki beş boşluk 1vw'de 1280'de 64 piksel
+            tutuyordu. 0.7vw ile ~45 piksele iner; bağlantı hedefleri
+            (--control-height, 44 px) ve dolguları değişmez, yalnız
+            aralarındaki ölü alan daralır.
+        */
+        gap: clamp(var(--space-1), 0.7vw, var(--space-3));
+        margin-inline: auto;
+        /*
+            daisyUI'nin `navbar` katmanı her çocuğa `flex: 1 1 384px` veriyor
+            ve gezinti o TABAN ölçüye sıkıştırılıp kendi içinde iki satıra
+            sarıyordu (ölçüldü: 390 px kutuda 455 px'lik içerik). Taban ölçü
+            içeriğin kendisidir; büyütme ve küçültme kararını çubuk verir.
+        */
+        flex: 0 1 auto;
     }
 
     .site-desktop-primary a {
@@ -1369,6 +1750,11 @@
         font-weight: 500;
     }
 
+    .site-desktop-primary a {
+        padding-inline: var(--space-1);
+        border-radius: var(--radius-md);
+    }
+
     .site-desktop-primary a:hover {
         color: var(--site-desktop-coral);
     }
@@ -1378,12 +1764,19 @@
         outline-offset: 4px;
     }
 
+    /*
+        TEK YARIÇAP AİLESİ (C1).
+
+        Burada 0.5rem yazılıydı, tabanda `--radius-md` (10 px): aynı
+        çubuktaki iki düğme iki farklı köşe yarıçapı taşıyordu ve fark
+        ölçülebilirdi (8 px'e karşı 10 px). Yarıçap artık tek yerden gelir.
+    */
     .site-header .site-header-cta[data-emphasis='true'] {
         background: var(--site-desktop-coral);
-        color: var(--site-desktop-ink);
+        color: var(--site-desktop-on-coral);
         border-color: transparent;
-        border-radius: 0.5rem;
-        padding-inline: 1rem;
+        border-radius: var(--radius-md);
+        padding-inline: var(--space-4);
         box-shadow: none;
     }
 
@@ -1391,7 +1784,11 @@
         background: transparent;
         color: var(--site-desktop-cream);
         border-color: color-mix(in srgb, var(--site-desktop-cream) 25%, transparent);
-        border-radius: 0.5rem;
+        border-radius: var(--radius-md);
+    }
+
+    .site-header .site-menu-toggle:hover {
+        border-color: var(--site-desktop-cream);
     }
 
     .site-menu-panel .site-menu-primary {
@@ -1399,10 +1796,9 @@
     }
 
     .site-menu-panel {
-        inset-inline-start: auto;
-        inline-size: min(26rem, 100%);
-        padding: 1.25rem;
-        box-shadow: var(--zc-lift-2);
+        /* Ölçü tabanda tek ifadede çözüldü; burada yalnız iç dolgu büyür. */
+        padding: var(--space-4);
+        margin-block-start: var(--space-2);
     }
 
     .site-footer {
@@ -1512,7 +1908,7 @@
 
     .site-desktop-footer-actions a[data-emphasis='true'] {
         background: var(--site-desktop-coral);
-        color: var(--site-desktop-ink);
+        color: var(--site-desktop-on-coral);
         border-color: transparent;
     }
 

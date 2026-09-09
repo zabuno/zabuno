@@ -48,9 +48,15 @@ final class ShellLayersTest extends TestCase
 
         /*
             BUGÜN BEŞ SATIR ÇİZİLİYOR: marka, bağlantı grupları, yasal,
-            kurumsal kimlik, alt satır. Altıncısı (pSEO bandı) kütükte
-            yayınlanmış sayfa olmadığı için HİÇ çizilmiyor — boş bir başlık,
-            olmayan bir bölümün sözünü vermektir (FOOTER-CONTENT-01).
+            bağlantı (doğrulanmış dış profil), alt satır. Altıncısı (pSEO
+            bandı) kütükte yayınlanmış sayfa olmadığı için HİÇ çizilmiyor —
+            boş bir başlık, olmayan bir bölümün sözünü vermektir
+            (FOOTER-CONTENT-01).
+
+            KURUMSAL KİMLİK ARTIK BİR ALTBİLGİ SATIRI DEĞİL (C3): yedi
+            satırlık künye `/information-society-services` sayfasına taşındı
+            ve altbilgide onun BAĞLANTISI kaldı. Satır sayısı değişmedi,
+            satırın işi değişti.
         */
         self::assertSame(
             5,
@@ -62,7 +68,7 @@ final class ShellLayersTest extends TestCase
             'site-footer-brand' => 'marka satırı',
             'site-footer-grid' => 'bağlantı grupları satırı',
             'site-footer-legal' => 'yasal satırı',
-            'site-footer-identity' => 'kurumsal kimlik satırı',
+            'site-footer-connect' => 'bağlantı satırı',
             'site-footer-bottom' => 'alt satır',
         ] as $marker => $job) {
             self::assertStringContainsString(
@@ -197,32 +203,47 @@ final class ShellLayersTest extends TestCase
 
     // --- FOOTER-LAYER-05 -------------------------------------------------------
 
-    public function test_the_seller_identity_is_on_every_corporate_page_and_says_what_is_missing(): void
+    public function test_the_seller_identity_has_one_page_the_footer_links_to_from_everywhere(): void
     {
         /*
-            GİRİLMEMİŞ ALAN ATLANMAZ, "GİRİLMEDİ" DİYE YAZILIR.
+            KÜNYE ALTBİLGİDEN SAYFAYA TAŞINDI (C3) — kural değişmedi, YERİ
+            değişti. Girilmemiş alan hâlâ ATLANMAZ, "girilmedi" diye
+            YAZILIR: atlanan bir satır o alanın hiç istenmediği izlenimi
+            verirdi, uydurma bir değer ise sözleşmenin tarafını yanlış
+            gösterirdi (`CompanyIdentity`).
 
-            Atlanan bir satır, o alanın hiç istenmediği izlenimi verirdi;
-            uydurma bir değer ise sözleşmenin tarafını yanlış gösterirdi.
-            Karar `CompanyIdentity`de zaten verilmişti; bu kapı onun
-            altbilgide de geçerli olduğunu donduruyor.
+            Taşımanın ölçülebilir sebebi: bir e-ticaret denetimi künyeyi
+            ADIYLA arar ("Bilgi Toplumu Hizmetleri") ve katlanmış bir
+            altbilgi listesi o aramanın hiçbir sonucunu vermez. Bu kapı iki
+            şeyi birden donduruyor — her kurumsal sayfanın altbilgisi o
+            sayfaya BAĞLANIR ve sayfa yedi alanın YEDİSİNİ de gösterir.
         */
         foreach (['/pricing', '/help', '/terms'] as $path) {
             $footer = $this->footer($path);
 
             self::assertStringContainsString(
-                'data-company-identity=',
+                'href="/information-society-services"',
                 $footer,
-                "FOOTER-LAYER-05: [{$path}] altbilgisinde satıcı kimliği yok."
+                "FOOTER-LAYER-05: [{$path}] altbilgisi satıcı künyesi sayfasına bağlanmıyor."
             );
 
-            foreach (['legal_name', 'address', 'mersis', 'tax_office', 'tax_number', 'email', 'phone'] as $field) {
-                self::assertStringContainsString(
-                    'data-company-field="'.$field.'"',
-                    $footer,
-                    "FOOTER-LAYER-05: [{$field}] alanı altbilgide atlanmış."
-                );
-            }
+            self::assertStringNotContainsString(
+                'data-company-identity=',
+                $footer,
+                "FOOTER-LAYER-05: [{$path}] altbilgisinde künye tablosu hâlâ çiziliyor — taşındı."
+            );
+        }
+
+        $page = (string) $this->get('/information-society-services')->assertOk()->getContent();
+
+        self::assertStringContainsString('data-company-identity=', $page);
+
+        foreach (['legal_name', 'address', 'mersis', 'tax_office', 'tax_number', 'email', 'phone'] as $field) {
+            self::assertStringContainsString(
+                'data-company-field="'.$field.'"',
+                $page,
+                "FOOTER-LAYER-05: [{$field}] alanı künye sayfasında atlanmış."
+            );
         }
     }
 

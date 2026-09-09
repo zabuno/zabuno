@@ -21,8 +21,10 @@ use App\Http\Controllers\PublicSite\ShowAboutController;
 use App\Http\Controllers\PublicSite\ShowAccessibilityStatementController;
 use App\Http\Controllers\PublicSite\ShowContactFormController;
 use App\Http\Controllers\PublicSite\ShowHelpController;
+use App\Http\Controllers\PublicSite\ShowInformationSocietyServicesController;
 use App\Http\Controllers\PublicSite\ShowInvestorPageController;
 use App\Http\Controllers\PublicSite\ShowLegalDocumentController;
+use App\Http\Controllers\PublicSite\ShowSiteMapPageController;
 use App\Http\Controllers\PublicSite\ShowTrustCentreController;
 use App\Http\Controllers\PublicSite\StoreContactMessageController;
 use App\Http\Controllers\PublicSite\StoreMeasurementConsentController;
@@ -114,6 +116,28 @@ Route::get('/trust', ShowTrustCentreController::class)->name('public.trust');
     ilgili — arayüzü kullanamayan biri oturum da açamıyor olabilir.
 */
 Route::get('/accessibility', ShowAccessibilityStatementController::class)->name('public.accessibility');
+
+/*
+    BİLGİ TOPLUMU HİZMETLERİ (C3).
+
+    Adres bu kelimelerle: bir e-ticaret denetimi, bir ödeme kuruluşu
+    incelemesi ve bir ticaret sicili sorgusu satıcının künyesini TAM olarak
+    bu başlıkla arar. Künye daha önce altbilginin iki sunumunda da katlanmış
+    bir listeydi; katlanmış bir altbilgi satırı o aramanın hiçbir sonucunu
+    vermiyordu. OTURUM İSTEMEZ ve veritabanına dokunmaz: kimlik ortamdan
+    gelir (`CompanyIdentity`).
+*/
+Route::get('/information-society-services', ShowInformationSocietyServicesController::class)
+    ->name('public.informationSocietyServices');
+
+/*
+    SİTE HARİTASI — İNSAN İÇİN (C3).
+
+    `sitemap.xml` arama motorunundur ve bir ziyaretçi onu açmaz. Adres
+    `/site-map` (tire ile): `/sitemap.xml` ile aynı kelimeyi paylaşmaları
+    ikisini karıştırmayı kolaylaştırırdı ve ikisi ayrı kitleye hizmet eder.
+*/
+Route::get('/site-map', ShowSiteMapPageController::class)->name('public.siteMap');
 
 /*
     YATIRIMCI İLİŞKİLERİ (FF-251) — dört adres, tek denetleyici.

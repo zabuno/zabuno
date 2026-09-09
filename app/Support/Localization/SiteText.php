@@ -114,12 +114,20 @@ final class SiteText
             // Güven merkezi ve erişilebilirlik beyanı (FF-252).
             'navTrust' => 'site.nav.trust',
             'navAccessibility' => 'site.nav.accessibility',
+            // Bilgi toplumu hizmetleri ve insan için site haritası (C3).
+            'navInformationSocietyServices' => 'site.nav.informationSocietyServices',
+            'navSiteMap' => 'site.nav.siteMap',
             'navLogin' => 'site.nav.login',
             'navRegister' => 'site.nav.register',
             // Kabuk menüsünü açan sözcük (FF-190). Grup ve madde adları
             // `SiteNavigation` üzerinden çözülür; bu tek dize kabuğun
             // kendisine ait olduğu için burada.
             'navMenu' => 'site.nav.menu',
+            // Görünüm tercihi (C2): kabuğun kendi denetimi, kütüğün değil.
+            'themeLabel' => 'site.theme.label',
+            'themeLight' => 'site.theme.light',
+            'themeDark' => 'site.theme.dark',
+            'themeSystem' => 'site.theme.system',
             // Hazırlanıyor sayfası (FF-117): metin ŞABLONDA değil KATALOGDA.
             'pageState.title' => 'site.pageState.title',
             'pageState.headline' => 'site.pageState.headline',
@@ -241,6 +249,39 @@ final class SiteText
             'aboutReachCta' => 'site.about.reach.cta',
             'aboutIncompleteHeading' => 'site.about.incomplete.heading',
             'aboutIncompleteBody' => 'site.about.incomplete.body',
+            /*
+                BİLGİ TOPLUMU HİZMETLERİ SAYFASI (C3).
+
+                Sayfanın kendi cümleleri katalogda; TABLOSU değil. Künye
+                satırları `CompanyIdentity` etiketlerinden, belge listesi
+                gezintiden, veri hakkı satırı ise yasal sayfalarla AYNI
+                `dataRequest*` anahtarlarından geliyor — aynı hakkı iki
+                farklı cümleyle anlatmamak için.
+            */
+            'issHeading' => 'site.iss.heading',
+            'issLead' => 'site.iss.lead',
+            'issIdentityHeading' => 'site.iss.identity.heading',
+            'issIdentityBody' => 'site.iss.identity.body',
+            'issDocumentsHeading' => 'site.iss.documents.heading',
+            'issDocumentsBody' => 'site.iss.documents.body',
+            'issContactHeading' => 'site.iss.contact.heading',
+            'issContactBody' => 'site.iss.contact.body',
+            /*
+                SİTE HARİTASI SAYFASI (C3). Ağacın İÇİNDEKİ her etiket
+                gezintiden gelir; katalogda duran şey yalnız sayfanın kendi
+                başlığı, giriş cümlesi ve ağacın kökü.
+            */
+            'siteMapHeading' => 'site.siteMap.heading',
+            'siteMapLead' => 'site.siteMap.lead',
+            'siteMapHome' => 'site.siteMap.home',
+            /*
+                SOSYAL ŞERİT (C3). İkon tek başına duruyor; okunabilir adı
+                bağlantının `aria-label`ında yaşıyor ve o ad çevrilmek
+                zorunda — bir ekran okuyucu kullanıcısı için şeridin TEK
+                bilgisi o cümledir.
+            */
+            'socialLabel' => 'site.social.label',
+            'socialGithub' => 'site.social.github',
             /*
                 GÜVENCE BEYANLARININ ETİKETLERİ (FF-252).
 

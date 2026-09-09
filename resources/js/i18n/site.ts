@@ -123,6 +123,16 @@ export const siteTranslations = {
     */
     'site.nav.trust': 'Trust centre',
     'site.nav.accessibility': 'Accessibility',
+    /*
+        BİLGİ TOPLUMU HİZMETLERİ VE SİTE HARİTASI (C3).
+
+        İlk ad SEÇİLMEDİ, ARANDI: e-ticaret mevzuatı ve ticaret sicili
+        satıcının künyesini tam olarak bu kelimelerle ister ve bir denetim
+        sayfayı bu adla arar. "Şirket bilgileri" gibi bir başlık daha
+        güzel okunurdu ve o aramanın hiçbir sonucunu vermezdi.
+    */
+    'site.nav.informationSocietyServices': 'Information Society Services',
+    'site.nav.siteMap': 'Site map',
     'site.nav.login': 'Log in',
     'site.nav.register': 'Create account',
     /*
@@ -133,6 +143,18 @@ export const siteTranslations = {
         şey durur ve bu, açılır bölmeyi açan sözcüktür.
     */
     'site.nav.menu': 'Menu',
+    /*
+        GÖRÜNÜM TERCİHİ (C2).
+
+        Üç seçenek üç ayrı sözcüktür, bir açık/kapalı anahtarı değil:
+        "sistem" bir üçüncü hâldir — kullanıcı bir renk seçmez, işletim
+        sisteminin kararını seçer. İki durumlu bir düğme o hâli ifade
+        edemez ve seçtiğini geri alma yolu bırakmazdı.
+    */
+    'site.theme.label': 'Appearance',
+    'site.theme.light': 'Light',
+    'site.theme.dark': 'Dark',
+    'site.theme.system': 'System',
     /*
         MEGA MENÜ GRUBU — sahibin kendi site haritasındaki üst menü
         (`docs/106` §3.1). Bu maddeler sayfa kütüğündeki canonical yollara
@@ -199,6 +221,40 @@ export const siteTranslations = {
         tek dize durur.
     */
     'site.footer.contentMenus': 'Browse all pages',
+    /*
+        BİLGİ TOPLUMU HİZMETLERİ SAYFASI (C3).
+
+        Cümleler HİÇBİR ŞEY İDDİA ETMEZ: sayfada bir sicil kaydı, bir üyelik
+        ya da bir uyum beyanı yok — yalnız satıcının girdiği künye, bu
+        depoda gerçekten yayımlanmış belgeler ve çalışan iletişim yolu.
+        Girilmemiş bir alan "girilmedi" der (`site.company.value.missing`).
+    */
+    'site.iss.heading': 'Information Society Services',
+    'site.iss.lead': 'Who the seller is, which documents it publishes, and how to reach it.',
+    'site.iss.identity.heading': 'Company identity',
+    'site.iss.identity.body':
+        'These are the details entered by the seller operating this service. A field that has not been entered is shown as such; nothing here is filled in on the seller\u2019s behalf.',
+    'site.iss.documents.heading': 'Official legal documents',
+    'site.iss.documents.body': 'Every document published on this site, each at its own address.',
+    'site.iss.contact.heading': 'Contact and data rights',
+    'site.iss.contact.body':
+        'The contact form reaches the seller and is kept. Requests about your personal data follow the same route.',
+    /*
+        SİTE HARİTASI SAYFASI (C3). "Bugün" kelimesi bilerek duruyor: harita
+        gezintiden türer ve gezinti yalnız bugün gerçekten açılan sayfaları
+        taşır. Yarın yayına alınan bir sayfa buraya kendiliğinden girer.
+    */
+    'site.siteMap.heading': 'Site map',
+    'site.siteMap.lead':
+        'Every page this site links to today, grouped the way the header and footer group it.',
+    'site.siteMap.home': 'Home',
+    /*
+        SOSYAL ŞERİT (C3). Yalnız DOĞRULANMIŞ profil çizilir; etiket ikonun
+        yerine geçen tek okunabilir bilgidir, bu yüzden platformun adını ve
+        markayı birlikte söyler.
+    */
+    'site.social.label': 'Zabuno elsewhere',
+    'site.social.github': 'Zabuno on GitHub',
     // --- Fiyat -----------------------------------------------------------
     'site.engineering.title': 'Zabuno — Engineering',
     /*

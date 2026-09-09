@@ -178,6 +178,14 @@ return [
             hiçbir yerde bir hata olarak görünmezdi.
         */
         'accessibility', 'trust',
+        /*
+            KÜNYE VE İNSAN İÇİN SİTE HARİTASI (C3). Aynı kural: ikisi de üst
+            düzey yoldur (URL-RESERVED-COVERS-ROUTES-13). Bir işletme
+            `information-society-services` slug'ını alırsa, bir ödeme
+            kuruluşunun incelemesinde tam bu başlıkla aradığı künye o
+            işletmenin menüsüyle gölgelenirdi.
+        */
+        'information-society-services', 'site-map',
         // `engineering` REZERVE KALIR: kökte yaşayan 301 yönlendirmesi
         // orada duruyor, bir kiracı o slug'ı alırsa kendi sayfası ile
         // yönlendirme aynı adresi paylaşırdı (FF-248).

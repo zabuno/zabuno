@@ -57,9 +57,36 @@
             @endif
         @endforeach
 
+        {{-- ÜÇÜNCÜ BÖLGE: ARAÇLAR (C1).
+
+             Çubuk artık üç bölge okuyor — marka, gezinti, araçlar — ve
+             sırası soldan sağa hep aynı: kim olduğumuz, nereye gidilir, ne
+             yapılır. Dil denetimi, birincil eylem ve menü aynı kümede durur
+             ki geniş ekranda gezintiyle karışmasınlar. --}}
         <div class="site-header-actions">
             <div class="site-language-desktop" data-language-presentation="desktop">
                 @include('public.partials.language-switcher')
+            </div>
+            {{-- Görünüm tercihi de dil denetimiyle AYNI iki sunumu kullanır
+                 (C2): geniş ekranda çubukta, dar ekranda menü bölmesinde.
+                 Aynı anda yalnız biri çizilir, dolayısıyla odak sırasında ve
+                 erişilebilirlik ağacında tek kopya vardır. --}}
+            <div class="site-theme-desktop" data-theme-presentation="desktop">
+                @include('public.partials.theme-control')
+            </div>
+            {{-- DOĞRULANMIŞ SOSYAL PROFİL — dil ve görünüm denetimiyle AYNI
+                 iki sunum kuralı (C1 ve C2'den devralındı, C3).
+
+                 320 pikselde çubuk zaten ölçülmüş sınırında: marka + tek
+                 hesap düğmesi + menü düğmesi tek satıra ancak sığıyor
+                 (`docs/141` §4). Çubuğa üçüncü bir ikon eklemek o satırı
+                 SARDIRIRDI ve sarma, ilk ekranın içerikten önce dolduğu
+                 anlamına gelir. Bu yüzden dar düzende şerit MENÜ
+                 BÖLMESİNDE durur; geniş çubukta yer boldur ve orada çıkar.
+                 Aynı anda yalnız biri çizilir (`display: none`), dolayısıyla
+                 odak sırasında ve erişilebilirlik ağacında tek kopya var. --}}
+            <div class="site-social-desktop" data-social-presentation-wrapper="desktop">
+                @include('public.partials.social-links', ['socialPresentation' => 'header-desktop'])
             </div>
             {{-- BİRİNCİL EYLEM ÇUBUKTA, İKİNCİSİ BÖLMEDE.
 
@@ -71,11 +98,20 @@
             @foreach ($nav['headerActions'] as $group)
                 <nav aria-label="{{ $group['label'] }}" data-nav-group="{{ $group['id'] }}" class="site-header-cta-group">
                     @foreach ($group['items'] as $item)
+                        {{-- İKON + SÖZCÜK (C1, `docs/118` E6).
+
+                             İkon eylemin CİNSİNİ söyler (bir hesap açılıyor),
+                             sözcük hedefini. İkisi birlikte durur: ikon tek
+                             başına bir etiket değildir, bu yüzden `aria-hidden`
+                             kalır ve ekran okuyucu yalnız sözcüğü okur
+                             (`ICON-03`). Çubuktaki tek dolu düğme budur —
+                             ikinci bir dolu düğme, birincil olanı ikincil
+                             yapardı. --}}
                         <a
                             href="{{ $item['href'] }}"
                             class="dz-btn site-header-cta"
                             @if ($item['emphasis']) data-emphasis="true" @endif
-                        >{{ $item['label'] }}</a>
+                        ><x-phosphor name="user-plus" /><span>{{ $item['label'] }}</span></a>
                     @endforeach
                 </nav>
             @endforeach
@@ -142,6 +178,12 @@
                     @endforeach
                     <div class="site-language-menu" data-language-presentation="menu">
                         @include('public.partials.language-switcher')
+                    </div>
+                    <div class="site-theme-menu" data-theme-presentation="menu">
+                        @include('public.partials.theme-control')
+                    </div>
+                    <div class="site-social-menu" data-social-presentation-wrapper="menu">
+                        @include('public.partials.social-links', ['socialPresentation' => 'header-menu'])
                     </div>
                 </div>
             </details>

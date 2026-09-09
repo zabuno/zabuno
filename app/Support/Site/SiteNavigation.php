@@ -217,6 +217,30 @@ final class SiteNavigation
                     */
                     ['labelKey' => 'site.nav.trust', 'path' => '/trust'],
                     ['labelKey' => 'site.nav.accessibility', 'path' => '/accessibility'],
+                    /*
+                        BİLGİ TOPLUMU HİZMETLERİ (C3).
+
+                        Şirket kimliği tablosu altbilginin İKİ sunumunda da
+                        çiziliyordu: yedi satırlık bir künye, her kurumsal
+                        sayfanın altında, katlanmış bir `<details>` içinde.
+                        Kanunun istediği şey ise bir künye SATIRI değil,
+                        adıyla aranabilen bir SAYFA — ticaret sicilinde ve
+                        e-ticaret denetiminde bu başlık aynen bu kelimelerle
+                        aranır. Tablo o sayfaya taşındı; altbilgide artık
+                        onun adı ve bağlantısı duruyor.
+
+                        Bağlantı ŞİRKET grubunda, yasal satırda değil: sayfa
+                        bir sözleşme değil, satıcının kim olduğunun beyanı —
+                        `/about` ve `/trust` ile aynı tür.
+                    */
+                    ['labelKey' => 'site.nav.informationSocietyServices', 'path' => '/information-society-services'],
+                    /*
+                        SİTE HARİTASI (C3). İnsan için, arama motoru için
+                        değil: `sitemap.xml` zaten var ve onu bir ziyaretçi
+                        okumaz. Bu sayfa gezintinin KENDİSİNİ gösterir —
+                        hangi grup neyi taşıyor, hangi sayfa nereye bağlı.
+                    */
+                    ['labelKey' => 'site.nav.siteMap', 'path' => '/site-map'],
                 ],
             ],
             [
