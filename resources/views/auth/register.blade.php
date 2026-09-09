@@ -22,6 +22,6 @@
          blok BOŞ çıkar ve form yine çalışır: kartlar kalıcı sayfaya düşer.
          Gerçek rotanın metni taşıdığı ayrıca sınanıyor — bu yedek, bir
          gerileme gizlesin diye değil, kabuk denetimi çökmesin diye var. --}}
-    <script type="application/json" id="register-legal">@json($legal ?? ['reviewPending' => false, 'documents' => []])</script>
+    <script type="application/json" id="register-legal" nonce="{{ $cspNonce ?? '' }}">@json($legal ?? ['reviewPending' => false, 'documents' => []])</script>
 </body>
 </html>
