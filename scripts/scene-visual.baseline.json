@@ -7778,13 +7778,13 @@
                     32,
                     30,
                     20,
-                    29,
-                    39,
-                    51,
-                    47,
-                    46,
-                    49,
-                    35,
+                    12,
+                    26,
+                    40,
+                    34,
+                    34,
+                    37,
+                    22,
                     17,
                     24,
                     42,
@@ -7794,13 +7794,13 @@
                     13,
                     13,
                     13,
-                    25,
-                    25,
-                    24,
-                    24,
-                    24,
-                    24,
-                    30,
+                    17,
+                    14,
+                    13,
+                    13,
+                    13,
+                    13,
+                    18,
                     16,
                     13,
                     13,
@@ -7968,12 +7968,14 @@
                     0
                 ],
                 "provenance": {
-                    "workflowRun": "https://github.com/zabuno/zabuno/actions/runs/34245660916",
-                    "artifact": "scene-visual-34245660916-1",
+                    "workflowRun": "https://github.com/zabuno/zabuno/actions/runs/34342767101",
+                    "job": "https://github.com/zabuno/zabuno/actions/runs/34342767101/job/102437173607",
+                    "headSha": "ef5060f1",
+                    "artifact": "scene-visual-34342767101-1",
                     "image": "help-320-forced.png",
-                    "imageSha256": "389e05e50bfcad7cd569bc76b3aa29bf13f2729e83eaac162dec883bcdfb331d",
-                    "reportSha256": "a8681c506c101c2da614c42fe863931fa18592a539e1b5647600d7712854d83b",
-                    "browser": "Chrome/152.0.7977.64",
+                    "imageSha256": "71916013c6a1a8eda95b46a0a3238e2039753554fed3c9d17f5e0a0dd295d52a",
+                    "reportSha256": "9e16d8eb785f681d524c0d51c4085484e3e81f1d9a352456036eb04e5cdfbd74",
+                    "browser": "Chrome/152.0.7977.82",
                     "platform": "linux",
                     "measuredDriftFromDefault": 13,
                     "worstCell": {
@@ -7982,8 +7984,27 @@
                         "expected": 35,
                         "actual": 48
                     },
-                    "review": "Linux CI ve macOS PNG görüntülerinde aynı düzen ve satır kırılımları; metin kenarı parlaklığı farklı. Yalnız bu platform/görünüm imzası kabul edildi; tolerans 12 ve varsayılan imzalar değişmedi."
-                }
+                    "review": "Genel başlık (public header) owner onaylı yeni kenarlık ve içerik düzenine geçti; run 34342767101 Linux CI görüntüsünde yardım sayfasının tamamı doğru, başlık şeridi yeni tasarımı gösteriyor. Kayan hücreler yalnız o üst şerittedir (sütun 4, satır 0: eski imza 29, yeni 12). İmza, CI'nin ölçtüğü PNG'den aynı çözücü ve aynı 16x12 izgarayla cevrimdisi yeniden hesaplandi ve CI raporunun sapmasini (17/255) birebir uretti. Varsayilan imzadan olculen sapma 13/255 (tolerans 12) oldugu icin bu gorunum platform istisnasi olarak kalir. Yalniz bu platform/gorunum imzasi kabul edildi; tolerans 12 ve varsayilan imzalar degismedi. Onceki inceleme previousProvenance altinda korunur."
+                },
+                "previousProvenance": [
+                    {
+                        "workflowRun": "https://github.com/zabuno/zabuno/actions/runs/34245660916",
+                        "artifact": "scene-visual-34245660916-1",
+                        "image": "help-320-forced.png",
+                        "imageSha256": "389e05e50bfcad7cd569bc76b3aa29bf13f2729e83eaac162dec883bcdfb331d",
+                        "reportSha256": "a8681c506c101c2da614c42fe863931fa18592a539e1b5647600d7712854d83b",
+                        "browser": "Chrome/152.0.7977.64",
+                        "platform": "linux",
+                        "measuredDriftFromDefault": 13,
+                        "worstCell": {
+                            "column": 9,
+                            "row": 8,
+                            "expected": 35,
+                            "actual": 48
+                        },
+                        "review": "Linux CI ve macOS PNG görüntülerinde aynı düzen ve satır kırılımları; metin kenarı parlaklığı farklı. Yalnız bu platform/görünüm imzası kabul edildi; tolerans 12 ve varsayılan imzalar değişmedi."
+                    }
+                ]
             },
             "terms-320-forced": {
                 "signature": [
@@ -7991,13 +8012,13 @@
                     32,
                     30,
                     20,
-                    29,
-                    39,
-                    51,
-                    47,
-                    46,
-                    49,
-                    35,
+                    12,
+                    26,
+                    40,
+                    34,
+                    34,
+                    37,
+                    22,
                     17,
                     24,
                     42,
@@ -8007,13 +8028,13 @@
                     13,
                     13,
                     13,
-                    25,
-                    25,
-                    24,
-                    24,
-                    24,
-                    24,
-                    30,
+                    17,
+                    14,
+                    13,
+                    13,
+                    13,
+                    13,
+                    18,
                     16,
                     13,
                     13,
@@ -8181,22 +8202,43 @@
                     0
                 ],
                 "provenance": {
-                    "workflowRun": "https://github.com/zabuno/zabuno/actions/runs/34339840787",
-                    "artifact": "scene-visual-34339840787-1",
+                    "workflowRun": "https://github.com/zabuno/zabuno/actions/runs/34342767101",
+                    "job": "https://github.com/zabuno/zabuno/actions/runs/34342767101/job/102437173607",
+                    "headSha": "ef5060f1",
+                    "artifact": "scene-visual-34342767101-1",
                     "image": "terms-320-forced.png",
-                    "imageSha256": "ddf51ff1999c32ce1193243e7db0e1d8083d436901b3449d25257711790f86fb",
-                    "reportSha256": "e469557bb024cca8a86a7346c7cdb98394e284d18a73dfe88b42c483847a3090",
-                    "browser": "Chrome/152.0.7977.64",
+                    "imageSha256": "e330787582e58bd6ed0c493772e1f92fd8c079d85b16115c27d07475d9006e48",
+                    "reportSha256": "9e16d8eb785f681d524c0d51c4085484e3e81f1d9a352456036eb04e5cdfbd74",
+                    "browser": "Chrome/152.0.7977.82",
                     "platform": "linux",
-                    "measuredDriftFromDefault": 13,
+                    "measuredDriftFromDefault": 11,
                     "worstCell": {
-                        "column": 4,
-                        "row": 11,
-                        "expected": 26,
-                        "actual": 39
+                        "column": 7,
+                        "row": 3,
+                        "expected": 40,
+                        "actual": 51
                     },
-                    "review": "Sözleşme sayfası owner isteğiyle yasal kip (legal modal) kazandı ve sürüm 0.2'ye çıktı; Linux CI görüntüsünde sayfanın tamamı doğru, sürüm satırı en altta görünüyor. Kayan hücre yalnız o satırın bulunduğu son şerittir (sütun 4, satır 11). İmza, CI'nin ölçtüğü PNG'den aynı çözücü ve aynı 16×12 ızgarayla çevrimdışı yeniden hesaplandı ve CI raporunun sapmasını (13/255) birebir üretti. Yalnız bu platform/görünüm imzası kabul edildi; tolerans 12 ve varsayılan imzalar değişmedi."
-                }
+                    "review": "Genel başlık (public header) owner onaylı yeni kenarlık ve içerik düzenine geçti; run 34342767101 Linux CI görüntüsünde sözleşme sayfasının tamamı doğru, başlık şeridi yeni tasarımı gösteriyor. Kayan hücreler yalnız o üst şerittedir (sütun 4, satır 0: eski imza 29, yeni 12). İmza, CI'nin ölçtüğü PNG'den aynı çözücü ve aynı 16x12 izgarayla cevrimdisi yeniden hesaplandi ve CI raporunun sapmasini (17/255) birebir uretti. Varsayilan imzadan olculen sapma 11/255 olup tolerans 12'nin altindadir; istisna kaydi, incelenmis platform gecmisini kaybetmemek icin bu pakette korundu ve yalniz imzasi tazelendi. Yalniz bu platform/gorunum imzasi kabul edildi; tolerans 12 ve varsayilan imzalar degismedi. Onceki inceleme previousProvenance altinda korunur."
+                },
+                "previousProvenance": [
+                    {
+                        "workflowRun": "https://github.com/zabuno/zabuno/actions/runs/34339840787",
+                        "artifact": "scene-visual-34339840787-1",
+                        "image": "terms-320-forced.png",
+                        "imageSha256": "ddf51ff1999c32ce1193243e7db0e1d8083d436901b3449d25257711790f86fb",
+                        "reportSha256": "e469557bb024cca8a86a7346c7cdb98394e284d18a73dfe88b42c483847a3090",
+                        "browser": "Chrome/152.0.7977.64",
+                        "platform": "linux",
+                        "measuredDriftFromDefault": 13,
+                        "worstCell": {
+                            "column": 4,
+                            "row": 11,
+                            "expected": 26,
+                            "actual": 39
+                        },
+                        "review": "Sözleşme sayfası owner isteğiyle yasal kip (legal modal) kazandı ve sürüm 0.2'ye çıktı; Linux CI görüntüsünde sayfanın tamamı doğru, sürüm satırı en altta görünüyor. Kayan hücre yalnız o satırın bulunduğu son şerittir (sütun 4, satır 11). İmza, CI'nin ölçtüğü PNG'den aynı çözücü ve aynı 16×12 ızgarayla çevrimdışı yeniden hesaplandı ve CI raporunun sapmasını (13/255) birebir üretti. Yalnız bu platform/görünüm imzası kabul edildi; tolerans 12 ve varsayılan imzalar değişmedi."
+                    }
+                ]
             }
         }
     },
