@@ -7,6 +7,8 @@ namespace Tests\Feature\Legal;
 use App\Application\Legal\ConsentRecorder;
 use App\Application\Legal\Port\LegalLibraryPort;
 use App\Models\User;
+use DOMDocument;
+use DOMXPath;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -271,14 +273,35 @@ final class RegistrationConsentTest extends TestCase
     /** @return array{reviewPending: bool, documents: array<string, mixed>} */
     private function legalPayloadFrom(string $html): array
     {
+        // Blok, ÖZNİTELİKLERİYLE değil KİMLİĞİYLE bulunur. Etikete bir
+        // `nonce` eklendiğinde (CSP) ya da öznitelik sırası değiştiğinde bu
+        // yardımcı körleşmemeli; aranan şey hep aynı: `application/json`
+        // türünde, `register-legal` kimlikli TEK blok.
+        $document = new DOMDocument;
+
+        self::assertTrue(
+            $document->loadHTML($html, LIBXML_NOERROR | LIBXML_NOWARNING),
+            'REG-LEGAL-02: kayıt sayfası ayrıştırılamadı.',
+        );
+
+        $blocks = (new DOMXPath($document))->query(
+            '//script[@id="register-legal" and @type="application/json"]',
+        );
+
+        self::assertNotFalse($blocks);
         self::assertSame(
             1,
-            preg_match('#<script type="application/json" id="register-legal">(.*?)</script>#s', $html, $matches),
-            'REG-LEGAL-02: kayıt sayfası yasal metin bloğunu taşımalı.',
+            $blocks->length,
+            'REG-LEGAL-02: kayıt sayfası yasal metin bloğunu taşımalı (tam olarak bir kez).',
         );
 
         /** @var array{reviewPending: bool, documents: array<string, mixed>} $decoded */
-        $decoded = json_decode(html_entity_decode($matches[1], ENT_QUOTES), true, 512, JSON_THROW_ON_ERROR);
+        $decoded = json_decode(
+            html_entity_decode((string) $blocks->item(0)?->textContent, ENT_QUOTES),
+            true,
+            512,
+            JSON_THROW_ON_ERROR,
+        );
 
         return $decoded;
     }
