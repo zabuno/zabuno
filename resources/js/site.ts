@@ -1,4 +1,5 @@
 import { bindDismiss } from './site/dismiss';
+import { bindTheme } from './site/theme';
 import { mountScene } from './site/scene/mount';
 
 /**
@@ -33,3 +34,12 @@ mountScene(window);
     olmanın yarattığı bir arıza.
 */
 bindDismiss(document);
+
+/*
+    GÖRÜNÜM TERCİHİ — kapanma yollarıyla aynı gerekçe.
+
+    Sahnenin dışında: hareket istemeyen bir ziyaretçi de temasını
+    seçebilmelidir. Denetim sunucuda `hidden` doğar ve yalnız bu çağrı onu
+    açar — betik gelmezse çalışmayan bir düğme görünmez.
+*/
+bindTheme(document, window);

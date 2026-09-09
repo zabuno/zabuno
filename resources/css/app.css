@@ -140,6 +140,14 @@
     aittir — ve onların on sekizini birden çizer.
 */
 @import './site-content.css';
+/*
+    KURUMSAL DİZİN SAYFALARI (C3): site haritası ağacı, künye sayfası ve
+    kabuğun sosyal şeridi. Ayrı dosya, çünkü `site-pages.css`in başlığı
+    "kurumsal sayfaların DÜZENİ" diyor ve bir ağaç bileşeni oraya yazılsaydı
+    adıyla içeriği ayrışan ilk dosya olurdu. Maliyeti yok: aynı pakette
+    birleşiyorlar.
+*/
+@import './site-directory.css';
 
 /*
     AEP `base.css` her `<a>` etiketini MAVİ ve ALTI ÇİZİLİ yapar — bu, bir

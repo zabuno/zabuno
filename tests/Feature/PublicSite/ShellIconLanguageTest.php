@@ -37,6 +37,19 @@ final class ShellIconLanguageTest extends TestCase
         'list' => 'List',
         'x' => 'X',
         'caret-down' => 'CaretDown',
+        /* C1 — dil denetiminin grup işareti ve hesap açma eylemi. */
+        'globe' => 'Globe',
+        'user-plus' => 'UserPlus',
+        /* C2 — görünüm tercihinin üç seçeneği. Haritanın genişlemesi
+           doğrulamayı GEVŞETMEZ: her yeni ad da paketin kendi `regular`
+           tanımıyla bire bir karşılaştırılır. */
+        'sun' => 'Sun',
+        'moon' => 'Moon',
+        'monitor' => 'Monitor',
+        /* C3 — doğrulanmış GitHub profilinin işareti. Elle çizilmiş bir
+           marka işareti yanlış marka demektir; bu yüzden o da paketin
+           kendi `regular` tanımıyla bire bir karşılaştırılır. */
+        'github-logo' => 'GithubLogo',
     ];
 
     /** Kurumsal kabuğun BÜTÜN yüzeyi — hem HTML hem görünüm. */

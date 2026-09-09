@@ -936,6 +936,38 @@ msgstr "In dieser Bereitstellung nicht vorhanden"
 msgid "site.investors.verification.present"
 msgstr "Vorhanden"
 
+#: site:site.iss.contact.body
+msgid "site.iss.contact.body"
+msgstr ""
+
+#: site:site.iss.contact.heading
+msgid "site.iss.contact.heading"
+msgstr ""
+
+#: site:site.iss.documents.body
+msgid "site.iss.documents.body"
+msgstr ""
+
+#: site:site.iss.documents.heading
+msgid "site.iss.documents.heading"
+msgstr ""
+
+#: site:site.iss.heading
+msgid "site.iss.heading"
+msgstr ""
+
+#: site:site.iss.identity.body
+msgid "site.iss.identity.body"
+msgstr ""
+
+#: site:site.iss.identity.heading
+msgid "site.iss.identity.heading"
+msgstr ""
+
+#: site:site.iss.lead
+msgid "site.iss.lead"
+msgstr ""
+
 #: site:site.legal.contents
 msgid "site.legal.contents"
 msgstr "Inhalt"
@@ -1040,6 +1072,10 @@ msgstr "Hilfe"
 msgid "site.nav.howItWorks"
 msgstr "So funktioniert es"
 
+#: site:site.nav.informationSocietyServices
+msgid "site.nav.informationSocietyServices"
+msgstr ""
+
 #: site:site.nav.integrations
 msgid "site.nav.integrations"
 msgstr "Integrationen"
@@ -1075,6 +1111,10 @@ msgstr "Konto erstellen"
 #: site:site.nav.resources
 msgid "site.nav.resources"
 msgstr "Ressourcen"
+
+#: site:site.nav.siteMap
+msgid "site.nav.siteMap"
+msgstr ""
 
 #: site:site.nav.solutions
 msgid "site.nav.solutions"
@@ -1380,9 +1420,29 @@ msgstr "Sie wissen noch nicht, welcher Tarif passt?"
 msgid "site.pricing.unsure.cta"
 msgstr "Fragen Sie uns"
 
+#: site:site.siteMap.heading
+msgid "site.siteMap.heading"
+msgstr ""
+
+#: site:site.siteMap.home
+msgid "site.siteMap.home"
+msgstr ""
+
+#: site:site.siteMap.lead
+msgid "site.siteMap.lead"
+msgstr ""
+
 #: site:site.skipToContent
 msgid "site.skipToContent"
 msgstr "Zum Hauptinhalt springen"
+
+#: site:site.social.github
+msgid "site.social.github"
+msgstr ""
+
+#: site:site.social.label
+msgid "site.social.label"
+msgstr ""
 
 #: site:site.support.ack.greeting
 msgid "site.support.ack.greeting"
@@ -1415,6 +1475,22 @@ msgstr "Betreff: {subject}"
 #: site:site.support.commitment
 msgid "site.support.commitment"
 msgstr "Wir antworten innerhalb von {hours} Stunden."
+
+#: site:site.theme.dark
+msgid "site.theme.dark"
+msgstr ""
+
+#: site:site.theme.label
+msgid "site.theme.label"
+msgstr ""
+
+#: site:site.theme.light
+msgid "site.theme.light"
+msgstr ""
+
+#: site:site.theme.system
+msgid "site.theme.system"
+msgstr ""
 
 #: site:site.title.emailVerified
 msgid "site.title.emailVerified"

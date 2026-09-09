@@ -10,8 +10,10 @@ use App\Http\Controllers\PublicSite\ShowAboutController;
 use App\Http\Controllers\PublicSite\ShowAccessibilityStatementController;
 use App\Http\Controllers\PublicSite\ShowContactFormController;
 use App\Http\Controllers\PublicSite\ShowHelpController;
+use App\Http\Controllers\PublicSite\ShowInformationSocietyServicesController;
 use App\Http\Controllers\PublicSite\ShowInvestorPageController;
 use App\Http\Controllers\PublicSite\ShowLegalDocumentController;
+use App\Http\Controllers\PublicSite\ShowSiteMapPageController;
 use App\Http\Controllers\PublicSite\ShowTrustCentreController;
 use App\Models\ContentPage;
 use Illuminate\Console\Command;
@@ -87,6 +89,15 @@ final class ExportStaticSiteCommand extends Command
         */
         ShowTrustCentreController::class,
         ShowAccessibilityStatementController::class,
+        /*
+            C3'ün iki yeni sayfası. Aynı ŞART: `scripts/mobile-ux-audit` 320
+            pikselde bu komutun çıktısını ölçüyor ve listeye girmeyen bir
+            sayfa hiç ölçülmez. Site haritasının iç içe listesi ile künye
+            tablosu, dar ekranda taşmaya en yatkın iki yapı — ölçülmemiş
+            bırakmak, tam olarak bu paketin yasakladığı cümleyi kurmak olurdu.
+        */
+        ShowInformationSocietyServicesController::class,
+        ShowSiteMapPageController::class,
     ];
 
     public function handle(HttpKernel $kernel): int

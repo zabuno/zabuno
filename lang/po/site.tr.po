@@ -936,6 +936,38 @@ msgstr "Bu kurulumda yok"
 msgid "site.investors.verification.present"
 msgstr "Mevcut"
 
+#: site:site.iss.contact.body
+msgid "site.iss.contact.body"
+msgstr "İletişim formu satıcıya ulaşır ve saklanır. Kişisel verinizle ilgili talepler de aynı yolu izler."
+
+#: site:site.iss.contact.heading
+msgid "site.iss.contact.heading"
+msgstr "İletişim ve veri hakları"
+
+#: site:site.iss.documents.body
+msgid "site.iss.documents.body"
+msgstr "Bu sitede yayımlanmış bütün belgeler, her biri kendi adresinde."
+
+#: site:site.iss.documents.heading
+msgid "site.iss.documents.heading"
+msgstr "Resmî yasal belgeler"
+
+#: site:site.iss.heading
+msgid "site.iss.heading"
+msgstr "Bilgi Toplumu Hizmetleri"
+
+#: site:site.iss.identity.body
+msgid "site.iss.identity.body"
+msgstr "Bu hizmeti yürüten satıcının girdiği bilgiler. Girilmemiş bir alan olduğu gibi yazılır; hiçbir alan satıcının yerine doldurulmaz."
+
+#: site:site.iss.identity.heading
+msgid "site.iss.identity.heading"
+msgstr "Şirket kimliği"
+
+#: site:site.iss.lead
+msgid "site.iss.lead"
+msgstr "Satıcı kim, hangi belgeleri yayımlıyor ve kendisine nasıl ulaşılır."
+
 #: site:site.legal.contents
 msgid "site.legal.contents"
 msgstr "İçindekiler"
@@ -1040,6 +1072,10 @@ msgstr "Yardım"
 msgid "site.nav.howItWorks"
 msgstr "Nasıl çalışır"
 
+#: site:site.nav.informationSocietyServices
+msgid "site.nav.informationSocietyServices"
+msgstr "Bilgi Toplumu Hizmetleri"
+
 #: site:site.nav.integrations
 msgid "site.nav.integrations"
 msgstr "Entegrasyonlar"
@@ -1075,6 +1111,10 @@ msgstr "Hesap oluştur"
 #: site:site.nav.resources
 msgid "site.nav.resources"
 msgstr "Kaynaklar"
+
+#: site:site.nav.siteMap
+msgid "site.nav.siteMap"
+msgstr "Site haritası"
 
 #: site:site.nav.solutions
 msgid "site.nav.solutions"
@@ -1380,9 +1420,29 @@ msgstr "Hangisi size uyar, emin değil misiniz?"
 msgid "site.pricing.unsure.cta"
 msgstr "Bize sorun"
 
+#: site:site.siteMap.heading
+msgid "site.siteMap.heading"
+msgstr "Site haritası"
+
+#: site:site.siteMap.home
+msgid "site.siteMap.home"
+msgstr "Ana sayfa"
+
+#: site:site.siteMap.lead
+msgid "site.siteMap.lead"
+msgstr "Bu sitenin bugün bağlandığı bütün sayfalar; üst çubuk ve altbilginin gruplandırdığı gibi."
+
 #: site:site.skipToContent
 msgid "site.skipToContent"
 msgstr "Ana içeriğe geç"
+
+#: site:site.social.github
+msgid "site.social.github"
+msgstr "GitHub'da Zabuno"
+
+#: site:site.social.label
+msgid "site.social.label"
+msgstr "Zabuno başka yerlerde"
 
 #: site:site.support.ack.greeting
 msgid "site.support.ack.greeting"
@@ -1415,6 +1475,22 @@ msgstr "Konu: {subject}"
 #: site:site.support.commitment
 msgid "site.support.commitment"
 msgstr "{hours} saat içinde yanıt veririz."
+
+#: site:site.theme.dark
+msgid "site.theme.dark"
+msgstr "Koyu"
+
+#: site:site.theme.label
+msgid "site.theme.label"
+msgstr "Görünüm"
+
+#: site:site.theme.light
+msgid "site.theme.light"
+msgstr "Açık"
+
+#: site:site.theme.system
+msgid "site.theme.system"
+msgstr "Sistem"
 
 #: site:site.title.emailVerified
 msgid "site.title.emailVerified"

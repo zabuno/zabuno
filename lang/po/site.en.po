@@ -936,6 +936,38 @@ msgstr "Not in this deployment"
 msgid "site.investors.verification.present"
 msgstr "Present"
 
+#: site:site.iss.contact.body
+msgid "site.iss.contact.body"
+msgstr "The contact form reaches the seller and is kept. Requests about your personal data follow the same route."
+
+#: site:site.iss.contact.heading
+msgid "site.iss.contact.heading"
+msgstr "Contact and data rights"
+
+#: site:site.iss.documents.body
+msgid "site.iss.documents.body"
+msgstr "Every document published on this site, each at its own address."
+
+#: site:site.iss.documents.heading
+msgid "site.iss.documents.heading"
+msgstr "Official legal documents"
+
+#: site:site.iss.heading
+msgid "site.iss.heading"
+msgstr "Information Society Services"
+
+#: site:site.iss.identity.body
+msgid "site.iss.identity.body"
+msgstr "These are the details entered by the seller operating this service. A field that has not been entered is shown as such; nothing here is filled in on the seller’s behalf."
+
+#: site:site.iss.identity.heading
+msgid "site.iss.identity.heading"
+msgstr "Company identity"
+
+#: site:site.iss.lead
+msgid "site.iss.lead"
+msgstr "Who the seller is, which documents it publishes, and how to reach it."
+
 #: site:site.legal.contents
 msgid "site.legal.contents"
 msgstr "Contents"
@@ -1040,6 +1072,10 @@ msgstr "Help"
 msgid "site.nav.howItWorks"
 msgstr "How it works"
 
+#: site:site.nav.informationSocietyServices
+msgid "site.nav.informationSocietyServices"
+msgstr "Information Society Services"
+
 #: site:site.nav.integrations
 msgid "site.nav.integrations"
 msgstr "Integrations"
@@ -1075,6 +1111,10 @@ msgstr "Create account"
 #: site:site.nav.resources
 msgid "site.nav.resources"
 msgstr "Resources"
+
+#: site:site.nav.siteMap
+msgid "site.nav.siteMap"
+msgstr "Site map"
 
 #: site:site.nav.solutions
 msgid "site.nav.solutions"
@@ -1380,9 +1420,29 @@ msgstr "Not sure which one fits?"
 msgid "site.pricing.unsure.cta"
 msgstr "Ask us"
 
+#: site:site.siteMap.heading
+msgid "site.siteMap.heading"
+msgstr "Site map"
+
+#: site:site.siteMap.home
+msgid "site.siteMap.home"
+msgstr "Home"
+
+#: site:site.siteMap.lead
+msgid "site.siteMap.lead"
+msgstr "Every page this site links to today, grouped the way the header and footer group it."
+
 #: site:site.skipToContent
 msgid "site.skipToContent"
 msgstr "Skip to main content"
+
+#: site:site.social.github
+msgid "site.social.github"
+msgstr "Zabuno on GitHub"
+
+#: site:site.social.label
+msgid "site.social.label"
+msgstr "Zabuno elsewhere"
 
 #: site:site.support.ack.greeting
 msgid "site.support.ack.greeting"
@@ -1415,6 +1475,22 @@ msgstr "Subject: {subject}"
 #: site:site.support.commitment
 msgid "site.support.commitment"
 msgstr "We reply within {hours} hours."
+
+#: site:site.theme.dark
+msgid "site.theme.dark"
+msgstr "Dark"
+
+#: site:site.theme.label
+msgid "site.theme.label"
+msgstr "Appearance"
+
+#: site:site.theme.light
+msgid "site.theme.light"
+msgstr "Light"
+
+#: site:site.theme.system
+msgid "site.theme.system"
+msgstr "System"
 
 #: site:site.title.emailVerified
 msgid "site.title.emailVerified"

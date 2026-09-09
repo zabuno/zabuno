@@ -1,5 +1,11 @@
 {{-- Desktop only: all targets still originate in SiteNavigation. No invented destinations.
-     A separate presentation keeps native mobile details intact, without forcing them open. --}}
+     A separate presentation keeps native mobile details intact, without forcing them open.
+
+     C3: şirket künyesi buradan da KALDIRILDI ve
+     `/information-society-services` sayfasına taşındı; sayfanın bağlantısı
+     şirket sütununda, gezintinin kendi kaynağından geliyor. İki sunumun
+     aynı anda ayrışması imkânsız: ikisi de aynı `SiteNavigation` grubunu
+     okuyor. --}}
 @php
     $footerGroups = collect($nav['footer'])->keyBy('id');
     $primaryGroup = collect($nav['header'])->firstWhere('id', 'primary');
@@ -98,18 +104,15 @@
             @endforeach
         </div>
 
-        <section class="site-desktop-footer-identity" aria-labelledby="desktop-footer-seller">
-            <div>
-                <h2 id="desktop-footer-seller">{{ $st['aboutSellerHeading'] }}</h2>
-                @unless ($companyComplete)
-                    <p data-footer-identity-warning>{{ $st['aboutIncompleteBody'] }}</p>
-                @endunless
-            </div>
-            @include('public.partials.company-identity')
-        </section>
-
         <div class="site-desktop-footer-bottom">
             <span>&copy; {{ now()->year }} {{ $st['brand'] }}</span>
+            {{-- Aynı denetim, ikinci sunum. İki altbilgi asla aynı anda
+                 çizilmez, dolayısıyla ziyaretçi tek bir tanesini görür. --}}
+            @include('public.partials.theme-control')
+            {{-- Doğrulanmış tek dış profil, geniş sunumda da AYNI adres
+                 (C3): iki altbilgi asla aynı anda çizilmez, bu yüzden
+                 ziyaretçi tek kopyayı görür. --}}
+            @include('public.partials.social-links', ['socialPresentation' => 'desktop-footer'])
             <a href="#main-content">{{ $st['footerBackToTop'] }}</a>
         </div>
     </div>

@@ -1,51 +1,152 @@
-/* Two presentations share one native form; only one can receive focus. */
+/*
+    DİL DENETİMİ — iki sunum, TEK yerel form (`SHELL-SINGLE-SOURCE-04`).
+
+    Aynı anda yalnız biri odak alır: dar ekranda menü bölmesindeki,
+    64rem üstünde çubuktaki. Ayrım `display: none` ile yapılır — gizlenen
+    sunum erişilebilirlik ağacından ve odak sırasından TAMAMEN çıkar.
+
+    ── C1: BÖLÜNMÜŞ TEK DENETİM ─────────────────────────────────────────
+
+    Önce iki ayrı çerçeveli düğme ve onların üstünde aynı iki sözcüğü
+    tekrar eden bir başlık vardı: dört kutu, bir denetim değil. Şimdi
+    çerçeve BİR tanedir, küre glifi onun içinde grubun ne olduğunu söyler
+    ve iki dil sözcüğü o çerçevenin içinde bölünmüş bir denetim gibi durur.
+
+    Küçülen şey yine hedef değil ölü alan: her seçenek `--control-height`
+    (44 px) tabanının altına inmez.
+*/
 .site-language-switcher {
     min-inline-size: 0;
-    padding-block-start: var(--space-3);
-    border-block-start: 1px solid var(--border);
 }
 
-.site-language-switcher fieldset {
+.site-language-fieldset {
     min-inline-size: 0;
     padding: 0;
     border: 0;
+    margin: 0;
 }
 
-.site-language-switcher legend {
+/*
+    BAŞLIK GÖRÜNMEZ AMA VAR.
+
+    Erişilebilir grup adı `<legend>`de kalır — ekran okuyucu "English /
+    Türkçe grubu" der. Görsel karşılığını küre glifi taşır; aynı iki
+    sözcüğü ekranda iki kez yazmak, okuyanı bilgilendirmez yorar.
+*/
+.site-language-legend {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
     padding: 0;
-    margin-block-end: var(--space-2);
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.site-language-control {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    max-inline-size: 100%;
+    padding-inline: var(--space-2);
+    /* Çerçeve ve yarıçap kabuğun geri kalanıyla aynı jetondan gelir; ikinci
+       bir sayı, bir gün ayrışacak ikinci bir kaynak olurdu. */
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    /* daisyUI'nin düğme gölgesi bu kabın İÇİNDE tekrar etmesin. */
+    box-shadow: none;
+}
+
+.site-language-globe {
+    flex: none;
     color: var(--fg-secondary);
 }
 
 .site-language-options {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-2);
+    min-inline-size: 0;
 }
 
 .site-language-option {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     min-block-size: var(--control-height);
-    color: var(--fg);
-    background: var(--surface);
-    border: 1px solid var(--border);
+    padding-inline: var(--space-2);
+    color: var(--fg-secondary);
+    /* Seçenekler ORTAK çerçevenin içindedir: kendi çerçeveleri ve gölgeleri
+       yok, yoksa çerçeve içinde çerçeve olurdu. */
+    background: transparent;
+    border: 0;
+    border-radius: var(--radius-sm);
+    box-shadow: none;
+    font-weight: 500;
 }
 
+.site-language-option:hover {
+    color: var(--fg);
+    background: var(--surface-hover);
+}
+
+/*
+    SEÇİLİ OLAN — altı çizili DEĞİL, dolu.
+
+    Alt çizgi bir bağlantı işaretidir ve burada bağlantı yok; ayrıca
+    `aria-pressed` durumunu gözle görenin okuyabilmesi için dolu bir zemin,
+    ince bir çizgiden çok daha hızlı ayırt edilir. Kalınlık ikinci sinyal
+    olarak kalır, tek sinyal olarak değil.
+*/
 .site-language-option[aria-pressed='true'] {
+    color: var(--fg);
+    background: var(--surface-hover);
     font-weight: 700;
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
 }
 
 .site-language-option:focus-visible {
     outline: 2px solid currentColor;
-    outline-offset: 3px;
+    outline-offset: -2px;
 }
 
 .site-language-desktop {
     display: none;
 }
 
-@media (min-width: 64rem) {
+/* Bölmedeki sunum kendi satırını alır; çubuktaki satır içinde durur. */
+.site-language-menu .site-language-switcher {
+    padding-block-start: var(--space-3);
+    border-block-start: 1px solid var(--border);
+}
+
+.site-language-menu .site-language-control {
+    display: flex;
+    inline-size: 100%;
+}
+
+.site-language-menu .site-language-options {
+    flex: 1 1 auto;
+}
+
+.site-language-menu .site-language-option {
+    flex: 1 1 0;
+}
+
+/*
+    SUNUM DEĞİŞİMİ 80rem'DE, 64rem'DE DEĞİL (C2 ölçümü).
+
+    Görünüm denetimi çubuğa katılınca 1024 pikselde marka + gezinti + dil +
+    görünüm + hesap eylemi + menü toplamı 1207 piksel oluyor ve kullanılabilir
+    genişlik 967 — çubuk iki satıra çıkıyor, yüksekliği 73'ten 107'ye
+    fırlıyordu. 1024 bir masaüstü değil, çoğu zaman bir tablettir.
+
+    Bu yüzden gezinti 64rem'de çubuğa çıkar ama İKİ AYAR DENETİMİ 80rem'i
+    bekler; o genişliğe kadar ikisi de menü bölmesinde durur — kaybolmaz, yer
+    değiştirir. Aynı anda yalnız bir sunum çizildiği için odak sırası ve
+    erişilebilirlik ağacı tek kopya görür.
+*/
+@media (min-width: 80rem) {
     .site-language-menu {
         display: none;
     }
@@ -54,33 +155,35 @@
         display: block;
         min-inline-size: 0;
     }
+}
 
-    .site-language-desktop .site-language-switcher {
-        padding: 0;
-        border: 0;
+@media (min-width: 64rem) {
+    /*
+        Koyu masaüstü çubuğunda denetim aynı denetimdir, yalnız mürekkebi
+        değişir: çerçeve krem rengin şeffaf bir payından gelir, dolayısıyla
+        zemin bir gün değişirse çerçeve onunla birlikte döner.
+    */
+    .site-language-desktop .site-language-control {
+        background: transparent;
+        border-color: color-mix(in srgb, var(--site-desktop-cream) 25%, transparent);
     }
 
-    .site-language-desktop legend {
-        position: absolute;
-        inline-size: 1px;
-        block-size: 1px;
-        padding: 0;
-        margin: -1px;
-        overflow: hidden;
-        clip-path: inset(50%);
-        white-space: nowrap;
-    }
-
-    .site-language-desktop .site-language-options {
-        gap: 0.25rem;
+    .site-language-desktop .site-language-globe {
+        color: var(--site-desktop-cream);
     }
 
     .site-language-desktop .site-language-option {
-        padding-inline: 0.5rem;
-        font-size: 0.875rem;
-        background: transparent;
+        /* Hedef 44 pikselde KALIR: 64rem bir işaretçi vaadi değildir, bir
+           tablet de o genişliktedir (`docs/117` K3). Yatay dolgu, görünüm
+           denetimi çubuğa katıldıktan sonra bir adım daraldı (C2). */
+        padding-inline: var(--space-2);
         color: var(--site-desktop-cream);
-        border-color: currentColor;
+    }
+
+    .site-language-desktop .site-language-option:hover,
+    .site-language-desktop .site-language-option[aria-pressed='true'] {
+        color: var(--site-desktop-ink);
+        background: var(--site-desktop-cream);
     }
 
     /* Intrinsic wrapping retains every target at 1024px and with longer text. */
@@ -91,6 +194,6 @@
 
     .site-header .site-header-actions {
         max-inline-size: 100%;
-        gap: 0.5rem;
+        gap: var(--space-3);
     }
 }
