@@ -86,6 +86,7 @@ final class RestaurantCriticalJourneyTest extends TestCase
             'password' => self::VALID_PASSWORD,
             'password_confirmation' => self::VALID_PASSWORD,
             'terms_accepted' => true,
+            'privacy_acknowledged' => true,
         ])->assertSuccessful();
 
         $user = User::where('email', $email)->firstOrFail();

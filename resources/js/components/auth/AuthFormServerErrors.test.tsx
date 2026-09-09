@@ -1,6 +1,7 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { RegisterForm } from './RegisterForm';
+import { REGISTER_LEGAL, acceptMandatoryLegalDocuments } from './registerLegal.fixture';
 import { LoginForm } from './LoginForm';
 
 /**
@@ -56,7 +57,7 @@ describe('RegisterForm — the server said which field was wrong', () => {
             }),
         );
 
-        render(<RegisterForm />);
+        render(<RegisterForm legal={REGISTER_LEGAL} />);
 
         fireEvent.change(screen.getByLabelText(/name/i), { target: { value: 'Tolga' } });
         fireEvent.change(screen.getByLabelText(/^email/i), {
@@ -67,8 +68,8 @@ describe('RegisterForm — the server said which field was wrong', () => {
         });
         fireEvent.change(screen.getByLabelText(/confirm/i), { target: { value: 'sifre-12345' } });
 
-        // Sözleşme onayı zorunlu (FF-198): kutu boşken form sunucuya gitmez.
-        fireEvent.click(screen.getByRole('checkbox', { name: /terms of service/i }));
+        // Onay ve beyan zorunlu (FF-198): ikisi de metnin sonunda verilir.
+        await acceptMandatoryLegalDocuments();
         fireEvent.click(screen.getByRole('button', { name: /register|create|sign up/i }));
 
         await waitFor(() => {
@@ -84,7 +85,7 @@ describe('RegisterForm — the server said which field was wrong', () => {
             }),
         );
 
-        render(<RegisterForm />);
+        render(<RegisterForm legal={REGISTER_LEGAL} />);
 
         fireEvent.change(screen.getByLabelText(/name/i), { target: { value: 'Tolga' } });
         fireEvent.change(screen.getByLabelText(/^email/i), {
@@ -95,8 +96,8 @@ describe('RegisterForm — the server said which field was wrong', () => {
         });
         fireEvent.change(screen.getByLabelText(/confirm/i), { target: { value: 'sifre-12345' } });
 
-        // Sözleşme onayı zorunlu (FF-198): kutu boşken form sunucuya gitmez.
-        fireEvent.click(screen.getByRole('checkbox', { name: /terms of service/i }));
+        // Onay ve beyan zorunlu (FF-198): ikisi de metnin sonunda verilir.
+        await acceptMandatoryLegalDocuments();
         fireEvent.click(screen.getByRole('button', { name: /register|create|sign up/i }));
 
         await waitFor(() => {
@@ -107,7 +108,7 @@ describe('RegisterForm — the server said which field was wrong', () => {
     it('still says something when the failure carries no field detail', async () => {
         stubFetch(jsonResponse(500, {}));
 
-        render(<RegisterForm />);
+        render(<RegisterForm legal={REGISTER_LEGAL} />);
 
         fireEvent.change(screen.getByLabelText(/name/i), { target: { value: 'Tolga' } });
         fireEvent.change(screen.getByLabelText(/^email/i), { target: { value: 'a@example.com' } });
@@ -116,8 +117,8 @@ describe('RegisterForm — the server said which field was wrong', () => {
         });
         fireEvent.change(screen.getByLabelText(/confirm/i), { target: { value: 'sifre-12345' } });
 
-        // Sözleşme onayı zorunlu (FF-198): kutu boşken form sunucuya gitmez.
-        fireEvent.click(screen.getByRole('checkbox', { name: /terms of service/i }));
+        // Onay ve beyan zorunlu (FF-198): ikisi de metnin sonunda verilir.
+        await acceptMandatoryLegalDocuments();
         fireEvent.click(screen.getByRole('button', { name: /register|create|sign up/i }));
 
         await waitFor(() => {

@@ -35,9 +35,19 @@ final class CreateNewUser implements CreatesNewUsers
                 da değil — kayıt hiç yazılmaz (`ConsentRecorder`).
             */
             'terms_accepted' => ['accepted'],
+            /*
+                AYDINLATMA BEYANI AYRI BİR ALAN (REG-LEGAL-01).
+
+                `terms_accepted` ile birleştirilmez: sunucu kabul ile beyanı
+                ancak ayrı alanlarla ayırt edebilir ve defter (`ConsentRecorder`)
+                ikisini ayrı kayıt olarak yazar. `accepted` örtük olarak
+                zorunludur: alan hiç gelmezse doğrulama düşer.
+            */
+            'privacy_acknowledged' => ['accepted'],
             'marketing_consent' => ['sometimes', 'boolean'],
         ], [
             'terms_accepted.accepted' => __('auth.terms_required'),
+            'privacy_acknowledged.accepted' => __('auth.privacy_acknowledgement_required'),
         ])->validate();
 
         $useCase = new RegisterUser(new EloquentUserRepository, new LaravelPasswordHasher);

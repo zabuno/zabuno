@@ -1,6 +1,10 @@
 import type React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import {
+  REGISTER_LEGAL,
+  acceptLegalDocument,
+} from '../../components/auth/registerLegal.fixture';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -169,20 +173,21 @@ describe('CSRF header helper — stateful cookie session, never a bearer token (
 describe('RegisterForm — navigates to pending on success, alerts on failure (review-correction RED)', () => {
   it('calls the injected onSuccess/navigate callback after a 2xx register response', async () => {
     const { RegisterForm } = await importAuthModule<{
-      RegisterForm: React.ComponentType<{ navigate?: (path: string) => void }>;
+      RegisterForm: React.ComponentType<{ navigate?: (path: string) => void; legal?: unknown }>;
     }>('components/auth/RegisterForm');
 
     const navigate = vi.fn();
     const fetchMock = vi.fn().mockResolvedValue({ ok: true, status: 200, json: async () => ({}) });
     vi.stubGlobal('fetch', fetchMock);
 
-    render(<RegisterForm navigate={navigate} />);
+    render(<RegisterForm navigate={navigate} legal={REGISTER_LEGAL} />);
 
     fireEvent.change(screen.getByLabelText(/name/i), { target: { value: 'Ada Lovelace' } });
     fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'ada@example.com' } });
     fireEvent.change(screen.getByLabelText(/^password$/i), { target: { value: 'correct-horse-battery-staple-1' } });
-    // Kayıt artık onaysız gitmez (FF-198): sözleşme kutusu işaretlenir.
-    fireEvent.click(screen.getByRole('checkbox', { name: /terms of service/i }));
+    // Kayıt artık onaysız gitmez (FF-198) ve beyan metnin sonunda verilir.
+    await acceptLegalDocument(/accept the terms of service/i);
+    await acceptLegalDocument(/read and understood the privacy policy/i);
     fireEvent.click(screen.getByRole('button', { name: /register|sign up|create account/i }));
 
     await waitFor(() => {
@@ -205,7 +210,9 @@ describe('RegisterForm — navigates to pending on success, alerts on failure (r
     fireEvent.change(screen.getByLabelText(/^password$/i), { target: { value: 'correct-horse-battery-staple-1' } });
     fireEvent.click(screen.getByRole('button', { name: /register|sign up|create account/i }));
 
-    expect(await screen.findByRole('alert').catch(() => null)).toBeTruthy();
+    // Zorunlu iki belge kutusu boş: form sunucuya çıkmaz ve İKİ uyarı doğar
+    // (kabul + beyan). Tekil sorgu ikisini birden görünce düşerdi.
+    expect((await screen.findAllByRole('alert').catch(() => [])).length).toBeGreaterThan(0);
 
     vi.unstubAllGlobals();
   });
@@ -310,7 +317,7 @@ describe('RegisterForm — network failure surfaces the existing accessible aler
     fireEvent.change(screen.getByLabelText(/^password$/i), { target: { value: 'correct-horse-battery-staple-1' } });
     fireEvent.click(screen.getByRole('button', { name: /register|sign up|create account/i }));
 
-    const alert = await screen.findByRole('alert');
+    const [alert] = await screen.findAllByRole('alert');
     expect(alert).toBeInTheDocument();
 
     vi.unstubAllGlobals();

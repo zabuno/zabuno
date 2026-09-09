@@ -2,47 +2,80 @@ import { useState, type FormEvent } from 'react';
 import { Label } from '../catalog/forms/micro/Label';
 import { TextInput } from '../catalog/forms/micro/TextInput';
 import { Button } from '../catalog/forms/micro/Button';
-import { CheckboxField } from '../catalog/forms/compound/CheckboxField';
+import { LegalDocumentCard, type RegisterLegalPayload } from './LegalDocumentModal';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../lib/csrfHeader';
 import { focusFirstInvalidField, readValidationFailure } from '../../lib/validationErrors';
 import { t } from '../../i18n/auth';
 
 type FieldErrors = Partial<
-    Record<'name' | 'email' | 'password' | 'terms_accepted' | 'submit', string>
+    Record<
+        'name' | 'email' | 'password' | 'terms_accepted' | 'privacy_acknowledged' | 'submit',
+        string
+    >
 >;
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /*
-    BELGE BAĞLANTISI BİR DOKUNMA HEDEFİDİR (FF-198, `docs/118` E3).
+    ALANLARIN EKRANDAKİ SIRASI — "ilk hatalı alan" bununla belirlenir.
 
-    Bağlantı cümlenin İÇİNE gömülmez: satır içi bir bağlantı 18 piksel
-    yüksekliğindedir ve parmakla vurulamaz (`docs/117` K1). Her belge kendi
-    satırında, 44 piksel yüksekliğinde bir hedef olarak durur.
+    Nesne anahtar sırası buna güvenilir bir cevap vermez; ayrıca yasal
+    kutular formun EN ALTINDA durur, yani boş bir formda odak metin
+    alanlarına gitmeli, kutulara değil. Aynı liste hem istemci hem sunucu
+    doğrulamasında kullanılır: iki yerde iki farklı sıra, aynı formun iki
+    farklı davranışı olurdu.
 */
-const DOCUMENT_LINK_CLASS =
-    'inline-flex min-h-[var(--density-hit-area-min)] items-center text-body text-fg underline';
+const FIELD_ORDER = [
+    'name',
+    'email',
+    'password',
+    'password_confirmation',
+    'terms_accepted',
+    'privacy_acknowledged',
+] as const;
+
+type OpenDocument = 'terms' | 'privacy' | 'marketing' | null;
 
 type RegisterFormProps = {
     navigate?: (path: string) => void;
+    /*
+        Yasal metin SUNUCUDAN, sayfayla birlikte gelir
+        (`RegistrationLegalPayload`). Gelmediğinde kart yine çizilir ama
+        kutusu işaretlenemez: gösteremediğimiz bir belgeyi okuduğunu
+        söyletmeyiz.
+    */
+    legal?: RegisterLegalPayload;
 };
 
 export function RegisterForm({
     navigate = (path) => window.location.assign(path),
+    legal,
 }: RegisterFormProps = {}) {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [passwordConfirmation, setPasswordConfirmation] = useState('');
     /*
-        İKİ KUTU, İKİ ANLAM (FF-198). Hizmet Koşulları + Gizlilik Politikası
-        ZORUNLU: işaretlenmeden form sunucuya hiç gitmez. Ticari ileti izni
-        İSTEĞE BAĞLI ve varsayılanı BOŞ — önceden işaretli bir kutu onay
-        değildir. Sunucu aynı kuralı ayrıca uygular (`CreateNewUser`).
+        ÜÇ KUTU, ÜÇ AYRI OLGU (REG-LEGAL-01).
+
+        1. Hizmet Koşulları KABUL edilir — sözleşme kurulur.
+        2. Gizlilik Politikası yalnız OKUNDUĞU BEYAN EDİLİR. Onay değildir ve
+           onay olarak istenmez (KVKK Kurulu 2026/347). Yine de zorunludur:
+           bilgilendirilmemiş bir kişi için veri işlemeye başlayamayız.
+        3. Ticari ileti izni İSTEĞE BAĞLI, ayrı ve varsayılanı BOŞ — önceden
+           işaretli bir kutu onay değildir.
+
+        Sunucu üçünü de ayrıca uygular (`CreateNewUser`, `ConsentRecorder`).
     */
     const [termsAccepted, setTermsAccepted] = useState(false);
+    const [privacyAcknowledged, setPrivacyAcknowledged] = useState(false);
     const [marketingConsent, setMarketingConsent] = useState(false);
+    const [openDocument, setOpenDocument] = useState<OpenDocument>(null);
     const [errors, setErrors] = useState<FieldErrors>({});
+
+    const documents = legal?.documents ?? {};
+    const reviewPending = legal?.reviewPending ?? false;
+    const closeDocument = () => setOpenDocument(null);
 
     function validate(): FieldErrors {
         const next: FieldErrors = {};
@@ -63,6 +96,10 @@ export function RegisterForm({
             next.terms_accepted = t('auth.register.error.terms');
         }
 
+        if (!privacyAcknowledged) {
+            next.privacy_acknowledged = t('auth.register.error.privacy');
+        }
+
         return next;
     }
 
@@ -73,6 +110,18 @@ export function RegisterForm({
         setErrors(nextErrors);
 
         if (Object.keys(nextErrors).length > 0) {
+            /*
+                HATA GÖSTERMEK YETMEZ, ONU BULDURMAK GEREKİR.
+
+                Sunucu reddettiğinde odak zaten ilk hatalı alana taşınıyordu;
+                İSTEMCİ reddettiğinde taşınmıyordu. 320×480'de fark ölçülebilir:
+                boş bir formu gönderen kişi ekranın altındaki düğmededir, hata
+                metinleri katlanmanın üstünde kalır ve sayfa hiç kıpırdamaz —
+                kullanıcıya hiçbir şey olmamış gibi görünür. `focusFirstInvalidField`
+                `preventScroll` kullanmaz, yani alan görünür alana KAYAR.
+            */
+            focusFirstInvalidField(nextErrors as Record<string, string>, FIELD_ORDER);
+
             return;
         }
 
@@ -96,6 +145,10 @@ export function RegisterForm({
                         password,
                         password_confirmation: passwordConfirmation,
                         terms_accepted: termsAccepted,
+                        // Aydınlatma beyanı AYRI bir alan olarak gider:
+                        // sunucu neyin kabul, neyin beyan olduğunu ancak
+                        // böyle ayırt edebilir.
+                        privacy_acknowledged: privacyAcknowledged,
                         marketing_consent: marketingConsent,
                     }),
                 }),
@@ -125,13 +178,7 @@ export function RegisterForm({
             submit: failure.message ?? t('auth.register.error.submit'),
         }));
 
-        focusFirstInvalidField(failure.fields, [
-            'name',
-            'email',
-            'password',
-            'password_confirmation',
-            'terms_accepted',
-        ]);
+        focusFirstInvalidField(failure.fields, FIELD_ORDER);
     }
 
     return (
@@ -234,37 +281,64 @@ export function RegisterForm({
                 />
             </div>
 
-            <div className="flex flex-col gap-1">
-                <CheckboxField
-                    id="register-terms"
-                    name="terms_accepted"
+            {/* ÜÇ KART, ÜÇ BELGE — her biri kendi metnini yanında taşır. */}
+            <div
+                role="group"
+                aria-label={t('auth.register.legal_links')}
+                className="flex flex-col gap-3"
+            >
+                <LegalDocumentCard
+                    legal={documents.terms}
+                    reviewPending={reviewPending}
+                    fallbackTitle={t('auth.register.legal.name.terms')}
+                    checkboxId="register-terms"
+                    checkboxName="terms_accepted"
+                    checkboxLabel={t('auth.register.terms')}
                     required
                     checked={termsAccepted}
-                    onChange={(event) => setTermsAccepted(event.target.checked)}
-                    label={t('auth.register.terms')}
+                    onChange={setTermsAccepted}
                     errorText={errors.terms_accepted}
+                    readLabel={t('auth.register.legal.read_terms')}
+                    open={openDocument === 'terms'}
+                    onOpen={() => setOpenDocument('terms')}
+                    onClose={closeDocument}
                 />
-                <nav aria-label={t('auth.register.legal_links')} className="flex flex-wrap gap-x-4">
-                    <a href="/terms" className={DOCUMENT_LINK_CLASS}>
-                        {t('auth.register.terms.read_terms')}
-                    </a>
-                    <a href="/privacy" className={DOCUMENT_LINK_CLASS}>
-                        {t('auth.register.terms.read_privacy')}
-                    </a>
-                </nav>
-            </div>
 
-            <div className="flex flex-col gap-1">
-                <CheckboxField
-                    id="register-marketing"
-                    name="marketing_consent"
-                    checked={marketingConsent}
-                    onChange={(event) => setMarketingConsent(event.target.checked)}
-                    label={t('auth.register.marketing')}
+                <LegalDocumentCard
+                    legal={documents.privacy}
+                    reviewPending={reviewPending}
+                    fallbackTitle={t('auth.register.legal.name.privacy')}
+                    checkboxId="register-privacy"
+                    checkboxName="privacy_acknowledged"
+                    checkboxLabel={t('auth.register.privacy')}
+                    checkboxNote={t('auth.register.privacy.note')}
+                    required
+                    checked={privacyAcknowledged}
+                    onChange={setPrivacyAcknowledged}
+                    errorText={errors.privacy_acknowledged}
+                    readLabel={t('auth.register.legal.read_privacy')}
+                    open={openDocument === 'privacy'}
+                    onOpen={() => setOpenDocument('privacy')}
+                    onClose={closeDocument}
                 />
-                <a href="/marketing-consent" className={DOCUMENT_LINK_CLASS}>
-                    {t('auth.register.marketing.read')}
-                </a>
+
+                <LegalDocumentCard
+                    legal={documents['marketing-consent']}
+                    reviewPending={reviewPending}
+                    fallbackTitle={t('auth.register.legal.name.marketing')}
+                    checkboxId="register-marketing"
+                    checkboxName="marketing_consent"
+                    checkboxLabel={t('auth.register.marketing')}
+                    checkboxNote={t('auth.register.marketing.note')}
+                    checked={marketingConsent}
+                    onChange={setMarketingConsent}
+                    readLabel={t('auth.register.legal.read_marketing')}
+                    /* Kutu metni tam kalır; kısalan yalnız düğmenin adı. */
+                    actionLabel={t('auth.register.legal.accept_marketing')}
+                    open={openDocument === 'marketing'}
+                    onOpen={() => setOpenDocument('marketing')}
+                    onClose={closeDocument}
+                />
             </div>
 
             <Button type="submit" className="w-full">

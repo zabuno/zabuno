@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { readyForRender } from './i18n/mount';
 import { markAnalyticsSurfaceAnonymous, trackPageView } from './lib/analytics';
 import { RegisterForm } from './components/auth/RegisterForm';
+import type { RegisterLegalPayload } from './components/auth/LegalDocumentModal';
 import { LoginForm } from './components/auth/LoginForm';
 import { ForgotPasswordForm } from './components/auth/ForgotPasswordForm';
 import { ResetPasswordForm } from './components/auth/ResetPasswordForm';
@@ -22,10 +23,32 @@ if (!container) {
 const view = container.dataset.authView;
 const authEmail = container.dataset.authEmail ?? '';
 
+/*
+    YASAL METİN SAYFAYLA BİRLİKTE GELDİ (REG-LEGAL-01).
+
+    Ayrı bir istek yok: kaydolan kişi imzaladığı metni, imzaladığı anda,
+    formu terk etmeden okur. Blok okunamazsa kayıt ekranı YİNE ÇİZİLİR;
+    kartlar metnin gösterilemediğini söyler ve kutuları işaretlenemez —
+    okunmamış bir belge için beyan alınmaz.
+*/
+function readLegalPayload(): RegisterLegalPayload | undefined {
+    const node = document.getElementById('register-legal');
+
+    if (node === null) {
+        return undefined;
+    }
+
+    try {
+        return JSON.parse(node.textContent ?? '') as RegisterLegalPayload;
+    } catch {
+        return undefined;
+    }
+}
+
 function renderView(container: HTMLElement) {
     switch (view) {
         case 'register':
-            return <RegisterForm />;
+            return <RegisterForm legal={readLegalPayload()} />;
         case 'login':
             return <LoginForm />;
         case 'forgot-password':

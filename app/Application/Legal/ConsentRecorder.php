@@ -19,8 +19,9 @@ use LogicException;
  * anında yayında olan sürüm, kabul edilen sürümdür.
  *
  * İki giriş noktası, iki an:
- *   - `recordRegistration`: hesap açılırken — Hizmet Koşulları + Gizlilik
- *     Politikası zorunlu; ticari ileti izni yalnız işaretlendiyse.
+ *   - `recordRegistration`: hesap açılırken — Hizmet Koşulları KABUL edilir,
+ *     Gizlilik Politikası yalnız OKUNDUĞU BEYAN EDİLİR (ayrı kip, aşağıya
+ *     bakınız); ticari ileti izni yalnız işaretlendiyse.
  *   - `recordCheckout`: ödeme adımında — Ön Bilgilendirme Formu + Mesafeli
  *     Satış Sözleşmesi, ve AYRI bir kayıt olarak ifaya derhâl başlama onayı.
  *
@@ -49,6 +50,25 @@ final class ConsentRecorder
     public const KIND_CHECKOUT = 'checkout';
 
     /**
+     * AYDINLATMA METNİNİN OKUNDUĞUNA DAİR BEYAN — ONAY DEĞİL (REG-LEGAL-01).
+     *
+     * KVKK Kurulu'nun 18.02.2026 tarihli ve 2026/347 sayılı ilke kararı,
+     * aydınlatma yükümlülüğünün açık rıza ile birlikte ve rıza gibi
+     * istenemeyeceğini söylüyor: aydınlatma OKUNUR, kişi bilgilendirildiğini
+     * beyan eder; onaylamaz.
+     *
+     * Defterde ayrı bir kip, çünkü ikisi ayrı hukuki olgudur. Aynı kipi
+     * taşısalardı elimizde "aydınlatmaya rıza gösterdi" diyen bir kayıt
+     * kalırdı — ve o kayıt, kararın yasakladığı şeyin kanıtı olurdu.
+     *
+     * ESKİ SATIRLAR OLDUĞU GİBİ DURUYOR. Bu değişiklikten önce yazılmış
+     * `registration` kipli `privacy` satırları geçmişte gerçekten öyle
+     * alınmıştı; onları geriye dönük yeniden yazmak, defterin ne olduğunu
+     * yok etmek olurdu.
+     */
+    public const KIND_PRIVACY_ACKNOWLEDGEMENT = 'privacy_acknowledgement';
+
+    /**
      * Cayma süresi dolmadan ifaya başlanmasına verilen AÇIK onay.
      *
      * Belge anahtarı `distance-sales`: onay o sözleşmenin bir maddesine
@@ -63,9 +83,21 @@ final class ConsentRecorder
         private readonly ConsentLedgerPort $ledger,
     ) {}
 
-    public function recordRegistration(int $userId, Request $request, bool $marketingConsent): void
+    /**
+     * @param  bool  $privacyAcknowledged  Kişi aydınlatma metnini OKUDUĞUNU
+     *                                     açıkça beyan etti mi? Beyan yoksa
+     *                                     satır yazılmaz — ve kayıt zaten
+     *                                     doğrulamadan geçmez
+     *                                     (`CreateNewUser`).
+     */
+    public function recordRegistration(int $userId, Request $request, bool $marketingConsent, bool $privacyAcknowledged): void
     {
-        $this->write($userId, null, self::KIND_REGISTRATION, ['terms', 'privacy'], $request);
+        // Yalnız Hizmet Koşulları KABUL edilir; aydınlatma metni ayrı satır.
+        $this->write($userId, null, self::KIND_REGISTRATION, ['terms'], $request);
+
+        if ($privacyAcknowledged) {
+            $this->write($userId, null, self::KIND_PRIVACY_ACKNOWLEDGEMENT, ['privacy'], $request);
+        }
 
         // SESSİZLİK ONAY DEĞİLDİR: işaretlenmeyen kutu için satır yazılmaz.
         if ($marketingConsent) {

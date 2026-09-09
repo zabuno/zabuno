@@ -124,17 +124,77 @@ msgstr "Adınızı girin."
 msgid "auth.register.error.password"
 msgstr "Bir parola girin."
 
+#: auth:auth.register.error.privacy
+msgid "auth.register.error.privacy"
+msgstr "Hesap oluşturmak için Gizlilik Politikasını okuduğunuzu onaylayın."
+
 #: auth:auth.register.error.submit
 msgid "auth.register.error.submit"
 msgstr "Hesabınızı oluşturamadık. Lütfen tekrar deneyin."
 
 #: auth:auth.register.error.terms
 msgid "auth.register.error.terms"
-msgstr "Hesap oluşturmak için bu kutuyu işaretleyin. Her iki belgenin bağlantısı aşağıda."
+msgstr "Hesap oluşturmak için bu kutuyu işaretleyin. Metnin tamamı bu sayfada."
 
 #: auth:auth.register.heading
 msgid "auth.register.heading"
 msgstr "Hesabınızı oluşturun"
+
+#: auth:auth.register.legal.accept_marketing
+msgid "auth.register.legal.accept_marketing"
+msgstr "Ticari e-posta almayı kabul ediyorum"
+
+#: auth:auth.register.legal.action_hint
+msgid "auth.register.legal.action_hint"
+msgstr "Cevabınız hesabınız oluşturulurken kaydedilir. O ana kadar değiştirebilirsiniz."
+
+#: auth:auth.register.legal.close
+msgid "auth.register.legal.close"
+msgstr "Kapat"
+
+#: auth:auth.register.legal.heading
+msgid "auth.register.legal.heading"
+msgstr "Okumanız istenen belgeler"
+
+#: auth:auth.register.legal.language
+msgid "auth.register.legal.language"
+msgstr "metnin dili: {language}"
+
+#: auth:auth.register.legal.name.marketing
+msgid "auth.register.legal.name.marketing"
+msgstr "Ticari ileti izni metni"
+
+#: auth:auth.register.legal.name.privacy
+msgid "auth.register.legal.name.privacy"
+msgstr "Gizlilik Politikası"
+
+#: auth:auth.register.legal.name.terms
+msgid "auth.register.legal.name.terms"
+msgstr "Hizmet Koşulları"
+
+#: auth:auth.register.legal.read_marketing
+msgid "auth.register.legal.read_marketing"
+msgstr "Ticari ileti onay metninin tamamını oku"
+
+#: auth:auth.register.legal.read_privacy
+msgid "auth.register.legal.read_privacy"
+msgstr "Gizlilik Politikasının tamamını oku"
+
+#: auth:auth.register.legal.read_terms
+msgid "auth.register.legal.read_terms"
+msgstr "Hizmet Koşullarının tamamını oku"
+
+#: auth:auth.register.legal.review_pending
+msgid "auth.register.legal.review_pending"
+msgstr "Bu metin henüz bir hukukçu tarafından incelenmedi. Karar vermeden önce okuyabilmeniz için olduğu gibi yayımlanıyor."
+
+#: auth:auth.register.legal.unavailable
+msgid "auth.register.legal.unavailable"
+msgstr "Metnin tamamı şu anda gösterilemiyor, bu yüzden bu kutu henüz işaretlenemez. Lütfen biraz sonra tekrar deneyin."
+
+#: auth:auth.register.legal.version
+msgid "auth.register.legal.version"
+msgstr "Sürüm {version}, {date} tarihinden itibaren yürürlükte"
 
 #: auth:auth.register.legal_links
 msgid "auth.register.legal_links"
@@ -144,9 +204,9 @@ msgstr "Yasal belgeler"
 msgid "auth.register.marketing"
 msgstr "Zabuno’dan e-posta yoluyla ticari elektronik ileti almayı kabul ediyorum. Bu isteğe bağlıdır."
 
-#: auth:auth.register.marketing.read
-msgid "auth.register.marketing.read"
-msgstr "Ticari ileti onay metnini okuyun"
+#: auth:auth.register.marketing.note
+msgid "auth.register.marketing.note"
+msgstr "İsteğe bağlı. Bu kutuyu boş bırakmanız hesabınızla ilgili başka hiçbir şeyi değiştirmez."
 
 #: auth:auth.register.name
 msgid "auth.register.name"
@@ -160,21 +220,21 @@ msgstr "Parola"
 msgid "auth.register.password_confirmation"
 msgstr "Parolayı doğrulayın"
 
+#: auth:auth.register.privacy
+msgid "auth.register.privacy"
+msgstr "Gizlilik Politikasını okudum ve anladım."
+
+#: auth:auth.register.privacy.note
+msgid "auth.register.privacy.note"
+msgstr "Bu yalnız bilgilendirildiğinizi söyler. Açık rıza değildir ve açık rıza olarak istenmez."
+
 #: auth:auth.register.submit
 msgid "auth.register.submit"
 msgstr "Kaydol"
 
 #: auth:auth.register.terms
 msgid "auth.register.terms"
-msgstr "Hizmet Koşulları’nı ve Gizlilik Politikası’nı okudum ve kabul ediyorum."
-
-#: auth:auth.register.terms.read_privacy
-msgid "auth.register.terms.read_privacy"
-msgstr "Gizlilik Politikası’nı okuyun"
-
-#: auth:auth.register.terms.read_terms
-msgid "auth.register.terms.read_terms"
-msgstr "Hizmet Koşulları’nı okuyun"
+msgstr "Hizmet Koşullarını okudum ve kabul ediyorum."
 
 #: auth:auth.reset_password.error.password
 msgid "auth.reset_password.error.password"

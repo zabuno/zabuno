@@ -9,6 +9,7 @@ use App\Actions\Fortify\ResetUserPassword;
 use App\Http\Responses\Auth\LoginResponse;
 use App\Http\Responses\Auth\PasswordResetLinkResponse;
 use App\Http\Responses\Auth\VerifyEmailResponse;
+use App\Support\Legal\RegistrationLegalPayload;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Events\RouteMatched;
@@ -46,7 +47,17 @@ final class FortifyServiceProvider extends ServiceProvider
 
             return view('auth.login');
         });
-        Fortify::registerView(fn () => view('auth.register'));
+        /*
+            KAYIT EKRANI, KABUL EDİLEN METNİ YANINDA TAŞIR (REG-LEGAL-01).
+
+            Metin sayfayla birlikte gelir; ayrı bir uç nokta yok
+            (`RegistrationLegalPayload`). Böylece kaydolan kişi formu terk
+            etmeden — yani yazdıklarını kaybetmeden — imzaladığı metni
+            okuyabilir.
+        */
+        Fortify::registerView(fn () => view('auth.register', [
+            'legal' => app(RegistrationLegalPayload::class)->forLocale(app()->getLocale()),
+        ]));
         Fortify::verifyEmailView(fn () => view('auth.verify'));
         Fortify::requestPasswordResetLinkView(fn () => view('auth.forgot-password'));
         Fortify::resetPasswordView(fn (Request $request) => view('auth.reset-password', [

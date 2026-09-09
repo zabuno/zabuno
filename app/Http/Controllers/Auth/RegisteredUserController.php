@@ -46,6 +46,7 @@ final class RegisteredUserController extends Controller
                 (int) $user->getAuthIdentifier(),
                 $request,
                 $request->boolean('marketing_consent'),
+                $request->boolean('privacy_acknowledged'),
             );
 
             return $user;
