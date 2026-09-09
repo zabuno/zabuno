@@ -42,6 +42,7 @@ final class RegistrationConsentTest extends TestCase
             'password' => self::VALID_PASSWORD,
             'password_confirmation' => self::VALID_PASSWORD,
             'terms_accepted' => true,
+            'privacy_acknowledged' => true,
         ], $overrides);
     }
 
@@ -83,10 +84,21 @@ final class RegistrationConsentTest extends TestCase
         self::assertCount(2, $records, 'REG-CONSENT-02: kayıt anında terms + privacy yazılmalı, başka bir şey değil.');
         self::assertSame(['privacy', 'terms'], $records->pluck('document_key')->all());
 
+        /*
+            İKİ SATIR, İKİ KİP (REG-LEGAL-01). Hizmet Koşulları KABUL
+            EDİLİR; aydınlatma metni yalnız OKUNDUĞU BEYAN EDİLİR. Defterde
+            aynı kipi taşısalardı, aydınlatmaya onay alınmış görünürdü —
+            KVKK Kurulu'nun 2026/347 sayılı ilke kararının yasakladığı şey
+            tam olarak budur.
+        */
+        self::assertSame(
+            ['privacy_acknowledgement', 'registration'],
+            $records->pluck('kind')->all(),
+        );
+
         $library = app(LegalLibraryPort::class);
 
         foreach ($records as $record) {
-            self::assertSame('registration', $record->kind);
             self::assertSame(1, (int) $record->granted);
             self::assertSame($library->find($record->document_key)?->version, $record->document_version,
                 'REG-CONSENT-02: kaydedilen sürüm, o an yayında olan sürüm olmalı.');
@@ -182,13 +194,110 @@ final class RegistrationConsentTest extends TestCase
         self::assertSame(2, DB::table('consent_records')->where('user_id', $user->id)->count());
     }
 
+    // --- REG-LEGAL-01: aydınlatma beyanı AYRI bir alan ve AYRI bir kip ---------
+
+    public function test_registration_without_the_privacy_acknowledgement_is_rejected(): void
+    {
+        $payload = $this->payload();
+        unset($payload['privacy_acknowledged']);
+
+        $this->withHeaders($this->jsonHeaders())->post('/register', $payload)
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('privacy_acknowledged');
+
+        self::assertSame(0, User::query()->count());
+        self::assertSame(0, DB::table('consent_records')->count());
+    }
+
+    public function test_the_privacy_acknowledgement_is_recorded_under_its_own_kind_not_as_a_registration_consent(): void
+    {
+        $this->withHeaders($this->jsonHeaders())
+            ->post('/register', $this->payload())
+            ->assertSuccessful();
+
+        $user = User::query()->where('email', 'ada@example.com')->firstOrFail();
+
+        $privacy = DB::table('consent_records')
+            ->where('user_id', $user->id)
+            ->where('document_key', 'privacy')
+            ->firstOrFail();
+
+        self::assertSame(ConsentRecorder::KIND_PRIVACY_ACKNOWLEDGEMENT, $privacy->kind);
+        self::assertSame('privacy_acknowledgement', $privacy->kind);
+
+        $terms = DB::table('consent_records')
+            ->where('user_id', $user->id)
+            ->where('document_key', 'terms')
+            ->firstOrFail();
+
+        self::assertSame(ConsentRecorder::KIND_REGISTRATION, $terms->kind);
+    }
+
+    /**
+     * REG-LEGAL-02: kayıt SAYFASI metni yanında taşır.
+     *
+     * Kebapçı, kabul ettiği metni okumak için formu terk etmek zorunda
+     * değil: metin sayfayla birlikte geliyor, ayrı bir istekle değil. Sayfa
+     * metinsiz çizilirse kutular kalır ama okunacak bir şey kalmaz.
+     */
+    public function test_the_register_page_ships_the_legal_texts_it_asks_people_to_read(): void
+    {
+        $response = $this->get('/register');
+
+        $response->assertStatus(200);
+
+        $payload = $this->legalPayloadFrom((string) $response->getContent());
+
+        // İnceleme notu kayıt ekranına da taşınır (`LegalReview`).
+        self::assertIsBool($payload['reviewPending']);
+        self::assertSame(
+            ['terms', 'privacy', 'marketing-consent'],
+            array_keys($payload['documents']),
+        );
+
+        $privacy = $payload['documents']['privacy'];
+        $library = app(LegalLibraryPort::class);
+
+        // Ekranda okunan sürüm ile deftere yazılan sürüm AYNI olmalı.
+        self::assertSame($library->find('privacy')?->version, $privacy['version']);
+        self::assertSame('/privacy', $privacy['url']);
+        self::assertNotSame([], $privacy['sections']);
+
+        // Şirket yer tutucuları DOLDURULMUŞ olmalı: `{company.legal_name}`
+        // gören biri kimle sözleşme yaptığını göremez.
+        self::assertStringNotContainsString('{company.', json_encode($payload, JSON_THROW_ON_ERROR));
+    }
+
+    /** @return array{reviewPending: bool, documents: array<string, mixed>} */
+    private function legalPayloadFrom(string $html): array
+    {
+        self::assertSame(
+            1,
+            preg_match('#<script type="application/json" id="register-legal">(.*?)</script>#s', $html, $matches),
+            'REG-LEGAL-02: kayıt sayfası yasal metin bloğunu taşımalı.',
+        );
+
+        /** @var array{reviewPending: bool, documents: array<string, mixed>} $decoded */
+        $decoded = json_decode(html_entity_decode($matches[1], ENT_QUOTES), true, 512, JSON_THROW_ON_ERROR);
+
+        return $decoded;
+    }
+
     // --- REG-CONSENT-05: kayıt formu onay kutularını ve bağlantıları taşır -----
 
     public function test_the_register_screen_ships_the_consent_strings_in_its_catalog(): void
     {
         $catalog = (string) file_get_contents(resource_path('js/i18n/auth.ts'));
 
-        foreach (['auth.register.terms', 'auth.register.marketing', 'auth.register.error.terms'] as $key) {
+        $keys = [
+            'auth.register.terms',
+            'auth.register.privacy',
+            'auth.register.marketing',
+            'auth.register.error.terms',
+            'auth.register.error.privacy',
+        ];
+
+        foreach ($keys as $key) {
             self::assertStringContainsString("'{$key}'", $catalog, "REG-CONSENT-05: [{$key}] kayıt kataloğunda yok.");
         }
     }

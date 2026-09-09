@@ -124,6 +124,10 @@ msgstr ""
 msgid "auth.register.error.password"
 msgstr ""
 
+#: auth:auth.register.error.privacy
+msgid "auth.register.error.privacy"
+msgstr ""
+
 #: auth:auth.register.error.submit
 msgid "auth.register.error.submit"
 msgstr ""
@@ -136,6 +140,62 @@ msgstr ""
 msgid "auth.register.heading"
 msgstr ""
 
+#: auth:auth.register.legal.accept_marketing
+msgid "auth.register.legal.accept_marketing"
+msgstr ""
+
+#: auth:auth.register.legal.action_hint
+msgid "auth.register.legal.action_hint"
+msgstr ""
+
+#: auth:auth.register.legal.close
+msgid "auth.register.legal.close"
+msgstr ""
+
+#: auth:auth.register.legal.heading
+msgid "auth.register.legal.heading"
+msgstr ""
+
+#: auth:auth.register.legal.language
+msgid "auth.register.legal.language"
+msgstr ""
+
+#: auth:auth.register.legal.name.marketing
+msgid "auth.register.legal.name.marketing"
+msgstr ""
+
+#: auth:auth.register.legal.name.privacy
+msgid "auth.register.legal.name.privacy"
+msgstr ""
+
+#: auth:auth.register.legal.name.terms
+msgid "auth.register.legal.name.terms"
+msgstr ""
+
+#: auth:auth.register.legal.read_marketing
+msgid "auth.register.legal.read_marketing"
+msgstr ""
+
+#: auth:auth.register.legal.read_privacy
+msgid "auth.register.legal.read_privacy"
+msgstr ""
+
+#: auth:auth.register.legal.read_terms
+msgid "auth.register.legal.read_terms"
+msgstr ""
+
+#: auth:auth.register.legal.review_pending
+msgid "auth.register.legal.review_pending"
+msgstr ""
+
+#: auth:auth.register.legal.unavailable
+msgid "auth.register.legal.unavailable"
+msgstr ""
+
+#: auth:auth.register.legal.version
+msgid "auth.register.legal.version"
+msgstr ""
+
 #: auth:auth.register.legal_links
 msgid "auth.register.legal_links"
 msgstr ""
@@ -144,8 +204,8 @@ msgstr ""
 msgid "auth.register.marketing"
 msgstr ""
 
-#: auth:auth.register.marketing.read
-msgid "auth.register.marketing.read"
+#: auth:auth.register.marketing.note
+msgid "auth.register.marketing.note"
 msgstr ""
 
 #: auth:auth.register.name
@@ -160,20 +220,20 @@ msgstr ""
 msgid "auth.register.password_confirmation"
 msgstr ""
 
+#: auth:auth.register.privacy
+msgid "auth.register.privacy"
+msgstr ""
+
+#: auth:auth.register.privacy.note
+msgid "auth.register.privacy.note"
+msgstr ""
+
 #: auth:auth.register.submit
 msgid "auth.register.submit"
 msgstr ""
 
 #: auth:auth.register.terms
 msgid "auth.register.terms"
-msgstr ""
-
-#: auth:auth.register.terms.read_privacy
-msgid "auth.register.terms.read_privacy"
-msgstr ""
-
-#: auth:auth.register.terms.read_terms
-msgid "auth.register.terms.read_terms"
 msgstr ""
 
 #: auth:auth.reset_password.error.password

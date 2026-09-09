@@ -7,7 +7,9 @@ return [
     'password' => 'Girilen şifre yanlış.',
     'throttle' => 'Çok fazla deneme yapıldı. Lütfen :seconds saniye sonra tekrar deneyin.',
     'registration_generic_failure' => 'Kaydınızı tamamlayamadık. Lütfen bilgilerinizi kontrol edip tekrar deneyin.',
-    'terms_required' => 'Hesap oluşturmak için lütfen Hizmet Koşullarını ve Gizlilik Politikasını kabul edin.',
+    'terms_required' => 'Hesap oluşturmak için lütfen Hizmet Koşullarını kabul edin.',
+    // Aydınlatma metni ONAYLANMAZ, okunduğu BEYAN EDİLİR (2026/347).
+    'privacy_acknowledgement_required' => 'Hesap oluşturmak için lütfen Gizlilik Politikasını okuduğunuzu onaylayın.',
     'verify_email_subject' => 'E-posta adresinizi doğrulayın',
     'verify_email_greeting' => 'Merhaba :name,',
     'verify_email_body' => 'E-posta adresinizi doğrulamak için lütfen aşağıdaki düğmeye tıklayın.',

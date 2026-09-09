@@ -86,6 +86,8 @@ final class VerificationEmailDeliveryHonestyTest extends TestCase
             'password' => 'Cok-Guclu-Parola-1',
             'password_confirmation' => 'Cok-Guclu-Parola-1',
             'terms_accepted' => true,
+            // Aydınlatma beyanı REG-LEGAL-01'de ayrı ve zorunlu bir alan.
+            'privacy_acknowledged' => true,
         ]);
 
         /*

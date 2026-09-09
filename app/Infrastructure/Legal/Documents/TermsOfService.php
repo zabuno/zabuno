@@ -13,8 +13,12 @@ use App\Domain\Legal\LegalSection;
  * Metin ürünün BUGÜN yaptığıyla sınırlı: çalışma alanı, menü, yayın ve
  * kalıcı karekod, isteğe bağlı sipariş ve puanlama, ekip rolleri, AI
  * destekli aktarım (`docs/107`). Ürünün yapmadığı hiçbir şey vaat
- * edilmez; süre, fiyat ve şirket bilgisi uydurulmaz. Sürüm 0.1: hukukçu
- * incelemesi bekliyor (`LegalReview`).
+ * edilmez; süre, fiyat ve şirket bilgisi uydurulmaz.
+ *
+ * Sürüm 0.2 (2026-09-09) tek bir düzeltme taşır: kayıt olmanın Gizlilik
+ * Politikasını da KABUL ettiğini söyleyen cümle, kabul ile aydınlatmayı
+ * ayıracak biçimde yeniden yazıldı. Metin hâlâ hukukçu incelemesi
+ * bekliyor (`LegalReview`); sürüm artışı bir onay değildir.
  */
 final class TermsOfService
 {
@@ -22,14 +26,14 @@ final class TermsOfService
     {
         return new LegalDocument(
             key: 'terms',
-            version: '0.1',
-            effectiveDate: '2026-09-06',
+            version: '0.2',
+            effectiveDate: '2026-09-09',
             title: 'Terms of Service',
             summary: 'The terms under which {company.legal_name} provides the Zabuno service to restaurants and other food businesses.',
             sections: [
                 new LegalSection('Who we are and what these terms cover', [
                     'These Terms of Service (the "Terms") govern the use of Zabuno, a web application operated by {company.legal_name} ("we", "us"), registered at {company.address}, MERSIS number {company.mersis}, tax office {company.tax_office}, tax number {company.tax_number}. You can reach us at {company.email} or {company.phone}.',
-                    'By creating an account you accept these Terms and the Privacy Policy. If you accept on behalf of a business, you confirm that you are authorised to bind that business.',
+                    'By creating an account you accept these Terms. The Privacy Policy is not accepted here: it tells you how we process personal data, and at registration you confirm only that you have read it. If you accept on behalf of a business, you confirm that you are authorised to bind that business.',
                 ]),
                 new LegalSection('The service', [
                     'Zabuno lets a business create a workspace, build a menu (categories, items, prices, allergens and images), publish it to a public page with a stable QR code, and update it afterwards without changing the QR code.',

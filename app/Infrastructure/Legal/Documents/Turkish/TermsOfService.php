@@ -14,14 +14,14 @@ final class TermsOfService
         return new LegalDocument(
             language: 'tr',
             key: 'terms',
-            version: '0.1',
-            effectiveDate: '2026-09-06',
+            version: '0.2',
+            effectiveDate: '2026-09-09',
             title: 'Hizmet Koşulları',
             summary: '{company.legal_name} tarafından restoranlara ve diğer gıda işletmelerine sunulan Zabuno hizmetinin koşulları.',
             sections: [
                 new LegalSection('Biz kimiz ve bu koşullar neleri kapsıyor?', [
                     'Bu Hizmet Koşulları ("Koşullar"), kayıtlı adresi {company.address}, MERSİS numarası {company.mersis}, vergi dairesi {company.tax_office}, vergi numarası {company.tax_number} olan {company.legal_name} ("biz") tarafından işletilen Zabuno web uygulamasının kullanımını düzenler. Bize {company.email} veya {company.phone} üzerinden ulaşabilirsiniz.',
-                    'Hesap oluşturarak bu Koşulları ve Gizlilik Politikasını kabul edersiniz. Bir işletme adına kabul ediyorsanız o işletmeyi bağlayıcı işlem yapmaya yetkili olduğunuzu teyit edersiniz.',
+                    'Hesap oluşturarak bu Koşulları kabul edersiniz. Gizlilik Politikası burada kabul edilmez: kişisel verilerinizi nasıl işlediğimizi anlatır ve kayıt sırasında yalnız onu okuduğunuzu beyan edersiniz. Bir işletme adına kabul ediyorsanız o işletmeyi bağlayıcı işlem yapmaya yetkili olduğunuzu teyit edersiniz.',
                 ]),
                 new LegalSection('Hizmet', [
                     'Zabuno, bir işletmenin çalışma alanı oluşturmasını, menü hazırlamasını (kategoriler, ürünler, fiyatlar, alerjenler ve görseller), menüyü sabit bir QR kodla herkese açık bir sayfada yayımlamasını ve daha sonra QR kodu değiştirmeden güncellemesini sağlar.',

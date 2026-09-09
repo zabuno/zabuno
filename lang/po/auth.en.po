@@ -124,17 +124,77 @@ msgstr "Enter your name."
 msgid "auth.register.error.password"
 msgstr "Enter a password."
 
+#: auth:auth.register.error.privacy
+msgid "auth.register.error.privacy"
+msgstr "Confirm that you have read the Privacy Policy to create an account."
+
 #: auth:auth.register.error.submit
 msgid "auth.register.error.submit"
 msgstr "We could not create your account. Please try again."
 
 #: auth:auth.register.error.terms
 msgid "auth.register.error.terms"
-msgstr "Tick this box to create an account. Both documents are linked below."
+msgstr "Tick this box to create an account. The full text is on this page."
 
 #: auth:auth.register.heading
 msgid "auth.register.heading"
 msgstr "Create your account"
+
+#: auth:auth.register.legal.accept_marketing
+msgid "auth.register.legal.accept_marketing"
+msgstr "I agree to receive commercial e-mail"
+
+#: auth:auth.register.legal.action_hint
+msgid "auth.register.legal.action_hint"
+msgstr "Your answer is recorded when your account is created. You can change it until then."
+
+#: auth:auth.register.legal.close
+msgid "auth.register.legal.close"
+msgstr "Close"
+
+#: auth:auth.register.legal.heading
+msgid "auth.register.legal.heading"
+msgstr "Documents you are asked to read"
+
+#: auth:auth.register.legal.language
+msgid "auth.register.legal.language"
+msgstr "text language: {language}"
+
+#: auth:auth.register.legal.name.marketing
+msgid "auth.register.legal.name.marketing"
+msgstr "Commercial message consent text"
+
+#: auth:auth.register.legal.name.privacy
+msgid "auth.register.legal.name.privacy"
+msgstr "Privacy Policy"
+
+#: auth:auth.register.legal.name.terms
+msgid "auth.register.legal.name.terms"
+msgstr "Terms of Service"
+
+#: auth:auth.register.legal.read_marketing
+msgid "auth.register.legal.read_marketing"
+msgstr "Read the commercial message consent text in full"
+
+#: auth:auth.register.legal.read_privacy
+msgid "auth.register.legal.read_privacy"
+msgstr "Read the Privacy Policy in full"
+
+#: auth:auth.register.legal.read_terms
+msgid "auth.register.legal.read_terms"
+msgstr "Read the Terms of Service in full"
+
+#: auth:auth.register.legal.review_pending
+msgid "auth.register.legal.review_pending"
+msgstr "This text has not yet been reviewed by a lawyer. It is published as it stands so you can read it before you decide."
+
+#: auth:auth.register.legal.unavailable
+msgid "auth.register.legal.unavailable"
+msgstr "The full text cannot be shown right now, so this box cannot be ticked yet. Please try again in a moment."
+
+#: auth:auth.register.legal.version
+msgid "auth.register.legal.version"
+msgstr "Version {version}, in force from {date}"
 
 #: auth:auth.register.legal_links
 msgid "auth.register.legal_links"
@@ -144,9 +204,9 @@ msgstr "Legal documents"
 msgid "auth.register.marketing"
 msgstr "I agree to receive electronic commercial messages from Zabuno by e-mail. This is optional."
 
-#: auth:auth.register.marketing.read
-msgid "auth.register.marketing.read"
-msgstr "Read the commercial message consent text"
+#: auth:auth.register.marketing.note
+msgid "auth.register.marketing.note"
+msgstr "Optional. Leaving this box empty changes nothing else about your account."
 
 #: auth:auth.register.name
 msgid "auth.register.name"
@@ -160,21 +220,21 @@ msgstr "Password"
 msgid "auth.register.password_confirmation"
 msgstr "Confirm password"
 
+#: auth:auth.register.privacy
+msgid "auth.register.privacy"
+msgstr "I have read and understood the Privacy Policy."
+
+#: auth:auth.register.privacy.note
+msgid "auth.register.privacy.note"
+msgstr "This says only that you were informed. It is not consent, and consent to it is not asked for."
+
 #: auth:auth.register.submit
 msgid "auth.register.submit"
 msgstr "Register"
 
 #: auth:auth.register.terms
 msgid "auth.register.terms"
-msgstr "I have read and accept the Terms of Service and the Privacy Policy."
-
-#: auth:auth.register.terms.read_privacy
-msgid "auth.register.terms.read_privacy"
-msgstr "Read the Privacy Policy"
-
-#: auth:auth.register.terms.read_terms
-msgid "auth.register.terms.read_terms"
-msgstr "Read the Terms of Service"
+msgstr "I have read and accept the Terms of Service."
 
 #: auth:auth.reset_password.error.password
 msgid "auth.reset_password.error.password"

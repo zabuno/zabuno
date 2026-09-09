@@ -30,6 +30,14 @@ use App\Domain\Legal\LegalSection;
  * 3. Verinin NEREDE durduğu hiç yazılı değildi. Sunucu Almanya'da
  *    (2026-09-08 ölçüldü) ve yedekler aynı sunucuda; ikisi de artık
  *    metinde.
+ *
+ * SÜRÜM 0.3 (REG-LEGAL-01). Metin, defterin ARTIK YAZMADIĞI bir şeyi
+ * anlatıyordu: "bu politikayı kabul ettiğiniz an". Kayıt ekranı artık bu
+ * metni onaya değil OKUNDUĞUNA DAİR BEYANA bağlıyor (KVKK Kurulu'nun
+ * 18.02.2026 tarihli, 2026/347 sayılı ilke kararı: aydınlatma açık rıza
+ * gibi istenemez) ve defterde ayrı bir kip taşıyor
+ * (`ConsentRecorder::KIND_PRIVACY_ACKNOWLEDGEMENT`). Değişen yalnız bu iki
+ * cümle: politikanın kendisi, hangi verinin neden işlendiği, aynı.
  */
 final class PrivacyPolicy
 {
@@ -37,8 +45,8 @@ final class PrivacyPolicy
     {
         return new LegalDocument(
             key: 'privacy',
-            version: '0.2',
-            effectiveDate: '2026-09-08',
+            version: '0.3',
+            effectiveDate: '2026-09-09',
             title: 'Privacy Policy',
             summary: 'What personal data Zabuno collects, why it is collected, who receives it and how long it is kept.',
             sections: [
@@ -48,7 +56,7 @@ final class PrivacyPolicy
                 ]),
                 new LegalSection('Data we collect when you create an account', [
                     'Your name, your e-mail address and your password. The password is stored only as a cryptographic hash; we cannot read it.',
-                    'The moment you accepted the Terms of Service and the Privacy Policy, together with the version of each text, your network address and your browser identifier at that moment. If you tick the optional commercial message box, that consent is recorded the same way.',
+                    'The moment you accepted the Terms of Service, and separately the moment you confirmed that you had read this Privacy Policy, together with the version of each text, your network address and your browser identifier at that moment. Those two are recorded as different things: the Terms of Service are accepted, while this policy is only acknowledged as read. Confirming that you have read it is not consent and is not asked for as consent. If you tick the optional commercial message box, that consent is recorded separately again.',
                     'Whether your e-mail address has been verified, and session data (network address, browser identifier) while you are logged in.',
                 ]),
                 new LegalSection('Data you enter while running your workspace', [
@@ -95,7 +103,7 @@ final class PrivacyPolicy
                     'Passwords are hashed, connections are encrypted, uploaded files are scanned before they are published, and access inside a workspace is controlled by roles. No method of storage or transmission is perfectly secure; if you notice a problem, tell us.',
                 ]),
                 new LegalSection('Changes to this policy', [
-                    'We may update this policy. The version number and effective date at the top of the page identify the current text. The version you accepted when you created your account is recorded with your account.',
+                    'We may update this policy. The version number and effective date at the top of the page identify the current text. The version that was in force when you created your account, and which you confirmed you had read, is recorded with your account.',
                 ]),
             ],
         );

@@ -14,8 +14,8 @@ final class PrivacyPolicy
         return new LegalDocument(
             language: 'tr',
             key: 'privacy',
-            version: '0.2',
-            effectiveDate: '2026-09-08',
+            version: '0.3',
+            effectiveDate: '2026-09-09',
             title: 'Gizlilik Politikası',
             summary: 'Zabuno\'nun hangi kişisel verileri topladığı, bunların neden toplandığı, kimlere iletildiği ve ne kadar süre saklandığı.',
             sections: [
@@ -25,7 +25,7 @@ final class PrivacyPolicy
                 ]),
                 new LegalSection('Hesap oluşturduğunuzda topladığımız veriler', [
                     'Adınız, e-posta adresiniz ve şifreniz. Şifre yalnızca kriptografik özet olarak saklanır; şifrenizi okuyamayız.',
-                    'Hizmet Koşullarını ve Gizlilik Politikasını kabul ettiğiniz an; her metnin sürümü, o andaki ağ adresiniz ve tarayıcı tanımlayıcınız. İsteğe bağlı ticari ileti kutusunu işaretlerseniz bu onay da aynı şekilde kaydedilir.',
+                    'Hizmet Koşullarını kabul ettiğiniz an ve ayrıca bu Gizlilik Politikasını okuduğunuzu beyan ettiğiniz an; her metnin sürümü, o andaki ağ adresiniz ve tarayıcı tanımlayıcınız. Bu ikisi defterde ayrı ayrı tutulur: Hizmet Koşulları KABUL EDİLİR, bu politika ise yalnız OKUNDUĞU BEYAN EDİLİR. Okuduğunuzu beyan etmeniz bir açık rıza değildir ve açık rıza olarak istenmez. İsteğe bağlı ticari ileti kutusunu işaretlerseniz o onay da ayrıca kaydedilir.',
                     'E-posta adresinizin doğrulanıp doğrulanmadığı ve oturumunuz açıkken oturum verileri (ağ adresi, tarayıcı tanımlayıcısı).',
                 ]),
                 new LegalSection('Çalışma alanınızı kullanırken girdiğiniz veriler', [
@@ -72,7 +72,7 @@ final class PrivacyPolicy
                     'Şifreler özetlenir, bağlantılar şifrelenir, yüklenen dosyalar yayımlanmadan önce taranır ve çalışma alanındaki erişim rollerle denetlenir. Hiçbir saklama veya iletim yöntemi kusursuz güvenli değildir; bir sorun fark ederseniz bize bildirin.',
                 ]),
                 new LegalSection('Bu politikadaki değişiklikler', [
-                    'Bu politikayı güncelleyebiliriz. Sayfanın üstündeki sürüm numarası ve yürürlük tarihi güncel metni tanımlar. Hesabınızı oluştururken kabul ettiğiniz sürüm hesabınızla birlikte kaydedilir.',
+                    'Bu politikayı güncelleyebiliriz. Sayfanın üstündeki sürüm numarası ve yürürlük tarihi güncel metni tanımlar. Hesabınızı oluştururken yürürlükte olan ve okuduğunuzu beyan ettiğiniz sürüm, hesabınızla birlikte kaydedilir.',
                 ]),
             ],
         );

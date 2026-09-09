@@ -1,6 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { RegisterForm } from '../../components/auth/RegisterForm';
+import {
+    REGISTER_LEGAL,
+    acceptMandatoryLegalDocuments,
+} from '../../components/auth/registerLegal.fixture';
 import { LoginForm } from '../../components/auth/LoginForm';
 import { VerificationPending } from '../../components/auth/VerificationPending';
 import { LogoutButton } from '../../components/auth/LogoutButton';
@@ -18,14 +22,14 @@ import { LogoutButton } from '../../components/auth/LogoutButton';
 
 const CSRF_COOKIE_URL = '/sanctum/csrf-cookie';
 
-function fillRegisterForm() {
+async function fillRegisterForm() {
     fireEvent.change(screen.getByLabelText(/name/i), { target: { value: 'Ada Lovelace' } });
     fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'ada@example.com' } });
     fireEvent.change(screen.getByLabelText(/^password$/i), {
         target: { value: 'correct-horse-battery-staple-1' },
     });
-    // Kayıt artık onaysız gitmez (FF-198): sözleşme kutusu işaretlenir.
-    fireEvent.click(screen.getByRole('checkbox', { name: /terms of service/i }));
+    // Kayıt onaysız gitmez (FF-198) ve beyan metnin sonunda verilir.
+    await acceptMandatoryLegalDocuments();
 }
 
 function fillLoginForm() {
@@ -48,8 +52,8 @@ describe('RegisterForm — CSRF cookie bootstrap before POST /register (S1WP02A-
         });
         vi.stubGlobal('fetch', fetchMock);
 
-        render(<RegisterForm navigate={navigate} />);
-        fillRegisterForm();
+        render(<RegisterForm legal={REGISTER_LEGAL} navigate={navigate} />);
+        await fillRegisterForm();
         fireEvent.click(screen.getByRole('button', { name: /register|sign up|create account/i }));
 
         await waitFor(() => {
@@ -74,8 +78,8 @@ describe('RegisterForm — CSRF cookie bootstrap before POST /register (S1WP02A-
         });
         vi.stubGlobal('fetch', fetchMock);
 
-        render(<RegisterForm />);
-        fillRegisterForm();
+        render(<RegisterForm legal={REGISTER_LEGAL} />);
+        await fillRegisterForm();
         fireEvent.click(screen.getByRole('button', { name: /register|sign up|create account/i }));
 
         const alert = await screen.findByRole('alert');
