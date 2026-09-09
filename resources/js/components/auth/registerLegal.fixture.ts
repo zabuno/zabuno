@@ -42,7 +42,9 @@ export async function acceptLegalDocument(name: RegExp): Promise<void> {
 
     const dialog = await screen.findByRole('dialog');
 
-    fireEvent.click(within(within(dialog).getByTestId('legal-document-action')).getByRole('button'));
+    fireEvent.click(
+        within(within(dialog).getByTestId('legal-document-action')).getByRole('button'),
+    );
 
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
 }

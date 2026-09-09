@@ -103,7 +103,9 @@ async function acceptThroughDocument(user: ReturnType<typeof userEvent.setup>, n
 
     const dialog = await screen.findByRole('dialog');
 
-    await user.click(within(within(dialog).getByTestId('legal-document-action')).getByRole('button'));
+    await user.click(
+        within(within(dialog).getByTestId('legal-document-action')).getByRole('button'),
+    );
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
 }
 
@@ -275,7 +277,9 @@ describe('RegisterForm — legal document cards', () => {
 
         // Kutunun tam metni ve isteğe bağlı notu YERİNDE.
         expect(boxLabel).toHaveTextContent(/this is optional\./i);
-        expect(screen.getByText(/leaving this box empty changes nothing else/i)).toBeInTheDocument();
+        expect(
+            screen.getByText(/leaving this box empty changes nothing else/i),
+        ).toBeInTheDocument();
 
         fireEvent.click(box);
 
