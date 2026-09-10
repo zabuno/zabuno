@@ -302,8 +302,27 @@ const FROZEN_MODULE_FILENAMES = [
 // ÇEVİRİ YAPILDI: otuz altı satırın tamamı `workspace.tr.po` içinde dolu ve
 // `workspace.tr.json` projeksiyonu yeniden üretildi; İngilizce taban
 // DEĞİŞMEDİ — cümleler bayt bayt aynı taşındı.
+// MEDIA-DESKTOP-01 (`docs/153` §6): 1825 → 1831. ALTI anahtar ve yeni bir
+// ürün yeteneği değil — kütüphanenin İŞARETLEYİCİ/KLAVYE yüzeyinin kendi
+// cümleleri: kısayol satırı, ızgaranın erişilebilir adı, bağlam menüsünün
+// adı, "Details" eylemi ve kalıcı ayrıntı bölmesinin iki cümlesi (bölge
+// adı + boşken sebebi).
+//
+// Sayının bu kadar KÜÇÜK kalması bir tercih: seçim sayacı, "hepsini seç",
+// "seçilenleri sil", "seçimi temizle" ve toplu silmede atlananların cümlesi
+// için YENİ anahtar açılmadı — `select.count`, `select.all`, `select.clear`,
+// `select.delete` ve `select.kept` zaten kütüphanenin kelimeleri ve araç
+// çubuğu cihaz tanımadığı için masaüstünde de aynı düğmeleri çiziyor. Aynı
+// eylemi iki yüzeyde iki farklı cümleyle anlatmak, sahibin onları iki ayrı
+// şey sanmasına yol açardı.
+//
+// Dokunmada bu ALTI cümlenin karşılığı YOKTUR (ok tuşu yok, sağ tık yok,
+// kalıcı ikinci sütun yok) ve `pages/desktop/` konvansiyonu gereği
+// hiçbirini okuyan kod mobil pakete inmez.
+// ÇEVİRİ YAPILDI: altı satırın tamamı `workspace.tr.po` içinde dolu ve
+// `workspace.tr.json` projeksiyonu yeniden üretildi.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '61ee9ea2123e66c18209a999c8b6a746e7d042d0b7acdc8ff8f356b55f6e924b';
+    '5a65cacf154ab590577010657c5d38e09d6cd80239d311c27d2cfa9790ca6cb9';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
@@ -311,7 +330,7 @@ function normalizedHash(entries: Record<string, string>): string {
     return createHash('sha256').update(normalized, 'utf8').digest('hex');
 }
 
-const FROZEN_LEGACY_KEY_COUNT = 1825;
+const FROZEN_LEGACY_KEY_COUNT = 1831;
 
 describe('workspace i18n modular catalog contract', () => {
     // Başlıktaki SAYI kaldırıldı ve bir daha yazılmayacak: liste zaten

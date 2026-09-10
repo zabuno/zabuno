@@ -425,6 +425,33 @@ export const media = {
     'workspace.media.library.access.private': 'Not publicly available yet',
 
     /*
+        KÜTÜPHANENİN MASAÜSTÜ YÜZEYİ (`docs/153` §6) — ALTI anahtar ve hepsi
+        yalnız işaretleyici/klavye paketinde okunur.
+
+        Dokunmada bu cümlelerin karşılığı YOKTUR: parmakla ok tuşu yoktur,
+        sağ tık yoktur, kalıcı ikinci sütun yoktur. Bu yüzden mobil
+        kütüphanede hiçbiri çizilmez ve hiçbiri mobil pakete inmez.
+
+        Seçimin sayacı, "hepsini seç" ve "seçilenleri sil" için YENİ anahtar
+        YOK ve ikinci bir seçim şeridi de YOK: bu üçü zaten araç çubuğunda
+        (`MediaLibraryToolbar`) duruyor ve o çubuk cihaz tanımaz. Izgaranın
+        başına aynı adı taşıyan ikinci bir düğme koymak, sahibin hangisinin
+        geçerli olduğunu denemeden bilememesi demekti.
+    */
+    'workspace.media.library.desktop.shortcuts':
+        'Arrow keys move · Space selects · Enter opens details · Delete moves to trash',
+    'workspace.media.library.desktop.grid': 'Files',
+    'workspace.media.library.desktop.menu': 'File actions',
+    'workspace.media.library.desktop.details': 'Details',
+    'workspace.media.library.desktop.detail.region': 'Selected file',
+    /*
+        Boş bölme SEBEBİNİ söyler. "Nothing selected" bir hâl bildirir ama
+        çıkış yolunu vermez; sahip yan sütunun bozuk olduğunu düşünür.
+    */
+    'workspace.media.library.desktop.detail.empty':
+        'Pick a file from the grid to read its details here.',
+
+    /*
         BOYUT MOTORU (kaynak ekranı "Boyut motoru", somut tablo `docs/108`
         §6.1). Kural bugün `config/media-slots.php` içinde bir SAYI
         LİSTESİYDİ; `320` bir sayıdır, `small · menü kartı · telefon` bir
