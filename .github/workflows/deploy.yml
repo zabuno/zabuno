@@ -53,10 +53,14 @@ jobs:
           test -f scripts/server-readonly-audit.sh
           bash -n scripts/server-readonly-audit.sh
           # Yazma yapan bir komut sızmışsa burada durur. Yorumlar ayıklanır:
-          # betiğin sözleşme yorumu bu komutları BİLEREK adıyla anar.
-          code="$(grep -v '^[[:space:]]*#' scripts/server-readonly-audit.sh)"
+          # betiğin sözleşme yorumu bu komutları BİLEREK adıyla anar. `sed`
+          # hem TAM SATIR yorumlarını siler hem de boşlukla başlayan SATIR SONU
+          # yorumlarını keser; eski `grep -v` yalnız tam satırı eliyordu, bu
+          # yüzden bir satır sonu yorumu kapıyı yanlışlıkla tetikleyebiliyordu.
+          # `sed` her zaman 0 döner: boş kalan çıktı `set -e` ile işi düşürmez.
+          code="$(sed -e '/^[[:space:]]*#/d' -e 's/[[:space:]]#.*$//' scripts/server-readonly-audit.sh)"
           if printf '%s\n' "$code" | grep -Eq \
-              'docker[[:space:]]+(run|start|stop|restart|rm|cp|build|pull)|compose[[:space:]]+(up|down|restart)|--dbname|set[[:space:]]+-x'; then
+              'docker[[:space:]]+(run|start|stop|restart|rm|cp|build|pull)|compose[[:space:]]+(up|down|restart)|--dbname|set[[:space:]]+-x|crontab[[:space:]]+-(r|e)|systemctl[[:space:]]+(start|stop|restart|enable|disable|kill)'; then
             echo "::error::Denetim betiği yasakli bir komut iceriyor."
             exit 1
           fi
