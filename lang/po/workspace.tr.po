@@ -5184,6 +5184,14 @@ msgstr "Telefonda önizleme"
 msgid "workspace.publication.publishAction.checklistConfirmed"
 msgstr "Yayın kontrol listesini gözden geçirdim"
 
+#: workspace:workspace.publication.publishAction.duty
+msgid "workspace.publication.publishAction.duty"
+msgstr "Yayınladığınız fiyatların, alerjenlerin ve bulunabilirliğin doğruluğundan işletmeniz sorumludur — ayrıntısı {terms} metnindedir."
+
+#: workspace:workspace.publication.publishAction.dutyTermsLink
+msgid "workspace.publication.publishAction.dutyTermsLink"
+msgstr "Hizmet Koşulları"
+
 #: workspace:workspace.publication.publishAction.failurePreservationNotice
 msgid "workspace.publication.publishAction.failurePreservationNotice"
 msgstr "Yayınlama başarısız olursa misafirler en son yayınladığınız menüyü görmeye devam eder — masada hiçbir şey bozulmaz."

@@ -5184,6 +5184,14 @@ msgstr "Preview on a phone"
 msgid "workspace.publication.publishAction.checklistConfirmed"
 msgstr "I reviewed the publish checklist"
 
+#: workspace:workspace.publication.publishAction.duty
+msgid "workspace.publication.publishAction.duty"
+msgstr "Your business is responsible for the accuracy of the prices, allergens and availability you publish — see the {terms}."
+
+#: workspace:workspace.publication.publishAction.dutyTermsLink
+msgid "workspace.publication.publishAction.dutyTermsLink"
+msgstr "Terms of Service"
+
 #: workspace:workspace.publication.publishAction.failurePreservationNotice
 msgid "workspace.publication.publishAction.failurePreservationNotice"
 msgstr "If publishing fails, guests keep seeing the menu you published last — nothing breaks at the table."
