@@ -81,6 +81,10 @@
             Hiçbir şey silinmez ve basılı kodlarınıza dokunulmaz.
         </p>
         <p class="text-fg-secondary">
+            Kaydettiniz ama misafiriniz hâlâ eski fiyatı mı görüyor?
+            <a class="site-inline-action" href="/help/nothing-changed-for-my-guests">Gördüğü şey taslak değil, yayındaki menü — nasıl yayınlanır</a>.
+        </p>
+        <p class="text-fg-secondary">
             Bu akşam bir şey mi bitti? Ürün satırında <strong>Tükendi</strong> deyin. Ürün
             fiyatıyla birlikte menüde kalır, bugün alınamayacağı yazar ve işaret ertesi gün
             kendiliğinden düşer — yayınlamanız gerekmez.
@@ -92,6 +96,11 @@
     <section id="help-more" aria-labelledby="help-more-heading" class="flex flex-col gap-3">
         <h2 id="help-more-heading" class="text-2xl font-bold">Bu üçü bittiğinde</h2>
         <ul class="flex list-disc flex-col gap-2 ps-5 text-fg-secondary">
+            <li>
+                <a class="site-inline-action" href="/help/nothing-changed-for-my-guests">Misafirlerim için neden hiçbir şey değişmedi?</a>
+                — yukarıdaki adımın cevabı: düzenlemek taslağı kaydeder, menü masaya siz
+                yayınladığınızda ulaşır.
+            </li>
             <li>
                 <a class="site-inline-action" href="/help/a-photo-on-a-dish">Bir ürüne fotoğraf nasıl eklerim?</a>
                 — fotoğraf önce Görseller ekranına, sonra ürüne gider; son adım yayınlamaktır.

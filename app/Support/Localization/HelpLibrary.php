@@ -57,9 +57,16 @@ final class HelpLibrary
      *
      * Sıra keyfî değil: sahip yardıma sırayla gelmez, ama ilk gün
      * sorularının önce durması bir telefonda kaydırma mesafesi demektir.
+     *
+     * "Misafirimde hiçbir şey değişmedi" fotoğraftan ÖNCE durur ve bu
+     * sıralama bir tercih değil, bir sıklık ölçüsüdür: kaydet-yayınla ayrımı
+     * ilk oturumun sonunda herkesin çarptığı duvardır, ürüne fotoğraf koymak
+     * ise ikinci günün işidir. Panik hâlindeki okuru kaydırmaya zorlamak,
+     * yardımın işe yaramadığı anlamına gelir.
      */
     public const ARTICLES = [
         self::ENTRY,
+        'nothing-changed-for-my-guests',
         'a-photo-on-a-dish',
     ];
 

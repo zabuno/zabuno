@@ -81,6 +81,10 @@
             deleted and your printed codes are untouched.
         </p>
         <p class="text-fg-secondary">
+            Saved it and your guests still see the old price?
+            <a class="site-inline-action" href="/help/nothing-changed-for-my-guests">That is the draft, and here is how to publish it</a>.
+        </p>
+        <p class="text-fg-secondary">
             Ran out of something tonight? Use <strong>Sold out</strong> on the dish. It stays
             on the menu with its price, marked as unavailable, and the mark clears itself the
             next day — no publishing needed.
@@ -92,6 +96,11 @@
     <section id="help-more" aria-labelledby="help-more-heading" class="flex flex-col gap-3">
         <h2 id="help-more-heading" class="text-2xl font-bold">Once those three are done</h2>
         <ul class="flex list-disc flex-col gap-2 ps-5 text-fg-secondary">
+            <li>
+                <a class="site-inline-action" href="/help/nothing-changed-for-my-guests">Why has nothing changed for my guests?</a>
+                — the answer to the step above: editing saves a draft, and the menu reaches the
+                table when you publish it.
+            </li>
             <li>
                 <a class="site-inline-action" href="/help/a-photo-on-a-dish">How do I put a photo on a dish?</a>
                 — the photo goes to Media first and the dish afterwards, and the last step is

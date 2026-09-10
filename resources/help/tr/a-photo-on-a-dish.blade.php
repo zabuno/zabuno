@@ -108,7 +108,11 @@
                 Önce <strong>Telefonda önizle</strong> deyin. Dizüstünde doğru görünen bir
                 fotoğraf telefonda yargılanır, çünkü misafiriniz onu orada okur.
             </li>
-            <li>Sonra <strong>Hemen yayınla</strong> deyin.</li>
+            <li>
+                Sonra <strong>Yayın durumu</strong> bölümünde
+                <strong>Yayın kontrol listesini gözden geçirdim</strong> kutusunu
+                işaretleyip <strong>Yayınla</strong> deyin.
+            </li>
         </ol>
         <p class="text-fg-secondary">
             Önizleme bağlantısı on beş dakika çalışır ve arama motorlarına kapalıdır.
