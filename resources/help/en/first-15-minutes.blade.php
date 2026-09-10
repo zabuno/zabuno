@@ -89,6 +89,19 @@
 
     <hr class="border-border" role="separator">
 
+    <section id="help-more" aria-labelledby="help-more-heading" class="flex flex-col gap-3">
+        <h2 id="help-more-heading" class="text-2xl font-bold">Once those three are done</h2>
+        <ul class="flex list-disc flex-col gap-2 ps-5 text-fg-secondary">
+            <li>
+                <a class="site-inline-action" href="/help/a-photo-on-a-dish">How do I put a photo on a dish?</a>
+                — the photo goes to Media first and the dish afterwards, and the last step is
+                publishing.
+            </li>
+        </ul>
+    </section>
+
+    <hr class="border-border" role="separator">
+
     <p class="text-fg-secondary">
         Something else in your way?
         <a class="site-inline-action" href="/contact">Write to us</a>.

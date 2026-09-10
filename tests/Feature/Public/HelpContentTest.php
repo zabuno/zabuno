@@ -68,25 +68,38 @@ final class HelpContentTest extends TestCase
     // --- HELP-EVERY-LOCALE-01 ---------------------------------------------
 
     /**
-     * Desteklenen her dilin makalesi VAR OLMALI.
+     * Desteklenen her dilin HER makalesi VAR OLMALI.
      *
      * Eksik bir dil, o dili seçen kullanıcıya sessizce İngilizce gösterirdi
      * — ve bunu kimse fark etmezdi. Kapı, eksikliği kullanıcıya değil CI'a
      * gösterir.
+     *
+     * Kütüphane çok makaleye açıldığında bu kapının da açılması ZORUNLU:
+     * yalnız giriş makalesini ölçen bir kapı, ikinci makale yarım
+     * çevrildiğinde sessiz kalırdı ve "yedek dile düşme" borcu tam da
+     * oradan doğardı. Ölçülen küme artık DİL × MAKALE.
      */
-    #[DataProvider('supportedLocales')]
-    public function test_every_supported_language_has_the_article(string $locale): void
+    #[DataProvider('supportedArticleTranslations')]
+    public function test_every_supported_language_has_every_article(string $locale, string $slug): void
     {
         self::assertFileExists(
-            HelpLibrary::pathFor($locale),
-            "HELP-EVERY-LOCALE-01: [{$locale}] için yardım makalesi yok."
+            HelpLibrary::pathFor($locale, $slug),
+            "HELP-EVERY-LOCALE-01: [{$locale}] için '{$slug}' makalesi yok."
         );
     }
 
-    /** @return list<array{0:string}> */
-    public static function supportedLocales(): array
+    /** @return list<array{0:string,1:string}> */
+    public static function supportedArticleTranslations(): array
     {
-        return array_map(static fn (string $l): array => [$l], HelpLibrary::SUPPORTED);
+        $cases = [];
+
+        foreach (HelpLibrary::SUPPORTED as $locale) {
+            foreach (HelpLibrary::ARTICLES as $slug) {
+                $cases[] = [$locale, $slug];
+            }
+        }
+
+        return $cases;
     }
 
     public function test_the_reader_gets_their_own_language(): void
@@ -129,6 +142,129 @@ final class HelpContentTest extends TestCase
         self::assertStringContainsString('category, product, price, currency, allergens, description, visible', $article);
         foreach (['help-import', 'help-qr', 'help-price'] as $anchor) {
             self::assertStringContainsString('id="'.$anchor.'"', $article);
+        }
+    }
+
+    // --- HELP-PHOTO-01 -----------------------------------------------------
+
+    /**
+     * İkinci makale de oturum İSTEMEZ ve kendi dilinde açılır.
+     *
+     * Adres allowlist'tedir: `/help` giriş makalesi olarak KALIR, yeni
+     * makale `/help/<slug>` altında durur ve ikisi de aynı çerez
+     * pazarlığını kullanır — makale Türkçe geldiyse üst çubuk da Türkçe
+     * okunmalı (`docs/100` MP-03).
+     */
+    public function test_the_photo_article_opens_without_an_account_in_the_readers_language(): void
+    {
+        foreach ([
+            ['en', 'tr', 'How do I put a photo on a dish?', 'Help'],
+            ['tr', 'en', 'Bir ürüne fotoğraf nasıl eklerim?', 'Yardım'],
+        ] as [$choice, $browser, $title, $navigation]) {
+            $this->withUnencryptedCookie('zbn_language', $choice)
+                ->withHeader('Accept-Language', $browser)
+                ->get('/help/a-photo-on-a-dish')
+                ->assertOk()
+                ->assertSee('<html lang="'.$choice.'"', false)
+                ->assertSee($title)
+                ->assertSee('>'.$navigation.'<', false);
+        }
+    }
+
+    /**
+     * Kayıtlı olmayan bir makale adı SAYFA DEĞİLDİR.
+     *
+     * Denetleyici adresi bir dosya yoluna çevirmez; kütüphanedeki listeyi
+     * gezer. Aksi hâlde `/help/<herhangi bir şey>` bir görünüm arama
+     * yüzeyi olurdu ve bir yardım sayfası, deponun geri kalanını yoklamanın
+     * en ucuz yolu hâline gelirdi.
+     */
+    public function test_an_unregistered_help_address_is_not_a_page(): void
+    {
+        foreach (['/help/does-not-exist', '/help/first-15-minutes', '/help/public.layout'] as $unknown) {
+            $this->get($unknown)->assertNotFound();
+        }
+    }
+
+    /**
+     * İkinci makale BULUNABİLİR olmalı.
+     *
+     * Kimse adresi tahmin etmez: giriş makalesi ona bağlanmıyorsa makale
+     * yazılmamış sayılır. Bağlantı HER DİLDE var.
+     */
+    public function test_the_entry_article_points_at_the_photo_article_in_every_language(): void
+    {
+        foreach (HelpLibrary::SUPPORTED as $locale) {
+            self::assertStringContainsString(
+                'href="/help/a-photo-on-a-dish"',
+                (string) file_get_contents(HelpLibrary::pathFor($locale)),
+                "HELP-PHOTO-01: [{$locale}] giriş makalesi fotoğraf makalesine bağlanmıyor."
+            );
+        }
+    }
+
+    /**
+     * Türkçe makale GERÇEK Türkçe denetim adlarını kullanır.
+     *
+     * Bir makale ekranda yazmayan bir düğme adı söylerse okuyucu iki kez
+     * tıkanır: önce düğmeyi bulamaz, sonra yardımın da yanıldığını görür.
+     * Adlar kataloğun kendisinden okunuyor — makale ile arayüz ayrışamaz.
+     */
+    public function test_the_turkish_photo_article_names_the_actual_turkish_controls(): void
+    {
+        $translator = app(TranslationPort::class);
+        $article = (string) file_get_contents(HelpLibrary::pathFor('tr', 'a-photo-on-a-dish'));
+
+        foreach ([
+            ['workspace', 'workspace.shell.nav.media'],
+            ['workspace', 'workspace.media.upload.heading'],
+            ['workspace', 'workspace.media.upload.dropzone.label'],
+            ['workspace', 'workspace.media.upload.field.assetSlot'],
+            ['workspace', 'workspace.media.upload.field.assetSlot.itemImage'],
+            ['menu', 'menu.media.slot.itemImage'],
+            ['workspace', 'workspace.media.upload.field.altText'],
+            ['workspace', 'workspace.media.upload.button'],
+            ['workspace', 'workspace.media.library.asset.status.ready'],
+            ['menu', 'menu.item.presentation.edit.short'],
+            ['menu', 'menu.item.presentation.submit'],
+            ['workspace', 'workspace.shell.nav.publication'],
+            ['workspace', 'workspace.publication.preview.button'],
+            ['workspace', 'workspace.publication.publishAction.mode.immediate'],
+            ['workspace', 'workspace.media.library.trash.heading'],
+        ] as [$domain, $key]) {
+            $label = $translator->translate($domain, $key, 'tr');
+            self::assertNotSame($key, $label, "Missing Turkish control label for {$key}.");
+            self::assertStringContainsString('<strong>'.e($label).'</strong>', $article, $key);
+        }
+    }
+
+    /**
+     * Makale ÜRÜNÜN YAPMADIĞI şeyi vaat etmez.
+     *
+     * Taslak metin üç yerde ölçülmemiş bir söz veriyordu: işlemenin kaç
+     * saniye süreceği, telefondan çıkan her biçimin kabul edileceği ve
+     * "Preview & publish" adında hiç var olmayan bir düğme. Üçü de
+     * kullanıcının ekranda göremeyeceği şeylerdir; kapı onları geri
+     * gelmekten alıkoyar.
+     */
+    public function test_the_photo_article_promises_only_what_the_screens_do(): void
+    {
+        foreach (HelpLibrary::SUPPORTED as $locale) {
+            $article = (string) file_get_contents(HelpLibrary::pathFor($locale, 'a-photo-on-a-dish'));
+
+            foreach (['Preview &amp; publish', 'Preview & publish', 'HEIF', 'HEIC'] as $unsupportedClaim) {
+                self::assertStringNotContainsString(
+                    $unsupportedClaim,
+                    $article,
+                    "HELP-PHOTO-01: [{$locale}] makalesi ölçülmemiş bir söz veriyor: {$unsupportedClaim}."
+                );
+            }
+
+            self::assertDoesNotMatchRegularExpression(
+                '/\b(seconds|saniye)\b/iu',
+                $article,
+                "HELP-PHOTO-01: [{$locale}] makalesi işleme süresi vaat ediyor; o süre ölçülmedi."
+            );
         }
     }
 }
