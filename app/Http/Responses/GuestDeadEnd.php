@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Responses;
 
+use App\Support\Localization\GuestLocale;
 use App\Support\Localization\GuestText;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
@@ -33,11 +34,31 @@ final class GuestDeadEnd
         }
 
         /*
+            MİSAFİRİN DİLİ, SUNUCUNUNKİ DEĞİL (`docs/85`). Metin dilsiz
+            isteniyordu ve katalog her seferinde Türkçeye düşüyordu; belgenin
+            `<html lang>`'i ise uygulamanın locale'inden (`en`) türüyordu.
+            Yani İngilizce olduğu SÖYLENEN bir belgede Türkçe bir cümle
+            duruyordu — masadaki İngiliz misafir onu okuyamıyor, ekran
+            okuyucu da İngilizce sanıp telaffuz ediyordu.
+
+            İÇERİK DİLİ YOKTUR ve `null` geçilmesi bu yüzden: bu sayfada
+            gösterilecek bir menü yok, dolayısıyla düşülecek bir restoran
+            dili de yok. Sıra bozulmaz — bu istekteki açık seçim, sonra
+            hatırlanan seçim, sonra Türkçe.
+
+            ÇEREZ YAZILMAZ. Menü sayfası seçimi hatırlatır çünkü seçim orada
+            yapılır; burada bir seçim yapılmadı ve bilinmeyen bir token'ın
+            yanıtına iz bırakmak, tekdüzeliği koruyan bu sayfanın işi değil.
+        */
+        $guestLocale = GuestLocale::resolve($request, null);
+
+        /*
             Metin ŞABLONDA değil KATALOGDA yaşar (FF-98): şablona yazılmış bir
             cümleyi sahibi hiçbir PO dosyasında bulamaz ve çeviremez.
         */
         return response()->view('public-not-found', [
-            'text' => app(GuestText::class)->deadEnd(),
+            'text' => app(GuestText::class)->deadEnd($guestLocale),
+            'guestLocale' => $guestLocale,
         ], 404)
             ->header('X-Robots-Tag', 'noindex, nofollow');
     }

@@ -62,6 +62,18 @@ final class GuestOutOfService
         return response()->view('public-menu-out-of-service', [
             'text' => app(GuestText::class)->outOfService($guestLocale, $nextServiceClock),
             'brandName' => trim($brandName),
+            /*
+                DİL, ÇÖZÜLDÜĞÜ YERDEN GEÇİRİLİR.
+
+                Cümleyi kuran locale burada zaten çözülmüştü; şablona
+                geçirilmediği sürece o da kendi çözümünü yapıyor ve
+                `resolve(request(), null)` çağrısında düşülecek bir RESTORAN
+                dili göremiyordu. İçerik dili `en` olan bir markada, seçimsiz
+                misafirin gövdesi İngilizce kurulurken belge kendini `tr` ilan
+                ediyordu — ekran okuyucu cümleyi yanlış dilde telaffuz eder
+                (WCAG 3.1.1). Tek doğru kaynak, yanıtı kuran taraftır.
+            */
+            'guestLocale' => $guestLocale,
         ], 200)
             // Geçici bir hâl indekslenmez; ama menünün kalıcı adresi hâlâ
             // geçerli olduğu için bağlantılar izlenmeye açık kalır.

@@ -1,5 +1,19 @@
 <!DOCTYPE html>
-<html lang="{{ \App\Support\Localization\DocumentLocale::tag() }}" dir="{{ \App\Support\Localization\DocumentLocale::direction() }}">
+@php
+    /* BELGE DİLİ = GÖVDEYİ KURAN DİL.
+
+       Cümle `GuestText` ile misafirin diliyle kuruluyor, `<html lang>` ise
+       ondan BAĞIMSIZ, uygulamanın locale'inden türüyordu; ikisi ayrıştığında
+       belge "İngilizce" derken gövde Türkçe konuşuyordu. Ekran okuyucu o
+       cümleyi yanlış dilde telaffuz eder (WCAG 3.1.1).
+
+       Yanıtı kuran taraf dili çözdüyse onu kullanırız; çözmediyse şablon aynı
+       kapıdan (`GuestLocale::resolve`) geçer ve misafirin AÇIK seçimi ile
+       hatırlanan seçimi aynı sırayla okunur. Aynı çözüm `public-menu` içinde
+       de yazılı. */
+    $documentLocale = $guestLocale ?? \App\Support\Localization\GuestLocale::resolve(request(), null);
+@endphp
+<html lang="{{ $documentLocale }}" dir="{{ \App\Support\Localization\GuestLocale::direction($documentLocale) }}">
 {{--
     SERVİS DIŞI SAAT (FF-139).
 
