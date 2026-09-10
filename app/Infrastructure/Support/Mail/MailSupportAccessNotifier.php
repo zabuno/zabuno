@@ -50,13 +50,19 @@ final readonly class MailSupportAccessNotifier implements SupportAccessNotifierP
             return false;
         }
 
-        $mailer = $this->mailTransport->select();
-
-        if ($mailer === self::NO_OUTBOUND_TRANSPORT) {
-            return false;
-        }
-
+        /*
+            SEÇİM DE `try` İÇİNDEDİR. Seçici yapılandırma arızasında istisna
+            atar (bkz. `MailTransportSelectorPort`); dışarıda kalsaydı
+            destek erişimi zaten AÇILMIŞ olduğu hâlde çağıran 500 alır ve
+            oturum satırı bildirim sonucunu hiç yazamazdı.
+        */
         try {
+            $mailer = $this->mailTransport->select();
+
+            if ($mailer === self::NO_OUTBOUND_TRANSPORT) {
+                return false;
+            }
+
             Mail::mailer($mailer)
                 ->to($recipients)
                 ->send(new SupportAccessOpened(

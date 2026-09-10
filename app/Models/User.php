@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Application\Mail\Port\MailTransportSelectorPort;
 use App\Mail\VerifyEmailMail;
+use App\Notifications\VaultResetPassword;
 use Database\Factories\UserFactory;
 use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
 use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
@@ -99,6 +100,24 @@ final class User extends Authenticatable implements MustVerifyEmailContract
 
             return false;
         }
+    }
+
+    /**
+     * Şifre sıfırlama bağlantısını KASADAN SEÇİLEN gönderici ile yollar.
+     *
+     * Çerçevenin `CanResetPassword` karşılığı düz `ResetPassword`
+     * bildirimini yollar; o bildirim hiçbir gönderici seçmediği için posta
+     * kanalı `mail.default`'a düşer — üretimde `log`. Doğrulama e-postası
+     * (yukarıda) kasadan seçilirken sıfırlamanın seçilmemesi, aynı panelde
+     * aynı anahtarla iki farklı sonuç veriyordu.
+     *
+     * Buradaki tek fark bildirimin sınıfıdır: token, adres, süre, throttle
+     * ve metin çerçevenin kendi davranışıdır ve `VaultResetPassword`
+     * bunların hiçbirine dokunmaz.
+     */
+    public function sendPasswordResetNotification(#[\SensitiveParameter] $token): void
+    {
+        $this->notify(new VaultResetPassword($token));
     }
 
     /**
