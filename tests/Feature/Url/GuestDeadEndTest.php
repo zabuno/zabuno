@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Url;
 
+use App\Support\Localization\GuestLocale;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
@@ -14,7 +15,7 @@ use Tests\TestCase;
  * Karekodu tarayan misafirin karşısına çıkan çıkmaz sokak.
  *
  * Requirement ID'leri: URL-DEADEND-HUMAN-20, URL-DEADEND-UNIFORM-21,
- * URL-DEADEND-NOINDEX-22, URL-DEADEND-JSON-23.
+ * URL-DEADEND-NOINDEX-22, URL-DEADEND-JSON-23, URL-DEADEND-GUEST-LANG-24.
  */
 final class GuestDeadEndTest extends TestCase
 {
@@ -117,5 +118,75 @@ final class GuestDeadEndTest extends TestCase
 
         self::assertSame(404, $response->getStatusCode());
         self::assertStringContainsString('Not Found', (string) $response->getContent());
+    }
+
+    // --- URL-DEADEND-GUEST-LANG-24 -----------------------------------------
+
+    /**
+     * ÇIKMAZ SOKAK DA MİSAFİRİN DİLİNİ KONUŞUR.
+     *
+     * Sayfa metnini sunucunun arayüz dilinden bağımsız seçiyordu: gövde her
+     * zaman Türkçe kuruluyor, `<html lang>` ise uygulamanın locale'inden
+     * (`en`) türüyordu. Masadaki İngiliz misafir, İngilizce olduğu SÖYLENEN
+     * bir belgede Türkçe bir cümle görüyordu — ekran okuyucu da o cümleyi
+     * İngilizce sanıp okuyordu.
+     *
+     * Menü sayfası bu kararı çoktan doğru veriyor (`GuestLocale::resolve`);
+     * çıkmaz sokak aynı kapıdan geçmiyordu.
+     */
+    public function test_the_dead_end_speaks_the_guests_language_not_the_servers(): void
+    {
+        $response = $this->browserGet('/menu/'.self::UNKNOWN);
+
+        $body = (string) $response->getContent();
+
+        self::assertSame(404, $response->getStatusCode());
+        self::assertMatchesRegularExpression(
+            '#<html lang="tr" dir="ltr"#',
+            $body,
+            'URL-DEADEND-GUEST-LANG-24: belge dili, gövdeyi kuran misafir diliyle aynı olmalı.',
+        );
+        self::assertStringContainsString('personel', $body);
+    }
+
+    public function test_an_english_guest_is_not_told_the_bad_news_in_turkish(): void
+    {
+        $response = $this->browserGet('/menu/'.self::UNKNOWN.'?lang=en');
+
+        $body = (string) $response->getContent();
+
+        self::assertSame(404, $response->getStatusCode());
+        self::assertMatchesRegularExpression('#<html lang="en" dir="ltr"#', $body);
+        self::assertStringContainsString('staff', $body, 'URL-DEADEND-GUEST-LANG-24: seçilen dilde yazılmalı.');
+        self::assertStringNotContainsString('personel', $body);
+    }
+
+    public function test_a_remembered_language_choice_survives_into_the_dead_end(): void
+    {
+        // Misafir dilini menü sayfasında seçti, sonra ölü bir karekod okuttu.
+        // Seçimini orada unutmak, ürünü tek bir sayfada hatırlayan bir şeye
+        // çevirirdi.
+        $response = $this->withCookie(GuestLocale::COOKIE, 'en')
+            ->withHeaders(['Accept' => 'text/html'])
+            ->get('/menu/'.self::UNKNOWN);
+
+        $response->assertStatus(404);
+        self::assertMatchesRegularExpression('#<html lang="en"#', (string) $response->getContent());
+        self::assertStringContainsString('staff', (string) $response->getContent());
+    }
+
+    public function test_the_chosen_language_does_not_break_the_uniform_answer(): void
+    {
+        // Dil seçimi bir ÖLÇÜM ARACINA dönüşmemeli: aynı dili isteyen iki
+        // istek, token'ın bilinmeyen mi bozuk mu olduğunu hâlâ ele
+        // vermemeli (URL-DEADEND-UNIFORM-21).
+        $unknown = $this->browserGet('/menu/'.self::UNKNOWN.'?lang=en');
+        $malformed = $this->browserGet('/menu/'.self::MALFORMED.'?lang=en');
+
+        self::assertSame($unknown->getStatusCode(), $malformed->getStatusCode());
+        self::assertSame(
+            $this->withoutNonces((string) $unknown->getContent()),
+            $this->withoutNonces((string) $malformed->getContent()),
+        );
     }
 }

@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature\QrDestination;
 
+use App\Http\Responses\GuestOutOfService;
 use App\Models\User;
 use App\Support\Localization\GuestLocale;
+use App\Support\Localization\GuestText;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Tests\Support\UntranslatableStringScanner;
@@ -26,7 +29,8 @@ use Tests\TestCase;
  *
  * Requirement IDs: GUEST-I18N-NO-HARDCODED-01, GUEST-I18N-SWITCH-01,
  * GUEST-I18N-REMEMBERED-01, GUEST-I18N-LANG-DIR-01,
- * GUEST-I18N-CONTENT-HONEST-01, GUEST-I18N-EVERY-OFFERED-LOCALE-01.
+ * GUEST-I18N-CONTENT-HONEST-01, GUEST-I18N-EVERY-OFFERED-LOCALE-01,
+ * GUEST-I18N-OUT-OF-SERVICE-LANG-01.
  */
 final class GuestLanguageTest extends TestCase
 {
@@ -294,5 +298,94 @@ final class GuestLanguageTest extends TestCase
             '#<p class="qr-menu-content-notice">#',
             $this->guest($key, '?lang=tr')->getContent(),
         );
+    }
+
+    // --- GUEST-I18N-OUT-OF-SERVICE-LANG-01 --------------------------------
+
+    /**
+     * SERVİS DIŞI SAYFASI DA MİSAFİRİN DİLİNİ İLAN EDER.
+     *
+     * Sayfanın CÜMLESİ zaten misafir diliyle kuruluyordu
+     * (`GuestOutOfService` `GuestLocale::resolve` çağırıyor), ama
+     * `<html lang>` ondan bağımsız, uygulamanın locale'inden türüyordu. Yani
+     * belge "İngilizce" diyor, gövde Türkçe konuşuyordu — ekran okuyucu için
+     * bu, cümleyi yanlış dilde telaffuz etmek demek.
+     *
+     * Kapı ZATEN açıktı; şablon ondan geçmiyordu.
+     */
+    public function test_the_out_of_service_page_declares_the_guests_language(): void
+    {
+        $turkish = $this->outOfService('/menu/anything', 'tr');
+
+        self::assertMatchesRegularExpression(
+            '#<html lang="tr" dir="ltr"#',
+            $turkish,
+            'GUEST-I18N-OUT-OF-SERVICE-LANG-01: belge dili, gövdeyi kuran misafir diliyle aynı olmalı.',
+        );
+
+        $english = $this->outOfService('/menu/anything?lang=en', 'tr');
+
+        self::assertMatchesRegularExpression('#<html lang="en" dir="ltr"#', $english);
+    }
+
+    /**
+     * SEÇİM YOKKEN BELGE DİLİNİ VEREN, RESTORANIN DİLİDİR.
+     *
+     * Sıranın son basamağı içerik dilidir: misafir ne `?lang=` yazdı ne de
+     * çerezi var; o hâlde cümle restoranın kendi dilinde kurulur
+     * (`GuestOutOfService` bunu ZATEN yapıyordu). Ama şablon dili kendisi
+     * çözerken içerik dilini GÖREMİYORDU — `resolve(request(), null)`
+     * çağrısında düşülecek bir restoran dili yok, dolayısıyla `tr`'ye
+     * düşüyordu.
+     *
+     * Sonuç, düzeltilmeden önce: İngilizce bir gövde taşıyan belge kendini
+     * `lang="tr"` ilan ediyordu — ekran okuyucu İngilizce cümleyi Türkçe
+     * telaffuz ederdi (WCAG 3.1.1). Bu, `?lang=`/çerez yolları düzeldikten
+     * sonra kalan tek sapmaydı.
+     *
+     * Cümle metni TESTE KOPYALANMAZ: katalogdan okunur ve yalnız Türkçesinden
+     * FARKLI olması beklenir. Kopyalasaydık cümle her düzeltildiğinde test de
+     * değişir ve hiçbir şey korumazdı.
+     */
+    public function test_the_out_of_service_page_follows_the_restaurants_language_when_the_guest_chose_none(): void
+    {
+        $page = $this->outOfService('/menu/anything', 'en');
+
+        self::assertMatchesRegularExpression(
+            '#<html lang="en" dir="ltr"#',
+            $page,
+            'GUEST-I18N-OUT-OF-SERVICE-LANG-01: seçim yokken belge dili, gövdeyi kuran içerik diliyle aynı olmalı.',
+        );
+
+        $text = app(GuestText::class);
+
+        $englishHeading = $text->outOfService('en', '02:00')['heading'];
+
+        self::assertNotSame(
+            $text->outOfService('tr', '02:00')['heading'],
+            $englishHeading,
+            'Karşılaştırma anlamsızsa iddia da anlamsız: iki dilin başlığı gerçekten farklı olmalı.',
+        );
+
+        // Gövde ile ilan edilen dil AYNI olmalı; ikisini ayrı ayrı doğrulamak,
+        // aralarındaki tutarlılığı kanıtlamaz.
+        self::assertStringContainsString($englishHeading, $page);
+    }
+
+    /**
+     * Servis dışı yanıtını, saat kurgusu olmadan doğrudan çizdirir.
+     *
+     * İstek KAPSAYICIYA da bağlanır: gerçek bir HTTP isteğinde çekirdek bunu
+     * zaten yapar ve şablon `request()` üzerinden aynı isteği görür. Bağlamayı
+     * atlarsak testin ölçtüğü şey ürünün davranışı değil, testin kendi
+     * kurgusunun eksikliği olurdu.
+     */
+    private function outOfService(string $uri, string $contentLocale): string
+    {
+        $request = Request::create($uri, 'GET');
+        $request->headers->set('Accept', 'text/html');
+        $this->app->instance('request', $request);
+
+        return (string) GuestOutOfService::respond($request, 'Zeytin', $contentLocale, '02:00')->getContent();
     }
 }
