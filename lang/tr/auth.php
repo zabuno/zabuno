@@ -6,6 +6,10 @@ return [
     'failed' => 'Bu bilgiler kayıtlarımızla eşleşmiyor.',
     'password' => 'Girilen şifre yanlış.',
     'throttle' => 'Çok fazla deneme yapıldı. Lütfen :seconds saniye sonra tekrar deneyin.',
+    // Posta taşıyıcısı arızalıyken verilen tek cevap: girilen adresin
+    // kayıtlı olup olmadığını ele vermez ve "gönderdik" demez.
+    'password_reset_unavailable' => 'Şu anda şifre sıfırlama e-postası gönderemiyoruz. Lütfen daha sonra tekrar deneyin.',
+
     'registration_generic_failure' => 'Kaydınızı tamamlayamadık. Lütfen bilgilerinizi kontrol edip tekrar deneyin.',
     'terms_required' => 'Hesap oluşturmak için lütfen Hizmet Koşullarını kabul edin.',
     // Aydınlatma metni ONAYLANMAZ, okunduğu BEYAN EDİLİR (2026/347).

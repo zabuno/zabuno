@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Auth;
 
 use App\Models\User;
+use App\Notifications\VaultResetPassword;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -136,7 +137,12 @@ final class PasswordResetJourneyTest extends TestCase
             'email' => 'no-such-account@example.com',
         ]);
 
-        Notification::assertSentTo($user, ResetPassword::class);
+        // Gönderilen bildirim, çerçevenin `ResetPassword`'ünün kasadan
+        // gönderici seçen alt sınıfıdır (`VaultResetPassword`);
+        // `assertSentTo` sınıf adını TAM eşleştirir, bu yüzden beklenen ad
+        // burada alt sınıftır. Aşağıdaki tip ipucu, o alt sınıfın hâlâ
+        // çerçevenin bildirimi olduğunu ayrıca doğrular.
+        Notification::assertSentTo($user, VaultResetPassword::class);
         Notification::assertCount(1);
     }
 
@@ -385,7 +391,7 @@ final class PasswordResetJourneyTest extends TestCase
             'email' => $user->email,
         ]);
 
-        Notification::assertSentTo($user, ResetPassword::class, function (ResetPassword $notification) use ($response) {
+        Notification::assertSentTo($user, VaultResetPassword::class, function (ResetPassword $notification) use ($response) {
             self::assertStringNotContainsString(
                 $notification->token,
                 (string) $response->getContent(),

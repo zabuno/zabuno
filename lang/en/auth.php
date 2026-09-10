@@ -8,6 +8,10 @@ return [
     'password' => 'The provided password is incorrect.',
     'throttle' => 'Too many attempts. Please try again in :seconds seconds.',
 
+    // Posta taşıyıcısı arızalıyken verilen tek cevap: girilen adresin
+    // kayıtlı olup olmadığını ele vermez ve "gönderdik" demez.
+    'password_reset_unavailable' => 'We cannot send password reset emails right now. Please try again later.',
+
     'registration_generic_failure' => 'We were unable to complete this registration. Please check your details and try again.',
     'terms_required' => 'Please accept the Terms of Service to create an account.',
     // Aydınlatma metni ONAYLANMAZ, okunduğu BEYAN EDİLİR (2026/347).

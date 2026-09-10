@@ -6,6 +6,7 @@ namespace App\Providers;
 
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
+use App\Http\Middleware\EnsurePasswordResetTransportAvailable;
 use App\Http\Responses\Auth\LoginResponse;
 use App\Http\Responses\Auth\PasswordResetLinkResponse;
 use App\Http\Responses\Auth\VerifyEmailResponse;
@@ -81,6 +82,28 @@ final class FortifyServiceProvider extends ServiceProvider
 
             if (! $executed) {
                 abort(429);
+            }
+
+            /*
+                ÖN KONTROL ROTA YIĞININA GİRER, BURADA KOŞMAZ.
+
+                `RouteMatched` rota ara katmanlarından önce doğar: oturum
+                (`StartSession`) henüz kurulmamıştır, dolayısıyla burada
+                üretilecek bir HTML hata yönlendirmesinin hata kesesi
+                kaydedilemez ve kullanıcı sebepsiz boş bir forma döner.
+                Ama bu olay yığın ÇALIŞMADAN önce doğduğu için rotanın
+                ara katman listesine hâlâ ekleme yapılabilir: kontrol
+                oturumun arkasında, hesap aranmadan önce koşar.
+
+                Liste bir kez genişletilir; rota nesnesi istekler arasında
+                yaşadığı için tekrar eklemek aynı kontrolü boşuna
+                çoğaltırdı. Kontrol rotanın KENDİ listesine bakar,
+                `gatherMiddleware()`'e DEĞİL: o çağrı sonucu önbelleğe alır
+                ve bu satırdan sonra eklenen her ara katmanı görünmez
+                kılardı — kontrol sessizce hiç koşmazdı.
+            */
+            if (! in_array(EnsurePasswordResetTransportAvailable::class, $event->route->middleware(), true)) {
+                $event->route->middleware(EnsurePasswordResetTransportAvailable::class);
             }
         });
 

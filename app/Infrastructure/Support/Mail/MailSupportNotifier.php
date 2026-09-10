@@ -44,38 +44,47 @@ final readonly class MailSupportNotifier implements SupportNotifierPort
 
     public function acknowledge(ReceivedSupportRequest $request): string|false|null
     {
-        $mailer = $this->mailTransport->select();
-
-        if ($mailer === self::NO_OUTBOUND_TRANSPORT) {
-            return false;
-        }
-
-        $locale = SiteText::pick($request->locale);
-        $replyTo = config('support.channel_email');
-        $replyTo = is_string($replyTo) && trim($replyTo) !== '' ? trim($replyTo) : null;
-
         /*
-            METİN KATALOGDAN, gönderenin dilinde. Alındı e-postası bir arayüz
-            metnidir: sahibi onu PO dosyasından çevirebilmeli. Taahhüt
-            cümlesi de aynı kaynaktan gelir — sayfa, e-posta ve panel tek
-            anahtarı okur (`docs/125` §3).
-        */
-        $text = [
-            'subject' => $this->siteText->get('site.support.ack.subject', $locale),
-            'greeting' => $this->siteText->get('site.support.ack.greeting', $locale),
-            'received' => $this->siteText->get('site.support.ack.received', $locale),
-            'subjectLine' => $this->siteText->get('site.support.ack.subjectLine', $locale),
-            'keep' => $this->siteText->get('site.support.ack.keep', $locale),
-            'panel' => $request->channel === SupportChannel::Panel
-                ? $this->siteText->get('site.support.ack.panel', $locale)
-                : null,
-            'reply' => $replyTo !== null
-                ? $this->siteText->get('site.support.ack.reply', $locale)
-                : null,
-            'commitment' => $this->commitment->sentence($locale),
-        ];
+            SEÇİM DE BİR GÖNDERİM ADIMIDIR, BU YÜZDEN AYNI AĞIN İÇİNDEDİR.
 
+            Seçici yapılandırma arızasında istisna atar (bkz.
+            `MailTransportSelectorPort`). O çağrı `try`'ın dışında kalırsa
+            istisna buradan yukarı çıkar: talep veritabanına yazılmıştır,
+            ama kullanıcı 500 görür ve satır bildirim sonucunu hiç almaz —
+            "gönderemedim" diyebilecekken hiçbir şey diyemeyiz.
+        */
         try {
+            $mailer = $this->mailTransport->select();
+
+            if ($mailer === self::NO_OUTBOUND_TRANSPORT) {
+                return false;
+            }
+
+            $locale = SiteText::pick($request->locale);
+            $replyTo = config('support.channel_email');
+            $replyTo = is_string($replyTo) && trim($replyTo) !== '' ? trim($replyTo) : null;
+
+            /*
+                METİN KATALOGDAN, gönderenin dilinde. Alındı e-postası bir
+                arayüz metnidir: sahibi onu PO dosyasından çevirebilmeli.
+                Taahhüt cümlesi de aynı kaynaktan gelir — sayfa, e-posta ve
+                panel tek anahtarı okur (`docs/125` §3).
+            */
+            $text = [
+                'subject' => $this->siteText->get('site.support.ack.subject', $locale),
+                'greeting' => $this->siteText->get('site.support.ack.greeting', $locale),
+                'received' => $this->siteText->get('site.support.ack.received', $locale),
+                'subjectLine' => $this->siteText->get('site.support.ack.subjectLine', $locale),
+                'keep' => $this->siteText->get('site.support.ack.keep', $locale),
+                'panel' => $request->channel === SupportChannel::Panel
+                    ? $this->siteText->get('site.support.ack.panel', $locale)
+                    : null,
+                'reply' => $replyTo !== null
+                    ? $this->siteText->get('site.support.ack.reply', $locale)
+                    : null,
+                'commitment' => $this->commitment->sentence($locale),
+            ];
+
             Mail::mailer($mailer)
                 ->to($request->email)
                 ->send(new SupportRequestAcknowledged(
@@ -106,13 +115,14 @@ final readonly class MailSupportNotifier implements SupportNotifierPort
             return false;
         }
 
-        $mailer = $this->mailTransport->select();
-
-        if ($mailer === self::NO_OUTBOUND_TRANSPORT) {
-            return false;
-        }
-
+        // Seçim de `try` içindedir; gerekçe `acknowledge()` üstündedir.
         try {
+            $mailer = $this->mailTransport->select();
+
+            if ($mailer === self::NO_OUTBOUND_TRANSPORT) {
+                return false;
+            }
+
             Mail::mailer($mailer)
                 ->to(trim($to))
                 ->send(new ContactMessageReceived(
