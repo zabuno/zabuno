@@ -42,10 +42,21 @@
                         <p class="site-pricing-note">{{ $commitment }}</p>
                     @endif
 
-                    @if ($errors->any())
+                    @php
+                        $contactErrors = [];
+                        foreach (['name', 'email', 'message'] as $field) {
+                            if ($errors->has($field)) {
+                                $contactErrors[$field] = $errors->get($field);
+                            }
+                        }
+                        $firstInvalidField = array_key_first($contactErrors);
+                    @endphp
+                    @if ($contactErrors !== [])
                         <ul role="alert" class="flex flex-col gap-1 text-fg-danger">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
+                            @foreach ($contactErrors as $field => $messages)
+                                @foreach ($messages as $error)
+                                    <li><a class="site-inline-action" href="#contact-{{ $field }}">{{ $error }}</a></li>
+                                @endforeach
                             @endforeach
                         </ul>
                     @endif
@@ -57,20 +68,32 @@
                             {{-- Etiket ŞART: yer tutucu bir etiket değildir ve ekran
                                  okuyucu onu alan adı olarak okumaz. --}}
                             <label for="contact-name">{{ $st['contactName'] }}</label>
-                            <input id="contact-name" name="name" type="text" required autocomplete="name"
+                            <input id="contact-name" name="name" @if ($errors->has('name')) aria-invalid="true" aria-describedby="contact-name-error" @endif
+                                   @if ($firstInvalidField === 'name') autofocus @endif type="text" required autocomplete="name"
                                    value="{{ old('name') }}" class="site-input">
+                            @error('name')
+                                <p id="contact-name-error" class="text-fg-danger">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div class="site-form-field">
                             <label for="contact-email">{{ $st['contactEmail'] }}</label>
-                            <input id="contact-email" name="email" type="email" required autocomplete="email"
+                            <input id="contact-email" name="email" @if ($errors->has('email')) aria-invalid="true" aria-describedby="contact-email-error" @endif
+                                   @if ($firstInvalidField === 'email') autofocus @endif type="email" required autocomplete="email"
                                    value="{{ old('email') }}" class="site-input">
+                            @error('email')
+                                <p id="contact-email-error" class="text-fg-danger">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <div class="site-form-field">
                             <label for="contact-message">{{ $st['contactMessage'] }}</label>
-                            <textarea id="contact-message" name="message" rows="6" required maxlength="4000"
+                            <textarea id="contact-message" name="message" @if ($errors->has('message')) aria-invalid="true" aria-describedby="contact-message-error" @endif
+                                   @if ($firstInvalidField === 'message') autofocus @endif rows="6" required maxlength="4000"
                                       class="site-input">{{ old('message') }}</textarea>
+                            @error('message')
+                                <p id="contact-message-error" class="text-fg-danger">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         {{-- BAL KÜPÜ: insan bunu görmez, dolayısıyla dolduramaz.
