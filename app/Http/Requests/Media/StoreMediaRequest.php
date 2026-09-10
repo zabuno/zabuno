@@ -24,6 +24,35 @@ final class StoreMediaRequest extends FormRequest
     private const ALLOWED_IMAGE_TYPES = [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_GIF, IMAGETYPE_WEBP];
 
     /**
+     * HEIC'İN DURAN FOTOĞRAF MARKALARI (`ftyp` brand'leri).
+     *
+     * HEIC bir ISO kabıdır ve kabı MP4 ile PAYLAŞIR: ikisinin de 5-8.
+     * baytı `ftyp`tir. Bu yüzden telefonundan çıkan bir fotoğraf, video
+     * kapısına düşüp "bu ürün video kabul etmiyor" cevabını alıyordu —
+     * doğru olmayan bir cümle, üstelik kullanıcıya yapacak bir şey de
+     * bırakmıyor.
+     *
+     * Ayrım MARKADAN yapılır: `heic`/`heix`/`heim`/`heis` DURAN bir
+     * fotoğraftır. Hareketli HEVC dizileri (`hevc`, `hevx`, `msf1`) burada
+     * BİLEREK yok — onlar gerçekten video hattının konusudur ve video
+     * cevabını almaya devam ederler.
+     *
+     * Genel HEIF markası `mif1` de yok: AVIF dosyaları onu uyumlu marka
+     * olarak taşır ve AVIF bu paketin konusu DEĞİLDİR (ayrı karar).
+     */
+    private const HEIC_STILL_BRANDS = ['heic', 'heix', 'heim', 'heis'];
+
+    /**
+     * `ftyp` kutusundan okunacak EN FAZLA bayt.
+     *
+     * Gerçek bir `ftyp` 24-32 bayttır. Sınır bir kolaylık değil: marka
+     * listesi dosyanın KENDİ bildirdiği uzunluktan geliyor ve o uzunluk
+     * yükleyenin denetimindedir. Sınırsız okumak, uydurma bir uzunluğun
+     * bu kapıya bellek harcatmasına izin vermek olurdu.
+     */
+    private const FTYP_SCAN_BYTES = 64;
+
+    /**
      * Ret cümlesinde türün SAHİBİN kelimesiyle adı.
      *
      * `image`/`vector`/`document` iç sözlüktür; sahip "görsel", "SVG" ve
@@ -105,6 +134,34 @@ final class StoreMediaRequest extends FormRequest
 
                 if ($this->startsLikeMarkup($value)) {
                     $this->validateSvg($value, $slot, $limits, $fail);
+
+                    return;
+                }
+
+                /*
+                    HEIC — VİDEO DEĞİL, ÇÖZÜLEMEYEN BİR FOTOĞRAF.
+
+                    iPhone'un varsayılan biçimi HEIC'tir ve kabı MP4 ile
+                    aynıdır (`ftyp`). Aşağıdaki video kapısı yalnız kaba
+                    baktığı için, sahibinin çektiği yemek fotoğrafı "bu
+                    ürün video kabul etmiyor" cevabını alıyordu. Cümle
+                    yanlıştı ve yapacak bir şey de söylemiyordu: sahip
+                    dosyasının bozuk olduğunu sanıp tekrar deniyor.
+
+                    Cevap DEĞİŞİYOR, karar değil. HEIC bugün hâlâ
+                    REDDEDİLİR — bu üründe kanıtlanmış bir HEIC çözücü
+                    yok, ve olmayan bir yeteneği kabul etmek dosyayı
+                    türevsiz, açılamaz bir satır olarak saklamak olurdu.
+                    Değişen tek şey, reddin artık DOĞRU olması ve
+                    kullanıcıya somut bir çıkış yolu (JPEG'e çevir)
+                    vermesi.
+
+                    Ayrım İÇERİKTEN, marka bazında yapılır — uzantıdan
+                    değil. `.heic` adı verilmiş bir PHP yükü bu nazik
+                    cevabı almaz; aşağıdaki güvenlik yollarına düşer.
+                */
+                if ($this->startsLikeHeicPhotograph($value)) {
+                    $fail((string) __('media.heic_needs_jpeg'));
 
                     return;
                 }
@@ -383,6 +440,59 @@ final class StoreMediaRequest extends FormRequest
         $mb = $bytes / 1048576;
 
         return number_format($mb, $mb < 10 ? 1 : 0, ',', '.').' MB';
+    }
+
+    /**
+     * Dosya GERÇEKTEN bir HEIC duran fotoğrafı mı? Uzantıya ve MIME'a bakılmaz.
+     *
+     * ISO kabı şöyle okunur ve her adımda fail-closed davranılır:
+     *
+     *   1. 5-8. baytlar `ftyp` olmalı; değilse bu kapının konusu değil.
+     *   2. İlk dört bayt kutunun KENDİ bildirdiği uzunluktur. En az 16
+     *      olmalı (uzunluk + `ftyp` + ana marka + sürüm), dörde bölünmeli
+     *      ve DOSYADA GERÇEKTEN OLMALI — kesilmiş ya da uydurma uzunluk
+     *      taşıyan bir gövde burada `false` döner ve nazik cevabı ALMAZ.
+     *   3. Markalar: 9-12. bayt ana marka, 17. bayttan itibaren uyumlu
+     *      markalar. Okuma `FTYP_SCAN_BYTES` ile sınırlıdır.
+     *   4. AVIF açıkça dışarıda: AVIF kendi kararıdır ve bu cümleyi
+     *      almamalıdır.
+     */
+    private function startsLikeHeicPhotograph(UploadedFile $file): bool
+    {
+        $path = (string) $file->getRealPath();
+
+        if (! is_readable($path)) {
+            return false;
+        }
+
+        $head = (string) @file_get_contents($path, false, null, 0, self::FTYP_SCAN_BYTES);
+
+        if (strlen($head) < 16 || substr($head, 4, 4) !== 'ftyp') {
+            return false;
+        }
+
+        $declared = @unpack('N', substr($head, 0, 4));
+        $boxSize = is_array($declared) ? (int) $declared[1] : 0;
+        // Bildirilen değil, DOSYANIN kendi boyutu: `getSize()` istemcinin
+        // bildirdiği sayıyı taşıyabilir ve bu kapı ona güvenmez.
+        $actualBytes = (int) (@filesize($path) ?: 0);
+
+        if ($boxSize < 16 || $boxSize % 4 !== 0 || $boxSize > $actualBytes) {
+            return false;
+        }
+
+        $readable = min($boxSize, strlen($head));
+        $brands = [substr($head, 8, 4)];
+
+        for ($offset = 16; $offset + 4 <= $readable; $offset += 4) {
+            $brands[] = substr($head, $offset, 4);
+        }
+
+        if (in_array('avif', $brands, true) || in_array('avis', $brands, true)) {
+            return false;
+        }
+
+        return array_intersect($brands, self::HEIC_STILL_BRANDS) !== [];
     }
 
     /**
