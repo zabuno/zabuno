@@ -2804,6 +2804,30 @@ msgstr ""
 msgid "workspace.media.library.assets.heading"
 msgstr ""
 
+#: workspace:workspace.media.library.desktop.detail.empty
+msgid "workspace.media.library.desktop.detail.empty"
+msgstr ""
+
+#: workspace:workspace.media.library.desktop.detail.region
+msgid "workspace.media.library.desktop.detail.region"
+msgstr ""
+
+#: workspace:workspace.media.library.desktop.details
+msgid "workspace.media.library.desktop.details"
+msgstr ""
+
+#: workspace:workspace.media.library.desktop.grid
+msgid "workspace.media.library.desktop.grid"
+msgstr ""
+
+#: workspace:workspace.media.library.desktop.menu
+msgid "workspace.media.library.desktop.menu"
+msgstr ""
+
+#: workspace:workspace.media.library.desktop.shortcuts
+msgid "workspace.media.library.desktop.shortcuts"
+msgstr ""
+
 #: workspace:workspace.media.library.detail.actionFailed
 msgid "workspace.media.library.detail.actionFailed"
 msgstr ""

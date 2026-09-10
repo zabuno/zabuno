@@ -2804,6 +2804,30 @@ msgstr "{count} yerde kullanılıyor"
 msgid "workspace.media.library.assets.heading"
 msgstr "Görseller"
 
+#: workspace:workspace.media.library.desktop.detail.empty
+msgid "workspace.media.library.desktop.detail.empty"
+msgstr "Ayrıntısını okumak için ızgaradan bir dosya seçin."
+
+#: workspace:workspace.media.library.desktop.detail.region
+msgid "workspace.media.library.desktop.detail.region"
+msgstr "Seçili dosya"
+
+#: workspace:workspace.media.library.desktop.details
+msgid "workspace.media.library.desktop.details"
+msgstr "Ayrıntılar"
+
+#: workspace:workspace.media.library.desktop.grid
+msgid "workspace.media.library.desktop.grid"
+msgstr "Dosyalar"
+
+#: workspace:workspace.media.library.desktop.menu
+msgid "workspace.media.library.desktop.menu"
+msgstr "Dosya işlemleri"
+
+#: workspace:workspace.media.library.desktop.shortcuts
+msgid "workspace.media.library.desktop.shortcuts"
+msgstr "Ok tuşları gezinir · Boşluk seçer · Enter ayrıntıyı açar · Delete çöpe taşır"
+
 #: workspace:workspace.media.library.detail.actionFailed
 msgid "workspace.media.library.detail.actionFailed"
 msgstr "Bu işlem olmadı. Hiçbir şey değişmedi."

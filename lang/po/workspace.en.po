@@ -2804,6 +2804,30 @@ msgstr "used in {count}"
 msgid "workspace.media.library.assets.heading"
 msgstr "Assets"
 
+#: workspace:workspace.media.library.desktop.detail.empty
+msgid "workspace.media.library.desktop.detail.empty"
+msgstr "Pick a file from the grid to read its details here."
+
+#: workspace:workspace.media.library.desktop.detail.region
+msgid "workspace.media.library.desktop.detail.region"
+msgstr "Selected file"
+
+#: workspace:workspace.media.library.desktop.details
+msgid "workspace.media.library.desktop.details"
+msgstr "Details"
+
+#: workspace:workspace.media.library.desktop.grid
+msgid "workspace.media.library.desktop.grid"
+msgstr "Files"
+
+#: workspace:workspace.media.library.desktop.menu
+msgid "workspace.media.library.desktop.menu"
+msgstr "File actions"
+
+#: workspace:workspace.media.library.desktop.shortcuts
+msgid "workspace.media.library.desktop.shortcuts"
+msgstr "Arrow keys move · Space selects · Enter opens details · Delete moves to trash"
+
 #: workspace:workspace.media.library.detail.actionFailed
 msgid "workspace.media.library.detail.actionFailed"
 msgstr "That did not work. Nothing was changed."

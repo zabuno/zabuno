@@ -16,7 +16,12 @@ import { t } from '../../../i18n/workspace';
 import { buildAuthRequestInit } from '../../../lib/csrfHeader';
 import { readValidationFailure, ServerRejectedError } from '../../../lib/validationErrors';
 import { MediaUploadRegion } from './media/MediaUploadRegion';
-import { MediaLibraryRegion, type MediaLibraryLoadState } from './media/MediaLibraryRegion';
+import { MediaLibraryRegion } from './media/MediaLibraryRegion';
+import type {
+    MediaLibraryLoadState,
+    MediaLibrarySurfaceContext,
+    MediaLibrarySurfaceRenderer,
+} from './media/librarySurface';
 import { MediaAuditRegion } from './media/MediaAuditRegion';
 import { MediaSizeEngineRegion } from './media/MediaSizeEngineRegion';
 import { MediaConvertRegion } from './media/MediaConvertRegion';
@@ -97,8 +102,23 @@ export type MediaLibraryActions = {
     updateAltText: (id: number, altText: string) => Promise<void>;
 };
 
-type MediaPageProps = {
+export type MediaPageProps = {
     workspaceId?: number;
+    /**
+     * Kütüphaneyi çizen işlev — YALNIZ masaüstü paketinde doludur
+     * (`docs/153`).
+     *
+     * `undefined` telefonun NORMAL hâlidir ve bir eksiklik anlatmaz:
+     * kütüphane o pakette bugünkü dokunmatik listeyle çizilir ve o liste
+     * dar ekranın TABANIdır (TOUCH-FIRST-INTERFACE §1). Sayfanın geri
+     * kalanı — yükleme, toplu işlem, dönüştür, kuyruk, kota, ayarlar —
+     * iki yüzeyde de aynıdır ve buradan geçmez.
+     *
+     * Bayrak değil ÇİZİCİ geçilir: `deviceClass === 'desktop'` diye bir
+     * dal, masaüstü ızgarasının kodunu telefon paketine yine indirirdi
+     * (`docs/153` §3).
+     */
+    renderLibrary?: MediaLibrarySurfaceRenderer;
 };
 
 /**
@@ -106,7 +126,7 @@ type MediaPageProps = {
  * remove an own quarantined asset — same-origin credentials throughout, CSRF
  * bootstrapped before every state-changing request (S1-WP03a).
  */
-export function MediaPage({ workspaceId }: MediaPageProps) {
+export function MediaPage({ workspaceId, renderLibrary }: MediaPageProps) {
     const [assets, setAssets] = useState<MediaAsset[]>([]);
     const [loadState, setLoadState] = useState<MediaLibraryLoadState>('loading');
     const [pendingDeleteIds, setPendingDeleteIds] = useState<Set<number>>(new Set());
@@ -374,6 +394,36 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
     }
 
     /*
+        KÜTÜPHANENİN YÜZEY BAĞLAMI — tek yerde kurulur (`docs/153` §4).
+
+        İki yüzey (dokunmatik liste ve masaüstü ızgarası) aynı nesneyi alır.
+        Ayrı ayrı kurulsaydı masaüstü ızgarası, silme bekleyen dosyaları ya
+        da çöp saklama süresini telefonunkinden farklı okuyabilirdi — ve
+        fark ancak sahibin "bir ekran sildi diyor, öteki hâlâ listeliyor"
+        dediği gün görünürdü.
+    */
+    const librarySurface: MediaLibrarySurfaceContext = {
+        assets,
+        onDelete: (id) => void handleDelete(id),
+        loadState,
+        onRetry: () => void loadAssets(),
+        pendingDeleteIds,
+        deleteErrorIds,
+        deleteNotice,
+        actions: workspaceId === undefined ? undefined : actions,
+        trashRetentionDays,
+        query,
+        folders,
+        activeFolderId: folderId,
+        onFolderChange: setFolderId,
+    };
+
+    /* Çizici yoksa (telefon paketi) bugünkü dokunmatik kütüphane çizilir. */
+    const renderLibrarySurface =
+        renderLibrary ??
+        ((surface: MediaLibrarySurfaceContext) => <MediaLibraryRegion {...surface} />);
+
+    /*
         BÖLÜMLER: kaynak dokuz bölüm gösteriyor, depoda bugün DÖRDÜ gerçek
         (`docs/108` §2). Var olmayan bir bölüme giden sekme, kullanıcıyı boş
         bir odaya sokar ve "burası ne zaman açılacak?" diye kalıcı bir soru
@@ -388,25 +438,7 @@ export function MediaPage({ workspaceId }: MediaPageProps) {
             key: 'library',
             label: t('workspace.media.library.tabs.library'),
             icon: <Images aria-hidden="true" size={18} />,
-            content: (
-                <PanelCard>
-                    <MediaLibraryRegion
-                        assets={assets}
-                        onDelete={(id) => void handleDelete(id)}
-                        loadState={loadState}
-                        onRetry={() => void loadAssets()}
-                        pendingDeleteIds={pendingDeleteIds}
-                        deleteErrorIds={deleteErrorIds}
-                        deleteNotice={deleteNotice}
-                        actions={workspaceId === undefined ? undefined : actions}
-                        trashRetentionDays={trashRetentionDays}
-                        query={query}
-                        folders={folders}
-                        activeFolderId={folderId}
-                        onFolderChange={setFolderId}
-                    />
-                </PanelCard>
-            ),
+            content: <PanelCard>{renderLibrarySurface(librarySurface)}</PanelCard>,
         },
         {
             key: 'upload',

@@ -14,73 +14,27 @@ import { MediaLibrarySlotList } from './MediaLibrarySlotList';
 import { MediaTrashList } from './MediaTrashList';
 import { MediaLibraryToolbar, type MediaLibraryView } from './MediaLibraryToolbar';
 import { MEDIA_SORT_ORDER, type MediaSortKey } from './mediaSort';
-import type { MediaFolder, MediaFolderId } from './MediaFolderRail';
+import {
+    activeFilterCount as countActiveFilters,
+    anyFilterActive,
+    availableSlots,
+    availableStatuses,
+    selectVisibleAssets,
+} from './mediaLibraryQuery';
+import type { MediaLibrarySurfaceContext } from './librarySurface';
 import { displayName, formatBytes } from './mediaFormat';
-import type { MediaAsset, MediaLibraryActions } from '../MediaPage';
+import type { MediaAsset } from '../MediaPage';
 
-export type MediaLibraryLoadState = 'loading' | 'idle' | 'error';
+export type { MediaLibraryLoadState } from './librarySurface';
 
-type MediaLibraryRegionProps = {
-    assets: MediaAsset[];
-    onDelete: (id: number) => void;
-    loadState: MediaLibraryLoadState;
-    onRetry?: () => void;
-    pendingDeleteIds?: Set<number>;
-    deleteErrorIds?: Set<number>;
-    deleteNotice?: string | null;
-    /**
-     * Kütüphane eylemleri (kullanım, sürüm, çöp). Verilmezse bölge yalnız
-     * listeler ve siler — bileşen tek başına da çalışır.
-     */
-    actions?: MediaLibraryActions;
-    trashRetentionDays?: number;
-    /**
-     * Arama KABUKTAN gelebilir (`MediaManagerShell`). Verildiğinde bölge
-     * kendi arama kutusunu çizmez: aynı ekranda iki arama alanı, hangisinin
-     * geçerli olduğunu belirsizleştirir.
-     */
-    query?: string;
-    /** Klasörler — boşsa hap şeridi hiç çizilmez. */
-    folders?: MediaFolder[];
-    activeFolderId?: MediaFolderId | null;
-    onFolderChange?: (id: MediaFolderId | null) => void;
-};
-
-const STATUS_ORDER = [
-    'ready',
-    'processing',
-    'accepted',
-    'scanning',
-    'quarantined',
-    'failed',
-    'rejected',
-] as const;
-
-/**
- * Sıralama karşılaştırıcıları.
- *
- * Elimizde OLMAYAN alana göre sıralamayız: `createdAt` ya da `sizeBytes`
- * gelmediğinde satır sırası KORUNUR (kararlı sıralama), uydurma bir sıraya
- * itilmez.
- */
-function compareAssets(a: MediaAsset, b: MediaAsset, sort: MediaSortKey): number {
-    if (sort === 'name') {
-        return displayName(a).localeCompare(displayName(b));
-    }
-
-    if (sort === 'largest') {
-        return (b.sizeBytes ?? 0) - (a.sizeBytes ?? 0);
-    }
-
-    const left = a.createdAt ? Date.parse(a.createdAt) : Number.NaN;
-    const right = b.createdAt ? Date.parse(b.createdAt) : Number.NaN;
-
-    if (Number.isNaN(left) && Number.isNaN(right)) return 0;
-    if (Number.isNaN(left)) return 1;
-    if (Number.isNaN(right)) return -1;
-
-    return right - left;
-}
+/*
+    Bölgenin özellikleri, kütüphanenin CİHAZDAN BAĞIMSIZ yüzey sözleşmesinin
+    kendisidir (`librarySurface.ts`). Ayrı bir `Props` türü yazılsaydı iki
+    tür zamanla ayrışır ve masaüstü çizicisine geçen bir alan burada eksik
+    kalırdı — üstelik fark ancak bir ekranda çalışmayan bir süzgeçle
+    görünürdü.
+*/
+type MediaLibraryRegionProps = MediaLibrarySurfaceContext;
 
 /**
  * Kütüphane (`docs/49` Faz 4-5, `docs/98` FF-70, FF-131 kanonik kaynak):
@@ -123,34 +77,35 @@ export function MediaLibraryRegion({
     const externalQuery = query !== undefined;
     const effectiveQuery = query ?? ownQuery;
 
-    const slots = useMemo(() => Array.from(new Set(assets.map((a) => a.slot))).sort(), [assets]);
-    const statuses = useMemo(() => {
-        const present = new Set(assets.map((a) => a.status));
-        return STATUS_ORDER.filter((s) => present.has(s));
-    }, [assets]);
+    const slots = useMemo(() => availableSlots(assets), [assets]);
+    const statuses = useMemo(() => availableStatuses(assets), [assets]);
 
-    const visible = useMemo(() => {
-        const needle = effectiveQuery.trim().toLocaleLowerCase();
-        const matched = assets.filter((asset) => {
-            if (activeFolderId !== null && asset.folderId !== activeFolderId) return false;
-            if (slot !== '' && asset.slot !== slot) return false;
-            if (status !== '' && asset.status !== status) return false;
-            if (unusedOnly && (asset.usageCount ?? 0) > 0) return false;
-            if (needle === '') return true;
-            return (
-                asset.altText.toLocaleLowerCase().includes(needle) ||
-                (asset.originalName ?? '').toLocaleLowerCase().includes(needle)
-            );
-        });
+    /*
+        SÜZGEÇ VE SIRALAMA PAYLAŞILIR (`mediaLibraryQuery.ts`). Bölge artık
+        kendi süzgecini yazmıyor: aynı soruya masaüstü ızgarası da cevap
+        veriyor ve iki ayrı süzgeç, iki farklı dosya sayısı demekti.
+    */
+    const libraryQuery = useMemo(
+        () => ({
+            text: effectiveQuery,
+            slot,
+            status,
+            unusedOnly,
+            folderId: activeFolderId,
+            sort,
+        }),
+        [effectiveQuery, slot, status, unusedOnly, activeFolderId, sort],
+    );
 
-        return [...matched].sort((a, b) => compareAssets(a, b, sort));
-    }, [assets, effectiveQuery, slot, status, unusedOnly, activeFolderId, sort]);
+    const visible = useMemo(
+        () => selectVisibleAssets(assets, libraryQuery),
+        [assets, libraryQuery],
+    );
 
     const detailAsset = assets.find((a) => a.id === detailId) ?? null;
     const impactAsset = assets.find((a) => a.id === impactId) ?? null;
-    const activeFilterCount =
-        (slot !== '' ? 1 : 0) + (status !== '' ? 1 : 0) + (unusedOnly ? 1 : 0);
-    const filtersActive = effectiveQuery !== '' || activeFilterCount > 0 || activeFolderId !== null;
+    const activeFilterCount = countActiveFilters(libraryQuery);
+    const filtersActive = anyFilterActive(libraryQuery);
     const toolbarVisible = loadState === 'idle' && assets.length > 1;
 
     const selectedVisible = visible.filter((asset) => selectedIds.has(asset.id));

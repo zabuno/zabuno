@@ -32,6 +32,10 @@ const OrdersScreenDesktop = lazy(async () => ({
     default: (await import('./OrdersScreenDesktop')).OrdersScreenDesktop,
 }));
 
+const MediaScreenDesktop = lazy(async () => ({
+    default: (await import('./MediaScreenDesktop')).MediaScreenDesktop,
+}));
+
 export const desktopPages: WorkspacePageOverrideMap = {
     /*
         SİPARİŞ KUYRUĞU — masaüstüne taşınan İLK ekran (`docs/153` §6).
@@ -49,6 +53,23 @@ export const desktopPages: WorkspacePageOverrideMap = {
         */
         <Suspense fallback={null}>
             <OrdersScreenDesktop ctx={ctx} />
+        </Suspense>
+    ),
+
+    /*
+        MEDYA KÜTÜPHANESİ — masaüstüne taşınan İKİNCİ ekran (`docs/153` §6).
+
+        Gerekçe kuyruğunkiyle aynı biçimde ama başka bir işten doğuyor:
+        telefonda kütüphaneye bakan kişi TEK bir fotoğrafı arar; masasında
+        oturan kişi kırk dosyayı arka arkaya gözden geçirir, klavyesi vardır
+        ve her dosya için "bu hangisiydi?" sorusunu bir çekmece açıp
+        kapatarak soramaz. Ayrışan tek şey kütüphanenin ÇİZİMİdir; sayfanın
+        geri kalanı (yükleme, dönüştür, kuyruk, kota, ayarlar) iki yüzeyde
+        de aynı koddur.
+    */
+    media: (ctx) => (
+        <Suspense fallback={null}>
+            <MediaScreenDesktop ctx={ctx} />
         </Suspense>
     ),
 };
