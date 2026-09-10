@@ -14,6 +14,7 @@ use App\Application\Publication\Port\PublicMenuAddressPort;
 use App\Application\Publication\UseCase\ResolveGuestMenuView;
 use App\Application\QrDestination\Dto\QrCodeRecord;
 use App\Application\QrDestination\Port\QrCodeRepositoryPort;
+use App\Application\QrDestination\UseCase\ResolveGuestTableReturn;
 use App\Application\Rating\Port\RatingScoreQueryPort;
 use App\Domain\Analytics\AnalyticsEventType;
 use App\Domain\Entitlement\Entitlement;
@@ -163,7 +164,28 @@ final class ShowPublicMenuController extends Controller
             // istemciden almak, herkesin herkesin adına olay yazması
             // demekti (`docs/84`).
             'menuKey' => $address['key'],
-            'itemPathFor' => fn (int $menuItemId, string $productName): string => $menuAddress->itemPath($menuItemId, $productName),
+            /*
+                ÜRÜN BAĞLANTISI MASAYI YANINDA GÖTÜRÜR (GUEST-B2).
+
+                Adres KANONİK kalır — masasız, indekslenebilir, paylaşılabilir
+                — ama misafirin hangi masadan geldiği açık bir sorgu olarak
+                eklenir. Bu sorgu olmadan ürüne dokunan misafir, dönüş
+                bağlantısıyla masasız menüye düşüyor ve sepetini EKRANDAN
+                kaybediyordu (denetim af51bbe1): sepet cihazında duruyor, ama
+                masası olmayan bir sayfa onu çizmiyor.
+
+                Belirteç YALNIZ BU YÜZEYDE eklenir. Kalıcı adresin kendi menü
+                sayfası (`ShowPublicMenuByKeyController`) aynı bağlantıyı
+                masasız kurar ve öyle kalmalı: orada bir masa YOKTUR ve
+                uydurulacak bir masa da yoktur.
+
+                Dışarıya sızmaz: bu sayfa zaten `noindex`, kanonik üstveri
+                belirteç taşımaz ve `Referrer-Policy: strict-origin-when-
+                cross-origin` (`SecurityHeaders`) dış bir bağlantıya yolu da
+                sorguyu da göndermez — yalnız kökü.
+            */
+            'itemPathFor' => fn (int $menuItemId, string $productName): string => $menuAddress->itemPath($menuItemId, $productName)
+                .'?'.ResolveGuestTableReturn::QUERY.'='.rawurlencode($record->token),
             // Metin ŞABLONDA değil KATALOGDA yaşar: Blade'e yazılan bir
             // cümleyi sahip hiçbir PO dosyasından çeviremez (`docs/82`).
             /*
