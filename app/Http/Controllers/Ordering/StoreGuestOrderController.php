@@ -13,6 +13,7 @@ use App\Application\Ordering\Port\OrderingSwitchPort;
 use App\Application\Ordering\Port\OrderRepositoryPort;
 use App\Application\Ordering\UseCase\BuildOrderLines;
 use App\Application\Publication\Port\PublicationRepositoryPort;
+use App\Application\Publication\UseCase\ResolveGuestMenuView;
 use App\Application\QrDestination\Port\QrCodeRepositoryPort;
 use App\Domain\Analytics\AnalyticsEventType;
 use App\Domain\Entitlement\Entitlement;
@@ -73,6 +74,18 @@ final class StoreGuestOrderController extends Controller
         private readonly OrderRepositoryPort $orders,
         private readonly BuildOrderLines $buildOrderLines,
         private readonly RecordAnalyticsEvent $recordAnalyticsEvent,
+        /*
+            ŞUBE ŞU AN AÇIK MI — MİSAFİRİN GÖRDÜĞÜ ŞERİDİ ÇİZEN KARARIN TA
+            KENDİSİ (GUEST-B1).
+
+            Buraya bir saat hesabı DEĞİL, o kararı veren sınıf giriyor.
+            İkinci bir hesap yazsaydık gece yarısını aşan aralık, şubenin
+            saat dilimi ve yarım hafta sessizliği iki yerde iki kez
+            yorumlanırdı; ikisi bir gün ayrışır ve hangisinin doğru olduğu
+            ancak masadaki misafir menünün üstünde "kapalıyız" yazarken
+            siparişi geçtiğinde anlaşılırdı.
+        */
+        private readonly ResolveGuestMenuView $guestMenuView,
     ) {}
 
     public function __invoke(Request $request, string $token): SymfonyResponse
@@ -123,7 +136,7 @@ final class StoreGuestOrderController extends Controller
             return $this->refuse('table_unknown', SymfonyResponse::HTTP_CONFLICT);
         }
 
-        if (! $this->acceptsOrders($qrCode->workspaceId, $qrCode->locationId)) {
+        if (! $this->acceptsOrders($qrCode->workspaceId, $qrCode->locationId, $qrCode->menuId)) {
             return $this->refuse('ordering_closed', SymfonyResponse::HTTP_CONFLICT);
         }
 
@@ -226,10 +239,32 @@ final class StoreGuestOrderController extends Controller
      * Sahip gece 23:00'te sipariş almayı kapattığında karar anında geçerli
      * olmalı: kapalıyken gelen bir sipariş, kimsenin bakmadığı bir kuyruğa
      * düşerdi.
+     *
+     * ═══ ŞALTER TEK KAPI DEĞİLDİR: SAAT DE KAPATIR (GUEST-B1) ═══
+     *
+     * Sahibin haftasını girmiş bir restoranda menünün üstünde gece 23:30'da
+     * dürüstçe "şu an kapalıyız" yazıyordu ve uç aynı anda siparişi kabul
+     * ediyordu. Sayfanın söylediği ile sunucunun yaptığı ayrışınca kaybeden
+     * misafir olur: mutfağa düşen sipariş sabaha kadar kimsenin bakmadığı
+     * bir kuyrukta bekler.
+     *
+     * ŞALTER ÖNCE SORULUR ve saat onu EZMEZ. Sahip "bugün mutfak yok"
+     * dediyse, haftanın o saati açık olsa bile sipariş alınmaz; tersini
+     * yapmak sahibin elle verdiği kararı sessizce geri almak olurdu.
+     *
+     * SESSİZLİK "KAPALI" DEĞİLDİR. Saatini hiç girmemiş şube (bugün
+     * çalışanların çoğu), yarım yazılmış bir hafta ve saat dilimi olmayan
+     * bir şube için `closedNoticeForMenu` `null` döner — yani "kapalı
+     * olduğumuzu söyleyemem". Bu paket o şubelerin siparişini kapatmaz;
+     * söylenmemiş bir şey söylenmiş sayılmaz.
      */
-    private function acceptsOrders(int $workspaceId, int $locationId): bool
+    private function acceptsOrders(int $workspaceId, int $locationId, int $menuId): bool
     {
-        return $this->orderingSwitch->acceptsOrders($workspaceId, $locationId);
+        if (! $this->orderingSwitch->acceptsOrders($workspaceId, $locationId)) {
+            return false;
+        }
+
+        return $this->guestMenuView->closedNoticeForMenu($workspaceId, $menuId) === null;
     }
 
     /**

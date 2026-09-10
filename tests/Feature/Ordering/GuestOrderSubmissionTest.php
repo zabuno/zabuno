@@ -9,6 +9,7 @@ use App\Domain\Entitlement\Entitlement;
 use App\Domain\Ordering\OrderStatus;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Tests\Support\GrantsPlanEntitlements;
@@ -206,6 +207,106 @@ final class GuestOrderSubmissionTest extends TestCase
             ->assertJsonPath('reason', 'ordering_closed');
     }
 
+    /*
+        ═══ KAPALI SAAT DE BİR RETTİR (GUEST-B1) ═══
+
+        Sahip "sipariş al" şalterini açık bırakır ve şubenin haftasını
+        girer; menünün üstünde gece 23:30'da dürüstçe "şu an kapalıyız"
+        yazar. Bugüne kadar o cümlenin ALTINDAN sipariş gönderilebiliyordu:
+        şerit misafire kapalı olduğumuzu söylüyor, uç ise siparişi kabul
+        edip mutfağa —kimsenin bakmadığı bir kuyruğa— yazıyordu.
+
+        Kararı iki yerde ayrı ayrı hesaplamıyoruz: şeridi çizen
+        `ResolveGuestMenuView::closedNoticeForMenu` ile burada sorulan soru
+        AYNI çağrıdır. Gece yarısını aşan aralık, şubenin saat dilimi ve
+        yarım hafta sessizliği zaten orada çözülmüş durumda; ikinci bir saat
+        hesabı yazsaydık, ikisi bir gün ayrışır ve hangisinin doğru olduğu
+        ancak masadaki misafir yanlış cevabı aldığında anlaşılırdı.
+
+        Ret sebebi YENİ DEĞİLDİR: mutfağın neden kapalı olduğu (şalter mi,
+        saat mi) misafirin yapacağı şeyi değiştirmez — ikisinde de personele
+        sorulur. Yeni bir sebep icat etmek, sepetin cümle kataloğuna
+        karşılığı olmayan bir dize eklemek olurdu.
+    */
+
+    public function test_a_branch_closed_by_its_opening_hours_refuses_the_order(): void
+    {
+        $this->buildScene('siparis-saat-kapali');
+
+        $this->insertUniformWeek(
+            $this->scene['workspaceId'],
+            $this->scene['locationId'],
+            9 * 60,
+            17 * 60,
+        );
+
+        // Şubenin KENDİ saatinde 23:30 — sunucunun saati cevaba karışmaz.
+        Carbon::setTestNow(Carbon::parse('2026-09-09 23:30', 'Europe/Istanbul'));
+
+        $this->postJson($this->orderPath(), [
+            'items' => [['menuItemId' => $this->scene['coffeeItemId'], 'quantity' => 1]],
+        ])
+            ->assertStatus(409)
+            ->assertJsonPath('reason', 'ordering_closed');
+
+        self::assertSame(
+            0,
+            DB::table('orders')->count(),
+            'Kapalı saatte gelen sipariş YAZILMAZ: yarım bir satır bırakmak, sabah gelen garsona olmayan bir masa gösterirdi.'
+        );
+    }
+
+    public function test_when_the_branch_reopens_the_order_goes_through_and_the_manual_switch_still_wins(): void
+    {
+        /*
+            İKİ ŞART BİRBİRİNİN YERİNE GEÇMEZ. Saat açıksa sipariş geçer;
+            ama sahip şalteri indirdiyse saat açık olsa bile geçmez. Saatin
+            şalteri EZMESİ, sahibin "bugün mutfak yok" kararını sessizce geri
+            almak olurdu — ve bunu ancak dolan bir kuyruk haber verirdi.
+        */
+        $this->buildScene('siparis-saat-acik');
+
+        $this->insertUniformWeek(
+            $this->scene['workspaceId'],
+            $this->scene['locationId'],
+            9 * 60,
+            17 * 60,
+        );
+
+        Carbon::setTestNow(Carbon::parse('2026-09-09 12:00', 'Europe/Istanbul'));
+
+        $this->postJson($this->orderPath(), [
+            'items' => [['menuItemId' => $this->scene['coffeeItemId'], 'quantity' => 1]],
+        ])->assertStatus(201);
+
+        DB::table('locations')->where('id', $this->scene['locationId'])->update(['accepts_orders' => false]);
+
+        $this->postJson($this->orderPath(), [
+            'items' => [['menuItemId' => $this->scene['coffeeItemId'], 'quantity' => 1]],
+        ])
+            ->assertStatus(409)
+            ->assertJsonPath('reason', 'ordering_closed');
+    }
+
+    public function test_a_branch_that_never_wrote_its_hours_keeps_todays_behaviour(): void
+    {
+        /*
+            BUGÜN ÇALIŞAN ŞUBELERİN ÇOĞU saatini hiç girmemiştir. Sessizliği
+            "kapalı" saymak, bu paketin tek satırıyla o restoranların
+            siparişini kapatmak olurdu. Uydurma bir varsayılan hafta yok:
+            söylenmemiş bir şey, söylenmiş sayılmaz.
+        */
+        $this->buildScene('siparis-saatsiz');
+
+        Carbon::setTestNow(Carbon::parse('2026-09-09 23:30', 'Europe/Istanbul'));
+
+        self::assertSame(0, DB::table('location_opening_hours')->count(), 'Öncül: bu sahnede hafta hiç yazılmamış.');
+
+        $this->postJson($this->orderPath(), [
+            'items' => [['menuItemId' => $this->scene['coffeeItemId'], 'quantity' => 1]],
+        ])->assertStatus(201);
+    }
+
     public function test_without_the_ordering_entitlement_the_answer_is_402_and_names_it(): void
     {
         $this->buildScene('siparis-haksiz', entitlements: [Entitlement::QrBulkGeneration]);
@@ -306,6 +407,31 @@ final class GuestOrderSubmissionTest extends TestCase
     private function orderPath(): string
     {
         return '/q/'.$this->scene['token'].'/orders';
+    }
+
+    /**
+     * Şubenin haftasını DOĞRUDAN yazar — yedi gün de aynı aralık.
+     *
+     * Panel ucundan geçilmez: burada sınanan şey yazma yolu değil, o veriyle
+     * siparişin kabul edilip edilmediğidir. Yazma yolu `LocationOpeningHours`
+     * testlerinde ayrıca donmuş durumda. Hafta BÜTÜN yazılır; eksik gün alan
+     * modelinde meşru olarak reddedilir ve o zaman ölçtüğümüz şey saat değil,
+     * yarım kayıt sessizliği olurdu.
+     */
+    private function insertUniformWeek(int $workspaceId, int $locationId, int $opensMinute, int $closesMinute): void
+    {
+        foreach (range(1, 7) as $day) {
+            DB::table('location_opening_hours')->insert([
+                'workspace_id' => $workspaceId,
+                'location_id' => $locationId,
+                'day_of_week' => $day,
+                'is_closed' => false,
+                'opens_minute' => $opensMinute,
+                'closes_minute' => $closesMinute,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
 
     /**
