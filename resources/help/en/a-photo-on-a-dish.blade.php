@@ -105,7 +105,11 @@
                 Use <strong>Preview on a phone</strong> first. A photo that looked right on a
                 laptop is judged on a phone, because that is where your guest reads it.
             </li>
-            <li>Then use <strong>Immediate publish</strong>.</li>
+            <li>
+                Then, under <strong>Publication status</strong>, tick
+                <strong>I reviewed the publish checklist</strong> and press
+                <strong>Publish</strong>.
+            </li>
         </ol>
         <p class="text-fg-secondary">
             The preview link works for fifteen minutes and is closed to search engines. It is

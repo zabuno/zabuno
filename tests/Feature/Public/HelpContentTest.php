@@ -229,7 +229,9 @@ final class HelpContentTest extends TestCase
             ['menu', 'menu.item.presentation.submit'],
             ['workspace', 'workspace.shell.nav.publication'],
             ['workspace', 'workspace.publication.preview.button'],
-            ['workspace', 'workspace.publication.publishAction.mode.immediate'],
+            ['workspace', 'workspace.publication.status.region'],
+            ['workspace', 'workspace.publication.publishAction.checklistConfirmed'],
+            ['workspace', 'workspace.publication.status.publishButton'],
             ['workspace', 'workspace.media.library.trash.heading'],
         ] as [$domain, $key]) {
             $label = $translator->translate($domain, $key, 'tr');
@@ -249,8 +251,27 @@ final class HelpContentTest extends TestCase
      */
     public function test_the_photo_article_promises_only_what_the_screens_do(): void
     {
+        $translator = app(TranslationPort::class);
+
         foreach (HelpLibrary::SUPPORTED as $locale) {
             $article = (string) file_get_contents(HelpLibrary::pathFor($locale, 'a-photo-on-a-dish'));
+
+            // "Hemen yayınla" kataloğda DURUYOR ama hiçbir ekran onu çizmiyor
+            // (`PublishActionConfigRegion` o kalıcı devre dışı kip seçimini
+            // kaldırdı). Yayın makalesindeki kapının aynısı burada da durur:
+            // iki makale aynı ekranı anlatıyor, biri ölü bir düğme adına
+            // geri dönemez.
+            $unrendered = $translator->translate(
+                'workspace',
+                'workspace.publication.publishAction.mode.immediate',
+                $locale
+            );
+
+            self::assertStringNotContainsString(
+                '<strong>'.e($unrendered).'</strong>',
+                $article,
+                "HELP-PHOTO-01: [{$locale}] makalesi çizilmeyen bir denetimi ('{$unrendered}') düğme diye gösteriyor."
+            );
 
             foreach (['Preview &amp; publish', 'Preview & publish', 'HEIF', 'HEIC'] as $unsupportedClaim) {
                 self::assertStringNotContainsString(
@@ -266,5 +287,144 @@ final class HelpContentTest extends TestCase
                 "HELP-PHOTO-01: [{$locale}] makalesi işleme süresi vaat ediyor; o süre ölçülmedi."
             );
         }
+    }
+
+    // --- HELP-PUBLICATION-01 -----------------------------------------------
+
+    /**
+     * ÜÇÜNCÜ MAKALE de oturum İSTEMEZ ve kendi dilinde açılır.
+     *
+     * Bu makalenin okuru özel bir okurdur: menüsünü düzeltmiş, kaydetmiş ve
+     * masadaki misafirde hiçbir şeyin değişmediğini görmüştür. O anda ürüne
+     * güveni sarsılmıştır ve yardımın oturum sorması, güvensizliği doğrular.
+     */
+    public function test_the_publication_article_opens_without_an_account_in_the_readers_language(): void
+    {
+        foreach ([
+            ['en', 'tr', 'Why has nothing changed for my guests?', 'Help'],
+            ['tr', 'en', 'Misafirlerim için neden hiçbir şey değişmedi?', 'Yardım'],
+        ] as [$choice, $browser, $title, $navigation]) {
+            $this->withUnencryptedCookie('zbn_language', $choice)
+                ->withHeader('Accept-Language', $browser)
+                ->get('/help/nothing-changed-for-my-guests')
+                ->assertOk()
+                ->assertSee('<html lang="'.$choice.'"', false)
+                ->assertSee($title)
+                ->assertSee('>'.$navigation.'<', false);
+        }
+    }
+
+    /**
+     * Makale BULUNABİLİR olmalı, HER DİLDE.
+     *
+     * Kimse adresi tahmin etmez ve bu makaleyi arayan kişi zaten paniktedir:
+     * giriş makalesi ona bağlanmıyorsa makale yazılmamış sayılır.
+     */
+    public function test_the_entry_article_points_at_the_publication_article_in_every_language(): void
+    {
+        foreach (HelpLibrary::SUPPORTED as $locale) {
+            self::assertStringContainsString(
+                'href="/help/nothing-changed-for-my-guests"',
+                (string) file_get_contents(HelpLibrary::pathFor($locale)),
+                "HELP-PUBLICATION-01: [{$locale}] giriş makalesi yayın makalesine bağlanmıyor."
+            );
+        }
+    }
+
+    /**
+     * Makale, EKRANDA GERÇEKTEN YAZAN denetim adlarını kullanır — her dilde.
+     *
+     * Adlar kataloğun kendisinden okunuyor, makaleye elle yazılmıyor: arayüz
+     * bir gün "Yayınla"yı başka bir şey yaparsa bu kapı kırmızıya döner ve
+     * makale ile ekran ayrışamaz. Ölçüm İngilizceyi de kapsar, çünkü yanlış
+     * düğme adı yalnız çeviride değil kaynak metinde de doğar.
+     */
+    #[DataProvider('supportedLocales')]
+    public function test_the_publication_article_names_the_actual_publication_controls(string $locale): void
+    {
+        $translator = app(TranslationPort::class);
+        $article = (string) file_get_contents(
+            HelpLibrary::pathFor($locale, 'nothing-changed-for-my-guests')
+        );
+
+        foreach ([
+            ['workspace', 'workspace.shell.nav.publication'],
+            ['workspace', 'workspace.publication.stepper.draft'],
+            ['workspace', 'workspace.publication.stepper.live'],
+            ['workspace', 'workspace.publication.diff.region'],
+            ['workspace', 'workspace.publication.readiness.region'],
+            ['workspace', 'workspace.publication.readiness.fix'],
+            ['workspace', 'workspace.publication.publishAction.checklistConfirmed'],
+            ['workspace', 'workspace.publication.status.publishButton'],
+            ['workspace', 'workspace.publication.preview.heading'],
+            ['workspace', 'workspace.publication.preview.linkButton'],
+            ['workspace', 'workspace.publication.schedule.region'],
+            ['workspace', 'workspace.publication.history.title'],
+            ['workspace', 'workspace.publication.history.restore'],
+            ['menu', 'menu.item.stock.out.short'],
+        ] as [$domain, $key]) {
+            $label = $translator->translate($domain, $key, $locale);
+            self::assertNotSame($key, $label, "Missing [{$locale}] control label for {$key}.");
+            self::assertStringContainsString('<strong>'.e($label).'</strong>', $article, $key);
+        }
+    }
+
+    /** @return list<array{0:string}> */
+    public static function supportedLocales(): array
+    {
+        return array_map(static fn (string $locale): array => [$locale], HelpLibrary::SUPPORTED);
+    }
+
+    /**
+     * Makale, YAYIN EKRANININ YAPMADIĞI şeyi vaat etmez.
+     *
+     * Üç yanlış söz bu makalede özellikle ucuzdur ve üçü de kaynakta
+     * ölçüldü:
+     *
+     *   - "Hemen yayınla" kataloğda DURUYOR ama hiçbir ekran onu çizmiyor
+     *     (`PublishActionConfigRegion` o kalıcı devre dışı kip seçimini
+     *     kaldırdı). Var olmayan bir düğmeyi aramak, tıkanmış sahibi ikinci
+     *     kez tıkatır.
+     *   - "Önbellek" burada yok: misafir menüsü yayınlanmış snapshot'ı
+     *     doğrudan okur (`ShowPublicMenuController`). Bir bekleme süresi
+     *     uydurmak, sahibi olmayan bir şeyi beklerken bırakırdı.
+     *   - Süre sözü verilmiyor: ne saniye, ne "anında". Ölçülmemiş bir hız
+     *     sözü, tutulmadığı ilk gün ürünün tamamına mal olur.
+     */
+    #[DataProvider('supportedLocales')]
+    public function test_the_publication_article_promises_only_what_the_screens_do(string $locale): void
+    {
+        $translator = app(TranslationPort::class);
+        $article = (string) file_get_contents(
+            HelpLibrary::pathFor($locale, 'nothing-changed-for-my-guests')
+        );
+
+        $unrendered = $translator->translate(
+            'workspace',
+            'workspace.publication.publishAction.mode.immediate',
+            $locale
+        );
+
+        self::assertStringNotContainsString(
+            '<strong>'.e($unrendered).'</strong>',
+            $article,
+            "HELP-PUBLICATION-01: [{$locale}] makalesi çizilmeyen bir denetimi ('{$unrendered}') düğme diye gösteriyor."
+        );
+
+        foreach (['Preview &amp; publish', 'Preview & publish'] as $inventedControl) {
+            self::assertStringNotContainsString($inventedControl, $article, $inventedControl);
+        }
+
+        self::assertDoesNotMatchRegularExpression(
+            '/(cache|caching|önbelle)/iu',
+            $article,
+            "HELP-PUBLICATION-01: [{$locale}] makalesi bir önbellek anlatıyor; misafir menüsünde önbellek YOK."
+        );
+
+        self::assertDoesNotMatchRegularExpression(
+            '/\b(seconds|saniye|instantly|instant|anında)\b/iu',
+            $article,
+            "HELP-PUBLICATION-01: [{$locale}] makalesi ölçülmemiş bir hız sözü veriyor."
+        );
     }
 }
