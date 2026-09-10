@@ -68,19 +68,49 @@ final class ApplyPublicationDecisionsCommandTest extends TestCase
     // --- PUBLISH-DECISION-02 ---------------------------------------------
 
     /**
-     * YALNIZ KAYNAK DİL. Türkçe kütük satırlarının metni yok ve çeviri kilidi
-     * kapalı (`docs/120` §7); bir Türkçe satırı yayına almak, 386 tane 404
-     * vaadinin ilkini vermek olurdu.
+     * YALNIZ SUNULAN DİLLER — ve her sayfa İKİ DİLDE DE karara bağlanmış.
+     *
+     * Bu kapı bir dönem "yalnız kaynak dil" diyordu ve gerekçesi ölçülebilir
+     * bir olguydu: Türkçe kütük satırlarının METNİ YOKTU, dolayısıyla bir
+     * Türkçe satırı açmak 386 tane 404 vaadinin ilkini vermek olurdu.
+     *
+     * Sahibin kararıyla (2026-09-10) on sekiz sayfanın Türkçe metni yazıldı
+     * ve kapı yön değiştirdi. Yerine geçen kural DAHA SIKI: bir dil yalnız
+     * `shipped_locales` içindeyse karara girebilir VE bir sayfa iki dilde de
+     * karara bağlanmışsa geçerlidir. Tek dilde açılmış bir sayfa, dil
+     * değiştiricide bir çıkmaz sokak ve hreflang'de tek yönlü bir iddia
+     * olurdu (`docs/119` §10.4).
      */
-    public function test_no_decision_names_a_locale_whose_content_is_locked(): void
+    public function test_every_decided_page_is_decided_in_every_shipped_language(): void
     {
-        $sourceLocale = (string) config('i18n.source_locale');
+        /** @var list<string> $shipped */
+        $shipped = array_values((array) config('i18n.shipped_locales'));
+
+        self::assertContains((string) config('i18n.source_locale'), $shipped);
+
+        $byPage = [];
 
         foreach (PublicationDecision::listFrom((array) config('content-publication-decisions')) as $decision) {
-            self::assertSame(
-                $sourceLocale,
+            self::assertContains(
                 $decision->locale,
-                "PUBLISH-DECISION-02: [{$decision->pageKey}] kaynak dil dışında bir satırı yayına alıyor."
+                $shipped,
+                "PUBLISH-DECISION-02: [{$decision->pageKey}] sunulmayan bir dilde yayına alınıyor."
+            );
+
+            $byPage[$decision->pageKey][] = $decision->locale;
+        }
+
+        self::assertNotSame([], $byPage, 'Kararlar dosyası boş — ölçüm dayanaksız.');
+
+        foreach ($byPage as $pageKey => $locales) {
+            sort($locales);
+            $expected = $shipped;
+            sort($expected);
+
+            self::assertSame(
+                $expected,
+                $locales,
+                "PUBLISH-DECISION-02: [{$pageKey}] her sunulan dilde karara bağlanmamış."
             );
         }
     }
@@ -91,6 +121,8 @@ final class ApplyPublicationDecisionsCommandTest extends TestCase
     {
         $named = $this->ledgerRow('urun.qr-menu', '/en/product/qr-menu/');
         $unnamed = $this->ledgerRow('urun.analitik', '/en/product/analytics/');
+        // Metni YAZILMIŞ ama bu ölçümün karar kümesinde ADI GEÇMEYEN satır:
+        // "adı geçmeyen açılmaz" kuralı ancak açılabilir bir satırla ölçülür.
         $turkish = $this->ledgerRow('urun.qr-menu', '/tr/urun/qr-menu/', 'tr');
 
         $this->decide([$this->decision('urun.qr-menu')]);
@@ -112,12 +144,25 @@ final class ApplyPublicationDecisionsCommandTest extends TestCase
     public function test_a_decision_naming_a_page_without_text_stops_the_command_and_publishes_nothing(): void
     {
         $writable = $this->ledgerRow('urun.qr-menu', '/en/product/qr-menu/');
-        $textless = $this->ledgerRow('urun.qr-menu', '/tr/urun/qr-menu/', 'tr');
+        /*
+            METNİ OLMAYAN DİL ARTIK TÜRKÇE DEĞİL.
+
+            Bu ölçüm bir dönem Türkçeyi kullanıyordu, çünkü Türkçe yuva
+            bilerek boştu. Sahibin kararıyla Türkçe metinler yazıldı ve
+            ölçüm o gün SESSİZCE ANLAMINI KAYBEDERDİ: komut başarılı olur,
+            test yeşil kalır ve "metni olmayan satır açılmaz" kuralı hiçbir
+            şeyi ölçmezdi.
+
+            Bu yüzden ölçü, metni GERÇEKTEN yazılmamış bir dile taşındı.
+            Almanca altyapıda tanınan bir dildir (`i18n.supported_locales`)
+            ama içerik kütüphanesinde tek satırı yoktur — yani kapının
+            ölçtüğü durumun bugünkü gerçek örneği.
+        */
+        $textless = $this->ledgerRow('urun.qr-menu', '/de/produkt/qr-menu/', 'de');
 
         $this->decide([
             $this->decision('urun.qr-menu'),
-            // Türkçe yuva bilerek boş (`docs/118` E4): metni yok.
-            $this->decision('urun.qr-menu', 'tr'),
+            $this->decision('urun.qr-menu', 'de'),
         ]);
 
         $this->artisan('site:apply-publication-decisions')->assertFailed();
