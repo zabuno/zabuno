@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Public;
 
 use App\Application\Localization\Port\TranslationPort;
+use App\Domain\QrDestination\QrPrintSheet;
 use App\Support\Localization\HelpLibrary;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -425,6 +426,149 @@ final class HelpContentTest extends TestCase
             '/\b(seconds|saniye|instantly|instant|anında)\b/iu',
             $article,
             "HELP-PUBLICATION-01: [{$locale}] makalesi ölçülmemiş bir hız sözü veriyor."
+        );
+    }
+
+    // --- HELP-TABLE-CARDS-01 -----------------------------------------------
+
+    /**
+     * DÖRDÜNCÜ MAKALE de oturum İSTEMEZ ve kendi dilinde açılır.
+     *
+     * Bu makalenin okuru elinde bir mukavva ve kırk masayla oturmuştur; kart
+     * basmak bir restoranın ömründe bir ya da iki kez yaptığı iştir ve tam da
+     * bu yüzden hiç kimse ekranı ezberlemez. Yardımın oturum sorması, yılda
+     * bir kez açılan bir kapıyı kilitli bulmak olurdu.
+     */
+    public function test_the_table_card_article_opens_without_an_account_in_the_readers_language(): void
+    {
+        foreach ([
+            ['en', 'tr', 'How do I print cards for my tables?', 'Help'],
+            ['tr', 'en', 'Masalarım için kart nasıl bastırırım?', 'Yardım'],
+        ] as [$choice, $browser, $title, $navigation]) {
+            $this->withUnencryptedCookie('zbn_language', $choice)
+                ->withHeader('Accept-Language', $browser)
+                ->get('/help/table-cards-and-areas')
+                ->assertOk()
+                ->assertSee('<html lang="'.$choice.'"', false)
+                ->assertSee($title)
+                ->assertSee('>'.$navigation.'<', false);
+        }
+    }
+
+    /**
+     * Makale BULUNABİLİR olmalı, HER DİLDE.
+     *
+     * Bağlantı giriş makalesinin KAREKOD bölümünde duruyor, yalnız en alttaki
+     * listede değil: oradaki üç satır kırk masalı bir salona yetmez ve
+     * yetmediğini fark eden okur, aradığı yeri o anda ister.
+     */
+    public function test_the_entry_article_points_at_the_table_card_article_in_every_language(): void
+    {
+        foreach (HelpLibrary::SUPPORTED as $locale) {
+            self::assertStringContainsString(
+                'href="/help/table-cards-and-areas"',
+                (string) file_get_contents(HelpLibrary::pathFor($locale)),
+                "HELP-TABLE-CARDS-01: [{$locale}] giriş makalesi masa kartı makalesine bağlanmıyor."
+            );
+        }
+    }
+
+    /**
+     * Makale, BASKI EKRANINDA GERÇEKTEN ÇİZİLEN denetimleri adıyla anar.
+     *
+     * Adlar kataloğun kendisinden okunuyor. Bu makale için kapı özellikle
+     * ucuz değil: ekran kısa süre önce bir kod LİSTESİNDEN bir BASKI
+     * SİPARİŞİNE dönüştü (`QrCodesPage`) ve makale eski ekranın diliyle
+     * yazılsaydı okuyucu "Yayın" ekranında olmayan bir sihirbaz arardı.
+     */
+    #[DataProvider('supportedLocales')]
+    public function test_the_table_card_article_names_the_actual_print_controls(string $locale): void
+    {
+        $translator = app(TranslationPort::class);
+        $article = (string) file_get_contents(
+            HelpLibrary::pathFor($locale, 'table-cards-and-areas')
+        );
+
+        foreach ([
+            ['workspace', 'workspace.shell.nav.qrCodes'],
+            ['workspace', 'workspace.shell.nav.publication'],
+            ['workspace', 'workspace.publication.qrScreen.step1'],
+            ['workspace', 'workspace.publication.qrScreen.preset.table'],
+            ['workspace', 'workspace.publication.qrScreen.preset.large'],
+            ['workspace', 'workspace.publication.qrScreen.preset.wall'],
+            ['workspace', 'workspace.publication.qrScreen.preset.window'],
+            ['workspace', 'workspace.publication.qrScreen.custom'],
+            ['workspace', 'workspace.publication.qrScreen.custom.format'],
+            ['workspace', 'workspace.publication.qrScreen.step2'],
+            ['workspace', 'workspace.publication.qrScreen.scope.all'],
+            ['workspace', 'workspace.publication.qrScreen.scope.area'],
+            ['workspace', 'workspace.publication.qrScreen.scope.one'],
+            ['workspace', 'workspace.publication.qrScreen.addTables'],
+            ['workspace', 'workspace.publication.qrExport.bulkWizard.tableCount'],
+            ['workspace', 'workspace.publication.qrExport.bulkWizard.advanced'],
+            ['workspace', 'workspace.publication.qrExport.bulkWizard.areaSectionCount'],
+            ['workspace', 'workspace.publication.qrExport.bulkWizard.seatCountPerTable'],
+            ['workspace', 'workspace.publication.qrExport.bulkWizard.namingPrefix'],
+            ['workspace', 'workspace.publication.qrExport.bulkWizard.namingSequenceStart'],
+            ['workspace', 'workspace.publication.qrExport.bulkWizard.namingRange'],
+            ['workspace', 'workspace.publication.qrExport.bulkWizard.createButton'],
+            ['workspace', 'workspace.publication.qrExport.bulkWizard.planRestricted.action'],
+            ['workspace', 'workspace.publication.qrScreen.step3'],
+            ['workspace', 'workspace.publication.qrScreen.cardTheme.plain'],
+            ['workspace', 'workspace.publication.qrScreen.cardTheme.framed'],
+            ['workspace', 'workspace.publication.qrScreen.cardTheme.branded'],
+            ['workspace', 'workspace.publication.qrScreen.cardTheme.dark'],
+            ['workspace', 'workspace.publication.qrScreen.cardTheme.signage'],
+            ['workspace', 'workspace.publication.qrScreen.headline.label'],
+            ['workspace', 'workspace.publication.qrScreen.print'],
+            ['workspace', 'workspace.publication.qrScreen.downloadShort'],
+            ['workspace', 'workspace.publication.qrScreen.sheet'],
+            ['workspace', 'workspace.publication.qrScreen.advanced'],
+            ['workspace', 'workspace.publication.diningAreas.heading'],
+            ['workspace', 'workspace.publication.diningAreas.save'],
+            ['workspace', 'workspace.publication.qrDestination.disableButton'],
+            ['workspace', 'workspace.publication.qrDestination.enableButton'],
+            ['workspace', 'workspace.publication.qrDestination.move.start'],
+            ['workspace', 'workspace.publication.qrExport.raw.heading'],
+        ] as [$domain, $key]) {
+            $label = $translator->translate($domain, $key, $locale);
+            self::assertNotSame($key, $label, "Missing [{$locale}] control label for {$key}.");
+            self::assertStringContainsString('<strong>'.e($label).'</strong>', $article, $key);
+        }
+    }
+
+    /**
+     * Makale, BASKI EKRANININ YAPMADIĞI şeyi vaat etmez.
+     *
+     * İki sınır sayısı ürünün kendisinde sahiplenilir (`QrPrintSheet`): bir
+     * sayfaya sığan kart ve tek istekte basılabilecek kart. Makaleye elle
+     * yazılmış bir sayı, sınır bir gün değiştiğinde sessizce yanlış olur ve
+     * sahip eksik bir arşivi tam sanıp matbaaya gönderir — bu yüzden sayılar
+     * kaynaktan okunuyor.
+     *
+     * Süre sözü yok: ne saniye, ne "anında". Basılacak kart sayısı arttıkça
+     * sunucunun işi de artar ve ölçülmemiş bir hız sözü, tutulmadığı ilk gün
+     * ürünün tamamına mal olur.
+     */
+    #[DataProvider('supportedLocales')]
+    public function test_the_table_card_article_promises_only_what_the_screens_do(string $locale): void
+    {
+        $article = (string) file_get_contents(
+            HelpLibrary::pathFor($locale, 'table-cards-and-areas')
+        );
+
+        foreach ([QrPrintSheet::CARDS_PER_PAGE, QrPrintSheet::CARDS_PER_REQUEST] as $limit) {
+            self::assertStringContainsString(
+                (string) $limit,
+                $article,
+                "HELP-TABLE-CARDS-01: [{$locale}] makalesi ürünün baskı sınırını ({$limit}) söylemiyor."
+            );
+        }
+
+        self::assertDoesNotMatchRegularExpression(
+            '/\b(seconds|saniye|instantly|instant|anında)\b/iu',
+            $article,
+            "HELP-TABLE-CARDS-01: [{$locale}] makalesi ölçülmemiş bir hız sözü veriyor."
         );
     }
 }
