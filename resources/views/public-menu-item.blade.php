@@ -159,8 +159,15 @@
     @include('partials.guest-closed-notice', ['closedNotice' => $closedNotice ?? null])
 
     {{-- Geri dönüş EN ÜSTTE de var: misafir yanlış ürüne girdiyse sayfanın
-         sonuna kadar kaydırmak zorunda kalmamalı. --}}
-    <a class="qr-item-back" href="{{ $menuPath }}">{{ $brandName !== '' ? $brandName : $guestText['subtitle'] }}</a>
+         sonuna kadar kaydırmak zorunda kalmamalı.
+
+         DÖNÜŞ YOLU KANONİK YOL DEĞİLDİR (GUEST-B2). Masadan gelen misafir
+         masasına döner, aramadan gelen misafir menünün kalıcı adresine.
+         Kararı sunucu verir ve buraya BİTMİŞ hâlde basar; şablon "acaba
+         masalı mıyız" diye sormaz. `$menuPath` yerinde durur ve kanonik
+         üstverinin sahibi olarak kalır. --}}
+    @php($returnPath = $returnPath ?? $menuPath)
+    <a class="qr-item-back" href="{{ $returnPath }}">{{ $brandName !== '' ? $brandName : $guestText['subtitle'] }}</a>
 
     @if ($categoryName !== '')
         <p class="qr-item-category" @isset($contentLocale) lang="{{ $contentLocale }}" @endisset>{{ $categoryName }}</p>
@@ -213,7 +220,7 @@
              §7.2.2'nin kararı geçerli olur: 320'de adet denetimi ile eylem
              düğmesi AYNI satırı paylaşmaz, çünkü sabitler eylem metnine
              153 px bırakıp onu kesiyor. --}}
-        <a class="qr-item-forward" href="{{ $menuPath }}">{{ $guestText['categoriesLabel'] }}</a>
+        <a class="qr-item-forward" href="{{ $returnPath }}">{{ $guestText['categoriesLabel'] }}</a>
     </div>
 </main>
 </x-zabuno>

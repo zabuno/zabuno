@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\QrDestination;
 
 use App\Domain\Entitlement\Entitlement;
+use App\Domain\Publication\MenuPublicAddress;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
@@ -602,6 +603,152 @@ final class GuestCartTest extends TestCase
         );
     }
 
+    // --- GUEST-B2-TABLE-RETURN-09 -----------------------------------------
+
+    public function test_a_detour_into_a_dish_page_keeps_the_table_and_brings_the_guest_back_to_it(): void
+    {
+        /*
+            MASADAN ÜRÜNE, ÜRÜNDEN MASAYA (GUEST-B2, denetim af51bbe1).
+
+            Ürünün KANONİK adresi masasızdır ve öyle kalmalı: paylaşılan bir
+            bağlantı, arama sonucu ve sitemap aynı adresi görür. Ama masadaki
+            misafir o adrese MASADAN geliyor ve kanonik adresin dönüş
+            bağlantısı onu masasız menüye bırakıyordu — sepet düğmesi orada
+            hiç çizilmez, çünkü o sayfanın bir masası yoktur. Misafirin
+            topladığı sepet cihazında duruyordu ama EKRANDA yoktu; bu, sepeti
+            kaybetmekle aynı şeydir.
+
+            Çözüm bir yönlendirme DEĞİL, taşınan bir BAĞLAMDIR: masadan
+            kurulan ürün bağlantısı belirteci açıkça yanında taşır, ürün
+            sayfası onu doğrular ve dönüş yolunu masaya çevirir.
+        */
+        $scene = $this->scene('masa-donus', null, 'Elde çekilmiş taze kahve.');
+
+        $menuHtml = (string) $this->withHeaders(['Accept' => 'text/html'])
+            ->get('/menu/'.$scene['token'])
+            ->getContent();
+
+        $itemPath = '/restoran/'.$scene['slug'].'/menu/'.$scene['menuKey'].'/urun/'.$scene['menuItemId'].'-kahve';
+
+        self::assertStringContainsString(
+            $itemPath.'?qr='.$scene['token'],
+            $menuHtml,
+            'GUEST-B2-TABLE-RETURN-09: masadan kurulan ürün bağlantısı masa bağlamını yanında taşımalı.'
+        );
+
+        $itemResponse = $this->withHeaders(['Accept' => 'text/html'])->get($itemPath.'?qr='.$scene['token']);
+        $itemResponse->assertStatus(200);
+        $itemHtml = (string) $itemResponse->getContent();
+
+        self::assertStringContainsString(
+            'href="/menu/'.$scene['token'].'"',
+            $itemHtml,
+            'GUEST-B2-TABLE-RETURN-09: doğrulanmış bir masa bağlamında dönüş yolu masanın menüsü olmalı.'
+        );
+
+        // KANONİK ÜSTVERİ MASASIZ KALIR: belirteç ne kanonik adrese, ne
+        // og:url'e, ne de yapılandırılmış veriye sızar.
+        self::assertStringContainsString(
+            'rel="canonical" href="http://localhost:8000'.$itemPath.'"',
+            $itemHtml,
+            'GUEST-B2-TABLE-RETURN-09: kanonik adres belirteç taşımamalı.'
+        );
+        self::assertStringNotContainsString(
+            $scene['token'],
+            (string) strstr($itemHtml, '</head>', true),
+            'GUEST-B2-TABLE-RETURN-09: belirteç başlığa (kanonik, og:url, yapılandırılmış veri) sızmamalı.'
+        );
+
+        // ÜRÜN SAYFASI SİPARİŞ/PUAN YÜZEYİ AÇMAZ: bağlam yalnız dönüş
+        // yolunu seçer, yetki vermez.
+        self::assertStringNotContainsString('data-cart-open', $itemHtml);
+        self::assertStringNotContainsString('/orders', $itemHtml);
+        self::assertStringNotContainsString('/ratings', $itemHtml);
+
+        // SEPETİN ANAHTARI DEĞİŞMEZ. İki yüzey aynı `data-menu-key`i basar;
+        // depo anahtarı ondan türetildiği için misafir döndüğünde sepeti
+        // aynı yerde bulur.
+        self::assertStringContainsString('data-menu-key="'.$scene['menuKey'].'"', $menuHtml);
+        self::assertStringContainsString('data-menu-key="'.$scene['menuKey'].'"', $itemHtml);
+
+        $backHtml = (string) $this->withHeaders(['Accept' => 'text/html'])
+            ->get('/menu/'.$scene['token'])
+            ->getContent();
+
+        self::assertStringContainsString(
+            'data-cart-open',
+            $backHtml,
+            'GUEST-B2-TABLE-RETURN-09: masaya dönen misafir sepetini yeniden görmeli.'
+        );
+        self::assertStringContainsString(
+            "'zabuno.cart.'",
+            $backHtml,
+            'GUEST-B2-TABLE-RETURN-09: sepetin depo anahtarı bu pakette değişmedi.'
+        );
+    }
+
+    public function test_a_table_context_that_is_not_this_table_is_refused_and_the_canonical_return_stands(): void
+    {
+        /*
+            BAĞLAM BİR YETKİDİR, BİR PARAMETRE DEĞİL.
+
+            Sorgudaki belirteç misafirin telefonundan gelir ve orada her şey
+            yazılabilir. Üç hâl de AYNI güvenli cevaba düşer — kanonik menüye
+            dönüş — ve hiçbiri sipariş/puan yüzeyi açmaz:
+
+            1. BİÇİMSİZ belirteç: hiç var olmamış bir dize.
+            2. YABANCI belirteç: başka bir kiracının gerçek, aktif masası.
+            3. KAPATILMIŞ kod: bir zamanlar bu masaydı, artık değil.
+
+            İkincisi bu üçünün en önemlisidir: kabul edilseydi, bir
+            restoranın menü sayfasındaki bir ürün, başka bir restoranın
+            masasına dönüş bağlantısı basardı.
+        */
+        $scene = $this->scene('masa-sahibi', null, 'Elde çekilmiş taze kahve.');
+        $foreign = $this->scene('baska-restoran', null, 'Elde çekilmiş taze kahve.');
+
+        $itemPath = '/restoran/'.$scene['slug'].'/menu/'.$scene['menuKey'].'/urun/'.$scene['menuItemId'].'-kahve';
+        $canonicalReturn = 'href="/restoran/'.$scene['slug'].'/menu/'.$scene['menuKey'].'"';
+
+        foreach ([
+            'biçimsiz' => 'kisa-ve-bozuk',
+            'yabancı' => $foreign['token'],
+        ] as $why => $candidate) {
+            $response = $this->withHeaders(['Accept' => 'text/html'])->get($itemPath.'?qr='.$candidate);
+            $response->assertStatus(200);
+            $html = (string) $response->getContent();
+
+            self::assertStringContainsString(
+                $canonicalReturn,
+                $html,
+                "GUEST-B2-TABLE-RETURN-09: {$why} bağlam güvenli kanonik dönüşe düşmeli."
+            );
+            self::assertStringNotContainsString(
+                '/menu/'.$candidate,
+                $html,
+                "GUEST-B2-TABLE-RETURN-09: {$why} bağlam hiçbir dönüş yolu kazandırmamalı."
+            );
+            self::assertStringNotContainsString('data-cart-open', $html);
+            self::assertStringNotContainsString('/orders', $html);
+            self::assertStringNotContainsString('/ratings', $html);
+        }
+
+        // 3. KAPATILMIŞ KOD — masadaki kâğıt sökülmüş; dönüş yolu da onunla
+        // birlikte kapanır.
+        DB::table('qr_codes')->where('id', $scene['qrCodeId'])->update(['state' => 'disabled']);
+
+        $html = (string) $this->withHeaders(['Accept' => 'text/html'])
+            ->get($itemPath.'?qr='.$scene['token'])
+            ->getContent();
+
+        self::assertStringContainsString(
+            $canonicalReturn,
+            $html,
+            'GUEST-B2-TABLE-RETURN-09: kapatılmış bir kod güvenli kanonik dönüşe düşmeli.'
+        );
+        self::assertStringNotContainsString('/menu/'.$scene['token'], $html);
+    }
+
     /**
      * Sipariş verebilen bir masanın en küçük gerçek sahnesi.
      *
@@ -611,9 +758,14 @@ final class GuestCartTest extends TestCase
      * bulandırırdı.
      *
      * @param  list<Entitlement>|null  $entitlements
-     * @return array{workspaceId:int, locationId:int, qrCodeId:int, token:string}
+     * @param  string  $description  Ürünün ANLATACAK ŞEYİ — boşsa menü sayfası
+     *                               o ürüne bağlantı KURMAZ (`ShowPublicMenuItemController::
+     *                               hasSomethingToSay`). Masadan ürün sayfasına giden yolu
+     *                               sınayan senaryolar bunu doldurur; sepet senaryoları
+     *                               boş bırakır ve sahne bugüne kadarki hâlinde kalır.
+     * @return array{workspaceId:int, locationId:int, qrCodeId:int, token:string, menuId:int, menuKey:string, menuItemId:int, slug:string}
      */
-    private function scene(string $seed, ?array $entitlements = null): array
+    private function scene(string $seed, ?array $entitlements = null, string $description = ''): array
     {
         $owner = User::factory()->create(['email_verified_at' => now()]);
 
@@ -650,8 +802,10 @@ final class GuestCartTest extends TestCase
             'updated_at' => now(),
         ]);
 
+        $menuKey = Str::lower(Str::random(10));
+
         $menuId = (int) DB::table('menus')->insertGetId([
-            'public_key' => Str::lower(Str::random(10)),
+            'public_key' => $menuKey,
             'workspace_id' => $workspaceId,
             'location_id' => $locationId,
             'name' => 'Ana Menü',
@@ -699,13 +853,14 @@ final class GuestCartTest extends TestCase
             'snapshot' => json_encode([
                 'categories' => [[
                     'name' => 'Sıcak İçecek',
-                    'menuItems' => [[
+                    'menuItems' => [array_filter([
                         'menuItemId' => $menuItemId,
                         'productName' => 'Kahve',
+                        'description' => $description,
                         'priceMinorAmount' => 4250,
                         'currencyCode' => 'TRY',
                         'allergens' => [],
-                    ]],
+                    ], static fn (mixed $value): bool => $value !== '')],
                 ]],
             ]),
             'entitlements' => json_encode(array_map(
@@ -775,6 +930,13 @@ final class GuestCartTest extends TestCase
             'locationId' => $locationId,
             'qrCodeId' => $qrCodeId,
             'token' => $token,
+            'menuId' => $menuId,
+            'menuKey' => $menuKey,
+            'menuItemId' => $menuItemId,
+            // Adres metni markanın ve şubenin adından kurulur
+            // (`EloquentPublicMenuAddress::displayNameOf`); testin onu
+            // elle yazması, bir gün sessizce ayrışan ikinci bir kural olurdu.
+            'slug' => MenuPublicAddress::slugFor('Marka '.$seed.' Şube '.$seed),
         ];
     }
 }

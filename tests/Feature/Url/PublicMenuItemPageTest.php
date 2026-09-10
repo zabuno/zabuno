@@ -115,6 +115,35 @@ final class PublicMenuItemPageTest extends TestCase
         self::assertStringContainsString("id=\"item-{$id}\"", $html);
     }
 
+    public function test_an_untrusted_table_context_changes_nothing_about_the_public_address(): void
+    {
+        /*
+            GUEST-B2 — MASA BAĞLAMI KANONİK ADRESE DOKUNMAZ.
+
+            Ürün sayfasına masadan gelen misafir bir belirteç taşıyabilir
+            (bkz. `GuestCartTest`), ama bu adres ARAMADAN da açılır ve o
+            zaman sorgudaki değer kimsenin masası değildir. Bu sayfanın
+            arama motoruna ilan ettiği adres her iki hâlde de AYNIDIR:
+            doğrulanmamış bir sorgu ne kanonik adrese, ne dönüş bağlantısına
+            karışır. Aksi hâlde tek bir bağlantı paylaşımı, sitemap'in
+            dışında sonsuz sayıda kopya adres üretirdi.
+        */
+        ['key' => $key, 'slug' => $slug, 'richId' => $id] = $this->publishedMenu();
+
+        // Biçimi doğru ama hiç var olmamış bir belirteç: en kandırıcı hâl.
+        $response = $this->get("/restoran/{$slug}/menu/{$key}/urun/{$id}-adana-kebap?qr=".str_repeat('z', 43));
+
+        $response->assertStatus(200);
+        $html = (string) $response->getContent();
+
+        self::assertStringContainsString(
+            "rel=\"canonical\" href=\"http://localhost:8000/restoran/{$slug}/menu/{$key}/urun/{$id}-adana-kebap\"",
+            $html,
+        );
+        self::assertStringNotContainsString('zzzz', $html, 'Doğrulanmamış bağlam sayfaya HİÇ basılmaz.');
+        self::assertStringContainsString("href=\"/restoran/{$slug}/menu/{$key}\"", $html);
+    }
+
     /** @return array{key: string, slug: string, richId: int, thinId: int} */
     private function publishedMenu(): array
     {
