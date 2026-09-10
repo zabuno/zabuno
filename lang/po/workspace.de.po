@@ -7088,6 +7088,22 @@ msgstr ""
 msgid "workspace.team.invite.unavailable"
 msgstr ""
 
+#: workspace:workspace.team.members.column.actions
+msgid "workspace.team.members.column.actions"
+msgstr ""
+
+#: workspace:workspace.team.members.column.email
+msgid "workspace.team.members.column.email"
+msgstr ""
+
+#: workspace:workspace.team.members.column.name
+msgid "workspace.team.members.column.name"
+msgstr ""
+
+#: workspace:workspace.team.members.column.role
+msgid "workspace.team.members.column.role"
+msgstr ""
+
 #: workspace:workspace.team.members.empty
 msgid "workspace.team.members.empty"
 msgstr ""

@@ -321,8 +321,22 @@ const FROZEN_MODULE_FILENAMES = [
 // hiçbirini okuyan kod mobil pakete inmez.
 // ÇEVİRİ YAPILDI: altı satırın tamamı `workspace.tr.po` içinde dolu ve
 // `workspace.tr.json` projeksiyonu yeniden üretildi.
+// TEAM-DESKTOP-01 (`docs/153` §6): 1831 → 1835. DÖRT anahtar ve yeni bir
+// ürün yeteneği değil — masaüstü üye TABLOSUNUN sütun başlıkları: "Name",
+// "Email", "Role", "Actions". Telefonda karşılıkları YOKTUR çünkü orada
+// sütun yoktur: dokunmatik liste ad, e-posta ve rolü satır içinde okur ve
+// hangisinin ne olduğu yazının kendisinden anlaşılır. Masada oturan kişinin
+// sorusu ise neredeyse her zaman bir sütun sorusudur ("kim yönetici?") ve o
+// soru ancak başlığı GÖRÜNEN bir sütunla cevaplanır.
+//
+// Üyenin kendi cümlelerinden HİÇBİRİ yeniden yazılmadı: "Çıkar", "Sahipliği
+// devret", 403/404 cevapları, rol adları ve yükleme/hata/boş metinleri iki
+// yüzeyde de aynı anahtarlardan gelir. Aynı işi iki yüzeyde iki farklı
+// cümleyle anlatmak, sahibin onları iki ayrı şey sanmasına yol açardı.
+// ÇEVİRİ YAPILDI: dört satırın tamamı `workspace.tr.po` içinde dolu ve
+// `workspace.tr.json` projeksiyonu yeniden üretildi.
 const FROZEN_LEGACY_NORMALIZED_SHA256 =
-    '5a65cacf154ab590577010657c5d38e09d6cd80239d311c27d2cfa9790ca6cb9';
+    'cb5ed37f051f3dbf723bc094dc7da58123a8758e22097d6161a24f4dc37bcab0';
 
 function normalizedHash(entries: Record<string, string>): string {
     const sortedKeys = Object.keys(entries).sort();
@@ -330,7 +344,7 @@ function normalizedHash(entries: Record<string, string>): string {
     return createHash('sha256').update(normalized, 'utf8').digest('hex');
 }
 
-const FROZEN_LEGACY_KEY_COUNT = 1831;
+const FROZEN_LEGACY_KEY_COUNT = 1835;
 
 describe('workspace i18n modular catalog contract', () => {
     // Başlıktaki SAYI kaldırıldı ve bir daha yazılmayacak: liste zaten

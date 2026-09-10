@@ -7088,6 +7088,22 @@ msgstr "Davet oluşturuldu."
 msgid "workspace.team.invite.unavailable"
 msgstr "Ekip arkadaşı davet etme henüz bağlı değil."
 
+#: workspace:workspace.team.members.column.actions
+msgid "workspace.team.members.column.actions"
+msgstr "İşlemler"
+
+#: workspace:workspace.team.members.column.email
+msgid "workspace.team.members.column.email"
+msgstr "E-posta"
+
+#: workspace:workspace.team.members.column.name
+msgid "workspace.team.members.column.name"
+msgstr "Ad"
+
+#: workspace:workspace.team.members.column.role
+msgid "workspace.team.members.column.role"
+msgstr "Rol"
+
 #: workspace:workspace.team.members.empty
 msgid "workspace.team.members.empty"
 msgstr "Bu çalışma alanında henüz üye yok."

@@ -36,6 +36,10 @@ const MediaScreenDesktop = lazy(async () => ({
     default: (await import('./MediaScreenDesktop')).MediaScreenDesktop,
 }));
 
+const TeamScreenDesktop = lazy(async () => ({
+    default: (await import('./TeamScreenDesktop')).TeamScreenDesktop,
+}));
+
 export const desktopPages: WorkspacePageOverrideMap = {
     /*
         SİPARİŞ KUYRUĞU — masaüstüne taşınan İLK ekran (`docs/153` §6).
@@ -70,6 +74,26 @@ export const desktopPages: WorkspacePageOverrideMap = {
     media: (ctx) => (
         <Suspense fallback={null}>
             <MediaScreenDesktop ctx={ctx} />
+        </Suspense>
+    ),
+
+    /*
+        EKİP — masaüstüne taşınan ÜÇÜNCÜ ekran (`docs/153` §6).
+
+        Ayrışan iş yine bir okuma işidir ama bu kez sorunun ŞEKLİ farklı:
+        telefonda ekibe bakan kişi kişileri tek tek okur, masasında oturan
+        kişi neredeyse her zaman bir SÜTUN sorar — "kim yönetici?", "bu
+        adres kimin?". O soru ancak hizalanmış, başlığı görünen sütunlarla
+        cevaplanır. Ayrışan tek şey ÜYE BÖLGESİNİN çizimidir; davet formu,
+        bekleyen davetler, rol rehberi ve bütün mutasyonlar iki yüzeyde de
+        aynı koddur.
+
+        Toplu rol değişimi burada YOK ve bilerek: bu paket çok sütunlu
+        okumayı getirir, toplu işlem ayrı bir paketin işidir.
+    */
+    team: (ctx) => (
+        <Suspense fallback={null}>
+            <TeamScreenDesktop ctx={ctx} />
         </Suspense>
     ),
 };

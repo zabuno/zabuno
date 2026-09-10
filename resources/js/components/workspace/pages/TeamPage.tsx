@@ -1,4 +1,12 @@
-import { useCallback, useEffect, useId, useRef, useState } from 'react';
+import {
+    useCallback,
+    useEffect,
+    useId,
+    useRef,
+    useState,
+    type ComponentProps,
+    type ReactNode,
+} from 'react';
 import { Button, Label, TextInput } from 'flowbite-react';
 import { t } from '../../../i18n/workspace';
 import { bootstrapCsrfCookie, buildAuthRequestInit } from '../../../lib/csrfHeader';
@@ -22,7 +30,32 @@ import {
     type TeamInvitationResendOutcome,
 } from './team/TeamInvitationList';
 
-type TeamPageProps = {
+/**
+ * ÜYE BÖLGESİNİN CİHAZA ÖZGÜ YÜZEYİ — `docs/153` §4.
+ *
+ * Yüzey, paylaşılan sayfanın ZATEN KURDUĞU özelliklerin kendisidir:
+ * sunucudan gelen durum ve üyeler, gerçek mutasyon geri çağrıları, izin
+ * kümeleri ve cümleler. Çizici bunları alır, kendi çizimini yapar — ama
+ * kendi listesini KURAMAZ. Kursaydı masaüstü tablosu ile telefon listesi
+ * aynı çalışma alanı için farklı kişiler gösterebilirdi ve fark ancak
+ * sahibin "bir ekran o kişiyi listeliyor, öteki listelemiyor" dediği gün
+ * görünürdü.
+ *
+ * Tip, dokunmatik listenin özelliklerinden TÜRETİLİR: iki yüzey aynı
+ * sözleşmeyi taşır ve sözleşme tek yerde yaşar. İkinci bir elle yazılmış
+ * kopya olsaydı, listeye yarın eklenen bir özellik masaüstünde sessizce
+ * eksik kalırdı.
+ */
+export type TeamMemberSurface = ComponentProps<typeof TeamMemberList>;
+
+/**
+ * `MediaLibrarySurfaceRenderer` ile aynı biçim ve aynı sebep: BAYRAK DEĞİL
+ * ÇİZİCİ geçilir. `deviceClass === 'desktop'` diye bir dal, masaüstü
+ * tablosunun kodunu telefon paketine yine indirirdi (`docs/153` §3).
+ */
+export type TeamMemberSurfaceRenderer = (surface: TeamMemberSurface) => ReactNode;
+
+export type TeamPageProps = {
     workspaceId?: number;
     /**
      * Oturumdaki kişinin BU çalışma alanındaki rolü — `GET /workspace-context`
@@ -41,6 +74,16 @@ type TeamPageProps = {
      * uymuyor" demiştir ve tanınmayan bir role sahiplik yetkisi verilemez.
      */
     viewerRole?: string | null;
+    /**
+     * ÜYE BÖLGESİNİN ÇİZİCİSİ — verilmezse bugünkü dokunmatik liste çizilir.
+     *
+     * `undefined` gelmesi bir eksiklik değil, TELEFONUN NORMAL HÂLİDİR:
+     * mobil giriş noktası bu çiziciyi hiç vermez, masaüstü tablosunun kodu o
+     * pakete hiç inmez ve taban 320 piksellik liste olduğu gibi kalır
+     * (TOUCH-FIRST-INTERFACE §1). Paylaşılan sayfa masaüstü bileşenini
+     * ADIYLA ANMAZ (`docs/153` §5).
+     */
+    renderMembers?: TeamMemberSurfaceRenderer;
 };
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -131,7 +174,36 @@ const ROLE_PILL_BASE = [
     'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus',
 ].join(' ');
 
-export function TeamPage({ workspaceId, viewerRole }: TeamPageProps) {
+/**
+ * ÇİZİCİ BİR BİLEŞEN SINIRININ ARDINDA ÇAĞRILIR.
+ *
+ * Sayfanın mutasyon geri çağrıları içeride `ref.current` okur (kaç isteğin
+ * geçtiğini ve hangi satırların kesin cevap aldığını orada tutar). Çizici
+ * ise sayfa açısından BİLİNMEYEN bir fonksiyondur; doğrudan çağrılsaydı
+ * derleyici, o geri çağrıların çizim sırasında çalıştığını varsaymak
+ * zorunda kalırdı (`react-hooks/refs`) — ve varsayım haksız değil, bir
+ * çizici gerçekten öyle yazılabilirdi.
+ *
+ * Sınır bunu YAPISAL olarak imkânsız kılar: yüzey buraya bir ÖZELLİK
+ * olarak iner, tıpkı dokunmatik listeye indiği gibi, ve çağrı çizim
+ * sırasında değil bu bileşenin kendi çiziminde olur.
+ */
+function TeamMemberRegion({
+    render,
+    surface,
+}: {
+    render: TeamMemberSurfaceRenderer;
+    surface: TeamMemberSurface;
+}) {
+    return <>{render(surface)}</>;
+}
+
+/* Çizici yoksa (telefon paketi) bugünkü dokunmatik liste çizilir. */
+const renderTeamMemberList: TeamMemberSurfaceRenderer = (surface) => (
+    <TeamMemberList {...surface} />
+);
+
+export function TeamPage({ workspaceId, viewerRole, renderMembers }: TeamPageProps) {
     const emailId = useId();
     const roleId = useId();
     /*
@@ -614,6 +686,60 @@ export function TeamPage({ workspaceId, viewerRole }: TeamPageProps) {
     */
     const viewerIsOwner = viewerRole === undefined || viewerRole?.toLowerCase() === 'owner';
 
+    /*
+        ÜYE BÖLGESİNİN YÜZEYİ — TEK yerde kurulur, İKİ yüzeye verilir.
+
+        Dokunmatik liste bu nesneyi doğrudan alır; masaüstü tablosu da aynı
+        nesneyi alır. Sayfa hangisinin çizildiğini bilmez ve bilmemelidir:
+        cihaz kararı sunucudadır, burada yalnız bir çizici vardır ya da
+        yoktur (`docs/153` §3-4).
+    */
+    const memberSurface: TeamMemberSurface = {
+        status: membersStatus,
+        members,
+        label: t('workspace.team.members.region'),
+        loadingText: t('workspace.team.members.loading'),
+        errorText: t('workspace.team.members.error'),
+        emptyText: t('workspace.team.members.empty'),
+        /*
+            Geri çağrılar TAZE bir sarmalayıcıyla geçilir (`MediaPage`
+            `onDelete` ile aynı biçim). Sayfanın kendi `useCallback`
+            fonksiyonları içeride `ref.current` okur; çizici bilinmeyen bir
+            fonksiyon olduğu için derleyici, onları çizim sırasında
+            çağrılıyor sayar. Sarmalayıcı çağrıyı olay anına taşır ve iş
+            yolu değişmez: giden istek yine sayfanın tek mutasyon yoludur.
+        */
+        onRemoveMember: (memberId) => removeMember(memberId),
+        onChangeRole: (memberId, nextRole) => changeMemberRole(memberId, nextRole),
+        assignableRoles: INVITABLE_ROLES.map((option) => ({
+            value: option.value,
+            label: t(option.labelKey),
+        })),
+        roleLabelFor: (name) => t('workspace.team.members.role.label', { name }),
+        roleErrorText: t('workspace.team.members.role.error'),
+        removeButtonText: t('workspace.team.members.remove.button'),
+        removeConfirmText: t('workspace.team.members.remove.confirm'),
+        removeCancelText: t('workspace.team.members.remove.cancel'),
+        removeBusyText: t('workspace.team.members.remove.busy'),
+        removeErrorText: t('workspace.team.members.remove.error'),
+        removeForbiddenText: t('workspace.team.members.remove.forbidden'),
+        removeMissingText: t('workspace.team.members.remove.missing'),
+        removeSuccessText: t('workspace.team.members.remove.success'),
+        removeRetryText: t('workspace.team.members.remove.retry'),
+        removableRoles: REMOVABLE_ROLES,
+        viewerIsOwner,
+        onTransferOwnership: (memberId) => transferOwnership(memberId),
+        transferButtonText: t('workspace.team.members.transfer.button'),
+        transferDialogTitle: t('workspace.team.members.transfer.title'),
+        transferDialogBody: t('workspace.team.members.transfer.body'),
+        transferConfirmText: t('workspace.team.members.transfer.confirm'),
+        transferCancelText: t('workspace.team.members.transfer.cancel'),
+        transferBusyText: t('workspace.team.members.transfer.busy'),
+        transferErrorText: t('workspace.team.members.transfer.error'),
+        transferRetryText: t('workspace.team.members.transfer.retry'),
+        transferSuccessText: t('workspace.team.members.transfer.success'),
+    };
+
     const guideRoles: TeamRoleKey[] = ['owner', 'manager', 'editor', 'kitchen'];
 
     if (members.some((member) => member.role.toLowerCase() === 'member')) {
@@ -639,45 +765,15 @@ export function TeamPage({ workspaceId, viewerRole }: TeamPageProps) {
                 */}
                 <div className="flex flex-wrap items-start gap-[var(--space-fluid-md)]">
                     <div className="flex min-w-[min(100%,20rem)] flex-[2] flex-col gap-[var(--space-fluid-md)]">
+                        {/*
+                            ÇİZİCİ YOKSA TABAN ÇİZİLİR: telefon paketinde
+                            `renderMembers` hiç gelmez ve ekran bugünkü
+                            listeyi bugünkü davranışıyla çizer.
+                        */}
                         <PanelCard>
-                            <TeamMemberList
-                                status={membersStatus}
-                                members={members}
-                                label={t('workspace.team.members.region')}
-                                loadingText={t('workspace.team.members.loading')}
-                                errorText={t('workspace.team.members.error')}
-                                emptyText={t('workspace.team.members.empty')}
-                                onRemoveMember={removeMember}
-                                onChangeRole={changeMemberRole}
-                                assignableRoles={INVITABLE_ROLES.map((option) => ({
-                                    value: option.value,
-                                    label: t(option.labelKey),
-                                }))}
-                                roleLabelFor={(name) =>
-                                    t('workspace.team.members.role.label', { name })
-                                }
-                                roleErrorText={t('workspace.team.members.role.error')}
-                                removeButtonText={t('workspace.team.members.remove.button')}
-                                removeConfirmText={t('workspace.team.members.remove.confirm')}
-                                removeCancelText={t('workspace.team.members.remove.cancel')}
-                                removeBusyText={t('workspace.team.members.remove.busy')}
-                                removeErrorText={t('workspace.team.members.remove.error')}
-                                removeForbiddenText={t('workspace.team.members.remove.forbidden')}
-                                removeMissingText={t('workspace.team.members.remove.missing')}
-                                removeSuccessText={t('workspace.team.members.remove.success')}
-                                removeRetryText={t('workspace.team.members.remove.retry')}
-                                removableRoles={REMOVABLE_ROLES}
-                                viewerIsOwner={viewerIsOwner}
-                                onTransferOwnership={transferOwnership}
-                                transferButtonText={t('workspace.team.members.transfer.button')}
-                                transferDialogTitle={t('workspace.team.members.transfer.title')}
-                                transferDialogBody={t('workspace.team.members.transfer.body')}
-                                transferConfirmText={t('workspace.team.members.transfer.confirm')}
-                                transferCancelText={t('workspace.team.members.transfer.cancel')}
-                                transferBusyText={t('workspace.team.members.transfer.busy')}
-                                transferErrorText={t('workspace.team.members.transfer.error')}
-                                transferRetryText={t('workspace.team.members.transfer.retry')}
-                                transferSuccessText={t('workspace.team.members.transfer.success')}
+                            <TeamMemberRegion
+                                render={renderMembers ?? renderTeamMemberList}
+                                surface={memberSurface}
                             />
                         </PanelCard>
                         <PanelCard>
