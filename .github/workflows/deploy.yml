@@ -1,606 +1,150 @@
-name: Deploy
+name: Server audit read-only
 
-# CI YEŞİL OLUNCA OTOMATİK. Sahibi `main`'e birleştirdiğinde site kendini
-# günceller; kimseye haber vermek gerekmez.
+# ⚠️ BU DAL ASLA BİRLEŞTİRİLMEZ (`codex/server-readonly-audit`).
 #
-# Tetikleyici `push` DEĞİL, `workflow_run`: doğrudan push'a bağlansaydı
-# deploy testlerle YARIŞIRDI ve kırık bir sürüm yayına çıkabilirdi. Bu
-# biçimde deploy, CI'ın bittiğini ve GEÇTİĞİNİ bekler.
+# Dosya yolu bilerek `deploy.yml`'dir. GitHub, `workflow_dispatch`'i yalnız
+# VARSAYILAN DALDA TANIMLI bir iş akışı için sunar; seçilen dalda ise O DALIN
+# dosyasını çalıştırır. Yeni bir `audit.yml` varsayılan dalda bulunmadığı için
+# hiç listelenmezdi. Bu yüzden denetim, var olan `deploy.yml` yolunu kullanır ve
+# YALNIZ BU DALDA dağıtım tanımının yerine salt-okunur denetim tanımını koyar.
+# `main` üzerindeki `deploy.yml` DEĞİŞMEZ; oradaki dağıtım aynen sürer.
 #
-# Elle tetikleme de duruyor: geri alma ve yeniden deneme için gerekir.
+# Bu tanımda dağıtım işi YOKTUR: `push`/`workflow_run` tetikleyicisi yok, imaj
+# derlemesi yok, `docker compose up` yok, sunucuya yazma yok. Sunucuda yalnız
+# `scripts/server-readonly-audit.sh` sabit, salt-okunur komutları çalıştırır.
 on:
-  workflow_run:
-    workflows: ['CI']
-    types: [completed]
-    branches: [main]
   workflow_dispatch:
     inputs:
       confirm:
-        description: "Elle deploy için DEPLOY yazın (otomatik deploy'da gerekmez)"
-        required: false
+        description: 'Salt-okunur denetimi çalıştırmak için READ_ONLY_AUDIT yazın'
+        required: true
         default: ''
 
-# Registry'ye yazma yetkisi YOK ve gerekmiyor: imaj GHCR'a itilmez, var
-# olan SSH kanalindan sunucuya aktarilir (bkz. `docs/42`).
-#
-# `actions: read` YAZMA DEĞİL OKUMA yetkisidir ve tek bir soru için var:
-# "main'in ucundaki commit'in CI'ı geçti mi?". Bu soru sorulamazsa dağıtım
-# hangi commit'i yayına alacağını bilemez (bkz. `docs/152`).
+# Yazma yetkisi YOK. `actions: read` bile gerekmiyor: bu iş akışı başka bir
+# koşumun sonucunu sormaz.
 permissions:
   contents: read
-  actions: read
 
 concurrency:
-  # Aynı anda iki deploy, sunucuda yarış demektir: ikisi de aynı
-  # `.image.env`'i yazar ve aynı yığını yeniden kurar.
-  group: deploy-production
-
-  # `cancel-in-progress: false` BİLİNÇLİ.
-  #
-  # `true` olsaydı, yeni bir dağıtım koşarken devam edeni ÖLDÜRÜRDÜ — ve
-  # devam eden, tam da imajı SSH ile aktarıyor ya da `docker compose up`
-  # çalıştırıyor olabilir. Yarıda kesilmiş bir `up`, üretimde yarım bir
-  # yığın bırakır: bazı konteynerler yeni imajda, bazıları eskisinde.
-  # Hızlanmak için üretimi kırma hakkımız yok.
-  #
-  # `false` ile GitHub sırayı şöyle tutar: koşan biter, bekleyenler
-  # arasından yalnız EN YENİSİ hayatta kalır (yeni bir koşum kuyruğa
-  # girdiğinde önceki bekleyen iptal edilir). Yani sıra beklemek, eski bir
-  # commit'in yayına çıkmasına yol açmaz — üstelik hangi commit'in
-  # dağıtılacağı koşum BAŞLADIĞINDA çözülür (`Hangi commit yayına
-  # alınmalı?`), kuyruğa girdiğinde değil.
+  group: server-readonly-audit
   cancel-in-progress: false
 
 jobs:
-  guard:
+  audit:
+    name: Salt-okunur sunucu denetimi
     runs-on: ubuntu-latest
-    outputs:
-      # Son söz `forward` adımınındır: geriye giden bir yayın burada
-      # durdurulur. O adım atlandıysa (sunucu yok, CI geçmedi) `decide`'ın
-      # kararı geçerlidir.
-      should_deploy: ${{ steps.forward.outputs.should_deploy || steps.decide.outputs.should_deploy }}
-      # Yayına alınacak commit — tetikleyen koşumun commit'i DEĞİL,
-      # dağıtılabilir en yeni commit.
-      target_sha: ${{ steps.target.outputs.sha }}
-      # Kararın verildiği andaki `main` ucu; kanıt adımı bunu bildirir.
-      tip_sha: ${{ steps.target.outputs.tip }}
-    steps:
-      - name: Sunucu tanımlı mı?
-        id: server
-        env:
-          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
-        run: |
-          # Sunucu henüz kurulmadıysa deploy BAŞARISIZ OLMAZ, ATLANIR.
-          # Her birleşmede kırmızı bir X görmek "kırmızıyı görmezden gel"
-          # alışkanlığı yaratır, ve o alışkanlık gerçek arızaları da gizler.
-          #
-          # Ama ATLAMA SESSİZ KALAMAZ. Bu iş yeşil biter ve sahip yeşili
-          # "birleştirdiğim şey yayında" diye okur — oysa hiçbir şey
-          # koşmamıştır: ne göçler, ne sayfa kütüğü, ne de yayın kararları.
-          # Atlanan iş ADIYLA söylenir ve koşum özetine yazılır; bir
-          # `::notice::`, günlüğün içinde kaybolabilir.
-          if [ -z "${DEPLOY_HOST}" ]; then
-            echo "configured=false" >> "$GITHUB_OUTPUT"
-            echo "::warning::ADIM ATLANDI — sunucu secret'ları tanımlı değil. Yayın kararları (site:apply-publication-decisions) UYGULANMADI; canlıda hiçbir şey değişmedi. Kurulum: docs/43."
-            {
-              echo "### ADIM ATLANDI — dağıtım koşmadı"
-              echo
-              echo "Sunucu secret'ları (\`DEPLOY_HOST\`) tanımlı değil, bu yüzden **hiçbir şey yayına alınmadı**."
-              echo
-              echo "Koşmayan adımlar:"
-              echo
-              echo "- \`php artisan migrate --force\` — göçler"
-              echo "- \`php artisan site:import-map\` — sayfa kütüğü"
-              echo "- \`php artisan site:apply-publication-decisions\` — yayın kararları"
-              echo
-              echo "Bu koşumun yeşil olması, sitenin güncellendiği anlamına **gelmez**. Kurulum: \`docs/43\`."
-            } >> "$GITHUB_STEP_SUMMARY"
-          else
-            echo "configured=true" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Deploy edilmeli mi?
-        id: decide
-        run: |
-          # Karar sırası önemli. "Atlama" ile "başarısızlık" ayrı şeylerdir:
-          # atlama, yapacak bir iş olmadığını söyler; başarısızlık, birinin
-          # bakması gerektiğini. İkisini karıştırmak, kırmızıyı anlamsız
-          # kılar.
-
-          # 1. Sunucu yok → yapacak iş yok.
-          if [ "${{ steps.server.outputs.configured }}" != "true" ]; then
-            echo "should_deploy=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          # 2. CI geçmedi → CI bunu zaten bildirdi. İkinci bir kırmızı X
-          #    bilgi eklemez, yalnız gürültü olur.
-          if [ "${{ github.event_name }}" = "workflow_run" ]; then
-            if [ "${{ github.event.workflow_run.conclusion }}" != "success" ]; then
-              echo "::notice::CI geçmedi (${{ github.event.workflow_run.conclusion }}); deploy atlandı."
-              echo "should_deploy=false" >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-
-            echo "should_deploy=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          # 3. Elle tetiklemede onay yoksa → bu bir kullanıcı hatası ve
-          #    görünmesi gerekir.
-          if [ "${{ inputs.confirm }}" != "DEPLOY" ]; then
-            echo "Elle deploy için onay kutusuna DEPLOY yazın."
-            exit 1
-          fi
-
-          echo "should_deploy=true" >> "$GITHUB_OUTPUT"
-
-      # DAĞITILAN COMMIT, TETİKLEYEN KOŞUMUN COMMIT'İ OLAMAZ — `docs/152`.
-      #
-      # ÖLÇÜLDÜ (2026-09-08, dağıtım koşumu 34210847469): koşum GitHub
-      # arayüzünde `8085ab18`'e ait görünüyordu ama yayına aldığı
-      # `ad02fc21`'di — main'in ucu değil, bir öncekiydi. `/up/build` de
-      # bunu doğruladı. Aynı gün beş kez oldu.
-      #
-      # Sebep: `workflow_run` HER CI koşumu için ayrı tetiklenir ve
-      # tetikleyen koşumun commit'ini taşır. Arka arkaya birleşmelerde
-      # koşumlar birbirini geçer; ESKİ bir commit'in CI'ı, YENİ bir
-      # commit'in dağıtımından SONRA bitebilir ve onun dağıtımı canlıyı
-      # geriye alır. Sonuç: en son birleşme, ancak BİR SONRAKİ birleşme
-      # geldiğinde yayına çıkar. Günün son birleşmesi gece boyu yayında
-      # olmaz — ve ertesi gün bir sonraki birleşme kusuru kendiliğinden
-      # örter, yani kusur kendini gizler.
-      #
-      # Düzeltme: hedef, tetikleyici değil **dağıtılabilir en yeni
-      # commit**tir. `main`'in ucu CI'dan GEÇMİŞSE o, geçmemişse elimizdeki
-      # en yeni yeşil commit olan tetikleyen commit yayına alınır.
-      #
-      # Elle tetikleme BU YOLA GİRMEZ: `workflow_dispatch` geri alma
-      # yoludur ve orada eski bir commit'i seçmek İSTENİR. Ucun peşine
-      # takılsaydı, geri alma sessizce geri alınamaz olurdu.
-      - name: Hangi commit yayına alınmalı?
-        id: target
-        if: steps.decide.outputs.should_deploy == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TRIGGER_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
-          BRANCH: ${{ github.event.workflow_run.head_branch || github.ref_name }}
-        run: |
-          set -uo pipefail
-
-          short() { printf '%s' "$(printf '%s' "$1" | cut -c1-8)"; }
-
-          if [ "${GITHUB_EVENT_NAME}" != "workflow_run" ]; then
-            # Elle tetikleme: seçilen ref neyse o. Geri alma yolu budur.
-            echo "sha=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
-            echo "tip=" >> "$GITHUB_OUTPUT"
-            echo "Elle tetikleme: $(short "${GITHUB_SHA}") yayına alınacak."
-            exit 0
-          fi
-
-          tip="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${BRANCH}" --jq '.sha' 2>/dev/null || true)"
-          target="${TRIGGER_SHA}"
-
-          if [ -n "${tip}" ] && [ "${tip}" != "${TRIGGER_SHA}" ]; then
-            # Uç başka bir commit. Yalnız CI'ı GEÇMİŞSE alınabilir; yoksa
-            # test edilmemiş kod yayına çıkardı ve `workflow_run`'ın bütün
-            # varlık sebebi ortadan kalkardı.
-            green="$(gh api \
-              "repos/${GITHUB_REPOSITORY}/actions/workflows/ci.yml/runs?head_sha=${tip}&status=success&per_page=1" \
-              --jq '.workflow_runs | length' 2>/dev/null || true)"
-
-            if [ "${green:-0}" -gt 0 ] 2>/dev/null; then
-              target="${tip}"
-              echo "::notice::Ucun ($(short "${tip}")) CI'ı geçmiş; tetikleyen $(short "${TRIGGER_SHA}") yerine uç yayına alınıyor."
-            else
-              echo "::notice::Ucun ($(short "${tip}")) CI'ı henüz geçmedi; dağıtılabilir en yeni commit $(short "${TRIGGER_SHA}")."
-            fi
-          fi
-
-          echo "sha=${target}" >> "$GITHUB_OUTPUT"
-          echo "tip=${tip}" >> "$GITHUB_OUTPUT"
-          echo "Yayına alınacak: $(short "${target}") (uç: $(short "${tip}"))"
-
-      # GERİYE GİTME YASAK — `docs/152`.
-      #
-      # Yukarıdaki çözüm yarışın çoğunu kapatır ama hepsini kapatamaz:
-      # koşumlar arasında saniyeler vardır ve API'nin cevabı bir an
-      # öncesine aittir. Bu yüzden karar, canlının KENDİ söylediği commit
-      # ile de ölçülür — `/up/build` (`docs/142`).
-      #
-      # Hedef, canlıda çalışanın ATASI ise (yani daha eski) dağıtım
-      # YAPILMAZ. Ata olup olmadığını GitHub'ın karşılaştırma ucu söyler:
-      # `compare/<canlı>...<hedef>` → `behind`, `git merge-base
-      # --is-ancestor <hedef> <canlı>` ile aynı ölçüm, ama checkout
-      # gerektirmez.
-      #
-      # KIRMIZI DEĞİL, DURDURMA. Ortada arıza yok: canlı zaten daha yeni
-      # kodu çalıştırıyor ve yapılacak bir iş kalmamış. Her yarışta kırmızı
-      # bir X basmak, bu deponun başka yerlerde bilerek kaçındığı
-      # "kırmızıyı görmezden gel" alışkanlığını yaratırdı. Ama sessiz de
-      # kalmaz: uyarı ve koşum özeti yazılır.
-      #
-      # Elle tetikleme yine muaf: geri alma TANIMI GEREĞİ geriye gitmektir.
-      - name: Geriye gitme yasak
-        id: forward
-        if: steps.decide.outputs.should_deploy == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          # Yeni secret İSTENMEZ: var olan sağlık adresinden kök adres
-          # türetilir. ADRES HİÇBİR YERE BASILMAZ — GitHub yalnız secret'ın
-          # KENDİ değerini maskeler, ondan türetilmiş bir parçayı değil.
-          DEPLOY_HEALTH_URL: ${{ secrets.DEPLOY_HEALTH_URL }}
-          TARGET_SHA: ${{ steps.target.outputs.sha }}
-        run: |
-          set -uo pipefail
-
-          short() {
-            if [ -z "$1" ]; then printf 'BİLİNMİYOR'; else printf '%s' "$(printf '%s' "$1" | cut -c1-8)"; fi
-          }
-
-          if [ "${GITHUB_EVENT_NAME}" != "workflow_run" ]; then
-            echo "Elle tetikleme: geri alma yolu; ileri/geri kontrolü uygulanmaz."
-            echo "should_deploy=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          origin="$(printf '%s' "${DEPLOY_HEALTH_URL}" | sed -E 's#^(https?://[^/]+).*#\1#')"
-
-          live=""
-          live_assets=""
-          if [ -n "${origin}" ]; then
-            proof="$(curl -fsS --max-time 15 "${origin}/up/build" 2>/dev/null || true)"
-            live="$(printf '%s' "${proof}" | jq -r '.revision // ""' 2>/dev/null || true)"
-            live_assets="$(printf '%s' "${proof}" | jq -r '.assets_revision // ""' 2>/dev/null || true)"
-          fi
-
-          # BİLİNMEYEN UYDURULMAZ ve bilinmeyen bir şey yüzünden dağıtım
-          # kilitlenmez. Canlı sürüm okunamıyorsa (ilk kurulum, uç geçici
-          # olarak cevapsız) karşılaştırma YAPILAMAZ; dağıtım sürer ve
-          # kanıt adımı zaten sonucu ölçer.
-          if [ -z "${live}" ] || [ "${live}" = "null" ]; then
-            echo "::notice::Canlı sürüm okunamadı; ileri/geri karşılaştırması yapılamadı. Dağıtım sürüyor, sonucu kanıt adımı ölçecek."
-            echo "should_deploy=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          # İKİ YARI DA AYNI OLMALI. Yalnız `.revision`'a bakıp atlamak,
-          # "PHP güncel, varlıklar bayat" hâlini (`docs/142` §2) onarılamaz
-          # kılardı: yeniden dağıtım her seferinde "zaten canlıda" diyerek
-          # atlanır, bayat CSS orada kalırdı.
-          if [ "${live}" = "${TARGET_SHA}" ] && [ "${live_assets}" = "${TARGET_SHA}" ]; then
-            echo "::notice::Canlı zaten $(short "${TARGET_SHA}") çalıştırıyor; yapılacak iş yok."
-            {
-              echo "### Yapılacak iş yok"
-              echo
-              echo "Canlı uygulama zaten \`$(short "${TARGET_SHA}")\` çalıştırıyor. Bu koşum hiçbir şeyi değiştirmedi."
-            } >> "$GITHUB_STEP_SUMMARY"
-            echo "should_deploy=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          status="$(gh api "repos/${GITHUB_REPOSITORY}/compare/${live}...${TARGET_SHA}" --jq '.status' 2>/dev/null || true)"
-
-          if [ "${status}" = "behind" ]; then
-            echo "::warning::DAĞITIM DURDURULDU — hedef $(short "${TARGET_SHA}"), canlıda çalışan $(short "${live}") commit'inden ESKİ. Canlı geriye alınmadı."
-            {
-              echo "### Dağıtım durduruldu — geriye gidecekti"
-              echo
-              echo "| | commit |"
-              echo "| --- | --- |"
-              echo "| Bu koşumun yayına alacağı | \`$(short "${TARGET_SHA}")\` |"
-              echo "| Canlıda çalışan | \`$(short "${live}")\` |"
-              echo
-              echo "Hedef, canlıda çalışanın **atası** — yani daha eski. Yayına alınsaydı site geriye giderdi."
-              echo "Bu bir arıza **değil**: canlı zaten daha yeni kodu çalıştırıyor. Ayrıntı: \`docs/152\`."
-            } >> "$GITHUB_STEP_SUMMARY"
-            echo "should_deploy=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          echo "İleri gidiliyor: $(short "${live}") → $(short "${TARGET_SHA}") (karşılaştırma: ${status:-BİLİNMİYOR})."
-          echo "should_deploy=true" >> "$GITHUB_OUTPUT"
-
-  deploy:
-    needs: guard
-    if: needs.guard.outputs.should_deploy == 'true'
-    runs-on: ubuntu-latest
-    environment: production
+    timeout-minutes: 15
+    # ÇİFT KİLİT: tanım yalnız bu dalda yaşar, ÜSTELİK iş yalnız bu ref'te
+    # koşar. Dosya kazara başka bir dala taşınsa bile iş çalışmaz.
+    if: >-
+      github.ref == 'refs/heads/codex/server-readonly-audit' &&
+      github.event_name == 'workflow_dispatch' &&
+      inputs.confirm == 'READ_ONLY_AUDIT'
     steps:
       - name: Checkout
         uses: actions/checkout@v5
         with:
-          # Tetikleyen koşumun commit'i DEĞİL, kapının çözdüğü hedef.
-          ref: ${{ needs.guard.outputs.target_sha }}
+          # Runner'da Git kimlik bilgisi bırakma: bu iş hiçbir şey itmez.
+          persist-credentials: false
 
-      - name: Set up Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: İmaj etiketini hesapla
-        id: meta
+      - name: Denetim betiği beklenen hâlde mi?
         run: |
-          # `workflow_run` bağlamında GITHUB_SHA varsayılan dalın ucudur;
-          # deploy edilmesi gereken, CI'ın GEÇTİĞİ EN YENİ commit'tir — ve
-          # onu kapı çözdü. Burada yeniden hesaplanmaz: iki yerde iki kez
-          # hesaplanan bir değer, er geç iki farklı cevap verir ve checkout
-          # bir commit'ten, etiket başkasından gelir (`docs/152`).
-          sha="${{ needs.guard.outputs.target_sha }}"
-          echo "sha=${sha}" >> "$GITHUB_OUTPUT"
-          # Etiket yerel: registry adı YOK. İmaj bir kayıt defterine
-          # uğramadan, doğrudan sunucuya gider.
-          echo "image=zabuno:${sha}" >> "$GITHUB_OUTPUT"
-
-      # Hedef netcup AMD EPYC: linux/amd64. Runner zaten amd64 olduğu için
-      # emülasyon yok; platform yine de AÇIKÇA yazılıyor, çünkü runner
-      # mimarisinin sessizce değişmesi imajı hedefte çalışmaz hâle getirir.
-      #
-      # `push: false` ve çıktı bir DOSYA: imaj GHCR'a itilmiyor. Sebep
-      # maliyet ve yüzey. Private bir paketin depolaması ve sunucunun her
-      # çekimi kotaya yazılır; dahası sunucuda uzun ömürlü bir registry
-      # kimlik bilgisi durmak zorunda kalırdı. Deploy zaten sabitlenmiş bir
-      # SSH kanalına sahip — ikinci bir güven ilişkisi kurmanın gerekçesi
-      # yok.
-      - name: İmajı derle (linux/amd64)
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: docker/Dockerfile
-          platforms: linux/amd64
-          push: false
-          tags: ${{ steps.meta.outputs.image }}
-          outputs: type=docker,dest=${{ runner.temp }}/zabuno-image.tar
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          # Derlenen varlıklar KENDİ commit'lerini taşımalı (`docs/142`).
-          # Bu argüman olmadan `public/build/revision.txt` boş kalır ve
-          # "PHP güncel, varlıklar bayat" durumu dışarıdan görünmez olur —
-          # 2026-09-08'de tam olarak bu oldu ve hiçbir kapı görmedi.
-          build-args: |
-            ZABUNO_RELEASE_SHA=${{ steps.meta.outputs.sha }}
-
-      - name: SSH anahtarını yükle
-        run: |
-          install -m 700 -d ~/.ssh
-          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          # Host anahtarı SABİTLENİR. `StrictHostKeyChecking=no`, ilk
-          # bağlantıda ortadaki adama kapı açar; deploy kanalı üretim
-          # sunucusuna kök erişimdir.
-          echo "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
-          chmod 600 ~/.ssh/known_hosts
-
-      # Dizin `install.sh` ile AYNI olmalı. İlk hâli `~/zabuno`'ydu ve
-      # `DEPLOY_USER=root` olduğu için `/root/zabuno`'ya bakıyordu; kurulum
-      # ise `/opt/zabuno`'ya yapılıyordu. Deploy boş bir dizinde çalışırdı.
-      - name: Compose dosyalarını gönder
-        env:
-          DEPLOY_DIR: ${{ secrets.DEPLOY_DIR || '/opt/zabuno' }}
-          DEPLOY_TARGET: ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}
-          # SSH her sunucuda 22'de DEĞİL. Sertleştirilmiş kurulumlarda port
-          # taşınır ve akış bunu geçirmezse 22'ye bağlanıp zaman aşımına
-          # düşer. Varsayılan 22, çünkü çoğu kurulum öyle; taşınmışsa
-          # `DEPLOY_PORT` secret'ı söyler.
-          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT || '22' }}
-        run: |
-          # `docker/` alt dizini şart: taban compose `./docker/Caddyfile`
-          # bağlıyor. İlk hâl iki dosyayı da düz kopyalıyordu, Caddyfile
-          # kökte kalıyordu ve bağlama noktası bir DİZİN olarak yaratılıyordu.
-          ssh -i ~/.ssh/id_ed25519 -p "$DEPLOY_PORT" "$DEPLOY_TARGET" "mkdir -p $DEPLOY_DIR/docker"
-
-          # Yıldız bilinçli: sunucu hangi topolojiyi seçerse seçsin, o
-          # dosya orada olmalı. Yalnız taban gönderilseydi, override
-          # deploy anında yok olur ve site 502'ye düşerdi.
-          scp -i ~/.ssh/id_ed25519 -P "$DEPLOY_PORT" docker-compose*.yml "$DEPLOY_TARGET:$DEPLOY_DIR/"
-          # Compose'un `./docker/...` ile bağladığı HER dosya burada
-          # olmalı; eksik kalan dosyanın yerinde Docker boş bir DİZİN
-          # yaratır. `clamd.conf` tarayıcı daemon'unun yapılandırmasıdır
-          # (DEPLOY-MALWARE-SCAN-12).
-          scp -i ~/.ssh/id_ed25519 -P "$DEPLOY_PORT" docker/Caddyfile docker/clamd.conf "$DEPLOY_TARGET:$DEPLOY_DIR/docker/"
-
-      # İmaj, dosya olarak DEĞİL akış olarak gider: runner'da sıkıştırılır,
-      # sunucuda açılıp doğrudan `docker load`'a verilir. Diske hiç yazılmaz,
-      # dolayısıyla sunucuda temizlenecek bir artık kalmaz ve deploy yarıda
-      # kalırsa yarım bir tar dosyası bırakmaz.
-      #
-      # `gzip -1`: katmanlar tar içinde SIKIŞTIRILMAMIŞ durur, bu yüzden en
-      # hızlı seviye bile aktarımı kabaca üçte birine indirir. Daha yüksek
-      # seviye, kazandığından fazlasını CPU'da harcar.
-      - name: İmajı SSH ile aktar
-        env:
-          DEPLOY_TARGET: ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}
-          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT || '22' }}
-          IMAGE_TAR: ${{ runner.temp }}/zabuno-image.tar
-        run: |
-          ls -lh "$IMAGE_TAR"
-
-          gzip -1 -c "$IMAGE_TAR" \
-            | ssh -i ~/.ssh/id_ed25519 -p "$DEPLOY_PORT" "$DEPLOY_TARGET" \
-              'gunzip | docker load'
-
-      - name: Yeni imajı yayına al
-        env:
-          DEPLOY_DIR: ${{ secrets.DEPLOY_DIR || '/opt/zabuno' }}
-          DEPLOY_TARGET: ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}
-          # SSH her sunucuda 22'de DEĞİL. Sertleştirilmiş kurulumlarda port
-          # taşınır ve akış bunu geçirmezse 22'ye bağlanıp zaman aşımına
-          # düşer. Varsayılan 22, çünkü çoğu kurulum öyle; taşınmışsa
-          # `DEPLOY_PORT` secret'ı söyler.
-          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT || '22' }}
-          ZABUNO_IMAGE: ${{ steps.meta.outputs.image }}
-          # `github.sha` DEĞİL. `workflow_run` bağlamında o, dalın o anki
-          # ucudur — deploy edilen commit değil. İkisi ayrıştığında imaj bir
-          # commit'ten gelir ve etiket başka bir commit'i söyler.
-          #
-          # ÖLÇÜLDÜ (2026-09-08, koşum 34179388196): `c1414278` derlenip
-          # yayına alındı, ama `github.sha` o an `c59d499b` olduğu için canlı
-          # uygulama on iki dakika boyunca `c59d499b` çalıştırdığını SÖYLEDİ.
-          # Sahibi sayfayı yeniledi, hiçbir şey değişmemişti, ve sürüm
-          # etiketi ona "en güncelsin" diyordu.
-          ZABUNO_BUILD_REVISION: ${{ steps.meta.outputs.sha }}
-        run: |
-          ssh -i ~/.ssh/id_ed25519 -p "$DEPLOY_PORT" "$DEPLOY_TARGET" \
-            bash -s -- "$DEPLOY_DIR" "$ZABUNO_IMAGE" "$ZABUNO_BUILD_REVISION" <<'REMOTE'
           set -euo pipefail
-          cd "$1"
-
-          echo "ZABUNO_IMAGE=$2" > .image.env
-
-          # Sayfanın hangi commit'i sunduğu, sayfanın KENDİSİNDEN okunabilmeli
-          # (`docs/87`). İmaj etiketi sunucuda duruyor ama tarayıcıya inmiyor;
-          # bu satır olmadan üretimde build kimliği boş kalıyordu.
-          echo "ZABUNO_BUILD_REVISION=$3" >> .image.env
-
-          # Topolojiyi SUNUCU seçer, akış değil. Hangi override'ın geçerli
-          # olduğu makinenin kendi `.env`'inde `COMPOSE_FILE` ile yazılıdır:
-          # biri yığının Caddy'sini kullanır, diğeri sunucuda hazır duran
-          # bir vekilin arkasına girer. Akışa gömülseydi, ikinci bir
-          # kurulum akışı çatallamak zorunda kalırdı.
-          compose_file="$(sed -n 's/^COMPOSE_FILE=//p' .env | tail -n 1)"
-          if [ -n "$compose_file" ]; then
-              export COMPOSE_FILE="$compose_file"
+          test -f scripts/server-readonly-audit.sh
+          bash -n scripts/server-readonly-audit.sh
+          # Yazma yapan bir komut sızmışsa burada durur. Yorumlar ayıklanır:
+          # betiğin sözleşme yorumu bu komutları BİLEREK adıyla anar.
+          code="$(grep -v '^[[:space:]]*#' scripts/server-readonly-audit.sh)"
+          if printf '%s\n' "$code" | grep -Eq \
+              'docker[[:space:]]+(run|start|stop|restart|rm|cp|build|pull)|compose[[:space:]]+(up|down|restart)|--dbname|set[[:space:]]+-x'; then
+            echo "::error::Denetim betiği yasakli bir komut iceriyor."
+            exit 1
           fi
+          # Tek izinli yönlendirme /dev/null'dur: betik sunucuda dosya yazmaz.
+          if printf '%s\n' "$code" | grep -E '>[^&]' | grep -qv '/dev/null'; then
+            echo "::error::Denetim betiginde /dev/null disi bir yonlendirme var."
+            exit 1
+          fi
+          sha256sum scripts/server-readonly-audit.sh
 
-          # `pull` YOK: imaj bir onceki adimda SSH ile yuklendi ve yerel.
-          # Cagrilsaydi, var olmayan bir registry'de aranir ve deploy tam da
-          # imaj hazirken basarisiz olurdu.
-          docker compose --env-file .env --env-file .image.env up -d --remove-orphans
-
-          # Yalniz SAHIPSIZ katmanlar silinir. Onceki SHA etiketleri
-          # sunucuda KALIR ve geri alma bunlarla yapilir: `.image.env`
-          # icindeki etiketi eskisiyle degistirip `up -d` yeter. Registry
-          # artik geri alma kaynagi olmadigi icin bu etiketler tek
-          # geriye donus yolu; toptan silen bir temizlik yazilmamali.
-          docker image prune -f
-          REMOTE
-
-      - name: Sağlık kontrolü
-        run: |
-          # Deploy, konteyner ayağa kalktığında değil, uygulama cevap
-          # verdiğinde bitmiştir. Aksi hâlde yeşil bir iş, düşmüş bir site
-          # anlamına gelebilir.
-          for attempt in $(seq 1 20); do
-            if curl -fsS --max-time 10 "${{ secrets.DEPLOY_HEALTH_URL }}" > /dev/null; then
-              echo "Sağlık kontrolü GEÇTİ (deneme ${attempt})"
-              exit 0
-            fi
-            sleep 6
-          done
-          echo "Sağlık kontrolü 120 saniyede geçmedi."
-          exit 1
-
-      # DAĞITIM NE DAĞITTIĞINI KANITLAR — `docs/142`.
-      #
-      # Yukarıdaki sağlık kontrolü yalnız "bir şey cevap veriyor mu?" diye
-      # sorar; ESKİ SÜRÜM DE CEVAP VERİR. 2026-09-08'de dağıtım her adımı —
-      # sağlık kontrolü dâhil — yeşil tamamladı ve canlı site birleştirilen
-      # commit'i çalıştırmıyordu. Sahibi saatlerce "ben mi yanlış yaptım"
-      # diye baktı, çünkü yeşil bir dağıtım ona güncel olduğunu söylüyordu.
-      #
-      # Bu adım o boşluğu kapatır: yayına alınan commit ile CANLI
-      # UYGULAMANIN söylediği commit karşılaştırılır, ve varlıkların
-      # derlendiği commit AYRICA karşılaştırılır — çünkü ikisi ayrışabilir
-      # ve bugünkü arıza tam olarak oydu.
-      - name: Dağıtım ne dağıttı?
+      - name: SSH kimliğini hazırla
         env:
-          # Yeni bir secret İSTENMEZ. İsteseydi, kurulumu bugün çalışan
-          # makinede kapı sessizce kapalı kalırdı — kapının hiç var olmadığı
-          # hâlin aynısı, ama var sanıldığı için daha kötüsü.
-          DEPLOY_HEALTH_URL: ${{ secrets.DEPLOY_HEALTH_URL }}
-          EXPECTED_SHA: ${{ steps.meta.outputs.sha }}
-          # `github.sha` DEĞİL. Uç, kararın verildiği anda ÖLÇÜLDÜ; olayın
-          # taşıdığı `github.sha` ise koşum kuyrukta beklerken eskimiş
-          # olabilir. Uyarının anlamı "bu koşum ucu almadı"dır ve o soru
-          # ancak ölçülmüş uçla doğru cevaplanır.
-          BRANCH_TIP_SHA: ${{ needs.guard.outputs.tip_sha || github.sha }}
+          # Secret'lar YALNIZ ortam değişkeni olarak geçer; hiçbir secret
+          # ifadesi run betiğinin metnine gömülmez.
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
         run: |
-          set -uo pipefail
+          set -euo pipefail
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+          # Sağlama: anahtar/known_hosts boş mu? İçerik BASILMAZ.
+          test -s ~/.ssh/id_ed25519
+          test -s ~/.ssh/known_hosts
 
-          # Sağlık adresinden yalnız kök adres alınır, yol atılır.
-          origin="$(printf '%s' "$DEPLOY_HEALTH_URL" | sed -E 's#^(https?://[^/]+).*#\1#')"
-          if [ -z "$origin" ]; then
-            echo "Sağlık adresi okunamadı; dağıtımın ne dağıttığı KANITLANAMADI."
+      - name: Sunucuyu salt-okunur denetle
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT || '22' }}
+          DEPLOY_DIR: ${{ secrets.DEPLOY_DIR || '/opt/zabuno' }}
+        run: |
+          set -euo pipefail
+          # `set -x` BİLEREK YOK: komut satırı günlüğe düşmemeli.
+
+          if [ -z "${DEPLOY_HOST}" ] || [ -z "${DEPLOY_USER}" ]; then
+            echo "::error::DEPLOY_HOST/DEPLOY_USER secret'ları tanımlı değil."
             exit 1
           fi
+          # Doğrulama: kabuk enjeksiyonuna yer bırakmayan dar karakter kümesi.
+          case "${DEPLOY_HOST}" in
+            *[!A-Za-z0-9.:-]*) echo "::error::DEPLOY_HOST biçimi kabul edilmedi."; exit 1 ;;
+          esac
+          case "${DEPLOY_USER}" in
+            *[!A-Za-z0-9._-]*) echo "::error::DEPLOY_USER biçimi kabul edilmedi."; exit 1 ;;
+          esac
+          case "${DEPLOY_PORT}" in
+            ''|*[!0-9]*) echo "::error::DEPLOY_PORT sayısal değil."; exit 1 ;;
+          esac
+          case "${DEPLOY_DIR}" in
+            /*) : ;;
+            *) echo "::error::DEPLOY_DIR mutlak yol değil."; exit 1 ;;
+          esac
+          case "${DEPLOY_DIR}" in
+            *[!A-Za-z0-9._/-]*) echo "::error::DEPLOY_DIR biçimi kabul edilmedi."; exit 1 ;;
+          esac
 
-          # ADRES HİÇBİR YERE BASILMAZ. GitHub yalnız secret'ın KENDİ
-          # değerini maskeler; ondan türetilmiş bir parça maskelenmez.
-          short() {
-            if [ -z "$1" ]; then printf 'BİLİNMİYOR'; else printf '%s' "$(echo "$1" | cut -c1-8)"; fi
-          }
+          # Host anahtarı SABİTLENMİŞTİR: bilinmeyen sunucuya bağlanmayı
+          # reddeder (`StrictHostKeyChecking=yes` + salt-okunur known_hosts).
+          # `BatchMode=yes`: parola sorgusu yok, sessizce asılı kalma yok.
+          ssh -i ~/.ssh/id_ed25519 \
+              -p "${DEPLOY_PORT}" \
+              -o BatchMode=yes \
+              -o StrictHostKeyChecking=yes \
+              -o UserKnownHostsFile="$HOME/.ssh/known_hosts" \
+              -o ConnectTimeout=15 \
+              -o ServerAliveInterval=15 \
+              -o ServerAliveCountMax=4 \
+              -o LogLevel=ERROR \
+              "${DEPLOY_USER}@${DEPLOY_HOST}" \
+              "bash -s -- '${DEPLOY_DIR}'" \
+              < scripts/server-readonly-audit.sh \
+              | tee "${RUNNER_TEMP}/audit.txt"
 
-          running=""
-          assets=""
-
-          # Konteyner değişimi bir an sürer ve vekil o aralıkta hâlâ eski
-          # konteynere bağlı olabilir. Uyuşana kadar beklenir; beklemeden
-          # kırmızı vermek, gerçek bir arıza ile bir saniyelik geçişi aynı
-          # şey sayardı ve kapı güvenilmez olurdu.
-          for attempt in $(seq 1 15); do
-            proof="$(curl -fsS --max-time 15 "${origin}/up/build" 2>/dev/null || true)"
-
-            if [ -n "$proof" ]; then
-              running="$(printf '%s' "$proof" | jq -r '.revision // ""')"
-              assets="$(printf '%s' "$proof" | jq -r '.assets_revision // ""')"
-
-              if [ "$running" = "$EXPECTED_SHA" ] && [ "$assets" = "$EXPECTED_SHA" ]; then
-                break
-              fi
-            fi
-
-            sleep 6
-          done
-
+      - name: Denetim özeti
+        if: always()
+        run: |
+          set -euo pipefail
+          if [ ! -s "${RUNNER_TEMP}/audit.txt" ]; then
+            echo "Denetim çıktısı yok (bağlantı kurulamadı olabilir)." >> "${GITHUB_STEP_SUMMARY}"
+            exit 0
+          fi
           {
-            echo "### Canlı sitede şu an ne çalışıyor?"
+            echo "## Salt-okunur sunucu denetimi"
             echo
-            echo "| | commit |"
-            echo "| --- | --- |"
-            echo "| Yayına alınan | \`$(short "$EXPECTED_SHA")\` |"
-            echo "| Canlı uygulama | \`$(short "$running")\` |"
-            echo "| Canlı varlıklar (CSS/JS) | \`$(short "$assets")\` |"
-          } >> "$GITHUB_STEP_SUMMARY"
-
-          failed=0
-
-          if [ "$running" != "$EXPECTED_SHA" ]; then
-            echo "::error::Yayına alınan commit $(short "$EXPECTED_SHA") ama canlı uygulama $(short "$running") çalıştırıyor."
-            failed=1
-          fi
-
-          # VARLIKLAR AYRI SORULUR. PHP güncel olup derlenmiş CSS/JS bayat
-          # kalabilir; 2026-09-08'de canlı site yeni sayfaları sunarken
-          # daisyUI'den önceki 126.594 baytlık CSS'i veriyordu.
-          if [ "$assets" != "$EXPECTED_SHA" ]; then
-            echo "::error::Derlenmiş varlıklar $(short "$assets") commit'inden; beklenen $(short "$EXPECTED_SHA")."
-            failed=1
-          fi
-
-          if [ "$failed" -ne 0 ]; then
-            echo "Dağıtım tamamlandı ama YAYINA ALDIĞI ŞEY DEĞİL. Bakılacak yer: docs/142."
-            exit 1
-          fi
-
-          echo "Kanıtlandı: canlı uygulama ve varlıklar $(short "$EXPECTED_SHA") commit'inden."
-
-          # ESKİ BİR COMMIT'İN BAŞARILI DAĞITIMI "SİTE GÜNCEL" DEMEK DEĞİL.
-          #
-          # BU UYARI KALDIRILMAZ. Kusuru görünür kılan tek şey oydu: 8 Eylül
-          # 2026'da beş dağıtım ucun gerisinde kaldı ve bunu söyleyen başka
-          # hiçbir şey yoktu (`docs/152`).
-          #
-          # Anlamı DARALDI. Eskiden "yayına alınan, tetikleyen koşumun
-          # commit'iydi" demekti ve bu, ucun HİÇ yayına çıkmaması anlamına
-          # gelebiliyordu. Artık hedef, dağıtılabilir en yeni commit'tir;
-          # bu uyarı yalnız ucun CI'ının HENÜZ bitmemiş olduğunu söyler.
-          # Yani kalıcı bir gerilik değil, geçici bir gerilik: ucun kendi
-          # dağıtımı onu alacak ve başka bir birleşme GEREKMEYECEK.
-          #
-          # Kırmızı değil — yapacak bir iş yoktu — ama sessiz de değil.
-          if [ -n "$BRANCH_TIP_SHA" ] && [ "$BRANCH_TIP_SHA" != "$EXPECTED_SHA" ]; then
-            echo "::warning::Bu dağıtım $(short "$EXPECTED_SHA") commit'ini yayına aldı, ama main'in ucu $(short "$BRANCH_TIP_SHA"). Site HENÜZ en son birleşmeyi çalıştırmıyor; ucun CI'ı bitmemiş. Onu kendi dağıtımı alacak; yeni bir birleşme GEREKMEZ."
-            {
-              echo
-              echo "> Bu koşum **main'in ucunu değil**, \`$(short "$EXPECTED_SHA")\` commit'ini yayına aldı — ucun (\`$(short "$BRANCH_TIP_SHA")\`) CI'ı henüz bitmemişti."
-              echo "> Uç, kendi CI'ı bitince ayrı bir dağıtımla gelecek. **Yeni bir birleşme gerekmez**; beklemek yeterli (\`docs/152\`)."
-            } >> "$GITHUB_STEP_SUMMARY"
-          fi
+            echo '```'
+            head -c 60000 "${RUNNER_TEMP}/audit.txt"
+            echo '```'
+          } >> "${GITHUB_STEP_SUMMARY}"
