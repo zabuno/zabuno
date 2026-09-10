@@ -1152,6 +1152,10 @@ msgstr ""
 msgid "platform.subscriptions.workspace.retry"
 msgstr ""
 
+#: platform:platform.support.desk.region
+msgid "platform.support.desk.region"
+msgstr ""
+
 #: platform:platform.support.error
 msgid "platform.support.error"
 msgstr ""
@@ -1370,6 +1374,14 @@ msgstr ""
 
 #: platform:platform.supportQueue.noReplySurface
 msgid "platform.supportQueue.noReplySurface"
+msgstr ""
+
+#: platform:platform.supportQueue.noWorkspace
+msgid "platform.supportQueue.noWorkspace"
+msgstr ""
+
+#: platform:platform.supportQueue.openDesk
+msgid "platform.supportQueue.openDesk"
 msgstr ""
 
 #: platform:platform.supportQueue.status.answered

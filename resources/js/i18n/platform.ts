@@ -547,6 +547,9 @@ const en = {
     'platform.support.open.submit': 'Open a support session on {name}',
     'platform.support.open.failed': 'The session could not be opened.',
     'platform.support.open.pickTenant': 'Pick a restaurant first.',
+    // Masanın kendi adı VAR, çünkü odak oraya taşınıyor: adsız bir kaba
+    // atlayan ekran okuyucu "grup" der ve görevli nereye düştüğünü bilmez.
+    'platform.support.desk.region': 'Support desk for {name}',
     'platform.support.open.alreadyOpen':
         'A session is already open. End it before opening another one; sessions never stack and are never renewed.',
 
@@ -563,6 +566,12 @@ const en = {
     'platform.supportQueue.empty': 'Nothing is waiting.',
     'platform.supportQueue.markAnswered': 'Mark answered',
     'platform.supportQueue.markClosed': 'Close',
+    // TEK TIK, kuyruktan masaya. Referans adın İÇİNDEDİR: iki satırın
+    // düğmesi aynı adı taşısaydı, ekran okuyucuyla çalışan görevli hangi
+    // talebin masasını açtığını yalnız sırayı sayarak bilebilirdi.
+    'platform.supportQueue.openDesk': 'Open the support desk for {reference}',
+    'platform.supportQueue.noWorkspace':
+        'This one came through the public contact form and is not tied to any restaurant account, so there is no support desk to open.',
     'platform.supportQueue.noAcknowledgement':
         'No acknowledgement email reached this sender, so they may not know the request arrived.',
     'platform.supportQueue.noReplySurface':

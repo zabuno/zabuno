@@ -18,6 +18,7 @@ const meta: Meta<typeof SupportQueue> = {
         busy: false,
         onStatusFilter: () => undefined,
         onChangeStatus: () => undefined,
+        onOpenWorkspace: () => undefined,
         rows: [
             {
                 id: 1,
