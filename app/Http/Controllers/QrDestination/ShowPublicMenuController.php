@@ -8,6 +8,7 @@ use App\Application\Analytics\UseCase\RecordAnalyticsEvent;
 use App\Application\Entitlement\Port\EntitlementRepositoryPort;
 use App\Application\MenuCatalog\Port\OutOfStockPort;
 use App\Application\Ordering\Port\OrderingSwitchPort;
+use App\Application\Publication\Dto\GuestClosedNotice;
 use App\Application\Publication\Dto\PublicationRecord;
 use App\Application\Publication\Port\PublicMenuAddressPort;
 use App\Application\Publication\UseCase\ResolveGuestMenuView;
@@ -199,7 +200,7 @@ final class ShowPublicMenuController extends Controller
                 bir düğme göstermek, ona olmayan bir yetenek vaat etmektir
                 ve bunu restoran değil ürün öder.
             */
-            'ordering' => $this->orderingFor($record, $publication, $guestLocale),
+            'ordering' => $this->orderingFor($record, $publication, $guestLocale, $view->closedNotice),
             /*
                 PUANLAMA — SEPETLE AYNI KURAL (`docs/116` §3/§4).
 
@@ -255,10 +256,26 @@ final class ShowPublicMenuController extends Controller
      * para birimi kullanmıyorsa sepet çizilmez — yanlış bir toplam, masada
      * ödenen bir yanlıştır.
      *
+     * ═══ ŞARTLARDAN BİRİ ZATEN SAYFANIN ÜSTÜNDE YAZIYORDU (GUEST-B1) ═══
+     *
+     * Şube kapalıyken menünün üstünde dürüst bir şerit çiziliyor ve altında
+     * çalışan bir sepet duruyordu; aynı ekran iki şey birden söylüyordu.
+     * Kapalılık kararı YENİDEN HESAPLANMAZ: şeridi çizen `closedNotice`
+     * buraya olduğu gibi girer. İkinci bir saat hesabı yazsaydık, gece
+     * yarısını aşan bir aralıkta şerit ile sepet farklı cevap verebilirdi.
+     *
+     * `null` gelen şerit "kapalı değiliz" DEĞİL, "kapalı olduğumuzu
+     * söyleyemiyoruz" demektir (saati girilmemiş şube, yarım hafta, saat
+     * dilimsiz şube). Bu paket o şubelerin sepetini kapatmaz.
+     *
      * @return array{submitPath:string, money:array<string, mixed>, text:array<string, string>}|null
      */
-    private function orderingFor(QrCodeRecord $record, PublicationRecord $publication, string $guestLocale): ?array
-    {
+    private function orderingFor(
+        QrCodeRecord $record,
+        PublicationRecord $publication,
+        string $guestLocale,
+        ?GuestClosedNotice $closedNotice,
+    ): ?array {
         if ($record->diningTableId === null) {
             // Masaya bağlı olmayan kod (afiş, kartvizit, giriş kodu):
             // siparişin düşeceği masa yok.
@@ -270,6 +287,13 @@ final class ShowPublicMenuController extends Controller
         }
 
         if (! $this->orderingSwitch->acceptsOrders($record->workspaceId, $record->locationId)) {
+            return null;
+        }
+
+        if ($closedNotice !== null) {
+            // Kapı kapalıyken sepet çizmek, masadaki misafire basınca
+            // sunucudan ret yiyeceği bir düğme göstermektir — üstelik
+            // ekranın üstünde kapalı olduğumuzu okuduktan sonra.
             return null;
         }
 

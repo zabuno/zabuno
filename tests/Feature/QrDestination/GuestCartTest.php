@@ -7,6 +7,7 @@ namespace Tests\Feature\QrDestination;
 use App\Domain\Entitlement\Entitlement;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Tests\Support\GrantsPlanEntitlements;
@@ -198,6 +199,64 @@ final class GuestCartTest extends TestCase
         $tableless = $this->scene('sepet-masasiz');
         DB::table('qr_codes')->where('id', $tableless['qrCodeId'])->update(['dining_table_id' => null]);
         $this->assertNoCartDrawn($tableless['token'], 'karekod bir masaya bağlı değil');
+    }
+
+    public function test_the_cart_is_not_drawn_while_the_branch_is_closed_by_its_opening_hours(): void
+    {
+        /*
+            ŞERİDİ ÇİZEN KARAR, SEPETİ DE KAPATIR (GUEST-B1).
+
+            Bugüne kadar sayfa iki şey birden söylüyordu: üstte "şu an
+            kapalıyız", altında çalışan bir sepet ve basılabilir bir
+            "siparişi gönder" düğmesi. Masadaki misafir için bu iki cümle
+            aynı ekranda duramaz — biri diğerini yalanlıyor.
+
+            Kapalılık kararı `ResolveGuestMenuView::closedNoticeForMenu`
+            içinde ZATEN veriliyordu ve sayfa onu şerit olarak çiziyordu;
+            eksik olan tek şey, aynı kararın sepet kapısında da sorulmasıydı.
+            İkinci bir saat hesabı yazmıyoruz: yazsaydık, gece yarısını aşan
+            bir aralıkta şerit ile sepet farklı cevap verebilirdi.
+        */
+        $scene = $this->scene('sepet-saat-kapali');
+
+        $this->insertUniformWeek($scene['workspaceId'], $scene['locationId'], 9 * 60, 17 * 60);
+
+        // Şubenin KENDİ saatinde 23:30; sunucunun saati cevaba karışmaz.
+        Carbon::setTestNow(Carbon::parse('2026-09-09 23:30', 'Europe/Istanbul'));
+
+        $html = (string) $this->withHeaders(['Accept' => 'text/html'])
+            ->get('/menu/'.$scene['token'])
+            ->getContent();
+
+        self::assertStringContainsString(
+            'data-guest-state="closed"',
+            $html,
+            'Öncül: şube kapalı ve şerit çizilmiş olmalı — sınanan şey, aynı kararın sepette de geçerli olması.'
+        );
+
+        $this->assertNoCartDrawn($scene['token'], 'şube o saatte kapalı');
+    }
+
+    /**
+     * Şubenin haftasını DOĞRUDAN yazar — yedi gün de aynı aralık.
+     *
+     * Panel ucundan geçilmez: sınanan şey yazma yolu değil, o veriyle
+     * sayfanın ne çizdiğidir.
+     */
+    private function insertUniformWeek(int $workspaceId, int $locationId, int $opensMinute, int $closesMinute): void
+    {
+        foreach (range(1, 7) as $day) {
+            DB::table('location_opening_hours')->insert([
+                'workspace_id' => $workspaceId,
+                'location_id' => $locationId,
+                'day_of_week' => $day,
+                'is_closed' => false,
+                'opens_minute' => $opensMinute,
+                'closes_minute' => $closesMinute,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
 
     private function assertNoCartDrawn(string $token, string $why): void
