@@ -34,6 +34,18 @@ export const team = {
     'workspace.team.invite.error': 'Unable to create the invitation. Please try again.',
     'workspace.team.invite.success': 'Invitation created successfully.',
     'workspace.team.members.region': 'Team members',
+    /*
+        MASAÜSTÜ TABLOSUNUN SÜTUN BAŞLIKLARI (`docs/153` §6).
+
+        Dört kelime yalnız geniş yüzeyde çizilir: dokunmatik liste alanları
+        satır içinde okur ve orada bir sütun yoktur. Başlıklar GÖRÜNÜRDÜR,
+        çünkü görünmez bir `aria-label` ekran okuyucuya yeter ama masada
+        oturan kişiye hiçbir şey söylemez.
+    */
+    'workspace.team.members.column.name': 'Name',
+    'workspace.team.members.column.email': 'Email',
+    'workspace.team.members.column.role': 'Role',
+    'workspace.team.members.column.actions': 'Actions',
     'workspace.team.members.loading': 'Loading team members…',
     'workspace.team.members.error': 'Team members failed to load. Please try again.',
     'workspace.team.members.empty': 'No members in this workspace yet.',
