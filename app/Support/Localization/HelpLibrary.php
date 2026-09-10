@@ -63,11 +63,18 @@ final class HelpLibrary
      * ilk oturumun sonunda herkesin çarptığı duvardır, ürüne fotoğraf koymak
      * ise ikinci günün işidir. Panik hâlindeki okuru kaydırmaya zorlamak,
      * yardımın işe yaramadığı anlamına gelir.
+     *
+     * Masa kartı makalesi EN SONDA durur ve bu da bir sıklık ölçüsüdür:
+     * kart basmak bir restoranın ömründe bir ya da iki kez yaptığı iştir,
+     * fiyat düzeltmek ise her hafta. Ama makale ilk günün de işidir — giriş
+     * makalesinin karekod bölümü doğrudan ona bağlanır, çünkü orada anlatılan
+     * üç satır kırk masalı bir salona yetmez.
      */
     public const ARTICLES = [
         self::ENTRY,
         'nothing-changed-for-my-guests',
         'a-photo-on-a-dish',
+        'table-cards-and-areas',
     ];
 
     private const FALLBACK = 'en';

@@ -52,13 +52,17 @@
         <h2 id="help-qr-heading" class="text-2xl font-bold">Print your QR codes</h2>
         <ol class="flex list-decimal flex-col gap-2 ps-5 text-fg-secondary">
             <li>Publish the menu first — a QR code needs something to point at.</li>
-            <li>Open <strong>Publication</strong> and create codes; there is a bulk option for a whole room of tables.</li>
-            <li>Export as <strong>PDF</strong> for the printer, or PNG/SVG for a designer.</li>
+            <li>Open <strong>QR codes</strong> in the workspace and create the codes for your tables; there is a bulk option for a whole room of tables.</li>
+            <li>Download the cards as PDF for the printer, or SVG for a designer.</li>
         </ol>
         <p class="text-fg-secondary">
             Print once. If you reorganise the menu later, the printed code keeps working: you
             can move where it points, and a code you disabled by mistake can be re-enabled.
             The paper on the table never becomes waste.
+        </p>
+        <p class="text-fg-secondary">
+            Forty tables, sizes, designs and areas?
+            <a class="site-inline-action" href="/help/table-cards-and-areas">Here is the whole table-card screen</a>.
         </p>
     </section>
 
@@ -105,6 +109,11 @@
                 <a class="site-inline-action" href="/help/a-photo-on-a-dish">How do I put a photo on a dish?</a>
                 — the photo goes to Media first and the dish afterwards, and the last step is
                 publishing.
+            </li>
+            <li>
+                <a class="site-inline-action" href="/help/table-cards-and-areas">How do I print cards for my tables?</a>
+                — one code per table, four ready sizes, and the areas that let you reprint the
+                garden without reprinting the whole restaurant.
             </li>
         </ul>
     </section>

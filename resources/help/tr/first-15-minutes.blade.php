@@ -52,13 +52,17 @@
         <h2 id="help-qr-heading" class="text-2xl font-bold">Karekodlarınızı bastırın</h2>
         <ol class="flex list-decimal flex-col gap-2 ps-5 text-fg-secondary">
             <li>Önce menüyü yayınlayın — karekodun işaret edeceği bir şey olmalı.</li>
-            <li><strong>Yayın</strong> ekranını açıp kod oluşturun; bütün bir salonun masaları için toplu seçenek var.</li>
-            <li>Matbaa için <strong>PDF</strong>, tasarımcı için PNG/SVG olarak dışa aktarın.</li>
+            <li>Çalışma alanında <strong>Karekodlar</strong> ekranını açıp masalarınızın kodlarını oluşturun; bütün bir salonun masaları için toplu seçenek var.</li>
+            <li>Kartları matbaa için PDF, tasarımcı için SVG olarak indirin.</li>
         </ol>
         <p class="text-fg-secondary">
             Bir kez bastırın. Menüyü sonradan yeniden düzenlerseniz basılı kod çalışmaya devam
             eder: nereyi gösterdiğini taşıyabilir, yanlışlıkla kapattığınız bir kodu geri
             açabilirsiniz. Masadaki kâğıt çöpe dönüşmez.
+        </p>
+        <p class="text-fg-secondary">
+            Kırk masa, ölçüler, tasarımlar ve bölümler?
+            <a class="site-inline-action" href="/help/table-cards-and-areas">Masa kartı ekranının tamamı burada</a>.
         </p>
     </section>
 
@@ -104,6 +108,11 @@
             <li>
                 <a class="site-inline-action" href="/help/a-photo-on-a-dish">Bir ürüne fotoğraf nasıl eklerim?</a>
                 — fotoğraf önce Görseller ekranına, sonra ürüne gider; son adım yayınlamaktır.
+            </li>
+            <li>
+                <a class="site-inline-action" href="/help/table-cards-and-areas">Masalarım için kart nasıl bastırırım?</a>
+                — masa başına bir kod, dört hazır ölçü ve bütün restoranı yeniden bastırmadan
+                yalnız bahçeyi yenilemenizi sağlayan bölümler.
             </li>
         </ul>
     </section>
