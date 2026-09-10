@@ -89,6 +89,18 @@
 
     <hr class="border-border" role="separator">
 
+    <section id="help-more" aria-labelledby="help-more-heading" class="flex flex-col gap-3">
+        <h2 id="help-more-heading" class="text-2xl font-bold">Bu üçü bittiğinde</h2>
+        <ul class="flex list-disc flex-col gap-2 ps-5 text-fg-secondary">
+            <li>
+                <a class="site-inline-action" href="/help/a-photo-on-a-dish">Bir ürüne fotoğraf nasıl eklerim?</a>
+                — fotoğraf önce Görseller ekranına, sonra ürüne gider; son adım yayınlamaktır.
+            </li>
+        </ul>
+    </section>
+
+    <hr class="border-border" role="separator">
+
     <p class="text-fg-secondary">
         Önünüzde başka bir şey mi var?
         <a class="site-inline-action" href="/contact">Bize yazın</a>.

@@ -41,6 +41,7 @@ use App\Http\Controllers\Workspace\DownloadWorkspaceDataExportController;
 use App\Http\Controllers\WorkspaceAppController;
 use App\Http\Middleware\EnsurePlatformSuperAdmin;
 use App\Http\Responses\GuestDeadEnd;
+use App\Support\Localization\HelpLibrary;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -85,9 +86,25 @@ Route::get('/pricing', [FoundationStatusController::class, '__invoke'])->name('p
     Gönderim HIZ SINIRLI: form herkese açık ve oturum istemiyor, dolayısıyla
     sınırsız gönderim bir tabloyu doldurmanın en ucuz yolu olurdu.
 */
-// "İlk 15 dakika" — menüyü aktarmak, karekod basmak, fiyat değiştirmek.
-// Oturum İSTEMEZ: tıkanan biri oturum açamıyor olabilir (`docs/89`).
-Route::get('/help', ShowHelpController::class)->name('public.help');
+/*
+    YARDIM KÜTÜPHANESİ (`docs/89`, HELP-PHOTO-01).
+
+    `/help` giriş makalesidir ("ilk 15 dakika": menüyü aktarmak, karekod
+    basmak, fiyat değiştirmek) ve ADI DA ADRESİ DE KALIR — paneldeki
+    ilk-kez ipuçları, gezinti ve altbilgi ona bağlı. Diğer makaleler
+    `/help/<slug>` altında durur.
+
+    Rotalar LİTERAL — desenle (`/help/{article}`) yazılmadılar. İki sebep:
+    desenli tek bir rota kayıtlı olmayan her adresi de denetleyiciye
+    taşırdı, ve statik sayfa sayan ölçümler (masterpage kapıları, 320
+    piksel taraması) desen taşıyan bir rotayı bir sayfa saymaz.
+
+    Oturum İSTEMEZ: tıkanan biri oturum açamıyor olabilir.
+*/
+foreach (HelpLibrary::ARTICLES as $helpArticle) {
+    Route::get(HelpLibrary::pathOf($helpArticle), ShowHelpController::class)
+        ->name($helpArticle === HelpLibrary::ENTRY ? 'public.help' : 'public.help.'.$helpArticle);
+}
 
 /*
     "Kimden alışveriş yapıyorum?" (FF-216).
