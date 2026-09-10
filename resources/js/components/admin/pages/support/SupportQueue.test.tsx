@@ -46,6 +46,7 @@ const rows: SupportQueueRow[] = [
 function renderQueue(overrides: Partial<React.ComponentProps<typeof SupportQueue>> = {}) {
     const onStatusFilter = vi.fn();
     const onChangeStatus = vi.fn();
+    const onOpenWorkspace = vi.fn();
 
     render(
         <SupportQueue
@@ -54,11 +55,12 @@ function renderQueue(overrides: Partial<React.ComponentProps<typeof SupportQueue
             busy={false}
             onStatusFilter={onStatusFilter}
             onChangeStatus={onChangeStatus}
+            onOpenWorkspace={onOpenWorkspace}
             {...overrides}
         />,
     );
 
-    return { onStatusFilter, onChangeStatus };
+    return { onStatusFilter, onChangeStatus, onOpenWorkspace };
 }
 
 describe('SupportQueue', () => {
@@ -111,6 +113,26 @@ describe('SupportQueue', () => {
 
         await user.selectOptions(screen.getByLabelText('Status'), 'answered');
         expect(onStatusFilter).toHaveBeenCalledWith('answered');
+    });
+
+    /**
+     * TEK TIK, YALNIZ AÇILACAK BİR HESAP VARSA.
+     *
+     * Kuyruktaki iki satır aynı görünür ama biri bir restoran hesabına
+     * bağlıdır, diğeri herkese açık iletişim formundan gelmiştir ve hiçbir
+     * hesaba bağlı DEĞİLDİR. İkisine de aynı düğmeyi çizmek, destek
+     * görevlisine var olmayan bir masayı vaat ederdi: tıklar, bekler ve
+     * elinde bir hata cümlesi kalırdı.
+     */
+    it('offers one accessible desk action for a tenant row and none for a public contact row', async () => {
+        const user = userEvent.setup();
+        const { onOpenWorkspace } = renderQueue();
+
+        const actions = screen.getAllByRole('button', { name: /Open the support desk/ });
+        expect(actions).toHaveLength(1);
+
+        await user.click(actions[0]);
+        expect(onOpenWorkspace).toHaveBeenCalledWith(42);
     });
 
     it('says nothing is waiting instead of drawing an empty box', () => {

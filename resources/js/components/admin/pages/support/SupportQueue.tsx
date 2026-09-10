@@ -24,6 +24,8 @@ export type SupportQueueProps = {
     busy: boolean;
     onStatusFilter: (status: string) => void;
     onChangeStatus: (id: number, status: string) => void;
+    /** Satırın kiracısını tek tıkla açar — yalnız `workspace_id` varsa çağrılır. */
+    onOpenWorkspace: (workspaceId: number) => void;
 };
 
 /**
@@ -45,6 +47,12 @@ export type SupportQueueProps = {
  * DURUM DEĞİŞTİRME BİR KAYIT FİİLİDİR, bir cevap değil. İlk `answered`
  * geçişi ilk yanıt damgasını bir kez atar — "kaç saatte cevap verdik"
  * ölçümünün kaynağı.
+ *
+ * MASA DÜĞMESİ YALNIZ HESABI OLAN SATIRDADIR. Herkese açık iletişim
+ * formundan gelen talebin `workspace_id`'si yoktur; ona da aynı düğmeyi
+ * çizmek, açılamayacak bir masayı vaat etmek olurdu. Düğme yerine o
+ * satırda NEDENİ yazar — eksik bir eylem, açıklanmamış bir boşluktan
+ * iyidir.
  */
 export function SupportQueue({
     rows,
@@ -52,6 +60,7 @@ export function SupportQueue({
     busy,
     onStatusFilter,
     onChangeStatus,
+    onOpenWorkspace,
 }: SupportQueueProps) {
     return (
         <OpsCard
@@ -97,7 +106,33 @@ export function SupportQueue({
                                     {t('platform.supportQueue.noAcknowledgement')}
                                 </p>
                             )}
+                            {row.workspace_id === null ? (
+                                <p className="text-meta text-fg-muted">
+                                    {t('platform.supportQueue.noWorkspace')}
+                                </p>
+                            ) : null}
                             <div className="flex flex-wrap gap-[var(--space-2)]">
+                                {row.workspace_id !== null && (
+                                    <Button
+                                        type="button"
+                                        size="sm"
+                                        disabled={busy}
+                                        onClick={() => {
+                                            // Kontrol tıklama ANINDA yeniden
+                                            // yapılır: derleyici, sonradan
+                                            // çalışacak bir geri çağırmanın
+                                            // içinde dışarıdaki daraltmayı
+                                            // geçerli saymaz.
+                                            if (row.workspace_id !== null) {
+                                                onOpenWorkspace(row.workspace_id);
+                                            }
+                                        }}
+                                    >
+                                        {t('platform.supportQueue.openDesk', {
+                                            reference: row.reference,
+                                        })}
+                                    </Button>
+                                )}
                                 {row.status !== 'answered' && (
                                     <Button
                                         type="button"

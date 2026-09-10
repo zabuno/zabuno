@@ -1152,6 +1152,10 @@ msgstr "Bir çalışma alanı seçin"
 msgid "platform.subscriptions.workspace.retry"
 msgstr "Tekrar dene"
 
+#: platform:platform.support.desk.region
+msgid "platform.support.desk.region"
+msgstr "{name} için destek masası"
+
 #: platform:platform.support.error
 msgid "platform.support.error"
 msgstr "Bu hesap okunamadı."
@@ -1371,6 +1375,14 @@ msgstr "Gönderene alındı e-postası ulaşmadı; talebinin geldiğini bilmiyor
 #: platform:platform.supportQueue.noReplySurface
 msgid "platform.supportQueue.noReplySurface"
 msgstr "Önce en eski: en uzun süredir bekleyen ilk yanıtlanır. Yanıtlar e-postayla yazılır; üründe henüz yanıt ekranı yoktur. Talebi yanıtlandı olarak işaretlemek zamanı kaydeder, mesaj göndermez."
+
+#: platform:platform.supportQueue.noWorkspace
+msgid "platform.supportQueue.noWorkspace"
+msgstr "Bu talep herkese açık iletişim formundan geldi ve hiçbir restoran hesabına bağlı değil; açılacak bir destek masası yok."
+
+#: platform:platform.supportQueue.openDesk
+msgid "platform.supportQueue.openDesk"
+msgstr "{reference} için destek masasını aç"
 
 #: platform:platform.supportQueue.status.answered
 msgid "platform.supportQueue.status.answered"

@@ -1152,6 +1152,10 @@ msgstr "Select a workspace"
 msgid "platform.subscriptions.workspace.retry"
 msgstr "Retry"
 
+#: platform:platform.support.desk.region
+msgid "platform.support.desk.region"
+msgstr "Support desk for {name}"
+
 #: platform:platform.support.error
 msgid "platform.support.error"
 msgstr "We could not read this account."
@@ -1371,6 +1375,14 @@ msgstr "No acknowledgement email reached this sender, so they may not know the r
 #: platform:platform.supportQueue.noReplySurface
 msgid "platform.supportQueue.noReplySurface"
 msgstr "Oldest first: the longest wait is answered first. Replies are written by email — this product has no reply surface yet, so marking a request answered records the timing, it does not send anything."
+
+#: platform:platform.supportQueue.noWorkspace
+msgid "platform.supportQueue.noWorkspace"
+msgstr "This one came through the public contact form and is not tied to any restaurant account, so there is no support desk to open."
+
+#: platform:platform.supportQueue.openDesk
+msgid "platform.supportQueue.openDesk"
+msgstr "Open the support desk for {reference}"
 
 #: platform:platform.supportQueue.status.answered
 msgid "platform.supportQueue.status.answered"
