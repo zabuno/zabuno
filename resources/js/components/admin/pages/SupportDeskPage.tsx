@@ -52,7 +52,15 @@ export function SupportDeskPage() {
         bulmak için bütün kuyruğu yeniden geçmek zorunda kalırdı.
     */
     const deskRef = useRef<HTMLDivElement | null>(null);
-    const [deskFocusPending, setDeskFocusPending] = useState(false);
+
+    /*
+        BEKLEYEN ODAK BİR DURUM DEĞİL, BİR REF. Durum olduğunda etkinin
+        kendisi onu sıfırlamak zorundaydı ve bu, çizim döngüsünün içinde
+        ikinci bir çizim isteyen bir yazma demekti (`react-hooks/
+        set-state-in-effect`). Ref hiçbir çizim tetiklemez: bayrak, tıklamayı
+        okuyan ile masayı çizen arasında taşınan tek seferlik bir not.
+    */
+    const deskFocusPendingRef = useRef(false);
 
     /*
         KUYRUK KİRACIDAN ÖNCE GELİR (`docs/125` §6). Destek günü bir
@@ -239,12 +247,24 @@ export function SupportDeskPage() {
     async function handleQueueOpen(workspaceId: number) {
         setNotice(null);
 
+        /*
+            BAYRAK İSTEKTEN ÖNCE KURULUR. `load` 'ready' durumunu kendi
+            içinde yazar; bayrağı sonra kursaydık, odağı taşıyacak geçiş çoktan
+            olup bitmiş olabilirdi.
+        */
+        deskFocusPendingRef.current = true;
+
         const view = await load(workspaceId);
 
-        if (view === null) return;
+        if (view === null) {
+            // Okuma başarısız: bekleyen not düşürülür, yoksa seçiciyle
+            // açılacak bir sonraki masa odağı haksız yere çalardı.
+            deskFocusPendingRef.current = false;
+
+            return;
+        }
 
         setSelected(view.workspace);
-        setDeskFocusPending(true);
     }
 
     async function handleOpen(reason: string) {
@@ -284,12 +304,18 @@ export function SupportDeskPage() {
         await load(selected.id);
     }
 
+    /*
+        ODAK, MASA ÇİZİLDİKTEN SONRA TAŞINIR. Etki commit'ten sonra koşar ve
+        `ref` o an bağlanmıştır; bu yüzden bir kare geciktirmeye gerek yok —
+        ertelemek odağı, kullanıcının klavyeyle bir sonraki tuşa basabildiği
+        bir aralığa iterdi. Etki DOM'a yazar, duruma DEĞİL.
+    */
     useEffect(() => {
-        if (!deskFocusPending || state.phase !== 'ready') return;
+        if (state.phase !== 'ready' || !deskFocusPendingRef.current) return;
 
+        deskFocusPendingRef.current = false;
         deskRef.current?.focus();
-        setDeskFocusPending(false);
-    }, [deskFocusPending, state.phase]);
+    }, [state.phase]);
 
     async function handleEnd() {
         setBusy(true);
