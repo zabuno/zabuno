@@ -194,18 +194,39 @@ final class CorporateProductPageTest extends TestCase
         $this->get('/en/product/tablet-menu/')->assertStatus(404);
     }
 
-    public function test_the_turkish_address_still_answers_404_because_its_content_slot_is_empty(): void
+    public function test_the_turkish_address_now_serves_its_own_written_page(): void
     {
         /*
-            `docs/118` E4 — kurumsal sitenin ilk içerik dili sahibin kararını
-            bekliyor. Türkçe yuva boş; kütükteki Türkçe kayıt YAYINA ALINSA
-            BİLE ortada gösterilecek bir içerik yok ve sayfa 404 kalır.
-            Yazılmamış bir sayfayı 200 ile sunmak, yönergenin baştan yasakladığı
-            soft-404'tür.
+            BU TEST BİR KARARIN TERSİNE DÖNMÜŞ HÂLİDİR.
+
+            Burada `test_the_turkish_address_still_answers_404_because_its_
+            content_slot_is_empty` duruyordu ve doğruydu: Türkçe yuva bilerek
+            boştu, dolayısıyla kütükteki Türkçe kayıt yayına alınsa bile
+            gösterilecek bir metin yoktu ve sayfa 404 kalıyordu.
+
+            Sahibin kararıyla (2026-09-10) o metin YAZILDI. Ölçülen mekanizma
+            hiç değişmedi — sayfa hâlâ KAYDIN dilinden okunuyor ve metni
+            olmayan bir adres hâlâ 404 dönüyor (`ResolvePageDelivery` son
+            emniyet kemeri, `PublishedPagesSurfaceTest` orada ölçüyor).
+            Değişen tek şey, bu adresin artık bir metni olması.
+
+            Sayfanın TÜRKÇE olduğu da ölçülür: kaydın dili `<html lang>`e
+            geçer ve gövde İngilizce kardeşinin metnini DEĞİL kendi metnini
+            taşır.
         */
         $this->page('urun.qr-menu', '/tr/urun/qr-menu/', PagePublicationStatus::Published, null, 'tr', 'QR menü');
 
-        $this->get('/tr/urun/qr-menu/')->assertStatus(404);
+        $response = $this->withHeaders(['Accept-Language' => 'tr'])->get('/tr/urun/qr-menu/');
+
+        $response->assertStatus(200);
+
+        $html = (string) $response->getContent();
+
+        self::assertStringContainsString('lang="tr"', $html);
+        self::assertStringContainsString('>QR menü</h1>', $html);
+        self::assertStringContainsString('Telefonundaki tarayıcıda açılır', $html);
+        // İngilizce asıl bu sayfaya SIZMAZ: iki dil ayrı metinlerdir.
+        self::assertStringNotContainsString('opens in the browser they already have', $html);
     }
 
     public function test_a_page_that_is_not_a_product_page_renders_from_the_same_template(): void

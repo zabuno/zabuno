@@ -7,6 +7,7 @@ namespace Tests\Unit\Content;
 use App\Domain\Content\Block\BlockType;
 use App\Domain\Money\MoneyFormatter;
 use App\Infrastructure\Content\Pages\PricingPage;
+use App\Infrastructure\Content\Pages\Tr\PricingPage as TurkishPricingPage;
 use App\Infrastructure\Content\ProductPageLibrary;
 use Database\Seeders\PlanCatalogueSeeder;
 use Tests\TestCase;
@@ -105,6 +106,22 @@ final class ProductPageLibraryTest extends TestCase
         'urun.menu-yonetimi.menu-versiyonlari',
     ];
 
+    /**
+     * DALGA 5 — PUBLIC-LOCALE-PARITY-01 (2026-09-10).
+     *
+     * Sahibin açık kararı: *ana dil İngilizce eksiksiz bitecek, Türkçe ikinci
+     * dil olacak ve çevirilerin eksiği kalmayacak.* Bu dalga yeni bir SAYFA
+     * eklemedi; var olan on sekiz sayfanın İKİNCİ DİLİNİ ekledi.
+     *
+     * Bu yüzden aşağıdaki ölçümlerin neredeyse hepsi `all()` üzerinde çalışır
+     * ve iki dili ayırt etmez: bir kural yalnız kaynak dilde ölçülseydi,
+     * ikinci dil sessizce kuralsız kalırdı — ve tam olarak orada, kimsenin
+     * okumadığı yerde bozulurdu.
+     *
+     * @var list<string>
+     */
+    private const LOCALES = ['en', 'tr'];
+
     /** @return list<string> */
     private static function everyPage(): array
     {
@@ -129,20 +146,173 @@ final class ProductPageLibraryTest extends TestCase
         }
     }
 
-    public function test_the_turkish_slots_are_deliberately_empty(): void
+    public function test_every_written_corporate_page_has_turkish_content(): void
     {
         /*
-            `docs/118` E4: kurumsal sitenin İLK içerik dili sahibin AÇIK
-            kararını bekliyor. Türkçe yuvayı tahminle doldurmak, o kararı
-            sessizce vermek olurdu — ve karar tersine dönerse atılacak emek
-            üretirdi. Yuva boş duruyor; karar geldiği gün YALNIZ bu katman
-            değişir, iskelet değişmez.
+            BU TEST BİR KARARIN TERSİNE DÖNMÜŞ HÂLİDİR.
 
-            Bu aynı zamanda çeviri kilidinin kendisiyle de tutarlıdır: burada
-            hiçbir çeviri üretilmedi, hiçbir çeviri işi kuyruklanmadı.
+            Burada `test_the_turkish_slots_are_deliberately_empty` duruyordu
+            ve gerekçesi doğruydu: kurumsal sitenin İLK içerik dili sahibin
+            AÇIK kararını bekliyordu (`docs/118` E4), ve boş yuvayı tahminle
+            doldurmak o kararı sessizce vermek olurdu.
+
+            Karar 2026-09-10'da GELDİ ve açıktır: *ana dil İngilizce eksiksiz
+            bitecek, Türkçe ikinci dil olacak ve çevirilerin eksiği
+            kalmayacak.* Ölçüm de onunla birlikte tersine döndü — eski test
+            silinmedi, YERİNE geçti: aynı yuvaya bakıyor ve artık dolu
+            olmasını istiyor.
+
+            Ölçümün yönü değişti ama sertliği değişmedi. Eskiden bir Türkçe
+            sayfanın VAR OLMASI kırılmaydı; şimdi YOK OLMASI kırılma. İkisi
+            arasında "bazıları var" diye bir hâl yok, çünkü yarım bir ikinci
+            dil, dil değiştiricide bir çıkmaz sokak demektir.
         */
         foreach (self::everyPage() as $pageKey) {
-            self::assertNull($this->library->find($pageKey, 'tr'));
+            self::assertNotNull(
+                $this->library->find($pageKey, 'tr'),
+                "Türkçe içerik eksik: {$pageKey}",
+            );
+        }
+    }
+
+    public function test_the_two_languages_offer_exactly_the_same_pages(): void
+    {
+        /*
+            Tek yönlü ölçmek yetmez ve sebebi hreflang'dir: bir dilde var olup
+            ötekinde olmayan bir sayfa, dil değiştiricide "karşılığı yok"
+            demek ve karşılıklı hreflang kümesini bozmaktır (`docs/119`
+            §10.4). Eşitlik iki yönlü ölçülür.
+        */
+        $keysByLocale = [];
+
+        foreach ($this->library->all() as $content) {
+            $keysByLocale[$content->locale][] = $content->pageKey;
+        }
+
+        self::assertSame(self::LOCALES, array_keys($keysByLocale));
+
+        foreach ($keysByLocale as $locale => $keys) {
+            sort($keys);
+            $expected = self::everyPage();
+            sort($expected);
+
+            self::assertSame($expected, $keys, "`{$locale}` dilinde sayfa kümesi farklı.");
+        }
+    }
+
+    public function test_the_turkish_page_is_a_counterpart_and_not_a_summary(): void
+    {
+        /*
+            ÇEVİRİ EKSİKLİĞİ BİR DÜRÜSTLÜK EKSİKLİĞİDİR.
+
+            Bir sayfanın Türkçesinde bir SINIRLAMA satırı eksik kalsaydı,
+            Türkçe okuyan kişi ürünün YAPMADIĞI bir şeyi yapıyor sanırdı ve
+            satın alma kararını onun üzerine kurardı — yönerge §1 madde
+            18'in yasakladığı şeyin ikinci dildeki hâli.
+
+            Bu yüzden ölçü "metin var mı" değil: iki dil AYNI blokları AYNI
+            sırada ve HER BLOKTA AYNI SAYIDA satırla taşımak zorundadır. Bir
+            özet, bir kısaltma ya da "sadece önemli maddeler" bu kapıdan
+            geçemez.
+
+            Kanıt yolları da eşleşir ve BİREBİR aynıdır: `source` bir metin
+            değil, depodaki bir dosyadır. Çevrilmiş bir kanıt yolu, kanıtın
+            kendisini kaybetmek olurdu.
+        */
+        foreach (self::everyPage() as $pageKey) {
+            $source = $this->library->find($pageKey, 'en');
+            $turkish = $this->library->find($pageKey, 'tr');
+
+            self::assertNotNull($source, $pageKey);
+            self::assertNotNull($turkish, $pageKey);
+
+            self::assertSame(
+                array_map(static fn ($block): string => $block->type->value, $source->blocks),
+                array_map(static fn ($block): string => $block->type->value, $turkish->blocks),
+                "{$pageKey}: iki dil aynı blokları aynı sırada taşımıyor.",
+            );
+
+            foreach ($source->blocks as $index => $block) {
+                $counterpart = $turkish->blocks[$index];
+
+                self::assertCount(
+                    count($block->entries),
+                    $counterpart->entries,
+                    "{$pageKey} / {$block->type->value}: Türkçe blok farklı sayıda satır taşıyor.",
+                );
+
+                foreach ($block->entries as $position => $entry) {
+                    $mirrored = $counterpart->entries[$position];
+
+                    self::assertSame(
+                        $entry->source,
+                        $mirrored->source,
+                        "{$pageKey} / {$block->type->value}: kanıt yolu eşleşmiyor.",
+                    );
+                    self::assertSame(
+                        $entry->href,
+                        $mirrored->href,
+                        "{$pageKey} / {$block->type->value}: CTA hedefi eşleşmiyor.",
+                    );
+                    self::assertSame(
+                        $entry->pageKey,
+                        $mirrored->pageKey,
+                        "{$pageKey} / {$block->type->value}: ilgili sayfa anahtarı eşleşmiyor.",
+                    );
+                }
+            }
+        }
+    }
+
+    public function test_no_turkish_page_is_english_wearing_a_turkish_label(): void
+    {
+        /*
+            "Çeviri var" demenin en ucuz yolu, İngilizce metni olduğu gibi
+            bırakıp yalnız başlığı değiştirmektir; ve o hâlde bütün öteki
+            ölçümler yeşil yanar. Bu yüzden metnin KENDİSİ ölçülür: iki dilin
+            görünen metni hiçbir satırda birebir aynı olamaz.
+
+            Ölçü metnin İYİ olduğunu söylemez — onu insan okur — ama
+            kopyalanmış bir sayfanın sessizce geçmesini imkânsız kılar.
+        */
+        foreach (self::everyPage() as $pageKey) {
+            $source = $this->library->find($pageKey, 'en');
+            $turkish = $this->library->find($pageKey, 'tr');
+
+            self::assertNotNull($source, $pageKey);
+            self::assertNotNull($turkish, $pageKey);
+
+            self::assertNotSame($source->metadata->h1, $turkish->metadata->h1, $pageKey);
+            self::assertNotSame($source->metadata->seoTitle, $turkish->metadata->seoTitle, $pageKey);
+            self::assertNotSame(
+                $source->metadata->metaDescription,
+                $turkish->metadata->metaDescription,
+                $pageKey,
+            );
+
+            foreach ($source->blocks as $index => $block) {
+                /*
+                    "İlgili sayfalar" bu ölçümün DIŞINDADIR ve bu bir boşluk
+                    değil bir tür ayrımı: oradaki metin bir cümle değil, bir
+                    sayfanın KENDİ ADIDIR ve bir ad iki dilde meşru biçimde
+                    aynı olabilir. Bağlantının nereye gittiği zaten
+                    `test_the_turkish_page_is_a_counterpart_and_not_a_summary`
+                    tarafından anahtar anahtar kilitleniyor.
+                */
+                if ($block->type === BlockType::Related) {
+                    continue;
+                }
+
+                $counterpart = $turkish->blocks[$index];
+
+                foreach ($block->entries as $position => $entry) {
+                    self::assertNotSame(
+                        $entry->text,
+                        $counterpart->entries[$position]->text,
+                        "{$pageKey} / {$block->type->value}: satır çevrilmemiş, kopyalanmış.",
+                    );
+                }
+            }
         }
     }
 
@@ -155,12 +325,20 @@ final class ProductPageLibraryTest extends TestCase
             gözden geçirmediği bir sayfa — sessizce yayına girebilirdi.
         */
         $written = array_map(
-            static fn ($content): string => $content->pageKey,
+            static fn ($content): string => $content->locale.'|'.$content->pageKey,
             $this->library->all(),
         );
 
         sort($written);
-        $expected = self::everyPage();
+
+        $expected = [];
+
+        foreach (self::LOCALES as $locale) {
+            foreach (self::everyPage() as $pageKey) {
+                $expected[] = $locale.'|'.$pageKey;
+            }
+        }
+
         sort($expected);
 
         self::assertSame($expected, $written);
@@ -182,6 +360,17 @@ final class ProductPageLibraryTest extends TestCase
         $sourceLocale = (string) config('i18n.source_locale');
 
         foreach ($this->library->all() as $content) {
+            /*
+                Bu ölçüm KAYNAK DİLİN adresine bakar; öteki dillerin adresi
+                belgeden gelen kütük satırında yaşar (`docs/106`,
+                `ImportSiteMapCommand`) ve bu dosyada tekrar edilmez. İkinci
+                dili de buraya yazmak, aynı olgunun bir gün ayrışacak iki
+                kaydını üretirdi.
+            */
+            if ($content->locale !== $sourceLocale) {
+                continue;
+            }
+
             self::assertArrayHasKey(
                 $content->pageKey,
                 $sourcePaths,
@@ -220,8 +409,9 @@ final class ProductPageLibraryTest extends TestCase
         }
 
         // Kanıtın kendisi de ölçülür: hiç kanıt taşımayan bir kütük, bu
-        // kapıyı sessizce boş geçerdi. Dalga 3 ile ölçülen sayı 370'i aştı.
-        self::assertGreaterThan(300, $checked);
+        // kapıyı sessizce boş geçerdi. Dalga 3 ile ölçülen sayı 370'i aştı;
+        // dalga 5 ikinci dili eklediğinde aynı kanıtlar bir kez daha sayıldı.
+        self::assertGreaterThan(600, $checked);
     }
 
     public function test_every_capability_step_requirement_and_limitation_carries_its_evidence(): void
@@ -369,20 +559,30 @@ final class ProductPageLibraryTest extends TestCase
             yazıldığında biri onu buraya eklemeyi unutursa, sayfa var ama
             harita onu göstermiyor olur.
         */
-        $overview = $this->library->find('urun', 'en');
-        self::assertNotNull($overview);
+        foreach (self::LOCALES as $locale) {
+            $overview = $this->library->find('urun', $locale);
+            self::assertNotNull($overview, $locale);
 
-        $related = $overview->block(BlockType::Related);
-        self::assertNotNull($related);
+            $related = $overview->block(BlockType::Related);
+            self::assertNotNull($related, $locale);
 
-        $linked = array_map(static fn ($entry): ?string => $entry->pageKey, $related->entries);
+            $linked = array_map(static fn ($entry): ?string => $entry->pageKey, $related->entries);
 
-        foreach ($this->library->all() as $content) {
-            if (preg_match('/^urun\.[^.]+$/', $content->pageKey) !== 1) {
-                continue;
+            foreach ($this->library->all() as $content) {
+                if ($content->locale !== $locale) {
+                    continue;
+                }
+
+                if (preg_match('/^urun\.[^.]+$/', $content->pageKey) !== 1) {
+                    continue;
+                }
+
+                self::assertContains(
+                    $content->pageKey,
+                    $linked,
+                    "`{$locale}` genel bakışı {$content->pageKey} sayfasına ulaşmıyor.",
+                );
             }
-
-            self::assertContains($content->pageKey, $linked, "Genel bakış {$content->pageKey} sayfasına ulaşmıyor.");
         }
     }
 
@@ -423,13 +623,26 @@ final class ProductPageLibraryTest extends TestCase
             kafasında bugün var olan bir özelliğe dönüşür ve satın alma kararı
             onun üzerine kurulur.
         */
-        $forbidden = ['coming soon', 'roadmap', 'will soon', 'in the coming', 'planned for', 'later this year'];
+        /*
+            LİSTE İKİ DİLLİDİR ve olmak zorundadır. Yalnız İngilizce ifadeleri
+            aramak, ikinci dilde "yakında" yazmayı serbest bırakırdı — üstelik
+            kural yeşil yanmaya devam ederdi, ki en pahalı hâli budur.
+        */
+        $forbidden = [
+            'coming soon', 'roadmap', 'will soon', 'in the coming', 'planned for', 'later this year',
+            'yakında', 'yol haritası', 'yakın zamanda', 'planlanıyor', 'ilerleyen aylarda',
+            'bu yıl içinde', 'ileride eklenecek', 'çok yakında',
+        ];
 
         foreach ($this->library->all() as $content) {
-            $haystack = mb_strtolower($this->flatten($content->pageKey));
+            $haystack = mb_strtolower($this->flatten($content->pageKey, $content->locale));
 
             foreach ($forbidden as $phrase) {
-                self::assertStringNotContainsString($phrase, $haystack, $content->pageKey);
+                self::assertStringNotContainsString(
+                    $phrase,
+                    $haystack,
+                    "{$content->locale}|{$content->pageKey}",
+                );
             }
         }
     }
@@ -448,31 +661,41 @@ final class ProductPageLibraryTest extends TestCase
         */
         $catalogue = PlanCatalogueSeeder::catalogue();
 
-        $content = $this->library->find('fiyatlandirma', 'en');
-        self::assertNotNull($content);
+        /*
+            İKİ DİL DE ÖLÇÜLÜR. Fiyat sayfası, bir sayfanın yalan söylemesinin
+            en pahalı olduğu yerdir ve o pahalılık ikinci dilde azalmaz —
+            aksine, kimsenin bakmadığı yerde artar. Tutar Türkçe sayfada
+            Türkçe biçimlendirilir (`₺` ve virgüllü ondalık), dolayısıyla
+            beklenen metin de o dilin biçimlendirmesinden üretilir.
+        */
+        foreach (self::LOCALES as $locale) {
+            $content = $this->library->find('fiyatlandirma', $locale);
+            self::assertNotNull($content, $locale);
 
-        $plans = $content->block(BlockType::Capabilities);
-        self::assertNotNull($plans);
+            $plans = $content->block(BlockType::Capabilities);
+            self::assertNotNull($plans, $locale);
 
-        $named = array_values(array_filter(array_map(
-            static fn ($entry): ?string => $entry->term,
-            $plans->entries,
-        )));
+            $named = array_values(array_filter(array_map(
+                static fn ($entry): ?string => $entry->term,
+                $plans->entries,
+            )));
 
-        // Ne eksik ne fazla: katalogda olmayan bir plan da sayfada duramaz.
-        self::assertSame(
-            array_values(array_map(static fn (array $plan): string => $plan['name'], $catalogue)),
-            $named,
-        );
-
-        $text = $this->flatten('fiyatlandirma');
-
-        foreach ($catalogue as $plan) {
-            self::assertStringContainsString(
-                MoneyFormatter::format($plan['amount_minor'], 'TRY', 'en'),
-                $text,
-                "Katalogdaki fiyat sayfada yazmıyor: {$plan['name']}",
+            // Ne eksik ne fazla: katalogda olmayan bir plan da sayfada duramaz.
+            self::assertSame(
+                array_values(array_map(static fn (array $plan): string => $plan['name'], $catalogue)),
+                $named,
+                $locale,
             );
+
+            $text = $this->flatten('fiyatlandirma', $locale);
+
+            foreach ($catalogue as $plan) {
+                self::assertStringContainsString(
+                    MoneyFormatter::format($plan['amount_minor'], 'TRY', $locale),
+                    $text,
+                    "`{$locale}` katalogdaki fiyat sayfada yazmıyor: {$plan['name']}",
+                );
+            }
         }
     }
 
@@ -487,22 +710,24 @@ final class ProductPageLibraryTest extends TestCase
 
             Sayı yazmak yasak değil; KAYNAKSIZ sayı yazmak yasak.
         */
-        $allowed = [];
+        foreach (self::LOCALES as $locale) {
+            $allowed = [];
 
-        foreach (PlanCatalogueSeeder::catalogue() as $plan) {
-            $formatted = MoneyFormatter::format($plan['amount_minor'], 'TRY', 'en');
+            foreach (PlanCatalogueSeeder::catalogue() as $plan) {
+                $formatted = MoneyFormatter::format($plan['amount_minor'], 'TRY', $locale);
 
-            foreach (self::figuresIn($formatted) as $figure) {
-                $allowed[$figure] = true;
+                foreach (self::figuresIn($formatted) as $figure) {
+                    $allowed[$figure] = true;
+                }
             }
-        }
 
-        foreach (self::figuresIn($this->flatten('fiyatlandirma')) as $figure) {
-            self::assertArrayHasKey(
-                $figure,
-                $allowed,
-                "Fiyat sayfasında kataloğa dayanmayan bir rakam var: {$figure}",
-            );
+            foreach (self::figuresIn($this->flatten('fiyatlandirma', $locale)) as $figure) {
+                self::assertArrayHasKey(
+                    $figure,
+                    $allowed,
+                    "`{$locale}` fiyat sayfasında kataloğa dayanmayan bir rakam var: {$figure}",
+                );
+            }
         }
     }
 
@@ -548,16 +773,36 @@ final class ProductPageLibraryTest extends TestCase
             'Zengin görselin misafir yüzeyi yazıldı; susma gerekçesi düştü.',
         );
 
-        $text = mb_strtolower($this->flatten('fiyatlandirma'));
+        /*
+            İKİ DİLİN KARARI AYNI OLMAK ZORUNDA. Bir hakkın bir dilde
+            anlatılıp ötekinde susulması, iki farklı ürün satmak olurdu:
+            Türkçe okuyan alıcı, İngilizce okuyanın gördüğü bir yeteneği hiç
+            görmezdi (ya da tersi). Bu yüzden ölçülen şey metin değil,
+            ANAHTAR KÜMESİDİR.
+        */
+        self::assertSame(
+            array_keys(PricingPage::ANNOUNCED),
+            array_keys(TurkishPricingPage::ANNOUNCED),
+            'Anlatılan haklar iki dilde aynı değil.',
+        );
+        self::assertSame(
+            array_keys(PricingPage::WITHHELD),
+            array_keys(TurkishPricingPage::WITHHELD),
+            'Susulan haklar iki dilde aynı değil.',
+        );
 
-        foreach (PricingPage::WITHHELD as $key => $reason) {
-            self::assertNotSame('', trim($reason), "Sebepsiz susmak bir karar değildir: {$key}");
-            self::assertStringNotContainsString(mb_strtolower($key), $text);
+        foreach (self::LOCALES as $locale) {
+            $text = mb_strtolower($this->flatten('fiyatlandirma', $locale));
+
+            foreach (PricingPage::WITHHELD as $key => $reason) {
+                self::assertNotSame('', trim($reason), "Sebepsiz susmak bir karar değildir: {$key}");
+                self::assertStringNotContainsString(mb_strtolower($key), $text, $locale);
+            }
+
+            // Geliştirici dili hiçbir hâlde sayfaya sızmaz: anlatılan hak da
+            // insanca cümlesiyle yazılır, ham anahtarıyla değil.
+            self::assertStringNotContainsString('menu.rich-media', $text, $locale);
         }
-
-        // Geliştirici dili hiçbir hâlde sayfaya sızmaz: anlatılan hak da
-        // insanca cümlesiyle yazılır, ham anahtarıyla değil.
-        self::assertStringNotContainsString('menu.rich-media', $text);
     }
 
     /**
@@ -575,9 +820,9 @@ final class ProductPageLibraryTest extends TestCase
         );
     }
 
-    private function flatten(string $pageKey): string
+    private function flatten(string $pageKey, string $locale): string
     {
-        $content = $this->library->find($pageKey, 'en');
+        $content = $this->library->find($pageKey, $locale);
 
         if ($content === null) {
             return '';

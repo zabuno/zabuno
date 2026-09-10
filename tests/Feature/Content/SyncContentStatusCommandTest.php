@@ -83,15 +83,41 @@ final class SyncContentStatusCommandTest extends TestCase
     public function test_a_page_whose_own_locale_has_no_content_is_not_advanced(): void
     {
         /*
-            `docs/118` E4. Türkçe kayıt, Türkçe yuva boş olduğu için
-            ilerlemez. İlerletseydik kütük "Türkçe taslak hazır" derdi ve bu
-            yalan, kalite kapısının ilk maddesinin ta kendisini boşa çıkarırdı.
+            ÖLÇÜM AYNI, ÖRNEĞİ DEĞİŞTİ.
+
+            Burada Türkçe bir kayıt kullanılıyordu, çünkü Türkçe yuva bilerek
+            boştu (`docs/118` E4). Sahibin ikinci dil kararıyla (2026-09-10)
+            on sekiz sayfanın Türkçe metni yazıldı ve bu ölçüm o gün sessizce
+            ANLAMINI KAYBEDERDİ: sayfa ilerler, test kırılır ve düzeltilirken
+            kuralın kendisi de yumuşatılabilirdi.
+
+            Kural yumuşatılmadı, ÖRNEĞİ taşındı: metni gerçekten yazılmamış
+            bir dil (Almanca) kullanılıyor. Kütük "taslak hazır" diyemez,
+            çünkü hazır bir taslak yok.
+        */
+        $page = $this->page('urun.qr-menu', 'de', PagePublicationStatus::Planned);
+
+        $this->artisan('site:sync-content-status')->assertSuccessful();
+
+        self::assertSame(PagePublicationStatus::Planned->value, $page->refresh()->publication_status);
+    }
+
+    public function test_a_second_language_with_written_content_advances_like_the_first(): void
+    {
+        /*
+            İkinci dilin ayrıcalığı da yoktur: metni yazılmış bir Türkçe
+            kayıt, İngilizce kardeşiyle aynı kademeye ilerler. Komutun
+            tavanı (`content_draft`) bu pakette DEĞİŞMEDİ — yayına almak
+            hâlâ bir insanın adıyla sayılmış kararıdır.
         */
         $page = $this->page('urun.qr-menu', 'tr', PagePublicationStatus::Planned);
 
         $this->artisan('site:sync-content-status')->assertSuccessful();
 
-        self::assertSame(PagePublicationStatus::Planned->value, $page->refresh()->publication_status);
+        self::assertSame(
+            PagePublicationStatus::ContentDraft->value,
+            $page->refresh()->publication_status,
+        );
     }
 
     public function test_a_dry_run_changes_nothing(): void

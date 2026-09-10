@@ -24,8 +24,9 @@ use Throwable;
  * 1. YAŞAYAN ROTA (`/pricing`, `/help`): bugün sunucuda karşılığı olan, kendi
  *    denetleyicisi olan sayfalar. Bunlar kütükte değildir (kütük yalnız `/tr/`
  *    ve `/en/` altını tutar, `docs/105` §8) ve her zaman bağlanabilir.
- * 2. KÜTÜK YOLU (`/tr/urun/`): sayfa kütüğündeki canonical yollar. Bunlar
- *    yalnız `PageRenderDecision::isLinkable()` evet dediğinde gezintiye girer.
+ * 2. KÜTÜK SAYFASI (`urun`): sayfa kütüğündeki dilsiz anahtarlar. Adresleri
+ *    ÇİZİM ANINDA seçili dilin satırından okunur ve yalnız
+ *    `PageRenderDecision::isLinkable()` evet dediğinde gezintiye girer.
  *    O kararı üreten tek yol `ResolvePageDelivery`dir (`docs/129` §3): kütükteki
  *    durum "yayında" dese bile, o dilde yazılmış bir metin yoksa adres 404
  *    döner ve gezintiye GİRMEZ.
@@ -40,17 +41,23 @@ final class SiteNavigation
     /**
      * Gezinti kütüğü — bölge, grup ve maddeler.
      *
-     * Buradaki her `path` ya bir rotadır ya da site haritasındaki bir
-     * canonical yoldur; üçüncü bir tür YOKTUR. Yeni bir menü maddesi
-     * eklemek, önce o sayfanın var olmasını gerektirir.
+     * Bir madde İKİ hedef türünden birini taşır ve üçüncüsü YOKTUR:
      *
-     * `registry` alanı, maddenin hangi soruyla süzüleceğini söyler.
+     * - `path`: bugün sunucuda karşılığı olan bir rota (`/pricing`) ya da
+     *   aynı belgedeki bir çıpa (`#features`). Dilden bağımsızdır.
+     * - `pageKey`: sayfa kütüğündeki dilsiz kimlik (`urun`). Adresi çizim
+     *   anında SEÇİLİ DİLİN satırından okunur; bu yüzden burada bir adres
+     *   yazılmaz ve yanlış dile götüren bir adres yazılamaz.
+     *
+     * `registry` alanı hangisinin beklendiğini söyler: `true` ise madde bir
+     * `pageKey` taşır ve kütük süzgecinden geçer, `false` ise bir `path`
+     * taşır ve her zaman bağlanabilir.
      *
      * @var array<string, list<array{
      *     id: string,
      *     labelKey: string,
      *     registry: bool,
-     *     items: list<array{labelKey: string, path: string, anchor?: bool, emphasis?: bool}>
+     *     items: list<array{labelKey: string, path?: string, pageKey?: string, anchor?: bool, emphasis?: bool}>
      * }>>
      */
     private const GROUPS = [
@@ -75,25 +82,49 @@ final class SiteNavigation
             [
                 /*
                     MEGA MENÜ — sahibin kendi site haritasındaki üst menü
-                    (`docs/106` §3.1). Bugün bu grubun BİR maddesi bile
-                    çizilmiyor, çünkü kütükteki karşılıkları henüz yayında
-                    değil; grup da bu yüzden hiç çizilmiyor.
+                    (`docs/106` §3.1).
 
-                    `/tr/fiyatlandirma/` bilerek YOK: aynı niyeti bugün
-                    yayında olan `/pricing` karşılıyor ve iki bağlantı aynı
-                    şeye götürseydi, ziyaretçi hangisinin doğru olduğunu
-                    bilemezdi (`docs/106` §1: aynı arama niyeti tek sayfa).
-                    O adresin göçü kendi paketinin işi (`docs/105` §4.1).
+                    ── ADRES DEĞİL ANAHTAR, VE SEBEBİ ÖLÇÜLDÜ ───────────────
+
+                    Bu maddeler bir dönem `/tr/urun/` gibi ELLE YAZILMIŞ
+                    Türkçe adresler taşıyordu. O yazım, kütükte tek bir dil
+                    varken zararsızdı: karşılıkların hiçbiri yayında değildi,
+                    dolayısıyla grup hiç çizilmiyordu ve kimse fark etmedi.
+
+                    Türkçe karşılıklar yayına alındığı gün o yazım bir
+                    KUSURA dönüştü ve kusur tek yönlüdür: İngilizce okuyan
+                    bir ziyaretçinin üst çubuğundaki "Product" bağlantısı onu
+                    `/tr/urun/`ya — yani Türkçe sayfaya — götürürdü. Türkçe
+                    okuyan için doğru olan adres, İngilizce okuyan için sessiz
+                    bir dil değişimiydi.
+
+                    Bu yüzden madde artık bir ADRES değil bir ANAHTAR taşır.
+                    Adres, çizim anında SEÇİLİ DİLİN kütük satırından okunur
+                    (`page_key` + `locale`) ve `/tr/urun/` ile
+                    `/en/product/` arasındaki mekanik olmayan bağ tam da
+                    burada, `docs/120` §5 madde 7'nin söylediği yerde kurulur.
+                    Bir adres yazılmadığı için yanlış dile götüren bir adres
+                    de yazılamaz.
+
+                    Yayın süzgeci DEĞİŞMEDİ: satır `ResolvePageDelivery`
+                    kararından geçmezse madde hiç çizilmez. Taslak bir Türkçe
+                    sayfa üst çubuğa sızamaz.
+
+                    `fiyatlandirma` bilerek YOK: aynı niyeti bugün yayında
+                    olan `/pricing` karşılıyor ve iki bağlantı aynı şeye
+                    götürseydi, ziyaretçi hangisinin doğru olduğunu bilemezdi
+                    (`docs/106` §1: aynı arama niyeti tek sayfa). O adresin
+                    göçü kendi paketinin işi (`docs/105` §4.1).
                 */
                 'id' => 'explore',
                 'labelKey' => 'site.nav.explore',
                 'registry' => true,
                 'items' => [
-                    ['labelKey' => 'site.nav.product', 'path' => '/tr/urun/'],
-                    ['labelKey' => 'site.nav.solutions', 'path' => '/tr/cozumler/'],
-                    ['labelKey' => 'site.nav.integrations', 'path' => '/tr/entegrasyonlar/'],
-                    ['labelKey' => 'site.nav.customers', 'path' => '/tr/musteriler/'],
-                    ['labelKey' => 'site.nav.resources', 'path' => '/tr/kaynaklar/'],
+                    ['labelKey' => 'site.nav.product', 'pageKey' => 'urun'],
+                    ['labelKey' => 'site.nav.solutions', 'pageKey' => 'cozumler'],
+                    ['labelKey' => 'site.nav.integrations', 'pageKey' => 'entegrasyonlar'],
+                    ['labelKey' => 'site.nav.customers', 'pageKey' => 'musteriler'],
+                    ['labelKey' => 'site.nav.resources', 'pageKey' => 'kaynaklar'],
                 ],
             ],
             [
@@ -381,10 +412,15 @@ final class SiteNavigation
     ) {}
 
     /**
-     * Gezintinin işaret ettiği BÜTÜN yollar — çıpalar hariç.
+     * Gezintinin ELLE YAZILMIŞ yolları — çıpalar ve kütük maddeleri hariç.
      *
      * Çıpa bir sayfa değil, bir sayfanın içindeki başlıktır; onu "var mı"
      * diye kütükte aramak yanlış soruyu sormak olurdu.
+     *
+     * Kütük maddeleri de burada YOKTUR ve bu bir eksik değil, artık bir
+     * TANIM: onlar bir adres taşımıyor, bir anahtar taşıyor ve adresleri
+     * kütükten okunuyor. "Gezinti yeni sayfa yaratmaz" iddiası onlar için
+     * bir tarama değil bir inşa özelliğidir — yazılabilecek bir adres yok.
      *
      * @return list<string>
      */
@@ -395,7 +431,7 @@ final class SiteNavigation
         foreach (self::GROUPS as $groups) {
             foreach ($groups as $group) {
                 foreach ($group['items'] as $item) {
-                    if ($item['anchor'] ?? false) {
+                    if (($item['anchor'] ?? false) || ! isset($item['path'])) {
                         continue;
                     }
 
@@ -427,7 +463,16 @@ final class SiteNavigation
      */
     public function forShell(string $anchorPrefix, ?string $locale = null): array
     {
-        $linkable = $this->linkableRegistryPaths();
+        /*
+            SEÇİLİ DİL BURADA BİR KEZ ÇÖZÜLÜR.
+
+            Kütük maddesinin adresi de altbilginin içerik katı da aynı dile
+            bakmak zorundadır; ikisini ayrı çözmek, üst çubuğun bir dili,
+            altbilginin başka bir dili gösterdiği bir sayfa üretirdi.
+        */
+        $selected = SiteText::pick($locale ?? app()->getLocale());
+
+        $linkable = $this->linkableRegistryHrefs($selected);
         $shell = [];
 
         /*
@@ -441,7 +486,7 @@ final class SiteNavigation
             Bu yüzden bu kat elle YAZILMIYOR, kütükten türüyor — ve o gün
             geldiğinde tek bir Blade satırı değişmeden zenginleşiyor.
         */
-        $shell['content'] = $this->contentMenus($locale);
+        $shell['content'] = $this->contentMenus($selected);
 
         foreach (self::GROUPS as $region => $groups) {
             $shell[$region] = [];
@@ -450,13 +495,29 @@ final class SiteNavigation
                 $items = [];
 
                 foreach ($group['items'] as $item) {
-                    if (($group['registry'] ?? false) && ! in_array($item['path'], $linkable, true)) {
-                        continue;
+                    if ($group['registry'] ?? false) {
+                        /*
+                            Kütük maddesinin adresi ÇİZİM ANINDA doğar:
+                            seçili dilde bağlanabilir bir satırı yoksa madde
+                            hiç çizilmez. Yayınlanmamış ya da o dilde metni
+                            yazılmamış bir sayfa buradan sızamaz — karar,
+                            ziyaretçinin alacağı HTTP kodunu üreten kararın
+                            ta kendisi (`ResolvePageDelivery`).
+                        */
+                        $href = $linkable[$item['pageKey']] ?? null;
+
+                        if ($href === null) {
+                            continue;
+                        }
+                    } else {
+                        $href = ($item['anchor'] ?? false)
+                            ? $anchorPrefix.$item['path']
+                            : $item['path'];
                     }
 
                     $items[] = [
-                        'label' => $this->siteText->get($item['labelKey'], $locale),
-                        'href' => ($item['anchor'] ?? false) ? $anchorPrefix.$item['path'] : $item['path'],
+                        'label' => $this->siteText->get($item['labelKey'], $selected),
+                        'href' => $href,
                         'emphasis' => $item['emphasis'] ?? false,
                     ];
                 }
@@ -469,7 +530,7 @@ final class SiteNavigation
 
                 $shell[$region][] = [
                     'id' => $group['id'],
-                    'label' => $this->siteText->get($group['labelKey'], $locale),
+                    'label' => $this->siteText->get($group['labelKey'], $selected),
                     'collapsed' => count($items) > self::OPEN_ITEM_CEILING,
                     'items' => $items,
                 ];
@@ -480,14 +541,24 @@ final class SiteNavigation
     }
 
     /**
-     * Kütükteki hangi gezinti hedefi bugün bağlantı verilebilir?
+     * Kütük maddelerinin SEÇİLİ DİLDEKİ adresleri — yalnız bağlanabilir olanlar.
      *
      * TEK sorguda okunur: her menü maddesi için ayrı sorgu, her sayfa
      * yüklemesinde beş sorgu demekti ve mega menü büyüdükçe artacaktı.
      *
-     * @return list<string>
+     * Sorgu ANAHTARLA yapılır, adresle değil. Adresle sormak, `/tr/urun/`
+     * ile `/en/product/` arasında var olmayan mekanik bir bağ varsaymak
+     * olurdu; oysa slug çevrilebilir bir alandır (`docs/119` §10.4) ve
+     * çevrilmesi SEO'nun gereğidir. Anahtar ise dilsizdir ve iki satırın
+     * ortak kimliğidir (`docs/120` §5 madde 7).
+     *
+     * Dönen adres URL motorundan geçer: kütük yolu sondaki eğik çizgiyi
+     * taşır ama sunucu onu 301 ile atar, ve iç bir bağlantıyı yönlendirmeye
+     * sokmak her tıklamaya bir tur eklemektir.
+     *
+     * @return array<string, string> `page_key` → çizilecek adres
      */
-    private function linkableRegistryPaths(): array
+    private function linkableRegistryHrefs(string $locale): array
     {
         $candidates = [];
 
@@ -498,7 +569,7 @@ final class SiteNavigation
                 }
 
                 foreach ($group['items'] as $item) {
-                    $candidates[] = $item['path'];
+                    $candidates[] = $item['pageKey'];
                 }
             }
         }
@@ -510,7 +581,10 @@ final class SiteNavigation
         $environment = $this->environment();
 
         try {
-            $pages = ContentPage::query()->whereIn('canonical_path', array_unique($candidates))->get();
+            $pages = ContentPage::query()
+                ->whereIn('page_key', array_unique($candidates))
+                ->where('locale', $locale)
+                ->get();
         } catch (Throwable) {
             /*
                 KÜTÜK OKUNAMAZSA SİTE ÖLMEZ.
@@ -534,7 +608,7 @@ final class SiteNavigation
         /** @var ContentPage $page */
         foreach ($pages as $page) {
             if ($this->isLinkable($page, $environment)) {
-                $linkable[] = $page->canonical_path;
+                $linkable[$page->page_key] = $this->normalizer->normalize($page->canonical_path)->target();
             }
         }
 
@@ -583,9 +657,8 @@ final class SiteNavigation
      *
      * @return list<array{id: string, label: string, items: list<array{label: string, href: string, emphasis: bool}>}>
      */
-    private function contentMenus(?string $locale): array
+    private function contentMenus(string $locale): array
     {
-        $locale = SiteText::pick($locale ?? app()->getLocale());
         $environment = $this->environment();
 
         try {
@@ -604,7 +677,7 @@ final class SiteNavigation
                 ->get();
         } catch (Throwable) {
             // Kütük okunamazsa site ÖLMEZ — yaşayan gruplar çizilmeye devam
-            // eder (aynı karar, `linkableRegistryPaths()`).
+            // eder (aynı karar, `linkableRegistryHrefs()`).
             return [];
         }
 
@@ -630,9 +703,21 @@ final class SiteNavigation
             $label[$page->page_key] = $delivery->content?->metadata->breadcrumbTitle ?? (string) $page->title;
         }
 
-        // Elle yazılmış gruplarda ZATEN duran adres burada tekrar edilmez:
-        // aynı bağlantıyı iki kez vermek, ziyaretçiye iki farklı yer olduğunu
-        // düşündürür.
+        /*
+            ELLE YAZILMIŞ BİR ROTA BURADA TEKRAR EDİLMEZ.
+
+            `/pricing` gibi yaşayan bir rota hem üst çubukta hem burada
+            dursaydı, ziyaretçi iki farklı yer olduğunu düşünürdü.
+
+            Kütük maddeleri (üst çubuktaki keşif grubu) bu süzgece GİRMEZ ve
+            bu bilinçli bir ayrım: onlar bir adres bildirmiyor, bir anahtar
+            bildiriyor ve iki yüzey aynı soruya farklı cevap veriyor. Üst
+            çubuk "ürün nerede başlıyor" der ve tek bir giriş gösterir;
+            altbilginin bu katı ise sitenin haritasıdır ve o girişin kendisi
+            haritada bir satırdır. `SiteNavigationSourceTest` (NAV-REGISTRY-03)
+            tam olarak bunu ölçüyor: yayına alınan bir kütük sayfası HEM üst
+            çubukta HEM içerik katında belirir.
+        */
         $declared = $this->declaredTargets();
 
         /** @var array<string, list<ContentPage>> $grouped */

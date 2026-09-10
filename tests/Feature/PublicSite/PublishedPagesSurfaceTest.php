@@ -39,13 +39,27 @@ final class PublishedPagesSurfaceTest extends TestCase
         return count(PublicationDecision::listFrom((array) config('content-publication-decisions')));
     }
 
-    /** @return list<string> Yayına alınan sayfaların YÖNLENDİRMESİZ adresleri. */
-    private function publishedTargets(): array
+    /**
+     * Yayına alınan sayfaların YÖNLENDİRMESİZ adresleri.
+     *
+     * `$locale` VERİLİRSE yalnız o dilin satırları döner ve bu bir kolaylık
+     * değil bir zorunluluk: altbilginin içerik katı TEK bir dilin kütük
+     * satırlarından türer (`SiteNavigation::contentMenus`). İki dili tek
+     * listede beklemek, İngilizce altbilgide Türkçe adresler aramak olurdu —
+     * yani tam olarak bu paketin ÖNLEDİĞİ şey.
+     *
+     * @return list<string>
+     */
+    private function publishedTargets(?string $locale = null): array
     {
         $normalizer = $this->app->make(UrlNormalizer::class);
         $targets = [];
 
         foreach (PublicationDecision::listFrom((array) config('content-publication-decisions')) as $decision) {
+            if ($locale !== null && $decision->locale !== $locale) {
+                continue;
+            }
+
             $page = ContentPage::query()
                 ->where('page_key', $decision->pageKey)
                 ->where('locale', $decision->locale)
@@ -59,9 +73,9 @@ final class PublishedPagesSurfaceTest extends TestCase
         return $targets;
     }
 
-    private function footer(string $path): string
+    private function footer(string $path, string $locale = 'en'): string
     {
-        $html = (string) $this->withHeaders(['Accept-Language' => 'en'])
+        $html = (string) $this->withHeaders(['Accept-Language' => $locale])
             ->get($path)->assertOk()->getContent();
 
         preg_match('#<footer\b.*?</footer>#s', $html, $match);
@@ -148,10 +162,11 @@ final class PublishedPagesSurfaceTest extends TestCase
         $targets = array_values(array_unique($matches[1]));
 
         self::assertGreaterThan(
-            $published,
+            count($this->publishedTargets('en')),
             count($targets),
             'PUBLISHED-SURFACE-01: altbilgi yayınlanan sayfa sayısından kısa — ölçüm dayanaksız.'
         );
+        self::assertGreaterThan(0, $published);
 
         foreach ($targets as $target) {
             // The account entry intentionally sends guests to authentication.
@@ -182,23 +197,33 @@ final class PublishedPagesSurfaceTest extends TestCase
     {
         $this->applyRealDecisions();
 
-        $band = $this->band($this->footer('/pricing'));
+        /*
+            İKİ DİL AYRI AYRI ÖLÇÜLÜR ve aynası da ayrıdır. Ziyaretçi tek bir
+            dilde okur; altbilgisinde öteki dilin adreslerini görmesi, ona
+            farkında olmadan dil değiştiren bir bağlantı sunmak olurdu.
+            Grup iskeletinin iki dilde AYNI çıkması da bir sonuç, bir
+            tesadüf değil: iskelet sayfaların kendi hiyerarşisinden
+            (`parent_key`) doğuyor ve hiyerarşi dilden bağımsız.
+        */
+        foreach (['en' => 'tr', 'tr' => 'en'] as $locale => $other) {
+            $band = $this->band($this->footer('/pricing', $locale));
 
-        preg_match_all('~href="(/[^"\#]*)"~', $band, $links);
+            preg_match_all('~href="(/[^"\#]*)"~', $band, $links);
 
-        $inBand = array_values(array_unique($links[1]));
-        sort($inBand);
+            $inBand = array_values(array_unique($links[1]));
+            sort($inBand);
 
-        self::assertSame($this->publishedTargets(), $inBand);
+            self::assertSame($this->publishedTargets($locale), $inBand, $locale);
+            self::assertStringNotContainsString('href="/'.$other.'/', $band, $locale);
 
-        // Grup iskeleti sayfaların KENDİ hiyerarşisinden çıkar: ürün ağacı,
-        // menü yönetiminin alt ağacı ve ebeveyni olmayanların yığını.
-        preg_match_all('~data-nav-group="(content-[^"]+)"~', $band, $groups);
+            preg_match_all('~data-nav-group="(content-[^"]+)"~', $band, $groups);
 
-        self::assertSame(
-            ['content-explore', 'content-urun', 'content-urun-menu-yonetimi'],
-            $groups[1]
-        );
+            self::assertSame(
+                ['content-explore', 'content-urun', 'content-urun-menu-yonetimi'],
+                $groups[1],
+                $locale
+            );
+        }
     }
 
     // --- PUBLISHED-SURFACE-03 --------------------------------------------
@@ -236,13 +261,27 @@ final class PublishedPagesSurfaceTest extends TestCase
         }
 
         /*
-            TÜRKÇE SATIRLAR SITEMAP'E GİRMEZ. 386'sının metni yok ve çeviri
-            kilidi kapalı (`docs/120` §7); biri girseydi arama motoruna
-            açılmayan bir adres ilan edilmiş olurdu.
+            METNİ OLMAYAN TÜRKÇE SATIRLAR SITEMAP'E YİNE GİRMEZ.
+
+            Buradaki kural bir dönem "hiçbir `/tr/` adresi giremez" diye
+            yazılıydı ve o gün doğruydu: 386 Türkçe satırın metni yoktu.
+            Ölçünün KENDİSİ hiç değişmedi — sitemap yalnız gerçekten açılan
+            adresleri ilan eder (`ResolvePageDelivery`) — değişen şey, on
+            sekizinin artık gerçekten açılıyor olması.
+
+            Bu yüzden kural bir dil yasağı olarak DEĞİL, bir sayı olarak
+            yazılır: kütükte kaç Türkçe satır varsa değil, kaç tanesinin
+            kararı verilmişse o kadar `/tr/` adresi görünür. Geri kalan 368
+            satır hâlâ dışarıdadır ve biri sızsaydı bu kapı kırılırdı.
         */
-        foreach ($after as $location) {
-            self::assertStringNotContainsString('/tr/', $location);
-        }
+        $turkish = array_values(array_filter(
+            $paths,
+            static fn (string $path): bool => str_starts_with($path, '/tr/'),
+        ));
+
+        sort($turkish);
+
+        self::assertSame($this->publishedTargets('tr'), $turkish);
     }
 
     // --- PUBLISHED-SURFACE-04 --------------------------------------------
@@ -265,52 +304,133 @@ final class PublishedPagesSurfaceTest extends TestCase
     {
         $this->applyRealDecisions();
 
-        $band = self::tidy($this->band($this->footer('/pricing')));
         $library = $this->app->make(ContentLibraryPort::class);
         $normalizer = $this->app->make(UrlNormalizer::class);
 
-        foreach (PublicationDecision::listFrom((array) config('content-publication-decisions')) as $decision) {
-            $page = ContentPage::query()
-                ->where('page_key', $decision->pageKey)
-                ->where('locale', $decision->locale)
-                ->firstOrFail();
+        /*
+            ETİKET, O DİLİN KENDİ KISA ADIDIR.
 
-            $content = $library->find($decision->pageKey, $decision->locale);
+            Kütükteki `title` alanı iki dilde de aynıdır — belgeden gelir ve
+            belge Türkçedir. Türkçe satırlar için bu, kaza eseri doğru
+            görünürdü ve tam olarak bu yüzden ölçülüyor: etiketin doğru
+            olması kaynağın doğru olmasından gelmeli, tesadüften değil.
+            Türkçe altbilgide görünen "QR menü", kütüğün açıklama cümlesi
+            değil, sayfanın kendi Türkçe kırıntı başlığıdır.
+        */
+        foreach (['en', 'tr'] as $locale) {
+            $band = self::tidy($this->band($this->footer('/pricing', $locale)));
 
-            self::assertNotNull($content);
+            foreach (PublicationDecision::listFrom((array) config('content-publication-decisions')) as $decision) {
+                if ($decision->locale !== $locale) {
+                    continue;
+                }
 
-            $href = $normalizer->normalize($page->canonical_path)->target();
+                $page = ContentPage::query()
+                    ->where('page_key', $decision->pageKey)
+                    ->where('locale', $decision->locale)
+                    ->firstOrFail();
 
-            self::assertStringContainsString(
-                '<a href="'.$href.'" class="site-footer-link">'.e($content->metadata->breadcrumbTitle).'</a>',
-                $band,
-                "PUBLISHED-SURFACE-04: [{$href}] etiketi sayfanın kendi kısa adı değil."
-            );
+                $content = $library->find($decision->pageKey, $decision->locale);
+
+                self::assertNotNull($content);
+
+                $href = $normalizer->normalize($page->canonical_path)->target();
+
+                self::assertStringContainsString(
+                    '<a href="'.$href.'" class="site-footer-link">'.e($content->metadata->breadcrumbTitle).'</a>',
+                    $band,
+                    "PUBLISHED-SURFACE-04: [{$href}] etiketi sayfanın kendi kısa adı değil."
+                );
+            }
+
+            // Kütüğün açıklama cümlesi ziyaretçiye ASLA ulaşmaz — iki dilde de.
+            self::assertStringNotContainsString('tek sayfada anlatır', $band, $locale);
+
+            /*
+                "genel bakış" YASAĞI YALNIZ İNGİLİZCEDE ANLAMLIDIR.
+
+                İngilizce altbilgide bu ifade ancak kütüğün Türkçe açıklaması
+                sızdıysa görünebilir — yasak orada gerçek bir kusuru yakalar.
+                Türkçe altbilgide ise aynı ifade sayfanın KENDİ kırıntı
+                başlığıdır ("Ürün genel bakışı"); iki dilde birden yasaklamak,
+                meşru Türkçe etiketi kusur saymak olurdu.
+            */
+            if ($locale === 'en') {
+                self::assertStringNotContainsString('genel bakış', $band, $locale);
+            }
         }
-
-        // Kütüğün Türkçe açıklaması ziyaretçiye ASLA ulaşmaz.
-        self::assertStringNotContainsString('tek sayfada anlatır', $band);
-        self::assertStringNotContainsString('genel bakış', $band);
     }
 
     // --- PUBLISHED-SURFACE-05 --------------------------------------------
 
     /**
-     * TÜRKÇE KÜTÜK SATIRLARI KIPIRDAMADI.
+     * YALNIZ METNİ YAZILMIŞ TÜRKÇE SATIRLAR AÇILDI — ne bir eksik, ne bir fazla.
      *
-     * 386 Türkçe satırın metni yok. Yayın kararı yalnız kaynak dili açtı;
-     * bir tanesi bile ilerlemiş olsaydı, ziyaretçiye 404 vaat eden bir
-     * bağlantı doğardı.
+     * Burada bir dönem "Türkçe satırlar KIPIRDAMADI" ölçülüyordu ve gerekçesi
+     * doğruydu: 386 satırın metni yoktu, biri açılsaydı ziyaretçiye 404 vaat
+     * eden bir bağlantı doğardı.
+     *
+     * Sahibin ikinci dil kararı (2026-09-10) on sekizinin metnini yazdırdı.
+     * Ölçünün RUHU değişmedi — hâlâ "metni olmayan hiçbir satır açılmasın"
+     * diyor — ama artık bunu bir yasakla değil bir SAYIYLA söylüyor:
+     * açılanların kümesi, karar dosyasında adıyla sayılanların kümesine eşit
+     * olmak zorunda. Toptan bir "Türkçeyi aç" bu kapıdan geçemez.
      */
-    public function test_the_turkish_rows_were_not_touched(): void
+    public function test_only_the_named_turkish_rows_were_opened(): void
     {
         $this->applyRealDecisions();
 
-        self::assertSame(
-            0,
-            ContentPage::query()->where('locale', 'tr')->where('was_ever_published', true)->count()
-        );
+        $opened = ContentPage::query()
+            ->where('locale', 'tr')
+            ->where('was_ever_published', true)
+            ->orderBy('page_key')
+            ->pluck('page_key')
+            ->all();
 
-        self::assertStringNotContainsString('href="/tr/', $this->footer('/pricing'));
+        $decided = [];
+
+        foreach (PublicationDecision::listFrom((array) config('content-publication-decisions')) as $decision) {
+            if ($decision->locale === 'tr') {
+                $decided[] = $decision->pageKey;
+            }
+        }
+
+        sort($decided);
+
+        self::assertSame($decided, $opened);
+
+        // Geri kalan Türkçe satırlar kütükte duruyor ve KAPALI.
+        self::assertGreaterThan(
+            count($decided),
+            ContentPage::query()->where('locale', 'tr')->count(),
+        );
+    }
+
+    /**
+     * BİR DİLİN ALTBİLGİSİ ÖTEKİ DİLE KÖPRÜ KURMAZ.
+     *
+     * Kusurun kendisi buydu ve üst çubukta yaşıyordu: elle yazılmış `/tr/…`
+     * adresleri, İngilizce okuyan bir ziyaretçiyi Türkçe sayfaya
+     * götürüyordu. Kapı artık iki yönlü ölçülüyor — kabuğun TAMAMINDA, yalnız
+     * altbilgide değil.
+     */
+    public function test_the_chrome_of_one_language_never_links_into_the_other(): void
+    {
+        $this->applyRealDecisions();
+
+        foreach (['en' => '/tr/', 'tr' => '/en/'] as $locale => $foreign) {
+            $html = (string) $this->withHeaders(['Accept-Language' => $locale])
+                ->get('/pricing')->assertOk()->getContent();
+
+            $chrome = '';
+
+            foreach (['header', 'footer'] as $tag) {
+                preg_match("#<{$tag}\b.*?</{$tag}>#s", $html, $match);
+                $chrome .= $match[0] ?? '';
+            }
+
+            self::assertNotSame('', $chrome, 'Kabuk hiç çizilmedi — ölçüm dayanaksız.');
+            self::assertStringNotContainsString('href="'.$foreign, $chrome, $locale);
+        }
     }
 }
