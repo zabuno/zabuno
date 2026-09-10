@@ -53,9 +53,7 @@ function jsonResponse(status: number, body: unknown): Response {
     } as Response;
 }
 
-function buildFetchMock(
-    options: { queue?: unknown[]; supportViewStatus?: number } = {},
-) {
+function buildFetchMock(options: { queue?: unknown[]; supportViewStatus?: number } = {}) {
     const queue = options.queue ?? [];
     const supportViewStatus = options.supportViewStatus ?? 200;
 
