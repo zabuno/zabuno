@@ -7,6 +7,7 @@ namespace App\Http\Controllers\QrDestination;
 use App\Application\MenuCatalog\Port\OutOfStockPort;
 use App\Application\Publication\Port\PublicMenuAddressPort;
 use App\Application\Publication\UseCase\ResolveGuestMenuView;
+use App\Application\QrDestination\UseCase\ResolveGuestTableReturn;
 use App\Domain\Publication\MenuPublicAddress;
 use App\Domain\Url\CanonicalUrl;
 use App\Http\Controllers\Controller;
@@ -41,6 +42,7 @@ final class ShowPublicMenuItemController extends Controller
         private readonly CanonicalUrl $canonical,
         private readonly OutOfStockPort $outOfStock,
         private readonly GuestText $guestText,
+        private readonly ResolveGuestTableReturn $tableReturn,
     ) {}
 
     public function __invoke(Request $request): SymfonyResponse
@@ -101,8 +103,39 @@ final class ShowPublicMenuItemController extends Controller
 
         $canonicalPath = $menuAddress->itemPath($itemId, (string) $item['productName']);
 
+        /*
+            MASA BAĞLAMI — SAYFA ÇİZİLMEDEN ÖNCE DOĞRULANIR (GUEST-B2).
+
+            Misafir bu sayfaya iki yoldan gelir ve ikisi aynı sayfayı ister:
+            masadaki karekoddan (menü sayfası bağlantıyı bağlamla kurar) ya da
+            aramadan/paylaşılan bir bağlantıdan (bağlam yoktur). Doğrulama
+            geçmezse sonuç ARAMADAN GELEN misafirin sayfasıdır — bir hata
+            sayfası değil: sorgudaki bir çöp, ürünü görmeye engel olamaz.
+
+            Doğrulanmış bağlam TEK BİR ŞEY değiştirir: dönüş yolunu. Sipariş
+            ya da puanlama yüzeyi bu sayfada YOKTUR ve bağlam onu açmaz; o
+            yüzeyler masanın kendi menü sayfasında, kendi şartlarıyla çizilir.
+        */
+        $tableToken = $this->tableReturn->tokenForItemPage(
+            $this->tableContextOf($request),
+            $address['workspace_id'],
+            $address['menu_id'],
+            $publication->menuId,
+        );
+
         if ($request->getPathInfo() !== $canonicalPath) {
-            return redirect($canonicalPath, 301);
+            /*
+                ADRES KENDİNİ ONARIRKEN MASAYI DÜŞÜRMEZ. Eski bir slug ile
+                gelen masalı bağlantı 301 alır; sorguyu burada bırakmak,
+                misafiri masasından ederdi. Taşınan dize DOĞRULANMIŞ
+                belirteçten yeniden kurulur — istekten kopyalanmaz.
+            */
+            return redirect(
+                $tableToken === null
+                    ? $canonicalPath
+                    : $canonicalPath.'?'.ResolveGuestTableReturn::QUERY.'='.rawurlencode($tableToken),
+                301,
+            );
         }
 
         $guestLocale = GuestLocale::resolve($request, $address['locale']);
@@ -115,6 +148,13 @@ final class ShowPublicMenuItemController extends Controller
             'categoryName' => $categoryName,
             'soldOut' => $soldOut,
             'menuPath' => $menuAddress->path(),
+            /*
+                DÖNÜŞ YOLU İLE KANONİK YOL AYRI DURUR ve ayrı kalmalı: birincisi
+                MİSAFİRİN nereye döneceğidir, ikincisi arama motoruna ilan
+                edilen adrestir. Tek değişkende birleştirseydik, masalı bir
+                ziyaret kanonik üstveriyi de masalı yapardı.
+            */
+            'returnPath' => $tableToken === null ? $menuAddress->path() : '/menu/'.$tableToken,
             'menuKey' => $address['key'],
             'brandName' => (string) ($publication->snapshot['identity']['brandName'] ?? '') !== ''
                 ? (string) $publication->snapshot['identity']['brandName']
@@ -170,6 +210,19 @@ final class ShowPublicMenuItemController extends Controller
             false,
             'Lax',
         );
+    }
+
+    /**
+     * Sorgudaki masa iddiası — yalnız DİZE olanı, başka hiçbir şeyi.
+     *
+     * `?qr[]=x` bir dizi getirir ve bir dizi hiçbir masanın belirteci
+     * olamaz; tip zorlaması yapmak yerine bilinmiyor sayılır.
+     */
+    private function tableContextOf(Request $request): ?string
+    {
+        $candidate = $request->query(ResolveGuestTableReturn::QUERY);
+
+        return is_string($candidate) ? $candidate : null;
     }
 
     /**
