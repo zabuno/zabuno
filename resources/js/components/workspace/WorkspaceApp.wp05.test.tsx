@@ -181,14 +181,24 @@ async function renderCurrentWorkspace() {
  * bir kez daha değişirse tek dosyada güncellensin.
  */
 /*
-    FF-130: Ayarlar hesap menüsünden RAYIN dibindeki sabit bloğa taşındı
-    (teslim paketinin kuralı: menü yalnız çalışma alanı değiştirme ve çıkış
-    taşır). Yardımcının adı korunuyor çünkü çağıran testler "Ayarlar'ı aç"
-    demek istiyor, "menüyü aç" değil.
+    AYARLAR YİNE HESAP MENÜSÜNDE (sahibin kararı, 2026-09-11).
+
+    Yolculuk: FF-130 onu menüden alıp rayın dibindeki sabit bloğa koydu;
+    2026-09-11'de sahip ekranı gösterip geri istedi, çünkü masaüstünde hesap
+    menüsünü açan kişi orada ne profilini ne ayarlarını bulabiliyordu — kişiye
+    ait işler ikiye bölünmüştü.
+
+    Yardımcının adı iki değişiklikte de korundu ve sebebi bu: çağıran testler
+    "Ayarlar'ı aç" demek istiyor, "şu düğmeye bas" değil. Yer üçüncü kez
+    değişirse yine tek dosya güncellenecek.
+
+    Menü bir `role="menu"`dur, ray ise `navigation`: madde artık bir bağlantı
+    değil bir `menuitem`, ve önce menünün açılması gerekir.
 */
 async function openSettingsFromAccountMenu(user: ReturnType<typeof userEvent.setup>) {
+    await user.click(await screen.findByRole('button', { name: 'Account' }));
     await user.click(
-        within(await screen.findByRole('navigation', { name: 'Account' })).getByRole('link', {
+        within(await screen.findByRole('menu', { name: 'Account' })).getByRole('menuitem', {
             name: 'Settings',
         }),
     );
@@ -211,6 +221,49 @@ describe('WorkspaceApp — Analytics/Team/Billing AdminShell destinations (S1-WP
         // sessizce başka bir ekranda açardı.
         history.replaceState(null, '', '/');
         setViewport(320, 480);
+    });
+
+    /*
+        KİŞİYE AİT İŞLER TEK EVDE — VE MASAÜSTÜNDE DE (sahibin kararı,
+        2026-09-11).
+
+        FF-127 Profil ve Ayarlar'ı rayın dibindeki sabit bloğa koymuştu;
+        hesap menüsünde yalnız kimlik satırı ve çıkış kalıyordu. Sahip ekranı
+        gösterip bunun yanlış olduğunu söyledi: masaüstünde menüyü açan kişi
+        orada profilini bulamıyor, ray listesine geri dönüyordu — aynı
+        kullanıcı iki cihazda aynı işi iki FARKLI yerde arıyordu.
+
+        Bu madde kararı tersinden kilitler: maddeler raya geri kaçarsa ya da
+        menüden düşerse kırılır. Ölçüm MASAÜSTÜ genişliğinde yapılır, çünkü
+        kusurun yaşandığı yer orasıydı — 320'de ray zaten yok.
+    */
+    it('keeps profile and settings in the account menu on desktop, not in the rail', async () => {
+        setViewport(1440, 900);
+
+        const { restoreFetch } = await renderCurrentWorkspace();
+        const user = userEvent.setup();
+
+        await user.click(await screen.findByRole('button', { name: 'Account' }));
+
+        const menu = await screen.findByRole('menu', { name: 'Account' });
+        expect(within(menu).getByRole('menuitem', { name: 'Profile' })).toBeInTheDocument();
+        expect(within(menu).getByRole('menuitem', { name: 'Settings' })).toBeInTheDocument();
+        expect(within(menu).getByRole('menuitem', { name: 'Log out' })).toBeInTheDocument();
+
+        /*
+            RAYIN DİBİNDEKİ İKİNCİ EV KAPANDI. Blok `railSections` boşken hiç
+            çizilmediği için `navigation name="Account"` bölgesi de yoktur;
+            madde onun VARLIĞINI değil, içinde bu iki hedefin bulunmamasını
+            ölçer — blok ileride ray'a ait başka bir hedefle geri gelebilir.
+        */
+        const rail = screen.queryByRole('navigation', { name: 'Account' });
+
+        if (rail !== null) {
+            expect(within(rail).queryByRole('link', { name: 'Profile' })).toBeNull();
+            expect(within(rail).queryByRole('link', { name: 'Settings' })).toBeNull();
+        }
+
+        restoreFetch();
     });
 
     it('exposes accessible Analytics, Team, and Billing nav links pointing at their real section addresses', async () => {

@@ -221,34 +221,55 @@ describe('WorkspaceApp — real AdminShell composition (S1-WP01A, RED)', () => {
     });
 
     /*
-        RAYIN DİBİNDEKİ SABİT BLOK (FF-127).
+        KİŞİYE AİT İŞLER HESAP MENÜSÜNDE (sahibin kararı, 2026-09-11).
 
-        Profil ve Ayarlar, kayıtta `group` taşımadıkları için gruplu
-        listede çizilmiyor ve YALNIZ hesap menüsünün içinden açılıyordu.
-        İkisi de günlük olmayan ama sık aranan hedeflerdir; bir açılır
-        menünün ardında durmaları, kullanıcıya "nerede?" sorusunu her
-        seferinde yeniden sordurur.
+        ── KARARIN YOLCULUĞU ──
 
-        Blok kendi listesini TUTMAZ: aynı kayıttan okur. İkinci bir liste
-        tutulsaydı, bir bölümün izni değiştiğinde ray onu göstermeye devam
-        eder ve kullanıcı 403 görürdü.
+        FF-127 Profil ve Ayarlar'ı rayın dibindeki sabit bloğa koymuştu ve
+        gerekçesi şuydu: "bir açılır menünün ardında durmaları, kullanıcıya
+        'nerede?' sorusunu her seferinde yeniden sordurur."
+
+        2026-09-11'de sahip ekranı gösterip tersini söyledi. Ölçülen kusur şu
+        olmuştu: masaüstünde iki madde rayda açıkta dururken hesap menüsünde
+        yalnız kimlik satırı ve "Çıkış yap" vardı. Yani kişiye ait işler İKİYE
+        bölünmüştü ve menüyü açan kişi orada profilini bulamıyordu. Üstelik
+        telefonda maddeler ZATEN menüdeydi: aynı kullanıcı iki cihazda aynı
+        işi iki FARKLI yerde arıyordu.
+
+        "Aynı hedefin iki evi olmasın" kuralı korundu; evin hangisi olacağı
+        değişti. Ev artık menü, çünkü menünün başlığı zaten kişinin kendisidir
+        (baş harf + e-posta) ve profil, ayarlar, çıkış o başlığın altına
+        aittir. Ray yalnız çalışma alanının bölümlerini taşır.
+
+        Adresler DEĞİŞMEDİ: `/profile` ve `/settings` aynı yerde.
     */
-    it('rayın dibinde Profil ve Ayarlar sabit blokta durur ve kayıttan okunur', async () => {
+    it('Profil ve Ayarlar hesap menüsünde durur, rayın dibinde değil', async () => {
         await renderCurrentWorkspace();
 
-        const footer = screen.getByRole('navigation', { name: 'Account' });
+        const user = userEvent.setup();
+        await user.click(await screen.findByRole('button', { name: 'Account' }));
 
-        for (const [label, path] of [
-            ['Profile', 'profile'],
-            ['Settings', 'settings'],
-        ] as const) {
-            expect(within(footer).getByRole('link', { name: label })).toHaveAttribute(
-                'href',
-                expect.stringContaining(`/${path}`),
-            );
+        const menu = await screen.findByRole('menu', { name: 'Account' });
+
+        for (const label of ['Profile', 'Settings', 'Log out'] as const) {
+            expect(within(menu).getByRole('menuitem', { name: label })).toBeInTheDocument();
         }
 
-        // Aynı hedefler gruplu listede TEKRARLANMAZ: kayıtta grupları yok.
+        /*
+            RAYIN DİBİNDEKİ İKİNCİ EV KAPANDI. Blok `railSections` boşken hiç
+            çizilmez; madde bloğun VARLIĞINI değil, içinde bu iki hedefin
+            bulunmamasını ölçer — ileride ray'a ait başka bir hedefle geri
+            gelebilir.
+        */
+        const footer = screen.queryByRole('navigation', { name: 'Account' });
+
+        if (footer !== null) {
+            for (const label of ['Profile', 'Settings'] as const) {
+                expect(within(footer).queryByRole('link', { name: label })).toBeNull();
+            }
+        }
+
+        // Aynı hedefler gruplu listede de TEKRARLANMAZ: kayıtta grupları yok.
         const nav = screen.getByRole('navigation', { name: 'Restaurant admin' });
         expect(within(nav).queryByRole('link', { name: 'Settings' })).toBeNull();
     });
