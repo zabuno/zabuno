@@ -61,6 +61,31 @@ Schedule::command('media:purge-trash')
     ->withoutOverlapping();
 
 /*
+    DURAN YEDEK GÜNDE BİR — "tatbikat edilen yedek, duran yedek değildir"
+    (`docs/107` Faz 1.5, BACKUP-PRODUCE-01).
+
+    Ölçülen boşluk şuydu: `db-backups` adlı kalıcı hacim 2026'nın başından
+    beri tanımlıydı ve İÇİ BOŞTU. Aşağıdaki tatbikat kendi dökümünü işi
+    bitince SİLER — doğrusu da budur, çünkü ölçtüğü şey "geri gelebiliyor
+    mu", "duruyor mu" değil. Yani sunucu bugün kaybedilse geri dönülecek
+    tek bir dosya yoktu ve hiçbir ekran bunu kırmızı göstermiyordu.
+
+    SAAT SEÇİMİ BİLİNÇLİ. Çöp boşaltımından (03:20) SONRA: silinen dosya
+    yedeğe girmesin. Tatbikattan (03:40) ÖNCE: tatbikat o gecenin yedeği
+    alınmış hâli ölçsün. Aradaki pencere ikisinin de sırasını korur.
+
+    `withoutOverlapping`: veritabanı büyüdükçe döküm uzar; ertesi gecenin
+    koşusu üstüne binerse aynı diske iki `pg_dump` birden yazar.
+
+    BU SATIR "YEDEK VAR" DEMEZ. Komut hedefi, boş alanı ve `pg_dump`
+    sürümünü döküm başlamadan ölçer ve biri eksikse SIFIRDAN FARKLI çıkar;
+    ne olduğu koşunun kendi raporundan (`--json`) okunur.
+*/
+Schedule::command('zabuno:backup:database')
+    ->dailyAt('03:30')
+    ->withoutOverlapping();
+
+/*
     YEDEK TATBİKATI GÜNDE BİR — "denenmemiş bir yedek, yedek değildir"
     (`docs/107` Faz 1.5, `docs/124`).
 

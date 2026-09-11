@@ -16,6 +16,7 @@ Owner kararı (2026-08-27): Faz 2'den önce deploy edilecek. Birincil hedef
 | Virüs tarayıcı | `docker/clamd.conf`, `docker/clamd.client.conf`, `docker/zabuno-scan` | Daemon ayrı `clamav` servisinde (imzalar bellekte, ~1,2 GB); uygulama imajında yalnız ince istemci; dosya soketten akıtılır. Düz `clamscan` her çağrıda veritabanını yükleyip zaman aşımına takılacağı için seçilmedi. Kapı: `MalwareScanTransportTest` |
 | Topoloji katmanları | `docker-compose.local.yml`, `docker-compose.edge-proxy.yml` | Aynı yığın, farklı ortam: geliştirici makinesi ve hazır vekil arkası |
 | HTTPS | `docker/Caddyfile` | Sertifikayı Caddy alır ve yeniler |
+| Duran yedek | `app/Console/Commands/BackupDatabaseCommand.php`, `config/backup.php` | Tüm veritabanının custom-format dökümünü `db-backups` hacmine (`/backups`) yazar, `pg_restore --list` ile okuyarak doğrular, yanına `.sha256` kardeş dosyası bırakır, hiçbir dosyayı silmez. 03:30 zamanlaması **tanımlı**; canlıda koştuğu ve bir arşiv ürettiği **kanıtlanmadı**. Kapı: `DatabaseBackupCommandTest`, `DEPLOY-BACKUP-LANDS-16` |
 | Yayın akışı | `.github/workflows/deploy.yml` | CI geçince tetiklenir; imajı derler, SSH ile aktarır, yayına alır, sağlık kontrolü yapar |
 
 ## Neden bu kararlar
@@ -191,11 +192,22 @@ kopyalanıp `--no-dev` ile var olmayan bir sağlayıcıyı yüklemeye çalışt�
 
 - **Gerçek sunucuda koşum.** Yığın yerelde çalıştı; netcup'ta çalıştığı
   kanıtlanmadı. Exit Gate bu kanıtı bekliyor (`docs/18`).
-- **Yedekleme otomasyonu.** `db-backups` hacmi ayrıldı, içine yazan bir iş
-  yok. (2026-09-06) Uygulama içi günlük TATBİKAT tanımlandı ve ilk elle
+- ~~**Yedekleme otomasyonu.** `db-backups` hacmi ayrıldı, içine yazan bir iş
+  yok.~~ (2026-09-06) Uygulama içi günlük TATBİKAT tanımlandı ve ilk elle
   yedek + izole geri yükleme için runbook yazıldı: `docs/124-YEDEK-TATBIKATI.md`.
-  Hacme düzenli yazan bir yedek işi hâlâ yok; runbook'taki elle adımlar onun
-  yerine geçmez, yalnız ilk kanıtı üretir.
+  **(2026-09-11, BACKUP-PRODUCE-01) Hacme yazan işin kodu ve zamanlaması
+  artık var:** `zabuno:backup:database` tam bir döküm üretir, 03:30 girdisi
+  `routes/console.php`'de tanımlıdır ve `app` servisi `db-backups` hacmini
+  `/backups` olarak bağlar — o bağlama olmadan döküm konteyner katmanına
+  yazılır ve ilk `docker compose up -d` ile silinirdi. Madde silinmedi,
+  üstü çizildi: bir eksiğin ne zaman ve neyle kapandığı da bir kayıttır.
+- **Yedeğin canlıda ilk kez üretilmesi.** Zamanlama tanımlı olmak, işin
+  koşmuş olması değildir: üretimde `/backups` altında bugün ölçülmüş tek bir
+  arşiv yoktur. İlk canlı koşum ve raporu `docs/124` §5.7'dedir.
+- **Yedeğin sunucudan çıkması.** Üretilecek arşiv de *aynı sunucuda*
+  duracaktır. Offsite kopya, retention (eski dökümün silinmesi), nokta-zaman
+  kurtarma (WAL) ve medya arşivi **yazılmadı**. Sunucunun kendisi
+  kaybolduğunda geri dönülebileceği bugün kanıtlanmış değildir.
 > **DÜZELTME (2026-09-05, çelişki denetimi FF-161):** aşağıdaki "kuyruk
 > işçisi yok" maddesi **artık doğru değil ve kaldırıldı.** Kuyruğa iş bırakan
 > özellik geldi (fotoğraftan menü aktarımı, `app/Jobs/ExtractMenuBatchPageJob`)

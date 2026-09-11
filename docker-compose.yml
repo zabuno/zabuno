@@ -162,6 +162,16 @@ services:
         volumes:
             # Yüklenen medya imajın içinde yaşamaz; imaj değişince kaybolurdu.
             - app-storage:/var/www/html/storage/app
+            # GECE ALINAN YEDEĞİN İNECEK YERİ — DEPLOY-BACKUP-LANDS-16.
+            #
+            # `db-backups` 2026'nın başından beri tanımlıydı, yalnız `db`
+            # servisine bağlıydı ve İÇİ BOŞTU. Zamanlayıcı bu konteynerde
+            # koşar; buraya bağlı bir `/backups` olmadan `zabuno:backup:database`
+            # dökümü konteynerin kendi katmanına yazardı ve o katman ilk
+            # `docker compose up -d` ile silinirdi — yedek alınır, yok olur,
+            # kayıt "başarılı" derdi. Salt okunur DEĞİL: komutun buraya
+            # YAZMASI gerekir.
+            - db-backups:/backups
         networks: [internal, web]
 
     clamav:

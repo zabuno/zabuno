@@ -22,7 +22,7 @@ kalan adımları taşır.
 | Günlük zamanlama tanımı | Tanımlı ve testle kilitli; **çalıştığı iddia edilmiyor** | `BackupRestoreDrillIsScheduledTest` |
 | Kanıt ucu (`GET /api/workspaces/{w}/security/evidence/backup-restore`) | Son kaydı, sürücüyü ve medya kaydını dönüyor | `BackupRestoreEvidenceApiTest` |
 | **Üretim sunucusunda tatbikat** | **Yapılmadı.** Üretimde hiçbir kanıt satırı yok | — |
-| `db-backups` hacmine düzenli yazan yedek işi | **Yok** (`docs/42` "Henüz yapılmadı") | — |
+| `db-backups` hacmine düzenli yazan yedek işi | **Kod ve zamanlama var** (`zabuno:backup:database`, 03:30; `app` servisi hacmi `/backups` olarak bağlıyor). Üretimde koşumu **kanıtlanmadı**: sunucuda bugün hiçbir arşiv dosyası ölçülmedi | `DatabaseBackupCommandTest`, `DEPLOY-BACKUP-LANDS-16` |
 
 Yerelde PostgreSQL ve `pg_dump` yoktur; PostgreSQL turu için bu makinede
 sonuç **bilinmiyor**dur ("geçti" değil). CI işi (`.github/workflows/ci.yml`,
@@ -123,17 +123,89 @@ php artisan security:evidence:backup-restore --json     # eklenen kayıtları JS
 `--json` çıktısı `{ "passed": bool, "database": {...}|null, "media": {...}|null }`
 biçimindedir; kayıt alanlarını olduğu gibi taşır, ham çıktı ve yol içermez.
 
+### 2.1 Duran yedek — `zabuno:backup:database` (BACKUP-PRODUCE-01)
+
+**Tatbikat edilen yedek ile duran yedek aynı şey değildir.** Yukarıdaki
+komut "geri gelebiliyor mu" sorusunu sorar ve kendi dökümünü işi bitince
+*siler* — doğrusu da budur. Bu komut öbür soruyu cevaplar: "bugün sunucu
+gitse, geri dönülecek bir dosya **var mı**?" Ölçülen boşluk şuydu:
+`db-backups` adlı kalıcı hacim 2026'nın başından beri tanımlıydı, yalnız
+`db` servisine bağlıydı ve içi boştu.
+
+```text
+php artisan zabuno:backup:database         # arşivi üretir, insan okunur rapor basar
+php artisan zabuno:backup:database --json   # aynı koşu, makine okunur rapor
+```
+
+Sıra bilinçlidir; **her ön kontrol döküm başlamadan biter**:
+
+1. Bağlantı sürücüsü PostgreSQL değilse koşu "uygulanamadı" der, "yapıldı"
+   demez — başka bir motorda üretilen dosya üretime geri yüklenemez.
+2. Hedef klasör yazılabilir bir dizin değilse durur. Hedef doğrulanmadan
+   `pg_dump` çalıştırılsaydı üretim veritabanı gigabaytlarca okunur ve
+   sonuç hiçbir yere yazılamazdı.
+3. Boş disk emniyet payının altındaysa durur. Yarım yazılan bir dosya iki
+   kez zarar verir: yedek alınmamış olur ve aynı diskteki veritabanı da
+   yazamaz hâle gelir — yani yedekleme işinin kendisi siteyi düşürür.
+4. `pg_dump`/`pg_restore` yoksa ya da büyük sürümü sunucununkinden eskiyse
+   durur (`config/backup.php#minimum_client_major`, bugün 17; kaynağı
+   compose'daki `postgres:17-alpine` ve DEPLOY-PG-CLIENT-PARITY-14). Eski
+   bir istemcinin ürettiği arşiv geri yüklenemez; üretilip duruyor olması
+   onu yedek yapmaz, yalnız yedeği olduğu **yanılsamasını** üretir.
+
+Sonra: veritabanının **tamamı** `pg_dump --format=custom` ile geçici bir
+dosyaya dökülür, arşiv `pg_restore --list` ile **okunarak** doğrulanır,
+SHA-256 özeti hesaplanıp arşivin yanındaki `.sha256` kardeş dosyasına
+yazılır ve dosya tek bir `rename()` ile final adına (`*.dump`) taşınır.
+Yarım kalan bir döküm final adını **almaz**: geri yükleme günü kimse
+dosyanın içine bakmaz, en yeni `.dump` dosyasına bakar.
+
+**Üretim verisine tek bir yazma yoktur.** Doğrulama `pg_restore --list`
+iledir — arşivin içindekiler listelenir, hiçbir şey geri *yüklenmez*.
+Komutun canlı veritabanına `pg_restore` çalıştıran bir yolu yoktur.
+
+**Hiçbir dosya silinmez.** Retention kuralı yazılmadan önce silme
+*yeteneği* de olmamalı; yeni arşiv eskisinin yanına gelir. Temizlenen tek
+şey koşunun kendi geçici dosyalarıdır.
+
+**Parola argümanda ve günlükte geçmez.** İstemciye `--no-password` verilir,
+değer yalnız alt sürecin ortamına (`PGPASSWORD`) konur ve hata metinleri
+maskelenir — bir yedekleme arızası, veritabanı parolasını günlüğe düşüren
+yer olmamalıdır.
+
+`--json` çıktısı `{ "ok": bool, "reason": string, "message": string,
+"path": string|null, "bytes": int|null, "sha256": string|null }`
+biçimindedir. Özet iki yerde yaşar: koşunun raporunda (izlemeye akan yer)
+ve arşivin yanındaki kardeş dosyada (arşivle birlikte taşınan yer). İkisi
+ayrışırsa kanıtın kendisi şüphelidir.
+
+Sözleşme `tests/Feature/Backup/DatabaseBackupCommandTest.php` ile
+kilitlidir (BACKUP-DB-DESTINATION-01 … BACKUP-DB-RESTORABLE-07). Canlı
+PostgreSQL isteyen iki madde, PostgreSQL yokken "geçti" demez: atlanır ve
+sebebini söyler; ölçüm CI'ın `DB_CONNECTION=pgsql` işinde yapılır.
+
 ## 3. Zamanlama
 
 `routes/console.php`: her gün 03:40'ta (çöp boşaltımından sonra),
 `withoutOverlapping` ile. Bu tanım testle kilitlidir.
 
-**Bu tanım "çalışıyor" demez.** Çalışıp çalışmadığı yalnız kanıt kaydından
-okunur (§4). Üretim uygulama imajında bugün `pg_dump` **yoktur**
-(`docker/Dockerfile` yalnız `nginx supervisor curl clamdscan` kurar); yani
-zamanlama üretimde çalışsa bile veritabanı kaydı `unknown`, medya kaydı ise
-gerçek bir ölçüm olacaktır. Bu da kayıttır ve doğrudur; §6 madde 2 bunun
-kapanışıdır.
+Duran yedek (`zabuno:backup:database`, §2.1) aynı dosyada **03:30**'dadır:
+çöp boşaltımından (03:20) *sonra* — silinen dosya yedeğe girmesin —, bu
+tatbikattan (03:40) *önce* — tatbikat o gecenin yedeği alınmış hâli
+ölçsün. Sıralama ve `withoutOverlapping` DEPLOY-BACKUP-LANDS-16 ile
+kilitlidir; aynı kapı, dökümün ineceği kalıcı hacmin `app` servisine
+bağlı olduğunu da ölçer.
+
+**Bu tanım "çalışıyor" demez** — ikisi için de. Bir zamanlayıcı girdisi,
+o işin üretimde koştuğunun kanıtı değildir; çalışıp çalışmadığı yalnız
+kanıt kaydından (§4) ve `/backups` altında duran gerçek dosyadan okunur.
+
+Uygulama imajı `postgresql-client-17` taşır (`docker/Dockerfile`, PGDG
+deposundan; DEPLOY-PG-CLIENT-PARITY-14 bunu sunucunun majörüyle birlikte
+kilitler), yani araç eksikliğinden doğan `unknown` beklentisi artık
+geçerli değil. Ama **canlı koşum hâlâ yapılmadı**: üretimde ne bir kanıt
+satırı ne de bir arşiv dosyası ölçüldü. Araç var olmak, iş koşmuş olmak
+değildir; §7 bunun kapanışıdır.
 
 ## 4. Kanıt nerede görünür
 
@@ -250,9 +322,15 @@ docker compose --env-file .env exec app php artisan security:evidence:backup-res
 ```
 
 - Medya kaydı gerçek bir ölçümdür.
-- Veritabanı kaydı, imajda `pg_dump` yokken `"status": "unknown"`,
-  `"exit_code": 127` döner. Bu beklenen ve doğru çıktıdır; §6 madde 2
-  kapanana kadar böyle kalır.
+- Veritabanı kaydı da gerçek bir ölçüm **olmalıdır**: imaj
+  `postgresql-client-17` taşır, yani `pg_dump` bulunur ve eski araca
+  dayanan `"status": "unknown"`/`"exit_code": 127` beklentisi geçerli
+  değildir. Yine de bu komut üretimde **henüz bir kez bile koşmadı**;
+  çıkan `status` ne olursa olsun buraya ölçüldüğü gibi yazılır ve
+  ölçülmeden "passed" yazılmaz.
+- Aynı koşuda duran yedeği de görün (§2.1): `ls -la /backups` ve
+  `php artisan zabuno:backup:database --json`. Zamanlama tanımlı olsa da
+  ilk canlı arşiv bu adımda ölçülür.
 
 Kanıt: `GET /api/workspaces/{w}/security/evidence/backup-restore` (sahip
 oturumuyla) ya da doğrudan tablo:
@@ -288,13 +366,19 @@ Bağlantı: `docs/42` "Henüz yapılmadı" (yedekleme otomasyonu), `docs/87`
 
 1. **§5'i bir kez koşmak** ve §5.8 raporunu `docs/16` DR-02'ye yazmak. Bu
    satır kapanmadan `docs/107` Faz 1.5 "bitti" olmaz.
-2. **Uygulama imajına `postgresql-client-17`** (PGDG deposundan; Debian
-   bookworm'un kendi paketi 15'tir ve 17 sunucuyu reddeder) — böylece
-   günlük tatbikatın veritabanı ayağı `unknown` yerine gerçek ölçüm yazar.
-   `docker/Dockerfile` bu pakette **değiştirilmedi**: yerelde imaj derlenip
-   ölçülmedi, ölçülmemiş bir Dockerfile değişikliği deploy'u kırabilirdi.
-3. **`db-backups` hacmine düzenli yazan bir yedek işi** (`docs/42`). Bu
-   paket onu yazmadı; tatbikat, var olmayan bir yedeği doğrulayamaz.
+2. ~~**Uygulama imajına `postgresql-client-17`**~~ — **kodda tamamlandı.**
+   `docker/Dockerfile` istemciyi PGDG deposundan kurar ve
+   DEPLOY-PG-CLIENT-PARITY-14 onu compose'daki sunucu majörüyle birlikte
+   kilitler. Bekleyen iş artık paketin kurulması değil, **canlıda ilk
+   koşum**: tatbikatın veritabanı ayağının gerçekten `unknown` yerine bir
+   ölçüm yazdığı üretimde görülmedi.
+3. ~~**`db-backups` hacmine düzenli yazan bir yedek işi**~~ — **kodda
+   tamamlandı** (BACKUP-PRODUCE-01): `zabuno:backup:database` her gece
+   03:30'da tam bir döküm üretir, `app` servisi hacmi `/backups` olarak
+   bağlar, sözleşme `DatabaseBackupCommandTest` ve DEPLOY-BACKUP-LANDS-16
+   ile kilitlidir. Bekleyen iş **canlıda ilk koşum ve ilk gerçek arşiv
+   dosyası**: üretimde `/backups` altında bugün ölçülmüş bir dosya yoktur,
+   dolayısıyla "yedeğimiz var" denemez.
 4. **Sunucu dışı kopya.** `/backups` ve medya arşivi sunucuyla birlikte
    kaybolur; sunucu dışına kopya olmadan RPO sonsuzdur (`docs/98` düzeltmesi).
 5. **Disk payı.** Günlük medya tatbikatı, medya kökü kadar ek yer ister
@@ -312,6 +396,13 @@ Bağlantı: `docs/42` "Henüz yapılmadı" (yedekleme otomasyonu), `docs/87`
   QR hedefleri, abonelikler manifestte değildir. Tam yedek §5.2'dir.
 - Nokta-zaman kurtarma (WAL arşivi) yoktur; RPO en iyi hâlde son döküm
   anıdır.
+- **Duran yedeğin kodu ve zamanlaması hazır** (§2.1) ama **üretim
+  artefaktı henüz kanıtlanmadı**: sunucuda `/backups` altında ölçülmüş tek
+  bir arşiv yoktur. Bir komutun var olması, bir dosyanın durması değildir.
+- Üretilecek arşiv de *aynı sunucuda* duracaktır: offsite kopya, retention
+  (eski yedeğin silinmesi), nokta-zaman kurtarma ve medya yedeğinin
+  arşivlenmesi bu paketin dışındadır ve hiçbiri yazılmadı. Disk dolarsa
+  koşu durur ve söyler; kimse eski dosyayı silmez.
 - PostgreSQL turu için bu makinede sonuç bilinmiyor; CI'daki ilk koşu bu
   paketin PR'ında ölçülür. Kırılırsa kayıt burada güncellenir, "geçti"
   yazılmaz.

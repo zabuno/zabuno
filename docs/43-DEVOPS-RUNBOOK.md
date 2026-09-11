@@ -188,8 +188,43 @@ docker compose --env-file .env --env-file .image.env exec -T db \
     pg_dump -U zabuno zabuno | gzip > /root/zabuno-$(date +%F).sql.gz
 ```
 
-`db-backups` adlı bir Docker hacmi ayrılmıştır ama **içine yazan zamanlanmış
-bir iş yoktur**. Kurulması ayrı bir iştir ve bu yönergenin dışındadır.
+Yukarıdaki komut **elle** alınan bir yedektir ve gerektiğinde hâlâ
+geçerlidir. Bunun dışında `zabuno:backup:database` diye bir iş vardır:
+tüm veritabanının custom-format dökümünü `db-backups` hacmine yazar,
+`pg_restore --list` ile okuyarak doğrular ve yanına `.sha256` kardeş
+dosyası bırakır. Zamanlaması (her gece 03:30) `routes/console.php`'de
+**tanımlıdır**.
+
+> **Tanımlı olmak, koşmuş olmak değildir.** Bu iş üretimde henüz bir kez
+> bile ölçülmedi ve `/backups` altında bugün duran bir arşiv olduğu
+> kanıtlanmış değildir. İlk canlı koşumu **siz** yapacaksınız; sonucu ne
+> olursa olsun `docs/124` §5.7'ye ölçüldüğü gibi yazın. O satır
+> kapanmadan "yedeğimiz var" demeyin.
+
+Elle bakmak — ve ilk canlı koşumu yapmak — için:
+
+```bash
+cd /opt/zabuno
+docker compose --env-file .env --env-file .image.env exec -T app \
+    ls -la /backups
+# Bir koşuyu elle tetiklemek ve raporunu okumak:
+docker compose --env-file .env --env-file .image.env exec -T app \
+    php artisan zabuno:backup:database --json
+```
+
+Rapor `ok`, `path`, `bytes` ve `sha256` alanlarını taşır. Aynı özet arşivin
+yanındaki `.sha256` dosyasında da durur; ikisi ayrışırsa **arşive
+güvenmeyin** — dosya bozulmuş olabilir.
+
+Koşu sıfırdan farklı çıkarsa yedek **alınmamıştır** ve mesaj sebebini
+söyler: PostgreSQL dışı bağlantı, yazılamayan `/backups`, boş alanın 1
+GiB'ın altına düşmesi ya da eksik/eski `pg_dump`. Hiçbirinde yarım dosya
+final adını almaz; disk dolduysa açılacak yer **elle** açılır, çünkü komutun
+silme yeteneği yoktur (retention henüz yazılmadı).
+
+**Hâlâ eksik olan:** arşiv aynı sunucudadır. Offsite kopya, eski dökümlerin
+temizlenmesi ve nokta-zaman kurtarma kurulmadı; bunlar ayrı işlerdir ve bu
+yönergenin dışındadır.
 
 ### Yapılmaması gerekenler
 
@@ -200,6 +235,7 @@ bir iş yoktur**. Kurulması ayrı bir iştir ve bu yönergenin dışındadır.
 | `db` servisine `ports:` ekleme | Veritabanını internete açar; parola tek savunma hattı kalır |
 | `app` servisine port yayımlama | Uygulama vekilin ilettiği başlıklara güveniyor; doğrudan erişim o güveni sömürülebilir yapar |
 | Sunucuda elle kod düzenleme | Sonraki deploy üzerine yazar; değişiklik depoya gitmeli |
+| `/backups` içindeki bir dosyayı silme | Geri dönülecek tek arşiv o olabilir; yer açmak gerekiyorsa önce kopyasını sunucu dışına alın |
 
 ### Sorun giderme
 
