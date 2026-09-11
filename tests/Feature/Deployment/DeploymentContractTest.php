@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Deployment;
 
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
 
@@ -1586,6 +1587,92 @@ final class DeploymentContractTest extends TestCase
             '/echo[^\n]*\$\{?(DEPLOY_HEALTH_URL|origin)\b/',
             $step,
             'DEPLOY-FORWARD-ONLY-15: secret\'tan türetilmiş adres günlüğe basılıyor; maskeleme onu kapsamaz.'
+        );
+    }
+
+    // --- DEPLOY-BACKUP-LANDS-16 -------------------------------------------
+
+    /**
+     * GECE ALINAN YEDEĞİN İNECEK KALICI BİR YERİ OLMALI —
+     * BACKUP-PRODUCE-01 (`docs/107` Faz 1.5).
+     *
+     * Ölçülen boşluk şuydu: `db-backups` adlı kalıcı hacim 2026'nın
+     * başından beri tanımlıydı, `db` servisine bağlıydı ve İÇİ BOŞTU.
+     * Zamanlayıcı `app` konteynerinde koşar; oraya bağlı bir `/backups`
+     * yoksa dökümü konteynerin kendi katmanına yazar ve o katman bir
+     * sonraki deploy'da silinir. Yani yedek alınır, `docker compose up -d`
+     * ile yok olur, kayıt "başarılı" der.
+     *
+     * İki yarısı da aynı sözün parçası ve ayrı ayrı anlamsız: yazacak
+     * bir yer olmadan zamanlama boşa koşar, koşan bir şey olmadan hacim
+     * boş durur. Bu yüzden tek kapı.
+     *
+     * SAAT SEÇİMİ BİLİNÇLİ: 03:20 çöp boşaltımından SONRA (silinen dosya
+     * yedeğe girmesin), 03:40 tatbikatından ÖNCE (tatbikat o gecenin
+     * yedeğinin alındığı hâli ölçsün).
+     */
+    public function test_the_nightly_database_backup_has_somewhere_durable_to_land(): void
+    {
+        $compose = $this->read('docker-compose.yml');
+
+        // `app` servisinin KENDİ blokları — `db` zaten `/backups`
+        // bağlıyor ve dosyada arama yapmak bu kapıyı sahte yeşil yapardı.
+        preg_match('/^(?<indent>[ ]*)app:[ ]*$\n(?<block>(?:^\g{indent}[ ]+.*$\n|^[ ]*$\n)*)/m', $compose, $service);
+
+        self::assertNotEmpty(
+            $service['block'] ?? '',
+            'DEPLOY-BACKUP-LANDS-16: compose dosyasında `app` servis bloğu okunamadı; '
+            .'boş okunan bir blok, eksik bir bağlama gibi görünür ve kapıyı sahte kırmızı yapardı.'
+        );
+
+        preg_match_all('/^[ ]*-[ ]*([A-Za-z0-9_.-]+):(\/[^:\s]*)(:[a-z,]+)?[ ]*$/m', $service['block'], $mounts, PREG_SET_ORDER);
+
+        $backupMounts = array_values(array_filter(
+            $mounts,
+            static fn (array $mount): bool => $mount[2] === '/backups',
+        ));
+
+        self::assertCount(
+            1,
+            $backupMounts,
+            'DEPLOY-BACKUP-LANDS-16: `app` servisi `/backups` yolunu ADLANDIRILMIŞ bir hacimden bağlamıyor; '
+            .'gece alınan döküm konteyner katmanında kalır ve ilk deploy\'da silinir.'
+        );
+
+        self::assertArrayNotHasKey(
+            3,
+            $backupMounts[0],
+            'DEPLOY-BACKUP-LANDS-16: yedek dizini salt okunur bağlanamaz; komutun oraya YAZMASI gerekir.'
+        );
+
+        $volume = $backupMounts[0][1];
+
+        self::assertMatchesRegularExpression(
+            '/^volumes:[ ]*$\n(?:^[ ]+.*$\n|^[ ]*$\n)*?^[ ]+'.preg_quote($volume, '/').':[ ]*$/m',
+            $compose,
+            "DEPLOY-BACKUP-LANDS-16: `{$volume}` üst düzey `volumes:` altında tanımlı değil; kalıcı değil demektir."
+        );
+
+        // ...ve oraya yazacak bir koşu olmalı.
+        $events = array_values(array_filter(
+            $this->app->make(Schedule::class)->events(),
+            static fn ($event): bool => str_contains((string) $event->command, 'zabuno:backup:database'),
+        ));
+
+        self::assertCount(
+            1,
+            $events,
+            'DEPLOY-BACKUP-LANDS-16: `zabuno:backup:database` zamanlayıcıda tam olarak bir kez olmalı; '
+            .'hatırlamaya bırakılan bir yedek, üretimde alınmayan yedektir.'
+        );
+        self::assertSame(
+            '30 3 * * *',
+            $events[0]->expression,
+            'DEPLOY-BACKUP-LANDS-16: yedek 03:30\'da alınır — çöp boşaltımından (03:20) sonra, tatbikattan (03:40) önce.'
+        );
+        self::assertTrue(
+            $events[0]->withoutOverlapping,
+            'DEPLOY-BACKUP-LANDS-16: uzayan bir döküm ertesi gecenin koşusuyla üst üste binmemeli.'
         );
     }
 }
