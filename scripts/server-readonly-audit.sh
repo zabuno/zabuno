@@ -564,6 +564,110 @@ say metabase_ro_public_grant_note "PUBLIC'e verilen yetkiler her role uygulanir;
 say metabase_ro_password_login "untested_by_design"
 say metabase_ro_default_acl_note "default ACL yalnizca GELECEK nesneleri etkiler; tek basina salt-okunurlugu kanitlamaz"
 
+echo "### section=mail_vault"
+# MAIL-DIAG-01 — CANLI Mailgun YAPILANDIRMA ÜSTVERİSİ. Posta GÖNDERİLMEZ.
+#
+# NE BASILIR: yalnız SINIFLANDIRILMIŞ simgeler. Ham satır, id, etiket,
+# `secret_hints`, şifreli metin, serbest `plain_fields` değeri ya da herhangi
+# bir e-posta adresi BASILMAZ — ne kasadan ne ortamdan.
+#
+# NE KANITLANMAZ: bu bölüm Laravel'i bootstrap ETMEZ ve hiçbir sırrı ÇÖZMEZ.
+# Dolayısıyla "hangi taşıyıcı gerçekten seçilir", "anahtar geçerli mi" ve
+# "`mail.default` çalışırken ne" soruları BURADAN CEVAPLANAMAZ; buradaki her
+# olgu yalnız ADAY ÜSTVERİDİR.
+#
+# `plain_fields` kolonu `json`dur (2026_09_04_000100 göçü); bu yüzden
+# `json_extract_path_text` doğrudan uygulanır, `jsonb` dönüşümü gerekmez.
+if [ "$DB_STATUS" != found ]; then
+  say mailgun_platform_rows_total unknown
+  say mailgun_platform_rows_read unknown
+  say mailgun_platform_rows_listed unknown
+  say mailgun_platform_row unknown
+else
+  MAIL_PSQL='psql -X -q -A -t -v ON_ERROR_STOP=1 -U "${POSTGRES_USER:-zabuno}" -d "${POSTGRES_DB:-zabuno}"'
+  # Toplam sayım AYRI sorgudur: liste en çok 5 satırla sınırlıdır ve bir
+  # kesilmiş liste toplamı temsil etmez.
+  dexec "$DBC" "$MAIL_PSQL -c \"BEGIN READ ONLY; SELECT 'mailgun_platform_rows_total='||count(*) FROM platform_credential_connections WHERE provider='mailgun' AND scope='platform_owned'; COMMIT;\""
+  if [ "$CAP_RC" -ne 0 ] || [ -z "$CAP_OUT" ]; then
+    say mailgun_platform_rows_total unknown
+  else
+    printf '%s\n' "$(first_line "$CAP_OUT")"
+  fi
+
+  SQL_MAIL_ROWS="
+BEGIN READ ONLY;
+SELECT 'mailgun_platform_row_'||t.n||'='||
+       'state='||CASE WHEN t.st='active' THEN 'active'
+                      WHEN t.st IN ('inactive','disabled') THEN 'inactive'
+                      ELSE 'other' END||
+       ' health='||CASE WHEN t.hs IN ('healthy','unhealthy','unknown') THEN t.hs
+                        ELSE 'other' END||
+       ' domain='||CASE WHEN t.dom='' THEN 'empty'
+                        WHEN t.dom='mg.zabuno.com' THEN 'mg.zabuno.com'
+                        WHEN t.dom='zabuno.com' THEN 'zabuno.com'
+                        ELSE 'other' END||
+       ' endpoint='||CASE WHEN t.ep='' THEN 'empty'
+                          WHEN t.host='api.eu.mailgun.net' THEN 'EU'
+                          WHEN t.host='api.mailgun.net' THEN 'US'
+                          ELSE 'other' END||
+       ' secret_ciphertext_present='||CASE WHEN t.sec='' THEN 'no' ELSE 'yes' END
+  FROM (SELECT row_number() OVER (ORDER BY id) AS n,
+               state AS st,
+               health_status AS hs,
+               lower(coalesce(json_extract_path_text(plain_fields,'domain'),'')) AS dom,
+               lower(coalesce(json_extract_path_text(plain_fields,'endpoint'),'')) AS ep,
+               split_part(regexp_replace(lower(coalesce(json_extract_path_text(plain_fields,'endpoint'),'')),'^https?://',''),'/',1) AS host,
+               coalesce(secret_ciphertext,'') AS sec
+          FROM platform_credential_connections
+         WHERE provider='mailgun' AND scope='platform_owned'
+         ORDER BY id
+         LIMIT 5) t
+ ORDER BY t.n;
+COMMIT;"
+  dexec "$DBC" "$MAIL_PSQL -c \"$SQL_MAIL_ROWS\""
+  if [ "$CAP_RC" -ne 0 ]; then
+    # Sorgu okunamadı: hiçbir satır olgusu "temiz" sayılmaz.
+    say mailgun_platform_rows_read unknown
+    say mailgun_platform_rows_listed unknown
+    say mailgun_platform_row unknown
+  elif [ -z "$CAP_OUT" ]; then
+    # Okuma BAŞARILI, sonuç kümesi gerçekten boş: sıfır satır.
+    say mailgun_platform_rows_read ok
+    say mailgun_platform_rows_listed 0
+    say mailgun_platform_row none
+  else
+    say mailgun_platform_rows_read ok
+    say mailgun_platform_rows_listed "$(printf '%s\n' "$CAP_OUT" | awk 'END{print NR}')"
+    printf '%s\n' "$CAP_OUT"
+  fi
+fi
+
+# Konteyner ORTAMI — yalnız sınıf, hiçbir değer basılmaz. Ortamda bir değişken
+# YOKSA bu, kasanın ya da ÖNBELLEKLENMİŞ config'in ne dediğini SÖYLEMEZ.
+if [ "$APP_STATUS" = found ]; then
+  say_dexec mail_env_mail_mailer "$APPC" \
+    'case "${MAIL_MAILER:-}" in "") echo unset ;; log) echo log ;; array) echo array ;; mailgun) echo mailgun ;; smtp) echo smtp ;; ses) echo ses ;; *) echo other ;; esac'
+  say_dexec mail_env_from_domain "$APPC" \
+    'a="${MAIL_FROM_ADDRESS:-}"; [ -n "$a" ] || { echo unset; exit 0; }; d=$(printf "%s" "${a##*@}" | tr "[:upper:]" "[:lower:]"); case "$d" in mg.zabuno.com) echo matches_mg ;; zabuno.com) echo matches_apex ;; *) echo other ;; esac'
+  say_dexec mail_env_mailgun_domain_configured "$APPC" \
+    'if [ -n "${MAILGUN_DOMAIN:-}" ]; then echo yes; else echo no; fi'
+  say_dexec mail_env_mailgun_secret_configured "$APPC" \
+    'if [ -n "${MAILGUN_SECRET:-}" ]; then echo yes; else echo no; fi'
+  say_dexec mail_env_mailgun_endpoint "$APPC" \
+    'e="${MAILGUN_ENDPOINT:-}"; [ -n "$e" ] || { echo unset; exit 0; }; h=$(printf "%s" "$e" | tr "[:upper:]" "[:lower:]"); h="${h#http://}"; h="${h#https://}"; h="${h%%/*}"; case "$h" in api.eu.mailgun.net) echo EU ;; api.mailgun.net) echo US ;; *) echo other ;; esac'
+else
+  for k in mail_env_mail_mailer mail_env_from_domain mail_env_mailgun_domain_configured \
+           mail_env_mailgun_secret_configured mail_env_mailgun_endpoint; do
+    say "$k" unknown
+  done
+fi
+
+# Yorumlanma kuralları — simge okumak yetmez:
+say mail_vault_secret_note "secret_ciphertext_present yalnizca ALAN DOLU demektir; gecerli anahtar ya da secilmis rota KANITI DEGILDIR"
+say mail_route_claim "candidate_metadata_only_not_effective_runtime_route"
+say mail_effective_route_note "tasiyici secimi kasa+env cozumlemesiyle calisma aninda olusur; bu betik bootstrap etmedigi icin BURADAN cikarilamaz"
+say mail_default_inference_note "mail_env_mail_mailer=unset, mail.default degerini BELIRLEMEZ; onbelleklenmis config farkli olabilir"
+
 echo "### section=end"
 say audit_finished_utc "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 exit 0
