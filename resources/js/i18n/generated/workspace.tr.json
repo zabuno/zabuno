@@ -1293,6 +1293,8 @@
     "workspace.publication.preview.linkPending": "Önizleme bağlantısı oluşturuluyor…",
     "workspace.publication.preview.region": "Telefonda önizleme",
     "workspace.publication.publishAction.checklistConfirmed": "Yayın kontrol listesini gözden geçirdim",
+    "workspace.publication.publishAction.duty": "Yayınladığınız fiyatların, alerjenlerin ve bulunabilirliğin doğruluğundan işletmeniz sorumludur — ayrıntısı {terms} metnindedir.",
+    "workspace.publication.publishAction.dutyTermsLink": "Hizmet Koşulları",
     "workspace.publication.publishAction.failurePreservationNotice": "Yayınlama başarısız olursa misafirler en son yayınladığınız menüyü görmeye devam eder — masada hiçbir şey bozulmaz.",
     "workspace.publication.publishAction.mode.immediate": "Hemen yayınla",
     "workspace.publication.publishAction.mode.label": "Yayın biçimi",

@@ -48,6 +48,21 @@ export const publication = {
         'Publish makes what you see here the menu your guests see. Anything you edit afterwards stays private until you publish again.',
     'workspace.publication.publishAction.failurePreservationNotice':
         'If publishing fails, guests keep seeing the menu you published last — nothing breaks at the table.',
+    /*
+        SORUMLULUK BEYANI (ALLERGEN-DUTY-01). Yeni bir hukuk metni DEĞİL:
+        cümle Hizmet Koşulları'nın "You are responsible for the accuracy of
+        your menu (prices, allergens, availability)" maddesinden türetildi ve
+        anlamı orada sahiplenilir. Üç sorumluluk ADIYLA sayılır; "menü
+        doğruluğu" gibi kapsayıcı bir söz, alerjeni sahibin gözünde görünmez
+        bırakırdı.
+
+        `{terms}` yer tutucusu bağlantı metninin cümlenin İÇİNDE durması
+        içindir: ayrıntıyı aramak için ekranı terk etmek gerekmez. Çeviride
+        yer tutucu KORUNUR — düştüğünde bağlantı cümleden kopar.
+    */
+    'workspace.publication.publishAction.duty':
+        'Your business is responsible for the accuracy of the prices, allergens and availability you publish — see the {terms}.',
+    'workspace.publication.publishAction.dutyTermsLink': 'Terms of Service',
     'workspace.publication.qrDestination.region': 'QR destination',
     'workspace.publication.qrDestination.explanation':
         'Create a QR code that resolves to the current published menu.',

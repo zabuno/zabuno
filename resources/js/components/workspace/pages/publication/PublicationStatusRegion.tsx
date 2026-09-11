@@ -46,6 +46,12 @@ type PublicationStatusRegionProps = {
     errorMessage: string | null;
 };
 
+/**
+ * Sorumluluk cümlesindeki bağlantının yeri. Cümlenin İÇİNDE durur: sahip
+ * "nerede yazıyor" diye ekranı terk etmek zorunda kalmasın.
+ */
+const DUTY_TERMS_PLACEHOLDER = '{terms}';
+
 export function PublicationStatusRegion({
     current,
     loading,
@@ -58,6 +64,11 @@ export function PublicationStatusRegion({
     publishing,
     errorMessage,
 }: PublicationStatusRegionProps) {
+    const [dutyBeforeTerms, ...dutyRestOfSentence] = t(
+        'workspace.publication.publishAction.duty',
+    ).split(DUTY_TERMS_PLACEHOLDER);
+    const dutyAfterTerms = dutyRestOfSentence.join(DUTY_TERMS_PLACEHOLDER);
+
     return (
         <div
             role="region"
@@ -129,6 +140,37 @@ export function PublicationStatusRegion({
                 data-publish-commit="true"
                 className="flex flex-col gap-[var(--space-3)] rounded-[var(--radius-lg)] border border-border bg-surface-subtle p-[var(--density-padding-inline)]"
             >
+                {/*
+                    SORUMLULUK BEYANI (ALLERGEN-DUTY-01).
+
+                    Şerit bugüne kadar yalnız "yayın listesini gözden
+                    geçirdim" onayını taşıyordu; o onay İŞLETME İÇİ bir
+                    kontrol listesidir ve kimin neyden sorumlu olduğunu
+                    söylemez. Kebapçı fiyatı günceller, "Yayınla"ya basar,
+                    ertesi gün kartelada yazmayan fıstık bir misafiri
+                    hastanelik eder — ekran o ana kadar alerjen doğruluğunun
+                    KİME ait olduğunu hiç söylememiştir.
+
+                    Beyan bir KAPI değil BİLDİRİMDİR: yeni bir onay kutusu,
+                    yeni bir adım, düğmeye yeni bir kilit yoktur; tek tıklık
+                    yayın aynen korunur. Ama kapatılamaz — kapatılabilir bir
+                    yükümlülük bildirimi ilk gün kapatılır ve sonraki her
+                    yayında hiç var olmamış gibi davranır. Aynı sebeple
+                    kontrol listesi, yükleme ve yayın hâlinden BAĞIMSIZ durur:
+                    yükümlülük yayına hazır olmakla değil, yayınlayacak
+                    olmakla doğar.
+
+                    Metin yeni bir hukuk metni değildir; Hizmet Koşulları'nın
+                    doğruluk maddesinden türer ve ayrıntısı `/terms`tedir.
+                */}
+                <p data-publish-duty="true" className="text-body text-fg-secondary">
+                    {dutyBeforeTerms}
+                    <a href="/terms" className="text-fg-link underline">
+                        {t('workspace.publication.publishAction.dutyTermsLink')}
+                    </a>
+                    {dutyAfterTerms}
+                </p>
+
                 <label className="flex w-full items-center gap-2 text-body text-fg-secondary">
                     <input
                         type="checkbox"

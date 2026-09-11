@@ -5184,6 +5184,14 @@ msgstr ""
 msgid "workspace.publication.publishAction.checklistConfirmed"
 msgstr ""
 
+#: workspace:workspace.publication.publishAction.duty
+msgid "workspace.publication.publishAction.duty"
+msgstr ""
+
+#: workspace:workspace.publication.publishAction.dutyTermsLink
+msgid "workspace.publication.publishAction.dutyTermsLink"
+msgstr ""
+
 #: workspace:workspace.publication.publishAction.failurePreservationNotice
 msgid "workspace.publication.publishAction.failurePreservationNotice"
 msgstr ""
