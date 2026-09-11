@@ -84,6 +84,34 @@ msgstr "We do not have this"
 msgid "site.assurance.state.notMeasured"
 msgstr "Not measured"
 
+#: site:site.billing.graceReminder.action
+msgid "site.billing.graceReminder.action"
+msgstr "You can pay from the billing section of your workspace:"
+
+#: site:site.billing.graceReminder.body
+msgid "site.billing.graceReminder.body"
+msgstr "Your paid period has ended and we have not received a payment yet. Nothing has been switched off: your plan features are still on while we wait."
+
+#: site:site.billing.graceReminder.graceEnds
+msgid "site.billing.graceReminder.graceEnds"
+msgstr "Your plan features stay on until {date}. That is the last day they remain open without a payment."
+
+#: site:site.billing.graceReminder.greeting
+msgid "site.billing.graceReminder.greeting"
+msgstr "Hello,"
+
+#: site:site.billing.graceReminder.periodEnded
+msgid "site.billing.graceReminder.periodEnded"
+msgstr "Your paid period ended on {date}."
+
+#: site:site.billing.graceReminder.safety
+msgid "site.billing.graceReminder.safety"
+msgstr "Your account is not closing. Your published menu stays online, the QR code on the table keeps working and your data stays where it is — only the extra features your plan adds are paused after that date, and a payment brings them straight back."
+
+#: site:site.billing.graceReminder.subject
+msgid "site.billing.graceReminder.subject"
+msgstr "Zabuno — your payment is overdue"
+
 #: site:site.brand
 msgid "site.brand"
 msgstr "Zabuno"

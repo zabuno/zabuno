@@ -24,6 +24,8 @@ use App\Application\Billing\Port\PaymentTransactionRepositoryPort;
 use App\Application\Billing\Port\PlanCatalogRepositoryPort;
 use App\Application\Billing\Port\PlanManagementRepositoryPort;
 use App\Application\Billing\Port\SandboxPaymentGatewayPort;
+use App\Application\Billing\Port\SubscriptionGraceReminderNotifierPort;
+use App\Application\Billing\Port\SubscriptionGraceReminderRepositoryPort;
 use App\Application\Billing\Port\SubscriptionRepositoryPort;
 use App\Application\Content\Port\ContentLibraryPort;
 use App\Application\DataRights\Port\DataRequestRepositoryPort;
@@ -139,6 +141,7 @@ use App\Infrastructure\Analytics\Persistence\EloquentAnalyticsRepository;
 use App\Infrastructure\Analytics\VaultAnalyticsSettings;
 use App\Infrastructure\Assurance\MeasuredAssuranceLibrary;
 use App\Infrastructure\Authorization\Persistence\EloquentAuthorizationDecisionPoint;
+use App\Infrastructure\Billing\Mail\MailSubscriptionGraceReminderNotifier;
 use App\Infrastructure\Billing\Persistence\EloquentBillingMode;
 use App\Infrastructure\Billing\Persistence\EloquentBillingProfileRepository;
 use App\Infrastructure\Billing\Persistence\EloquentInvoiceRepository;
@@ -146,6 +149,7 @@ use App\Infrastructure\Billing\Persistence\EloquentIyzicoSandboxTransactionRepos
 use App\Infrastructure\Billing\Persistence\EloquentPaymentTransactionRepository;
 use App\Infrastructure\Billing\Persistence\EloquentPlanCatalogRepository;
 use App\Infrastructure\Billing\Persistence\EloquentPlanManagementRepository;
+use App\Infrastructure\Billing\Persistence\EloquentSubscriptionGraceReminderRepository;
 use App\Infrastructure\Billing\Persistence\EloquentSubscriptionRepository;
 use App\Infrastructure\Billing\Provider\ContainerPaymentGatewaySelector;
 use App\Infrastructure\Billing\Provider\IyzipayGateway;
@@ -794,6 +798,14 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->bind(HostCapabilityProbePort::class, RuntimeHostCapabilityProbe::class);
         $this->app->bind(PlatformAuthorizationPort::class, EloquentPlatformAuthorization::class);
         $this->app->bind(SubscriptionRepositoryPort::class, EloquentSubscriptionRepository::class);
+        /*
+            ÖDEMESİZ SÜRE HATIRLATMASI (`docs/107` Faz 1.3, `docs/134`).
+            İkisi ayrı port: damganın nerede durduğu ile haberin nasıl
+            gittiği ayrı altyapı kararlarıdır ve biri değişince diğeri
+            değişmemeli (veri hakları ile aynı gerekçe).
+        */
+        $this->app->bind(SubscriptionGraceReminderRepositoryPort::class, EloquentSubscriptionGraceReminderRepository::class);
+        $this->app->bind(SubscriptionGraceReminderNotifierPort::class, MailSubscriptionGraceReminderNotifier::class);
         $this->app->bind(PlatformWorkspaceQueryPort::class, EloquentPlatformWorkspaceQuery::class);
         $this->app->bind(IyzicoSandboxTransactionRepositoryPort::class, EloquentIyzicoSandboxTransactionRepository::class);
         $this->app->bind(IyzicoSandboxGatewayPort::class, IyzipaySandboxGateway::class);
