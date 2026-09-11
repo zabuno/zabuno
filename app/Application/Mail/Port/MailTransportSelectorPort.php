@@ -16,11 +16,18 @@ namespace App\Application\Mail\Port;
  *
  * SEÇİM BAŞARISIZ OLABİLİR — VE SESSİZCE DEĞİL.
  *
- * Kimlik hiç girilmemişse bu bir arıza değildir: varsayılan sürücünün adı
- * döner. Ama kimlik GİRİLMİŞ ve yapılandırma taşınamıyorsa (örneğin uç
- * nokta taşıyıcının host alanına sığmıyorsa) gerçekleştirme bir istisna
- * ATAR; sessizce `mail.default`'a dönmek, üretimde `log` demek — yani
- * "gönderildi" deyip hiçbir yere ulaşmayan bir e-posta demek — olurdu.
+ * Kimlik hiç girilmemişse bu kural olarak bir arıza değildir: varsayılan
+ * sürücünün adı döner. Ama kimlik GİRİLMİŞ ve yapılandırma taşınamıyorsa
+ * (örneğin uç nokta taşıyıcının host alanına sığmıyorsa) gerçekleştirme bir
+ * istisna ATAR; sessizce `mail.default`'a dönmek, üretimde `log` demek —
+ * yani "gönderildi" deyip hiçbir yere ulaşmayan bir e-posta demek — olurdu.
+ *
+ * ÜRETİMDE VARSAYILANIN DA GÖNDERİYOR OLMASI GEREKİR. Kimlik hiç
+ * girilmemişken bile, üretimdeki varsayılan gönderici e-postayı bir dosyaya
+ * (`log`), belleğe (`array`) ya da hiçliğe (`null`) yazıyorsa — adı ne
+ * olursa olsun, takma ad da çözülür — gerçekleştirme yine istisna ATAR:
+ * ortada giden bir yol yoktur ve "gönderildi" demek yanlış olurdu. Gerçek
+ * bir yedek (örneğin SMTP) korunur, yerel/test ortamı kapsam dışıdır.
  *
  * ÇAĞIRANIN YÜKÜMLÜLÜĞÜ. Bu yüzden `select()` çağrısı, çağıranın KENDİ
  * gönderim hata yolunun İÇİNDE yapılır — gönderme çağrısıyla aynı `try`
@@ -35,7 +42,9 @@ namespace App\Application\Mail\Port;
  * ön kontroldür: aksi hâlde var olan hesap 500, olmayan hesap 200 alır ve
  * bu fark tek başına hesap sayımına yarar.
  *
- * @throws \RuntimeException Kimlik girilmiş ama yapılandırma taşınamıyorsa.
+ * @throws \RuntimeException Kimlik girilmiş ama yapılandırma taşınamıyorsa;
+ *                           ya da üretimde kimlik yokken varsayılan
+ *                           gönderici hiçbir yere göndermiyorsa.
  */
 interface MailTransportSelectorPort
 {
