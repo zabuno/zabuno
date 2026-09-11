@@ -80,26 +80,28 @@
     dilin kendisi değil, düzenin ters yönde ayakta kalıp kalmadığıdır.
 */
 
-import { spawn } from 'node:child_process';
+import { launchBrowser, exitBrowserUnavailable } from './browser-session.mjs';
 import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 
-const CHROME_CANDIDATES = [
-    process.env.CHROME_PATH,
-    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-    '/usr/bin/google-chrome',
-    '/usr/bin/google-chrome-stable',
-    '/usr/bin/chromium',
-    '/usr/bin/chromium-browser',
-].filter(Boolean);
+/*
+    BAŞLATMA ORTAK KATMANDA (`docs/154`, 2026-09-11).
 
-const CHROME = CHROME_CANDIDATES.find((candidate) => existsSync(candidate));
+    Bu dosya Chrome'u kendi kopyaladığı kodla başlatıyordu: kendi aday
+    listesi, kendi `spawn`ı, `stdio: 'ignore'` ve TEK deneme. `docs/154`'ün
+    ölçtüğü ayrışma tam olarak buydu — `shell-scroll-gate` sabit port ve 15
+    saniye kullanıyordu, burası seçilen port ve 30 saniye; birinde
+    düzeltilen bir şey ötekinde düzelmiyordu.
 
-if (CHROME === undefined) {
-    console.error('mobile-ux-audit: Chrome bulunamadı — ölçüm YAPILMADI, sonuç "bilinmiyor".');
-    process.exit(2);
-}
+    `shell-scroll-gate` 2026-09-11'de taşındı; bu, arıza sınıfının SON
+    kopyasıydı. Artık üçüncü bir kopya yok.
+
+    Kazanılan: üç deneme, her denemenin kendi profil dizini, Chrome'un
+    stderr'inin saklanması ve altyapı arızası için ayrı çıkış kodu (3) —
+    "benim değişikliğim mi bozdu, makine mi?" sorusu artık çıkış kodundan
+    cevaplanır.
+*/
 
 /*
     SABİT PORT YOK — Chrome portu kendisi seçer, araç onu diskten okur.
@@ -518,26 +520,6 @@ function cdp(ws, method, params = {}) {
     });
 }
 
-async function debuggerUrl(profile) {
-    /* `--remote-debugging-port=0`: Chrome seçtiği portu profil dizinine yazar. */
-    const marker = join(profile, 'DevToolsActivePort');
-
-    for (let attempt = 0; attempt < 120; attempt++) {
-        try {
-            const [port] = readFileSync(marker, 'utf8').split('\n');
-            const list = await fetch(`http://127.0.0.1:${port.trim()}/json/list`).then((r) =>
-                r.json(),
-            );
-            const page = list.find((t) => t.type === 'page');
-            if (page) return page.webSocketDebuggerUrl;
-        } catch {
-            /* Chrome henüz dinlemiyor ya da portu henüz yazmadı. */
-        }
-        await new Promise((r) => setTimeout(r, 250));
-    }
-    throw new Error('Chrome hata ayıklama portu açılmadı.');
-}
-
 /*
     HİKÂYE ÇİZİLMEDEN ÖLÇÜLMEZ.
 
@@ -805,24 +787,36 @@ const baseline =
 
 const profileDir = mkdtempSync(join(tmpdir(), 'mobile-audit-'));
 
-const chrome = spawn(
-    CHROME,
-    [
-        '--headless=new',
-        '--remote-debugging-port=0',
-        `--user-data-dir=${join(profileDir, 'profile')}`,
-        '--no-first-run',
-        '--disable-gpu',
-        '--allow-file-access-from-files',
-        'about:blank',
-    ],
-    { stdio: 'ignore' },
-);
+let session;
+
+try {
+    /*
+        `--allow-file-access-from-files`: Storybook'un derlenmiş çıktısı
+        `file://` ile açılıyor ve parçalar arası istekler bu bayrak olmadan
+        engellenir. Ortak katmanın taban bayraklarına EKLENİR, onların
+        yerine geçmez.
+    */
+    session = await launchBrowser({
+        label: 'mobile-ux-audit',
+        extraArgs: ['--allow-file-access-from-files'],
+    });
+} catch (error) {
+    /*
+        Çıkmadan önce kendi çöpünü topla: `exitBrowserUnavailable` süreci
+        bitirir ve aşağıdaki `finally` hiç çalışmaz.
+    */
+    try {
+        rmSync(profileDir, { recursive: true, force: true });
+    } catch {
+        /* Geçici dizin işletim sistemine bırakılır. */
+    }
+    exitBrowserUnavailable(error);
+}
 
 const report = [];
 
 try {
-    const ws = new WebSocket(await debuggerUrl(join(profileDir, 'profile')));
+    const ws = new WebSocket(session.debuggerUrl);
     await new Promise((resolve, reject) => {
         ws.addEventListener('open', resolve, { once: true });
         ws.addEventListener('error', reject, { once: true });
@@ -977,7 +971,7 @@ try {
 
     ws.close();
 } finally {
-    chrome.kill();
+    session.close();
 
     /*
         Chrome kapanırken profil dizinine hâlâ yazıyor olabilir; hemen silmek
