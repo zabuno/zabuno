@@ -37,10 +37,11 @@
     üç kırılmanın üçü de o sözleşmenin bozulmasıydı.
 */
 
-import { spawn } from 'node:child_process';
-import { existsSync, mkdtempSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+
+import { launchBrowser, exitBrowserUnavailable } from './browser-session.mjs';
 
 import {
     ACCOUNT,
@@ -59,24 +60,19 @@ import {
     olurdu (`docs/109` §8.7): çalışan ama söylediği şeyi ölçmeyen bir kapı.
     Ölçüm yapılmadıysa sonuç "geçti" değil, "bilinmiyor"dur — ve bilinmeyen
     bir sonuç yeşil renkte gösterilemez.
+
+    ── BAŞLATMA ARTIK ORTAK (`docs/154`, 2026-09-11) ──
+
+    Bu dosya Chrome'u kendi kopyaladığı otuz satırla başlatıyordu: sabit bir
+    zaman aşımı, TEK deneme, yeniden deneme yok. 2026-09-11'de CI tam olarak
+    burada düştü — "Chrome debug endpoint unavailable after 15000ms" — ve
+    ölçülen şey bir düzen kusuru değil, açılmayan bir tarayıcıydı.
+
+    Başlatma `browser-session.mjs`e taşındı: üç deneme, her denemenin kendi
+    profil dizini, stderr'in saklanması ve altyapı arızası için AYRI bir
+    çıkış kodu. Kapının ölçtüğü şey değişmedi; ölçemediğinde ne söylediği
+    değişti.
 */
-const CHROME_CANDIDATES = [
-    process.env.CHROME_PATH,
-    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-    '/usr/bin/google-chrome',
-    '/usr/bin/google-chrome-stable',
-    '/usr/bin/chromium',
-    '/usr/bin/chromium-browser',
-].filter(Boolean);
-
-const CHROME = CHROME_CANDIDATES.find((candidate) => existsSync(candidate));
-
-if (CHROME === undefined) {
-    console.error('shell-scroll-gate: Chrome bulunamadı — ölçüm YAPILMADI, kapı geçemez.');
-    console.error(`denenen yollar: ${CHROME_CANDIDATES.join(', ')}`);
-    console.error('CHROME_PATH ortam değişkeniyle yol verilebilir.');
-    process.exit(2);
-}
 
 /*
     Sınıflar AYRI bir modülde yaşıyor ve `AdminShell.contract.test.tsx`
@@ -152,70 +148,8 @@ async function cdp(ws, method, params = {}) {
     });
 }
 
-async function connect(chrome, profilePath, startup) {
-    const deadline = Date.now() + 15000;
-    while (Date.now() < deadline) {
-        if (startup.error || chrome.exitCode !== null || chrome.signalCode !== null) {
-            throw new Error(
-                `Chrome startup failed (${startup.error?.message ?? chrome.exitCode ?? chrome.signalCode}). ${startup.stderr}`,
-            );
-        }
-        try {
-            const [port] = readFileSync(join(profilePath, 'DevToolsActivePort'), 'utf8').split(
-                '\n',
-            );
-            if (!/^\d+$/.test(port) || Number(port) < 1 || Number(port) > 65535) {
-                throw new Error('Invalid owned Chrome port');
-            }
-            const list = await fetch(`http://127.0.0.1:${port}/json/list`, {
-                signal: AbortSignal.timeout(Math.max(1, Math.min(1000, deadline - Date.now()))),
-            }).then((r) => r.json());
-            const page = list.find((t) => t.type === 'page');
-            if (page) return page.webSocketDebuggerUrl;
-        } catch {
-            // The owned profile marker and endpoint may not be ready yet.
-        }
-        await new Promise((r) => setTimeout(r, Math.max(0, Math.min(250, deadline - Date.now()))));
-    }
-    throw new Error(`Chrome debug endpoint unavailable after 15000ms. ${startup.stderr}`);
-}
-
-function startupDiagnostics(chrome) {
-    const startup = { error: null, stderr: '' };
-    chrome.on('error', (error) => {
-        startup.error = error;
-    });
-    chrome.stderr.setEncoding('utf8');
-    chrome.stderr.on('data', (chunk) => {
-        startup.stderr = (startup.stderr + chunk).slice(-4096);
-    });
-    return startup;
-}
-
-async function stopChrome(chrome) {
-    const exited = () => !chrome.pid || chrome.exitCode !== null || chrome.signalCode !== null;
-    if (exited()) return;
-    const waitForExit = (signal) =>
-        new Promise((resolve) => {
-            let timer;
-            const done = () => {
-                clearTimeout(timer);
-                chrome.removeListener('exit', done);
-                resolve();
-            };
-            chrome.once('exit', done);
-            timer = setTimeout(done, 2000);
-            if (exited()) done();
-            else chrome.kill(signal);
-        });
-    await waitForExit('SIGTERM');
-    if (!exited()) await waitForExit('SIGKILL');
-    if (!exited()) throw new Error('Owned Chrome did not exit; profile retained.');
-}
-
 async function measure(url, width, height) {
-    const wsUrl = await connect(chrome, profilePath, startup);
-    const ws = new WebSocket(wsUrl);
+    const ws = new WebSocket(session.debuggerUrl);
     await new Promise((resolve, reject) => {
         ws.addEventListener('open', resolve, { once: true });
         ws.addEventListener('error', reject, { once: true });
@@ -288,30 +222,32 @@ if (!cssHref) {
 
 const dir = mkdtempSync(join(tmpdir(), 'shell-scroll-'));
 const page = join(dir, 'index.html');
-const profilePath = join(dir, 'profile');
 writeFileSync(page, harness(cssHref));
 
-const chrome = spawn(
-    CHROME,
-    [
-        '--headless=new',
-        '--remote-debugging-port=0',
-        `--user-data-dir=${profilePath}`,
-        '--no-first-run',
-        '--disable-gpu',
-        'about:blank',
-    ],
-    { stdio: ['ignore', 'ignore', 'pipe'] },
-);
+let session;
 
-const startup = startupDiagnostics(chrome);
+try {
+    session = await launchBrowser({ label: 'shell-scroll-gate' });
+} catch (error) {
+    /*
+        ÇIKMADAN ÖNCE KENDİ ÇÖPÜNÜ TOPLA.
+
+        `exitBrowserUnavailable` süreci bitirir; aşağıdaki `finally` hiç
+        çalışmaz. Bu satır olmasaydı tarayıcı açılmayan her koşu ardında
+        bir `shell-scroll-*` dizini bırakırdı — ve bu, kapının kendi
+        başlatma testinin ölçtüğü şeydir: geçici dizinde yalnız testin
+        koyduğu dosya kalmalı.
+    */
+    rmSync(dir, { recursive: true, force: true });
+    exitBrowserUnavailable(error);
+}
 
 try {
     console.log('shell-scroll-gate');
     check('telefon 320×568', await measure(`file://${page}`, 320, 568));
     check('masaüstü 1440×900', await measure(`file://${page}`, 1440, 900));
 } finally {
-    await stopChrome(chrome);
+    session.close();
     rmSync(dir, { recursive: true, force: true });
 }
 
