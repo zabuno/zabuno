@@ -403,6 +403,73 @@ final class PasswordResetDeliveryTest extends TestCase
         self::assertSame($unknown->getContent(), $response->getContent());
     }
 
+    // --- PRD-MAILGUN-PRODUCTION-NO-TRANSPORT-01 --------------------------
+
+    /**
+     * KİMLİK HİÇ GİRİLMEMİŞ: ÜRETİMDE BU DA "GÖNDERİLDİ" DEĞİLDİR.
+     *
+     * Yanlış yazılmış uç nokta ayrıca yakalanır; buradaki hâl ondan daha
+     * sadedir — Mailgun alanları hiç doldurulmamıştır. Seçici o zaman
+     * `mail.default`'a döner; üretimde o değer giden bir yola bağlı
+     * değilse (`log` gibi) mesaj sunucudaki bir dosyaya yazılır, ekranda
+     * "bağlantı gönderildi" belirir, posta kutusuna hiçbir şey düşmez.
+     * Burada üretim ortamında aynı yolculuk yürütülür ve cevabın
+     * "gönderdik" OLMADIĞI sabitlenir.
+     */
+    #[Test]
+    public function production_without_any_mailgun_credential_never_claims_a_reset_link_was_sent(): void
+    {
+        Config::set('app.env', 'production');
+        Config::set('services.mailgun.domain', null);
+        Config::set('services.mailgun.secret', null);
+
+        $user = $this->verifiedUser();
+
+        $response = $this->withHeaders($this->jsonHeaders())
+            ->post(self::FORGOT_PASSWORD_URI, ['email' => $user->email]);
+
+        self::assertNotSame(
+            200,
+            $response->getStatusCode(),
+            'PRD-MAILGUN: üretimde giden yol yokken hâlâ generic başarı yanıtı dönüyor.'
+        );
+        self::assertStringContainsString(
+            (string) trans('auth.password_reset_unavailable'),
+            (string) $response->getContent(),
+            'PRD-MAILGUN: kullanıcıya arındırılmış "gönderemedik" cevabı dönmedi.'
+        );
+        self::assertCount(
+            0,
+            $this->mailbox('array')->messages(),
+            'PRD-MAILGUN: üretimde e-posta yine sessiz varsayılan göndericiye düştü.'
+        );
+    }
+
+    /**
+     * Aynı engel, kayıtlı adresle kayıtsız adresi AYIRT ETMEZ.
+     *
+     * Ön kontrol hesap aranmadan önce yürüdüğü için bu yol da hesap sayma
+     * oracle'ı üretmez: iki istek de bayt bayt aynı cevabı alır.
+     */
+    #[Test]
+    public function production_without_any_mailgun_credential_answers_known_and_unknown_emails_identically(): void
+    {
+        Config::set('app.env', 'production');
+        Config::set('services.mailgun.domain', null);
+        Config::set('services.mailgun.secret', null);
+
+        $user = $this->verifiedUser();
+
+        $known = $this->withHeaders($this->jsonHeaders())
+            ->post(self::FORGOT_PASSWORD_URI, ['email' => $user->email]);
+        $unknown = $this->withHeaders($this->jsonHeaders())
+            ->post(self::FORGOT_PASSWORD_URI, ['email' => 'no-such-account@example.com']);
+
+        self::assertSame($unknown->getStatusCode(), $known->getStatusCode());
+        self::assertSame($unknown->getContent(), $known->getContent());
+        self::assertNotSame(500, $known->getStatusCode());
+    }
+
     // --- PRD-MAILGUN-HTML-VISIBLE-FAILURE-01 -----------------------------
 
     /**
