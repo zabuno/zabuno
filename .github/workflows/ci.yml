@@ -126,6 +126,18 @@ jobs:
       - name: Logical direction gate self-test
         run: ./scripts/logical-direction-gate.test.sh
 
+      # Tarayici acilmazsa kapi kirilir — ama NEDEN acilmadigi da yazilmali.
+      # Olculen kusur: son 300 CI kosumunun 39 basarisizligindan biri
+      # (run 33997789409) tarayici baslatilamadigi icin dustu ve tek
+      # soyledigi "port acilmadi" oldu; Chrome'un kendi stderr'i
+      # `stdio: 'ignore'` ile cope atiliyordu. Kok neden olculemedi.
+      #
+      # Bu test GERCEK Chrome istemez: sahte tarayici ikilileriyle her ariza
+      # bicimini belirlenimci olarak kurar. Gercek Chrome'a karsi kosan bir
+      # test, tam olarak duzeltmeye calistigimiz kararsizligi tasirdi.
+      - name: Browser session self-test (docs/154)
+        run: ./scripts/browser-session.test.sh
+
       # Kabuk duzeni jsdom'da OLCULEMEZ: jsdom duzen hesaplamaz, her kutu
       # sifir yuksekliktedir ve hicbir sey kaydirilmaz. Kabuk uc kez ust uste
       # sahibin ekraninda kirildi ve her seferinde butun testler yesildi.
