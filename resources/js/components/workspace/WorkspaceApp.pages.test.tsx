@@ -237,14 +237,23 @@ function setViewport(width: number, height: number) {
  * bir kez daha değişirse tek dosyada güncellensin.
  */
 /*
-    FF-130: Ayarlar hesap menüsünden RAYIN dibindeki sabit bloğa taşındı
-    (teslim paketinin kuralı: menü yalnız çalışma alanı değiştirme ve çıkış
-    taşır). Yardımcının adı korunuyor çünkü çağıran testler "Ayarlar'ı aç"
-    demek istiyor, "menüyü aç" değil.
+    AYARLAR YİNE HESAP MENÜSÜNDE (sahibin kararı, 2026-09-11).
+
+    Yolculuk: FF-130 onu menüden alıp rayın dibindeki sabit bloğa koydu;
+    2026-09-11'de sahip ekranı gösterip geri istedi, çünkü masaüstünde hesap
+    menüsünü açan kişi orada ne profilini ne ayarlarını bulabiliyordu — kişiye
+    ait işler ikiye bölünmüştü.
+
+    Yardımcının adı iki değişiklikte de korundu ve sebebi bu: çağıran testler
+    "Ayarlar'ı aç" demek istiyor, "şu düğmeye bas" değil.
+
+    Menü bir `role="menu"`dur, ray ise `navigation`: madde artık bir bağlantı
+    değil bir `menuitem`, ve önce menünün açılması gerekir.
 */
 async function openSettingsFromAccountMenu(user: ReturnType<typeof userEvent.setup>) {
+    await user.click(await screen.findByRole('button', { name: 'Account' }));
     await user.click(
-        within(await screen.findByRole('navigation', { name: 'Account' })).getByRole('link', {
+        within(await screen.findByRole('menu', { name: 'Account' })).getByRole('menuitem', {
             name: 'Settings',
         }),
     );

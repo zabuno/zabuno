@@ -269,17 +269,20 @@ describe('WorkspaceApp — Brand & Locations pages (S1-WP01A foundation)', () =>
 
         await screen.findByRole('navigation', { name: 'Restaurant admin' });
         /*
-            FF-84: Ayarlar kenar çubuğundan hesap (sistem) menüsüne taşındı
-            (sahibin kararı). Kayıtta grubu yok; adresi çalışmaya devam eder.
+            AYARLAR YİNE HESAP MENÜSÜNDE (sahibin kararı, 2026-09-11).
+
+            Yolculuk: FF-84 onu kenar çubuğundan menüye aldı; FF-130 menüden
+            rayın dibindeki sabit bloğa taşıdı; 2026-09-11'de sahip ekranı
+            gösterip menüye geri istedi — masaüstünde menüyü açan kişi orada
+            ne profilini ne ayarlarını bulabiliyordu.
+
+            Test kullanıcının GERÇEKTE izlediği yolu izler: önce menüyü aç,
+            sonra maddeye bas. Menü bir `role="menu"`dur; madde bir bağlantı
+            değil `menuitem`.
         */
-        /*
-            FF-130: Ayarlar hesap menüsünden RAYIN dibindeki sabit bloğa
-            taşındı (teslim paketinin kuralı). Menü artık yalnız çalışma
-            alanı değiştirme ve çıkış taşır; testin izlediği yol da
-            kullanıcının gerçekte izlediği yol olmalı.
-        */
+        fireEvent.click(screen.getByRole('button', { name: 'Account' }));
         fireEvent.click(
-            within(screen.getByRole('navigation', { name: 'Account' })).getByRole('link', {
+            within(screen.getByRole('menu', { name: 'Account' })).getByRole('menuitem', {
                 name: 'Settings',
             }),
         );

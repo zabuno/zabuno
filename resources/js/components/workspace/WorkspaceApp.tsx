@@ -1060,32 +1060,27 @@ export function WorkspaceApp({
         }
 
         /*
-            RAYIN DİBİ (FF-127) — aynı kayıttan, ikinci bir liste yok.
+            RAYIN DİBİ BOŞ — PROFİL VE AYARLAR HESAP MENÜSÜNE TAŞINDI
+            (sahibin kararı, 2026-09-11).
 
-            Sıra burada SABİT ve kayıttaki `order` alanından bağımsızdır:
-            iki maddelik bir blokta kimlik satırı üstte, ayarlar altta durur
-            ve bu sıra kas hafızasıdır. Kaydın sırası ise gruplu listeyi
-            ilgilendirir.
+            FF-127 bu iki maddeyi rayın dibindeki sabit bloğa koymuştu ve
+            gerekçesi şuydu: "menüde de durmaları, aynı hedefin iki evi
+            olması demekti". Gerekçe doğruydu, TARAF yanlış seçilmişti.
 
-            Bir bölüm izin yüzünden görünmüyorsa burada da yoktur —
-            `visibleDescriptors` üzerinden okunmasının tek sebebi bu.
+            Sahip ekranı gösterip söyledi: iki madde rayda açıkta dururken
+            hesap menüsünde yalnız "Hesap" ve "Çıkış yap" vardı — yani
+            kişiye ait işler İKİYE bölünmüştü. Menüyü açan kişi orada
+            profilini bulamıyor, ray listesine geri dönüyordu.
+
+            Tek ev artık hesap menüsü: kimlik satırı, profil, ayarlar,
+            çıkış — hepsi kişinin kendi adının altında. Ray yalnız çalışma
+            alanının bölümlerini taşır.
+
+            `railSections` mekanizması KALDIRILMADI: boş kaldığında
+            `DesktopChrome` bloğu hiç çizmez (`length > 0`), ve ileride
+            rayın dibine gerçekten ray'a ait bir hedef gerekirse yeri
+            hazırdır.
         */
-        for (const key of ['profile', 'settings'] as const) {
-            const descriptor = visibleDescriptors.find((candidate) => candidate.key === key);
-
-            if (descriptor === undefined) continue;
-
-            const item = toNavItem(descriptor);
-
-            railSections.push({
-                key: item.key,
-                label: item.label,
-                href: item.href,
-                icon: item.icon,
-                active: activeSection === descriptor.key,
-                onSelect: item.onSelect,
-            });
-        }
     }
 
     /*
@@ -1169,29 +1164,26 @@ export function WorkspaceApp({
                     renderPersistentSidebar === undefined ? 'w-auto max-w-[14rem]' : undefined
                 }
                 /*
-                    HESAP MENÜSÜ YALNIZ: çalışma alanı değiştir, çıkış
-                    (FF-130, teslim paketinin kuralı).
+                    PROFİL VE AYARLAR HER CİHAZDA BURADA (sahibin kararı,
+                    2026-09-11).
 
-                    Profil ve Ayarlar masaüstünde rayın dibindeki sabit
-                    blokta açıkta duruyor (FF-127); menüde de durmaları,
-                    aynı hedefin iki evi olması demekti.
+                    Eskiden bu iki madde menüye YALNIZ ray yokken giriyordu
+                    (telefon); masaüstünde rayın dibinde açıkta duruyorlardı
+                    (FF-127). Sonuç, sahibin ekranda gösterdiği şeydi: aynı
+                    kullanıcı iki farklı cihazda aynı işi iki FARKLI yerde
+                    arıyordu, ve masaüstünde hesap menüsünü açan kişi orada
+                    profilini bulamıyordu.
 
-                    TELEFONDA RAY YOKTUR. İki maddeyi orada da kaldırmak,
-                    ikisini de ULAŞILAMAZ yapardı: kayıtta grupları olmadığı
-                    için çekmecede ve alt çubukta da çizilmiyorlar. Kural bu
-                    yüzden "menüden kaldır" değil, "menüde yalnız ray
-                    yokken dursun".
+                    "Aynı hedefin iki evi olmasın" kuralı korundu — evin
+                    hangisi olacağı değişti. Ev artık menü, çünkü menünün
+                    başlığı zaten kişinin kendisidir (baş harf + e-posta) ve
+                    profil, ayarlar, çıkış o başlığın altına aittir.
+
+                    Koşul `currentWorkspace`de KALDI: çalışma alanı yokken
+                    gidilecek bir profil/ayarlar adresi de yoktur.
                 */
-                onOpenProfile={
-                    currentWorkspace && renderPersistentSidebar === undefined
-                        ? () => goToSection('profile')
-                        : undefined
-                }
-                onOpenSettings={
-                    currentWorkspace && renderPersistentSidebar === undefined
-                        ? () => goToSection('settings')
-                        : undefined
-                }
+                onOpenProfile={currentWorkspace ? () => goToSection('profile') : undefined}
+                onOpenSettings={currentWorkspace ? () => goToSection('settings') : undefined}
                 onLogout={() => void handleLogout()}
                 loggingOut={loggingOut}
             />
