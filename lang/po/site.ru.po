@@ -1504,6 +1504,26 @@ msgstr ""
 msgid "site.support.commitment"
 msgstr ""
 
+#: site:site.support.reply.closing
+msgid "site.support.reply.closing"
+msgstr ""
+
+#: site:site.support.reply.greeting
+msgid "site.support.reply.greeting"
+msgstr ""
+
+#: site:site.support.reply.intro
+msgid "site.support.reply.intro"
+msgstr ""
+
+#: site:site.support.reply.reply
+msgid "site.support.reply.reply"
+msgstr ""
+
+#: site:site.support.reply.subject
+msgid "site.support.reply.subject"
+msgstr ""
+
 #: site:site.theme.dark
 msgid "site.theme.dark"
 msgstr ""

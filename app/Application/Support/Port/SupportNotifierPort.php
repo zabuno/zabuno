@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Application\Support\Port;
 
 use App\Application\Support\Dto\ReceivedSupportRequest;
+use App\Application\Support\Dto\SupportReplyTarget;
+use App\Domain\Support\SupportReplyOutcome;
 
 /**
  * İki gönderim, iki alıcı — FF-201.
@@ -37,4 +39,14 @@ interface SupportNotifierPort
      * @return string|false|null `null` devralındı, dize sebep, `false` hiç denenmedi
      */
     public function notifyOwner(ReceivedSupportRequest $request): string|false|null;
+
+    /**
+     * Süperadminin düz metin cevabı, talebi açan adrese — SUPPORT-REPLY-01.
+     *
+     * Diğer ikisinden AYRILIR: burada sonuç bir satır alanı değil, çağıranın
+     * KARARIDIR. Gerçekten çıkmayan bir cevap talebi `answered` yapmamalı,
+     * bu yüzden dönen şey `null`/sebep değil sabit bir sonuç kodudur.
+     * İstisna FIRLATMAZ; ham sağlayıcı metni yalnız sunucu günlüğünde kalır.
+     */
+    public function reply(SupportReplyTarget $target, string $body): SupportReplyOutcome;
 }

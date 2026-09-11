@@ -554,9 +554,9 @@ const en = {
         'A session is already open. End it before opening another one; sessions never stack and are never renewed.',
 
     // DESTEK KUYRUĞU (`docs/125` §6'nın kapanışı). Metinler ürünün BUGÜNKÜ
-    // gerçeğini söyler: cevap e-postayla yazılır, çünkü üründe cevap yazma
-    // yüzeyi yok. Var olmayan bir kutuyu ima eden bir cümle, cevabın
-    // gittiğini sandırırdı.
+    // gerçeğini söyler: cevap ARTIK satırın içinde yazılır (SUPPORT-REPLY-01)
+    // ve "cevap yüzeyi yok" cümlesi kaldırıldı — olmayan bir eksikliği ilan
+    // etmek, var olmayan bir kutuyu çizmek kadar yanlıştır.
     'platform.supportQueue.title': 'Support queue',
     'platform.supportQueue.filter': 'Status',
     'platform.supportQueue.filter.all': 'All statuses',
@@ -574,8 +574,24 @@ const en = {
         'This one came through the public contact form and is not tied to any restaurant account, so there is no support desk to open.',
     'platform.supportQueue.noAcknowledgement':
         'No acknowledgement email reached this sender, so they may not know the request arrived.',
-    'platform.supportQueue.noReplySurface':
-        'Oldest first: the longest wait is answered first. Replies are written by email — this product has no reply surface yet, so marking a request answered records the timing, it does not send anything.',
+    // CEVAP KUTUSU: etiket ve düğme REFERANSI taşır, çünkü kuyrukta çok
+    // satır var ve ekran okuyucuyla çalışan görevli hangi talebe yazdığını
+    // sırayı sayarak öğrenmemeli.
+    'platform.supportQueue.reply.label': 'Reply to {reference}',
+    'platform.supportQueue.reply.send': 'Send reply to {reference}',
+    // ARIZANIN CÜMLESİ EKRANIN, KODU SUNUCUNUN. Ham sağlayıcı metni hiç
+    // gelmez; iki sebep ayrı yazılır çünkü biri yapılandırma eksiği, diğeri
+    // geçici bir arızadır ve görevlinin yapacağı şey farklıdır.
+    'platform.supportQueue.reply.noTransport':
+        'No outbound email transport is configured, so nothing was sent. The request is untouched — add a mail credential and send the same reply again.',
+    'platform.supportQueue.reply.failed':
+        'The reply could not be sent. The request is untouched and your draft is kept, so you can send it again.',
+    // Yalnız `SUPPORT_EMAIL` KESİN boşken: gönderim yine çıkar, müşteri
+    // yalnız o e-postaya "cevapla" diyemez.
+    'platform.supportQueue.noReplyTo':
+        'No reply-to address is configured (SUPPORT_EMAIL), so the customer cannot reply to this email — they would have to write in again.',
+    'platform.supportQueue.replyNote':
+        'Oldest first: the longest wait is answered first. A reply sent from a row really leaves the building, and only then is the request marked answered. The button beside it is a bookkeeping action: marking a request answered records the timing, it does not send anything. There is no duplicate guard on the server, so submitting the same reply twice sends two emails.',
 
     'platform.auditLog.source.support-access': 'Tenant access',
 } as const;

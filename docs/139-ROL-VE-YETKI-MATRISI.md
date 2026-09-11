@@ -252,7 +252,7 @@ uçların kendisidir ve bu liste yönlendiriciye sorularak üretildi.
 | Ölçüm | Sayı |
 | --- | ---: |
 | Kapının arkasındaki okuma ucu | 18 |
-| Kapının arkasındaki yazma ucu | 15 |
+| Kapının arkasındaki yazma ucu | 16 |
 | Tek kiracıyı adlandıran okuma ucu | 3 |
 | Tek kiracıyı adlandıran YAZMA ucu | 3 |
 | Bunlardan gerekçesi KAYITSIZ olan | 0 |
@@ -280,6 +280,7 @@ ve yazan uçların kayıtlı gerekçesiyle:
 - `POST /api/admin/plans/{plan}/activate`
 - `POST /api/admin/release-attestations`
 - `POST /api/admin/support-access/end`
+- `POST /api/admin/support-requests/{supportRequest}/reply`
 - `POST /api/admin/workspaces/{workspace}/manual-payments`
 - `POST /api/admin/workspaces/{workspace}/support-access`
 - `POST /api/admin/workspaces/{workspace}/transactions/{transaction}/refund`

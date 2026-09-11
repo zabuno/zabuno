@@ -6,6 +6,7 @@ namespace App\Application\Support\Port;
 
 use App\Application\Support\Dto\NewSupportRequest;
 use App\Application\Support\Dto\ReceivedSupportRequest;
+use App\Application\Support\Dto\SupportReplyTarget;
 use App\Application\Support\Dto\SupportRequestAdminRow;
 use App\Application\Support\Dto\SupportRequestSummary;
 use App\Application\Support\Exception\SupportReferenceExhaustedException;
@@ -48,6 +49,13 @@ interface SupportRequestRepositoryPort
      * @return list<SupportRequestAdminRow>
      */
     public function listForPlatform(?SupportRequestStatus $status): array;
+
+    /**
+     * Cevap için gereken hedef — yalnız gönderimin ihtiyacı olan alanlar
+     * (`SupportReplyTarget`). Satır yoksa `null` döner ve çağıran bunu
+     * sayım yapılamayan bir 404'e çevirir.
+     */
+    public function findReplyTarget(int $id): ?SupportReplyTarget;
 
     /**
      * Durumu değiştirir. `answered`'a ilk geçişte `first_response_at`

@@ -18,7 +18,7 @@ de yolu yoktu. Bu belge o boşluğu kapatan paketin (FF-201) kararlarını,
 | Yanıt taahhüdü | Yok | Yapılandırılmışsa üç yüzeyde **aynı cümle, tek kaynak**; yapılandırılmamışsa **hiçbir yerde** |
 | Panelden destek isteme | Yok | `Destek` bölümü: kendi talepleri + yeni talep + yardım bağlantısı |
 | Takip | Yok | Durum panelde ve e-postada; kamuya açık sorgu **yok** (§5) |
-| Süperadmin | Yok | Uçlar var, **ekran yok** (§6) |
+| Süperadmin | Yok | Kuyruk ekranı + **satırdan cevap gönderme** (§6) |
 
 ## 1. Akış
 
@@ -135,32 +135,53 @@ Durum yalnız **panelde** (oturum + yetki arkasında) ve **e-postada**
 (gönderenin kendi kutusunda) görünür. Kamu formundan yazan biri panelsizdir;
 onun takibi cevap e-postasıdır — referans o cevabın konusunda durur.
 
-## 6. Süperadmin: uçlar var, ekran bekliyor
+## 6. Süperadmin: kuyruk ekranı ve satırdan cevap
 
-> **EKRAN GELDİ (FF-218, `docs/122` Y7, `docs/133`).** Aşağıdaki iki uç
-> artık `/platform` → **Destek masası**'nın en üstündeki kuyruk kartından
-> okunuyor: bekleyen talepler (en eski üstte), durum süzgeci, ve
-> `received`/`answered`/`closed` geçişleri. Alındı e-postası çıkmamış bir
-> talep ayrıca işaretleniyor — "yazdım ama cevap gelmedi" çağrısının
-> sebebi çoğu zaman odur.
->
-> **Cevap yazma yüzeyi HÂLÂ YOK** ve ekran öyle bir yüzey varmış gibi
-> davranmıyor: kart bunu kendi cümlesiyle söylüyor ("replies are written by
-> email… marking a request answered records the timing, it does not send
-> anything"). Var olmayan bir kutuyu çizmek, cevabın gittiğini sandırırdı.
+**EKRAN GELDİ (FF-218, `docs/122` Y7, `docs/133`).** Uçlar `/platform` →
+**Destek masası**'nın en üstündeki kuyruk kartından okunuyor: bekleyen
+talepler (en eski üstte), durum süzgeci, `received`/`answered`/`closed`
+geçişleri. Alındı e-postası çıkmamış bir talep ayrıca işaretleniyor —
+"yazdım ama cevap gelmedi" çağrısının sebebi çoğu zaman odur.
 
-`PlatformApp.tsx` başka bir pakette değişiyor; bu paket ekran eklemedi.
-Sunucu tarafı hazır ve donmuş:
+**CEVAP YÜZEYİ DE GELDİ (SUPPORT-REPLY-01).** Görevli dün kuyruğu okuyup
+uygulamadan çıkıyordu: adresi elle kopyalıyor, kendi posta programını
+açıyor, cevabı orada yazıyor ve dönüp "Mark answered"a basıyordu — dört
+pencere, iki uygulama, ve cevabın gidip gitmediğini kimsenin bilmediği tek
+nokta. Artık satırın kendi kutusuna yazıp bir kez basıyor.
 
 | Uç | Sınır | Not |
 | --- | --- | --- |
-| `GET /api/admin/support-requests?status=` | — | her kanal, en eski üstte (kuyruk); tanınmayan süzgeç = süzgeçsiz |
+| `GET /api/admin/support-requests?status=` | — | her kanal, en eski üstte (kuyruk); tanınmayan süzgeç = süzgeçsiz. Satır şeması DONMUŞTUR; `SUPPORT_EMAIL`'in var olup olmadığı gövdeye değil `X-Support-Reply-To` başlığına yazılır (`configured`/`missing`) |
 | `PUT /api/admin/support-requests/{id}/status` | `throttle:20,1` | `received` / `answered` / `closed`; ilk `answered` geçişi `first_response_at`'i **bir kez** damgalar |
+| `POST /api/admin/support-requests/{id}/reply` | `throttle:20,1` | düz metin gövde (kırpıldıktan sonra boş olamaz, üst sınır 5000 karakter); gönderim BAŞARILIYSA 200 ve talep `answered` |
 
 Geçiş kısıtı yok (kapanmış talep yeniden açılabilir); tek değişmez ilk yanıt
-damgasıdır — "kaç saatte cevap verdik" ölçümünün kaynağı. Ekran `docs/122`
-Y7 ile birlikte geldi (yukarıdaki kutu); süperadmin **cevabı hâlâ
-e-postayla yazar** — üründe cevap yazma yüzeyi yoktur.
+damgasıdır — "kaç saatte cevap verdik" ölçümünün kaynağı.
+
+**SIRA: ÖNCE GÖNDER, SONRA DAMGALA.** Ters sırada taşıyıcı düştüğünde satır
+cevaplanmış görünürdü, müşteri beklerdi ve ölçüm gönderilmemiş bir cevabı
+sayardı. Sürücü `log` ise gönderim hiç DENENMEZ: uç `409
+{"reason":"no_outbound_transport"}` döner, satır `received` ve damgasız
+kalır. Seçim ya da gönderim patlarsa yine 409'dur ve sebep SABİT bir koddur
+— ham sağlayıcı cümlesi (içinde bir anahtar olabilir) yalnız sunucu
+günlüğünde kalır, tarayıcıya ve `platform_audits`'e çıkmaz. Satır
+değişmediği için AYNI gövde yeniden gönderilebilir.
+
+**GÖVDE HİÇBİR YERDE SAKLANMAZ:** ne satırda, ne denetim izinde. Yeni tablo,
+yeni sütun, yeni migration yok. `platform_audits` yalnız `reply_sent` /
+`reply_failed`, aktör ve referansı taşır — cevabın METNİ müşterinin
+cümlesidir ve denetim izi onu saklamak için yapılmadı.
+
+**BU UÇ EXACTLY-ONCE DEĞİLDİR.** Yinelenen gönderimi eleyen bir anahtar
+(ledger, idempotency tablosu) bu pakette YOKTUR: elle atılan iki eşzamanlı
+POST iki e-posta üretir. Tek savunma ekrandadır — gönderim sürerken düğme
+basılamaz. Kart ayrıca manuel damganın dürüstlüğünü koruyor: "marking a
+request answered records the timing, it does not send anything".
+
+**CEVAP ADRESİ HÂLÂ EKSİK (§7.2).** `SUPPORT_EMAIL` boşken cevap yine çıkar
+ama `Reply-To` konmaz; kart bunu bir kez, kendi altında söyler. Ekran ilk
+yükte adresin durumunu bilmez (`unknown`) ve o sırada UYARMAZ: henüz
+bilinmeyen bir eksikliği ilan etmek sahte bir arıza üretirdi.
 
 ## 7. Sahibe açık sorular
 
@@ -187,11 +208,12 @@ e-postayla yazar** — üründe cevap yazma yüzeyi yoktur.
 | `PublicSupportRequestTest` (10) | Kamu formu → `support_requests`; referans biçimi; ekranda referans; alındı e-postası ve sonucu; sahibe bildirim referanslı; adres/taşıyıcı yokken damga yok; bal küpü; eski tablo yazılmaz ama durur |
 | `ResponseCommitmentTest` (3) | Taahhüt yokken hiçbir yüzeyde yok; varken üç yüzey aynı cümle; geçersiz değer = yok |
 | `WorkspaceSupportRequestTest` (7) | Hesaptan ad/e-posta; liste yalnız bu çalışma alanı; başkası 404; editör 404, yönetici 201; auth/verified; doğrulama; throttle |
-| `PlatformSupportRequestAdminTest` (4) | Süperadmin sınırı; liste ve süzgeç; ilk yanıt bir kez; geçersiz durum 422 |
+| `PlatformSupportRequestAdminTest` (8) | Süperadmin sınırı; liste ve süzgeç; ilk yanıt bir kez; geçersiz durum 422; **gerçekten çıkan cevap satırı `answered` yapar ve damgayı bir kez atar; taşıyıcı yokken 409 ve satır değişmez; arıza sanitize edilir ve aynı gövde yeniden gönderilir; rolsüz 404 / boş gövde 422 / olmayan talep 404** |
 | `SupportReferenceTest` (4) | Alfabe; çarpışmada yeni numara; tükenince gürültü; 23000 ve 23505 |
 | `SupportDeploymentContractTest` (2) | İki değişken konteynere `${...}` ile geçer; örnek dosyalarda ad var, değer yok |
-| `ModularApiRouteRegistrationTest` | Dört yeni imza ve `routes/api/support.php` |
+| `ModularApiRouteRegistrationTest` | Beş imza (cevap ucu dahil) ve `routes/api/support.php` |
 | `SupportPage.test.tsx` (8) | Liste, taahhüt yalnız sunucudan, gönderim ve yeniden okuma, üç sonuç cümlesi, varsayılan istemcinin adresleri, bölüm kaydı (izin + Yönetim grubu), bölümün kayıtta en sonda durması |
+| `SupportQueue.test.tsx` (8) | Satırın kim/ne/nasıl ulaşılır bilgisi; alındı uyarısı yalnız çıkmayanda; durum geçişi ve tutulan durumun düğmesizliği; sunucuda süzme; masa düğmesi yalnız hesaplı satırda; boş kuyruk cümlesi; **satırdan tek tıkla cevap ve busy'de ikinci tıklamanın yollamaması; arızada taslağın durması, hatanın yalnız o satırda duyurulması ve cevap adresi yokken bunun söylenmesi** |
 | `forms.guard.test.ts` | Talep formu `noValidate` taşır: tarayıcının kendi baloncuğu `submit` olayını yutmaz (`docs/47` Kural 5b) |
 | `scripts/mobile-ux-audit` | Üç hikâye kökü (`SupportPage` 4, `SupportRequestForm` 3, `SupportRequestList` 4), 320×568 gerçek Chrome: 11/11 hikâye ölçüldü, bulgu sıfır; kullanılabilir genişlik sayfa 288/320, kart 270/320 (eşik 230). Ölçüm, aynı makinede eşzamanlı ikinci bir denetim 9355 portunu tuttuğu için ayrı portta ve 2 sn bekleme ile alındı — betiğin 450 ms'lik beklemesi yük altında hikâyeyi çizilmeden ölçüyor ve boş ölçümü "sorun yok" diye raporluyor; bu, aracın kendi açık borcudur (`docs/117` §0 ile aynı aile) |
 
@@ -203,8 +225,17 @@ bir alındı e-postası alır; sahibe giden bildirim aynı numarayı taşır. Ot
 açmışsa panelden `Destek`'e girer, adını yazmadan talep açar, talebini
 listede durumuyla görür.
 
-**Çalışmaz:** süperadminin talepleri **cevaplayacağı** yüzey — görmek ve
-durumunu işaretlemek FF-218'de geldi (§6), cevabı yazmak hâlâ e-postadan;
-kamu formundan yazan birinin **durum takibi** (bilerek, §5); yanıt
-süresi vaadi (sahip sayıyı verene kadar, §3); Mailgun kum havuzunda
-rastgele alıcıya teslim (§7.4).
+Süperadmin `/platform` → Destek masası'nda kuyruğu görür, satırın kutusuna
+cevabını yazar ve bir kez basar: (taşıyıcı yapılandırılmışsa) e-posta
+referansı konu satırında taşıyarak Hüseyin'e çıkar, talep `answered` olur ve
+ilk yanıt damgası bir kez düşer. Taşıyıcı yoksa hiçbir şey gönderilmez,
+satır olduğu yerde kalır ve aynı cevap sonra yeniden gönderilebilir.
+
+**Çalışmaz:** aynı cevabın **iki kez gönderilmesini sunucuda eleyen** bir
+anahtar (§6: ekrandaki kilit dışında koruma yok, elle atılan iki eşzamanlı
+POST iki e-posta üretir); müşterinin cevaba **"cevapla" diyebilmesi**
+(`SUPPORT_EMAIL` boş, §7.2); gönderilmiş cevabın **metninin bir yerde
+saklanması** (bilerek, §6 — gövde hiçbir yere yazılmaz, bu yüzden "ne
+cevapladık" sorusunun kaydı da yok); kamu formundan yazan birinin **durum
+takibi** (bilerek, §5); yanıt süresi vaadi (sahip sayıyı verene kadar, §3);
+Mailgun kum havuzunda rastgele alıcıya teslim (§7.4).

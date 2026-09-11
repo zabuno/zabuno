@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\PlatformAdmin\ListSupportRequestsController;
+use App\Http\Controllers\PlatformAdmin\ReplyToSupportRequestController;
 use App\Http\Controllers\PlatformAdmin\UpdateSupportRequestStatusController;
 use App\Http\Controllers\Support\ListWorkspaceSupportRequestsController;
 use App\Http\Controllers\Support\StoreWorkspaceSupportRequestController;
@@ -32,5 +33,12 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::middleware(EnsurePlatformSuperAdmin::class)->group(function () {
         Route::get('/admin/support-requests', ListSupportRequestsController::class);
         Route::put('/admin/support-requests/{supportRequest}/status', UpdateSupportRequestStatusController::class)->middleware('throttle:20,1');
+        /*
+            CEVAP UCU, durum ucuyla AYNI sınırda: aynı elin aynı ekrandaki
+            iki hareketi. UÇ EXACTLY-ONCE DEĞİLDİR — sunucuda yinelenen
+            gönderimi eleyen bir anahtar yok, iki eşzamanlı POST iki
+            e-posta üretir (`docs/125` §6).
+        */
+        Route::post('/admin/support-requests/{supportRequest}/reply', ReplyToSupportRequestController::class)->middleware('throttle:20,1');
     });
 });

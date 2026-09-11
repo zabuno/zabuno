@@ -601,6 +601,22 @@ export const siteTranslations = {
     'site.support.ack.reply': 'You can reply to this email to add more detail.',
 
     /*
+        SÜPERADMİNİN CEVABI (SUPPORT-REPLY-01). Yalnız ÇERÇEVE burada: selam,
+        hangi talebe cevap verildiği ve kapanış. ARADAKİ gövde süperadminin o
+        an yazdığı metindir ve katalogda yeri yoktur — çevrilmez, biçimlenmez.
+
+        KONU REFERANSI TAŞIR: müşteri gelen kutusunda onu arar ve alındı
+        e-postasıyla aynı numarayı görür.
+    */
+    'site.support.reply.subject': 'Zabuno — reply to your request {reference}',
+    'site.support.reply.greeting': 'Hello {name},',
+    'site.support.reply.intro': 'Here is our reply to your request {reference} ({subject}):',
+    'site.support.reply.closing':
+        'Keep the reference {reference} and quote it if you write to us again.',
+    // Yalnız `SUPPORT_EMAIL` yapılandırılmışsa (`site.support.ack.reply` ile aynı kural).
+    'site.support.reply.reply': 'You can reply to this email if you need more help.',
+
+    /*
         VERİ HAKKI BİLDİRİMİ (FF-226, `docs/138` §6).
 
         Cümleler KATALOGDA, Mailable'da değil: bu e-postada ne yazdığı

@@ -19,6 +19,9 @@ const meta: Meta<typeof SupportQueue> = {
         onStatusFilter: () => undefined,
         onChangeStatus: () => undefined,
         onOpenWorkspace: () => undefined,
+        onReply: () => undefined,
+        replyError: null,
+        replyToConfigured: true,
         rows: [
             {
                 id: 1,
@@ -69,3 +72,19 @@ export const Waiting: Story = {};
 
 /** Boş kuyruk BOŞ bir kutu değil, bir cümledir. */
 export const NothingWaiting: Story = { args: { rows: [] } };
+
+/**
+ * ARIZA SATIRIN İÇİNDE, cevap adresi de eksik: 320 pikselde iki uzun
+ * cümlenin kutuyu ve düğmeyi nereye ittiği yalnız gerçek bir düzen
+ * motorunda görülür.
+ */
+export const ReplyFailed: Story = {
+    args: {
+        replyToConfigured: false,
+        replyError: {
+            id: 1,
+            message:
+                'The reply could not be sent. The request is untouched and your draft is kept, so you can send it again.',
+        },
+    },
+};

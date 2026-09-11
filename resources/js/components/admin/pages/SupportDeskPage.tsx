@@ -75,6 +75,21 @@ export function SupportDeskPage() {
     const [queueStatus, setQueueStatus] = useState('');
     const [queueAttempt, setQueueAttempt] = useState(0);
 
+    /*
+        CEVAP ARIZASI SATIRIN KENDİSİNDE DUYURULUR (SUPPORT-REPLY-01).
+        Kartın üstündeki tek not, üç satırlık bir kuyrukta hangi cevabın
+        çıkamadığını söylemezdi.
+    */
+    const [replyError, setReplyError] = useState<{ id: number; message: string } | null>(null);
+
+    /*
+        CEVAP ADRESİ ÜÇ DURUMLUDUR. Liste cevabının BAŞLIĞINDAN okunur:
+        satır şeması donmuştur ve bir yapılandırma olgusu satırın alanı
+        değildir. İlk yükte `unknown`'dır ve o sırada UYARILMAZ — henüz
+        bilinmeyen bir eksikliği ilan etmek, sahte bir arıza üretirdi.
+    */
+    const [replyTo, setReplyTo] = useState<'unknown' | 'configured' | 'missing'>('unknown');
+
     useEffect(() => {
         let cancelled = false;
 
@@ -89,9 +104,12 @@ export function SupportDeskPage() {
 
                 if (cancelled || !response.ok) return;
 
+                const header = response.headers.get('X-Support-Reply-To');
                 const body = (await response.json()) as SupportQueueRow[];
 
                 if (cancelled) return;
+
+                if (header === 'configured' || header === 'missing') setReplyTo(header);
 
                 setQueue(body);
             } catch {
@@ -130,6 +148,55 @@ export function SupportDeskPage() {
 
         setBusy(false);
         setQueueAttempt((previous) => previous + 1);
+    }
+
+    /**
+     * CEVABI YOLLAR ve gerçekten çıktı mı onu söyler.
+     *
+     * `true` DÖNMESİ TASLAĞIN SİLİNMESİ DEMEKTİR, bu yüzden yalnız sunucu
+     * gönderimi onayladığında döner: 409 (taşıyıcı yok ya da gönderim
+     * patladı) taslağı korur ve aynı gövde yeniden gönderilebilir.
+     *
+     * SEBEP SUNUCUNUN KODUDUR, ham sağlayıcı cümlesi değil — o hiç gelmez
+     * (`docs/110` P0-06). Ekran o kodu kendi cümlesine çevirir.
+     */
+    async function handleReply(id: number, body: string): Promise<boolean> {
+        setBusy(true);
+        setReplyError(null);
+
+        let sent = false;
+
+        try {
+            const response = await fetch(`/api/admin/support-requests/${String(id)}/reply`, {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+                body: JSON.stringify({ body }),
+            });
+
+            if (response.ok) {
+                sent = true;
+            } else {
+                const payload = (await response.json().catch(() => null)) as {
+                    reason?: string;
+                } | null;
+
+                setReplyError({
+                    id,
+                    message:
+                        payload?.reason === 'no_outbound_transport'
+                            ? t('platform.supportQueue.reply.noTransport')
+                            : t('platform.supportQueue.reply.failed'),
+                });
+            }
+        } catch {
+            setReplyError({ id, message: t('platform.supportQueue.reply.failed') });
+        }
+
+        setBusy(false);
+        setQueueAttempt((previous) => previous + 1);
+
+        return sent;
     }
 
     /*
@@ -350,6 +417,9 @@ export function SupportDeskPage() {
                 }}
                 onChangeStatus={(id, next) => void handleQueueStatus(id, next)}
                 onOpenWorkspace={(workspaceId) => void handleQueueOpen(workspaceId)}
+                onReply={(id, body) => handleReply(id, body)}
+                replyError={replyError}
+                replyToConfigured={replyTo !== 'missing'}
             />
 
             <WorkspaceDiscovery selectedWorkspace={selected} onSelect={handleSelect} />
