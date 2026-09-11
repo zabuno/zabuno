@@ -68,6 +68,44 @@ return [
      * ÇEVİRİLER SİLİNMEDİ. `lang/po/*.tr.po` içindeki 1997 metin olduğu gibi
      * duruyor ve TAMDIR; sahip istediği gün bu listeye 'tr' eklemek yeterli.
      * Silmek, bir daha yapılması gereken bir işi geri getirirdi.
+     *
+     * ═══ VE SONRA GERİ AÇILDI — 2026-09-08, #352 ═══
+     *
+     * YUKARIDAKİ İKİ PARAGRAF ARTIK BU DOSYANIN DEĞERİNİ ANLATMIYOR ve bu
+     * satır tam olarak o yüzden var. `shipped_locales` bugün `['en', 'tr']`
+     * — yani "Türkçe listeden çıktı" cümlesi 2026-09-08'den beri YANLIŞTI ve
+     * üç gün boyunca kimse fark etmedi.
+     *
+     * Ölçülen kayıt şu: `7b42c5b8` ("Redesign desktop frontpages and enable
+     * English/Turkish language journeys", #352, 2026-09-08) satırı `['en']`
+     * → `['en', 'tr']` yaptı ve BU GEREKÇE BLOĞUNA DOKUNMADI. Değer değişti,
+     * değerin sebebi değişmedi. Bugün Türkçe tarayıcı gerçekten
+     * `<html lang="tr">` alıyor.
+     *
+     * NEDEN ÖNEMLİ: bu blok sahibin bir TALİMATININ kaydıdır ("Ben
+     * söylemedikçe tercüme çeviri yapma"). Bir talimat kaydı, yürürlükten
+     * kalktığında susarsa, onu okuyan bir sonraki oturum yürürlükte sanır ve
+     * ya yanlış işi yapar ya doğru işi reddeder. Yapılandırma dosyasının
+     * yorumu, kodun kendisi kadar bakım ister.
+     *
+     * ═══ HANGİ KARAR YÜRÜRLÜKTE: 09-08, 09-05 DEĞİL ═══
+     *
+     * Bu dosya iki tarihli owner kararı taşıyor ve ikisi zıt yönde:
+     *
+     *   2026-09-05 — "Ben söylemedikçe tercüme çeviri yapma." (yukarıda)
+     *   2026-09-08 — "İngilizce kaynak ve varsayılan, Türkçe ikinci arayüz
+     *                 dilidir." (bu dosyanın BAŞLIĞINDA, 'Yayınlanan arayüz
+     *                 dilleri' bloğunda)
+     *
+     * SONRAKİ TARİH YÜRÜRLÜKTEDİR: 09-08 kararı 09-05 kararını değiştirir ve
+     * `['en', 'tr']` değeri o karara dayanır — uydurulmuş değildir. Yukarıdaki
+     * 09-05 bloğu SİLİNMEDİ çünkü bir kararın ne zaman ve hangi gerekçeyle
+     * değiştiği de kayıttır; ama artık yürürlükte olan o değil.
+     *
+     * Almanca ve Fransızca katalogları YAZILDI (`lang/po/*.de.po`,
+     * `*.fr.po`) ama bu listede DEĞİL: yayında iki dil var, `en` ve `tr`.
+     * Derlenmiş katalog, sunulan dil demek değildir — bu dosyanın başlığındaki
+     * ilk cümle tam olarak bunu söylüyor.
      */
 
     /*
@@ -100,7 +138,8 @@ return [
     |
     |   shipped_locales   — "bu dilde EKSİKSİZ bir ürün verebiliyor muyuz?"
     |                       Kullanıcıya sunulan tek liste budur ve bugün
-    |                       yalnız `en` var.
+    |                       `en` ile `tr` var (2026-09-08, #352 — gerekçesi
+    |                       ve hâlâ açık olan onayı yukarıdaki blokta).
     |
     | Ayrım kâğıt üstünde değil: bir dil buraya girdiği gün ürünün o dilde
     | tek kelimesi çevrilmez. `shipped_locales`e girmesi kataloğunun TAM
