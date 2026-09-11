@@ -84,6 +84,34 @@ msgstr "Buna sahip değiliz"
 msgid "site.assurance.state.notMeasured"
 msgstr "Ölçülmedi"
 
+#: site:site.billing.graceReminder.action
+msgid "site.billing.graceReminder.action"
+msgstr "Ödemeyi çalışma alanınızın faturalandırma bölümünden yapabilirsiniz:"
+
+#: site:site.billing.graceReminder.body
+msgid "site.billing.graceReminder.body"
+msgstr "Ödemeli döneminiz sona erdi ve henüz bir ödeme ulaşmadı. Hiçbir şey kapatılmadı: biz beklerken plan özellikleriniz açık kalmaya devam ediyor."
+
+#: site:site.billing.graceReminder.graceEnds
+msgid "site.billing.graceReminder.graceEnds"
+msgstr "Plan özellikleriniz {date} tarihine kadar açık kalır. Bu, ödeme olmadan açık kalacakları son gündür."
+
+#: site:site.billing.graceReminder.greeting
+msgid "site.billing.graceReminder.greeting"
+msgstr "Merhaba,"
+
+#: site:site.billing.graceReminder.periodEnded
+msgid "site.billing.graceReminder.periodEnded"
+msgstr "Ödemeli döneminiz {date} tarihinde sona erdi."
+
+#: site:site.billing.graceReminder.safety
+msgid "site.billing.graceReminder.safety"
+msgstr "Hesabınız kapanmıyor. Yayınlanmış menünüz çevrim içi kalır, masadaki karekod çalışmaya devam eder ve verileriniz yerinde durur — bu tarihten sonra yalnız planınızın kattığı ek özellikler duraklar ve bir ödeme onları hemen geri getirir."
+
+#: site:site.billing.graceReminder.subject
+msgid "site.billing.graceReminder.subject"
+msgstr "Zabuno — ödemeniz gecikti"
+
 #: site:site.brand
 msgid "site.brand"
 msgstr "Zabuno"

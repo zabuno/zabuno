@@ -610,6 +610,37 @@ export const siteTranslations = {
         E-POSTA BİR SÜRE TAAHHÜDÜ VERMEZ. "Şu kadar günde silinir" değil,
         "şu tarihte silinecek" der ve tarih kayıttan gelir.
     */
+    /*
+        ÖDEMESİZ SÜRE HATIRLATMASI (`docs/107` Faz 1.3, `docs/134`).
+
+        Cümleler KATALOGDA, Mailable'da değil (`site.dataRights.*` ile aynı
+        desen): bu e-postada ne yazdığı sorusunun cevabı tek yerde durmalı.
+
+        İKİ TARİH, BİR YOL. "7 gün kaldı" YAZILMAZ: e-posta bir gün sonra
+        okunduğunda o cümle yanlışlaşır ve bu depo aynı dersi veri hakları
+        bildiriminde bir kez öğrendi. Tarih kayıttan gelir, sayı
+        hesaplanmaz.
+
+        KORKU BÜYÜTÜLMEZ. "Hesabınız kapanıyor" demez, çünkü kapanmıyor:
+        yayınlanmış menü yayında kalır, veri durur, kapanan yalnız planın
+        verdiği EK yeteneklerdir (`SubscriptionPhase::Suspended` belgesi).
+        Bunu söylemeyen bir hatırlatma, masadaki karekodun söneceğini
+        sandıran bir hatırlatmadır.
+
+        TİCARİ İLETİ DEĞİL, HİZMET BİLDİRİMİ: yürüyen bir aboneliğin
+        durumunu söyler, bir şey satmaz — bu yüzden onay aranmaz.
+    */
+    'site.billing.graceReminder.subject': 'Zabuno — your payment is overdue',
+    'site.billing.graceReminder.greeting': 'Hello,',
+    'site.billing.graceReminder.body':
+        'Your paid period has ended and we have not received a payment yet. Nothing has been switched off: your plan features are still on while we wait.',
+    'site.billing.graceReminder.periodEnded': 'Your paid period ended on {date}.',
+    'site.billing.graceReminder.graceEnds':
+        'Your plan features stay on until {date}. That is the last day they remain open without a payment.',
+    'site.billing.graceReminder.safety':
+        'Your account is not closing. Your published menu stays online, the QR code on the table keeps working and your data stays where it is — only the extra features your plan adds are paused after that date, and a payment brings them straight back.',
+    'site.billing.graceReminder.action': 'You can pay from the billing section of your workspace:',
+
     'site.dataRights.greeting': 'Hello,',
 
     'site.dataRights.export.subject': 'Zabuno — your data archive is ready',

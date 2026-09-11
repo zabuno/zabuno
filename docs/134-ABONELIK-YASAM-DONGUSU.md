@@ -237,6 +237,78 @@ veritabanına dokunmaz, kimse destekten "hesabımı açar mısınız" diye istem
 
 ---
 
+### K15 — Hatırlatma: ödemesiz süreye girildiği SÖYLENİR (BILL-GRACE-REMINDER-01)
+
+K11–K14 ödemesiz sürenin mekanizmasını kurmuştu; eksik olan tek şey sahibin
+bunu DUYMASIYDI. Panele bakmayan sahip, sürenin dolduğunu ancak bir şey
+kapandığında fark ediyordu. `zabuno:send-grace-reminders` bu boşluğu
+kapatır.
+
+**Yalnız `Grace`.** Evre `SubscriptionLifecycle`'ın MEVCUT tek hesabından
+okunur (K12); bu paket ikinci bir evre hesabı açmadı. `Active`,
+`Cancelling`, `Ended` ve `Suspended` sessizdir. İptal etmiş sahibe "ödemen
+gecikti" demek, kabul ettiğimiz iptali kabul etmemek olurdu; askıdaki
+sahibe ödemesiz süreyi haber vermek ise geçmiş bir tarihi bugünmüş gibi
+sunmaktır.
+
+**Alıcı: çalışma alanının BUGÜNKÜ her sahibi**, her biri kendi postasında.
+Fatura profilindeki adres DEĞİL — o adres mali müşavirin olabilir ve belgeyi
+alan kişi ile paneli açıp ödemeyi yapabilen kişi aynı kişi değildir.
+Hatırlatma bir belge değil, bir davranış çağrısıdır. Tek postaya iki sahip
+yazılsaydı, bir adresin düşmesi diğerini de düşürürdü.
+
+**Metin iki TARİH ve bir yol taşır:** dönemin bitişi, ödemesiz sürenin
+bitişi (= ücretli özelliklerin açık kalacağı SON gün) ve `/app#billing`. Gün
+SAYISI yazılmaz: "7 gün kaldı" cümlesi e-postanın okunduğu güne göre
+yanlışlaşır. Metin ayrıca yayınlanmış menünün ve verinin KORUNDUĞUNU söyler
+(K13): bunu söylemeyen bir hatırlatma, masadaki karekodun söneceğini
+sandıran bir hatırlatmadır.
+
+**Damga: abonelik/çalışma alanı + dönemin `ends_at`'i + alıcı**
+(`subscription_grace_reminders`). Dönem anahtarın içindedir, çünkü yeni bir
+dönem yeni bir olaydır ve yeniden haber verilir; alıcı anahtarın içindedir,
+çünkü düşen bir adres yüzünden başarılı bir alıcı ikinci kez rahatsız
+edilmemeli, başaramayan alıcı da bir daha hiç denenmemezlik etmemelidir.
+
+**`log` sürücüsü gönderim DEĞİLDİR** ve damga basmaz (`docs/93` deseni,
+`MailDataRightsNotifier` ile aynı sözleşme): taşıyıcısı girilmemiş bir
+kurulumda damga basılsaydı, hatırlatma "gönderildi" sayılır ve taşıyıcı
+geldiğinde bir daha hiç çıkmazdı.
+
+**Bir alıcının düşmesi taramayı kesmez.** Sebep arındırılmış ve kırpılmış
+hâliyle günlüğe yazılır, diğer sahipler postasını alır, komut yine de
+BAŞARISIZ döner (sessiz başarı, arızayı zamanlayıcının günlüğünde görünmez
+kılardı) ve düşen alıcı ödemesiz süre sürdükçe ertesi günkü koşuda yeniden
+denenir — başarıya kadar, başarıdan sonra bir daha değil (`RunDueErasures`
+ile aynı ders).
+
+**Dil: kullanıcı tercihi şeması YOKTUR** ve bu paket öyle bir şema açmadı.
+Metin `SiteText::pick(null)` ile kaynak dile düşer; zamanlayıcıdan koşan bir
+işin "o anki dili" zaten kimsenin seçtiği bir dil değildir.
+
+**Ticari ileti değil, hizmet bildirimidir:** yürüyen bir aboneliğin durumunu
+söyler, bir şey satmaz — bu yüzden ayrıca onay aranmaz.
+
+Zamanlama `routes/console.php`'de günde bir, sabit saatte ve
+`withoutOverlapping` ile kuruludur; paylaşımlı barındırmada uzayan bir
+tarama ertesi koşunun üstüne binmez.
+
+**Garantinin sınırı söylenir.** Bu koruma ZAMANLANMIŞ koşular içindir.
+Gerçek sıra `alreadyNotified` -> `notify` -> `markNotified` olduğu için —
+yani damga, yukarıdaki karar gereği ancak gönderim BAŞARDIKTAN sonra
+basıldığı için — komut ELLE ve eşzamanlı tetiklenirse iki koşu da "haber
+verilmemiş" görebilir. `subscription_grace_reminders` üzerindeki benzersiz
+indeks o durumda çift DEFTER satırını önler, çift POSTAYI değil: hatırlatma
+"en çok bir kez" değil, **"en az bir kez"**dir. Bunu kapatmanın yolu damgayı
+denemeden ÖNCE basmaktır ve o yol, taşıyıcısı takılan bir kurulumda
+hatırlatmayı sessizce yakacağı için bilerek seçilmedi.
+
+Sözleşmeyi donduran test:
+`tests/Feature/Billing/SubscriptionGraceReminderTest.php`
+(GRACE-REMINDER-01..05).
+
+---
+
 ## 4. HEPSİ DENETİME DÜŞER — DEFTERE DEĞİL, VE BU BİR KARAR
 
 `platform_audits`, scope `billing.subscription`, dört eylem:
@@ -365,10 +437,12 @@ kap dolgusu birikmesin.
    ödediği bir ödemedir; "başarısız yenileme ödemesi" bu yüzden pratikte
    "dönem bitti, ödeme gelmedi" demektir. Kart saklayan bir yenileme motoru
    geldiğinde ödemesiz süre aynı yerde kalır, tetikleyicisi değişir.
-2. **Sahip ödemesiz süreye girdiğini yalnız PANELE BAKARSA öğrenir.**
-   E-posta hatırlatması bu pakette yok ve uydurulmadı: yanıt/bildirim
-   taahhüdü sahibin kararıdır (`config/support.php` aynı sebeple boştur).
-   Bu, Faz 1.3'ün kalan tek eksiğidir.
+2. **Hatırlatma indi; ama ödemesiz sürenin İÇİNDE tek bir haber verilir.**
+   Sahip ödemesiz süreye girdiğini artık e-postayla da öğrenir (K15). Buna
+   karşılık dönem BİTMEDEN ÖNCE uyaran bir posta ("N gün sonra bitiyor")
+   bu pakette YOKTUR ve uydurulmadı: o, ne zaman ve kaç kez uyarılacağına
+   dair bir ürün kararıdır ve sahibindir. Askıya DÜŞÜLDÜĞÜNDE de posta
+   çıkmaz — bugün yalnız `Grace`'e GİRİŞ haber verilir.
 3. **Yayına dondurulmuş haklar süresizdir.** Askıya düşen bir restoranın
    eski yayını, o yayının haklarıyla çalışmaya devam eder. Bu, basılı
    karekodu koruyan kararın doğrudan sonucudur ve bilinçlidir; bir gün

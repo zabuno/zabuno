@@ -110,6 +110,23 @@ final class TenantDataScope
             TenantTable::direct('subscriptions'),
             TenantTable::direct('billing_profiles'),
             TenantTable::direct('iyzico_sandbox_transactions'),
+            /*
+                ÖDEMESİZ SÜRE HATIRLATMASININ DAMGASI (`docs/134` K15).
+
+                SİLİNİR — ve bu, yanındaki ödeme/fatura satırlarından
+                bilinçli olarak AYRI bir karardır. Fatura ve defter kaydı
+                yasal bir belge olduğu için durur; bu satır ise yalnız
+                "bu kişiye bu dönem zaten yazdık" bilgisidir, yani
+                tekrarı önleyen işletme durumudur. Çalışma alanının verisi
+                silindiğinde hatırlatılacak bir abonelik de kalmaz ve geriye
+                yalnız bir E-POSTA ADRESİ kalırdı; onu saklamak için
+                gösterebileceğimiz bir yükümlülük yok.
+
+                DIŞA AKTARILIR, çünkü kiracının KENDİ kaydıdır: "bana ne
+                zaman, hangi adrese haber verdiniz?" sorusunun cevabı
+                sahibin hakkıdır.
+            */
+            TenantTable::direct('subscription_grace_reminders'),
             TenantTable::direct(
                 'payment_transactions',
                 erased: false,

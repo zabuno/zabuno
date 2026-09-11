@@ -84,6 +84,34 @@ msgstr ""
 msgid "site.assurance.state.notMeasured"
 msgstr ""
 
+#: site:site.billing.graceReminder.action
+msgid "site.billing.graceReminder.action"
+msgstr ""
+
+#: site:site.billing.graceReminder.body
+msgid "site.billing.graceReminder.body"
+msgstr ""
+
+#: site:site.billing.graceReminder.graceEnds
+msgid "site.billing.graceReminder.graceEnds"
+msgstr ""
+
+#: site:site.billing.graceReminder.greeting
+msgid "site.billing.graceReminder.greeting"
+msgstr ""
+
+#: site:site.billing.graceReminder.periodEnded
+msgid "site.billing.graceReminder.periodEnded"
+msgstr ""
+
+#: site:site.billing.graceReminder.safety
+msgid "site.billing.graceReminder.safety"
+msgstr ""
+
+#: site:site.billing.graceReminder.subject
+msgid "site.billing.graceReminder.subject"
+msgstr ""
+
 #: site:site.brand
 msgid "site.brand"
 msgstr ""

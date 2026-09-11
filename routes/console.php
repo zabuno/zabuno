@@ -104,3 +104,30 @@ Schedule::command('security:evidence:backup-restore')
 Schedule::command('zabuno:run-due-erasures')
     ->dailyAt('04:10')
     ->withoutOverlapping();
+
+/*
+    ÖDEMESİZ SÜREYE GİRİŞ HABER VERİLİR (`docs/107` Faz 1.3, `docs/134`).
+
+    ÖNCE ÇAĞIRAN, SONRA ÇAĞRILAN. Zamanlayıcıya bağlanmamış bir komut,
+    ekranda verilmiş ama tutulmayan bir sözdür; bu depo o dersi medya çöp
+    kutusunda bir kez öğrendi (FF-161). Ölçülen kusur şuydu: sahip ödemesiz
+    süreye girdiğini yalnız panele bakarsa öğreniyordu — panele bakmayan
+    sahip, sürenin dolduğunu ancak bir şey kapandığında fark ediyordu.
+
+    GÜNDE BİR, DAKİKADA BİR DEĞİL: ödemesiz süre gün ölçeğindedir ve aynı
+    taramayı bin dört yüz kez koşturmanın anlamı yok. Sabit saatte, çünkü
+    komutun kendisi "bugün haber verildi mi?" sorusunu damgadan okur ve
+    kayan bir saat aynı günü iki kez taramaya yol açardı.
+
+    SABAH SEÇİLDİ ve bu, silme/arşiv işlerinden (03:20–04:10) FARKLI bir
+    karardır: o işler geri alınamaz ve sahibin ekrana bakmadığı saatte
+    yapılır. Bu iş ise tam tersini ister — sahip postayı açtığında gününün
+    içinde olmalı ve ödemeyi aynı gün yapabilmeli.
+
+    `withoutOverlapping`: paylaşımlı barındırmada bu makine dakikada bir
+    koşan kuyrukla paylaşılır; çok sayıda çalışma alanında uzayan bir
+    tarama ertesi koşunun üstüne binmemelidir.
+*/
+Schedule::command('zabuno:send-grace-reminders')
+    ->dailyAt('08:30')
+    ->withoutOverlapping();
