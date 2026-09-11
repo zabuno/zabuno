@@ -118,7 +118,7 @@ echo "### section=compose"
 PROJECT=unknown
 if [ "$DOCKER_OK" = yes ]; then
   cap docker ps -a --filter "label=com.docker.compose.project.working_dir=$DEPLOY_DIR" \
-    --format '{{index .Labels "com.docker.compose.project"}}'
+    --format '{{.Label "com.docker.compose.project"}}'
   if [ "$CAP_RC" -ne 0 ]; then
     say compose_project_read unknown
   elif [ -z "$CAP_OUT" ]; then
@@ -196,8 +196,16 @@ else
 fi
 if [ "$LSN_RC" -ne 0 ]; then
   say host_listening_5432 unknown
+  say host_listening_5432_local_addrs unknown
 else
   say host_listening_5432 "$(printf '%s\n' "$CAP_OUT" | awk '$4 ~ /:5432$/{n++} END{print (n?"yes":"no")}')"
+  # Yalnız YEREL ADRES alanı (ss/netstat 4. sutun) — surec/PID/ortam basilmaz.
+  # Sinirli: en cok 4 farkli adres, gerisi "+N_more" olarak sayilir.
+  # Amac: 127.0.0.1:5432 (loopback) ile 0.0.0.0:5432 / [::]:5432 (tum
+  # arayuzler) ayrimini "yes" degerinin belirsizliginden kurtarmak.
+  say host_listening_5432_local_addrs "$(printf '%s\n' "$CAP_OUT" | awk '
+    $4 ~ /:5432$/ && !seen[$4]++ { if (n < 4) out = (n ? out "," : "") $4; n++ }
+    END { if (!n) print "none"; else if (n > 4) print out ",+" (n-4) "_more"; else print out }')"
 fi
 
 echo "### section=metabase"
