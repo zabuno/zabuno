@@ -74,7 +74,9 @@ final class HelpLibrary
         self::ENTRY,
         'nothing-changed-for-my-guests',
         'a-photo-on-a-dish',
+        'add-your-restaurant',
         'table-cards-and-areas',
+        'who-can-do-what',
     ];
 
     private const FALLBACK = 'en';
