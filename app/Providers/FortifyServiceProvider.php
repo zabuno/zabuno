@@ -59,7 +59,22 @@ final class FortifyServiceProvider extends ServiceProvider
         Fortify::registerView(fn () => view('auth.register', [
             'legal' => app(RegistrationLegalPayload::class)->forLocale(app()->getLocale()),
         ]));
-        Fortify::verifyEmailView(fn () => view('auth.verify'));
+        /*
+            EKRAN, POSTANIN HANGİ ADRESE GİTTİĞİNİ SÖYLEMELİ.
+
+            Görünüm buraya kadar veri ALMADAN çağrılıyordu ve
+            `auth.verify` şablonu `$email ?? ''` diye soruyordu; yani
+            değişken hiçbir zaman dolmuyor, ekranda "… adresine bir
+            doğrulama bağlantısı gönderdik" cümlesi ADRESSİZ çıkıyordu.
+
+            Postası gelmeyen kullanıcının ilk sorusu tam olarak budur:
+            "adresi yanlış mı yazdım?" Adres ekranda yoksa o soruyu
+            cevaplayamaz ve yapabileceği tek şey aynı düğmeye tekrar
+            basmaktır. Kullanıcı 2026-09-11'de bunu bildirdi.
+        */
+        Fortify::verifyEmailView(fn (Request $request) => view('auth.verify', [
+            'email' => (string) ($request->user()?->email ?? ''),
+        ]));
         Fortify::requestPasswordResetLinkView(fn () => view('auth.forgot-password'));
         Fortify::resetPasswordView(fn (Request $request) => view('auth.reset-password', [
             'token' => (string) $request->route('token'),

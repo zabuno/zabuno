@@ -89,6 +89,42 @@ describe('VerificationPending screen — accessible English Flowbite-first UI (S
 
     expect(screen.getByRole('status')).toBeInTheDocument();
   });
+
+  /*
+      KAPAN KUSURU — TERSİNDEN KİLİTLİ.
+
+      Bu ekranda bir tek "yeniden gönder" vardı. Posta gelmediğinde kullanıcı
+      hiçbir yere gidemiyordu: uygulama doğrulanmamış hesaba kapalı, çıkış
+      düğmesi yok, yeni kayıt zaten girişli olduğu için ana sayfaya atıyor.
+      Adres çubuğuna `/logout` yazmak da çare değil — çıkış POST'tur, GET 405
+      döner. Bir kullanıcı 2026-09-11'de bu döngüyü bildirdi.
+
+      Madde, çıkış düğmesi ekrandan KALKARSA kırılır. Posta sorunu çözülse
+      bile kapan yanlıştır: postası geciken, spam'e düşen ya da adresini
+      yanlış yazan herkes aynı yere sıkışır.
+  */
+  it('always offers a way out, so an unverifiable account is never trapped', async () => {
+    const { VerificationPending } = await importAuthModule<{ VerificationPending: React.ComponentType<{ email: string }> }>('components/auth/VerificationPending');
+    render(<VerificationPending email="ada@example.com" />);
+
+    const logout = screen.getByRole('button', { name: /log ?out/i });
+    expect(logout).toBeInTheDocument();
+    logout.focus();
+    expect(logout).toHaveFocus();
+  });
+
+  /*
+      ADRES EKRANDA YAZAR. Postası gelmeyen kişinin ilk sorusu "adresi yanlış
+      mı yazdım?"dır; ekran adresi göstermiyorsa o soruyu cevaplayamaz ve
+      yapabileceği tek şey aynı düğmeye tekrar basmaktır. Görünüm bu maddeden
+      önce veri almadan çağrılıyordu ve adres HER ZAMAN boştu.
+  */
+  it('shows which address the link was sent to', async () => {
+    const { VerificationPending } = await importAuthModule<{ VerificationPending: React.ComponentType<{ email: string }> }>('components/auth/VerificationPending');
+    render(<VerificationPending email="ada@example.com" />);
+
+    expect(screen.getByText(/ada@example\.com/)).toBeInTheDocument();
+  });
 });
 
 describe('LoginForm — accessible English Flowbite-first UI (S1WP02A-SESSION-01/02, A11Y-01)', () => {
