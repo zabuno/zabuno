@@ -8,11 +8,26 @@
 
      ── ETİKET BAĞLANTIDA, İKONDA DEĞİL ──
 
-     İkon tek başına duruyor (yanında sözcük yok) ama erişilebilir adı yine
-     de ikonun kendisinde YAŞAMAZ: adı taşıyan şey tıklanan şeydir. Bağlantı
-     `aria-label` alır, ikon `aria-hidden` kalır — böylece ekran okuyucu
-     "GitHub'da Zabuno, bağlantı" der, "grafik" demez ve aynı şeyi iki kez
-     okumaz (`ICON-03`).
+     İkon tek başına duruyor ama erişilebilir adı ikonun kendisinde YAŞAMAZ:
+     adı taşıyan şey tıklanan şeydir. İkon `aria-hidden` kalır — ekran
+     okuyucu "grafik" demez ve aynı şeyi iki kez okumaz (`ICON-03`).
+
+     ── AD GÖRÜNÜR BİR DÜĞÜMDÜR, `aria-label` DEĞİL ──
+
+     Yapımcının adı artık bağlantının İÇİNDE gerçek bir `<span>` olarak
+     duruyor ve bağlantının erişilebilir adı odur. `aria-label` kaldırıldı:
+     iki kaynak olsaydı (görünen metin ve gizli etiket) ikisi bir gün
+     ayrışırdı ve ayrışan taraf ekran okuyucununki olurdu — kimsenin
+     bakmadığı taraf.
+
+     ── VURGU BİR ZENGİNLEŞTİRMEDİR, BİLGİNİN TEK EVİ DEĞİL ──
+
+     Ad vurguda (`hover`) açılır; ama DOKUNMALI BİR CİHAZDA VURGU YOKTUR
+     (`TOUCH-FIRST-INTERFACE` md. 2). Bu yüzden ad, açılıp açılmamasından
+     bağımsız olarak erişilebilirlik ağacında ve odak sırasında hep vardır:
+     görsel olarak daraltılır, ağaçtan çıkarılmaz. Dokunan kullanıcı adı
+     ekranda görmez ama ekran okuyucusu ve klavyesi onu bulur; kaybolan tek
+     şey bir SÜS olur, bir BİLGİ değil.
 
      ── DIŞ ADRES, DIŞ SEKME DEĞİL ──
 
@@ -34,8 +49,7 @@
                     class="site-social-link"
                     data-social="{{ $link['id'] }}"
                     rel="me noopener"
-                    aria-label="{{ $link['label'] }}"
-                ><x-phosphor :name="$link['icon']" /></a>
+                ><x-phosphor :name="$link['icon']" /><span class="site-social-name">{{ $link['name'] }}</span></a>
             </li>
         @endforeach
     </ul>

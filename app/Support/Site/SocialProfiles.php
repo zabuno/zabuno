@@ -39,14 +39,28 @@ final class SocialProfiles
      * @var array<string, array{icon: string, labelKey: string}>
      */
     private const PLATFORMS = [
-        'github' => ['icon' => 'github-logo', 'labelKey' => 'socialGithub'],
+        'github' => ['icon' => 'github-logo', 'labelKey' => 'socialGithub', 'name' => 'İsmail Karaca'],
     ];
+
+    /**
+     * ÖZEL AD ÇEVRİLMEZ — VE BU YÜZDEN KATALOĞA GİRMEZ.
+     *
+     * "İsmail Karaca" altı dilde de aynı yazılır. Kataloğa bir anahtar
+     * açmak, altı PO/MO dosyasını bir kişinin adını "çevirmek" için
+     * süpürmek olurdu ve çevirmene anlamsız bir satır bırakırdı. Burada
+     * düz metin duruyor; `SiteText` yalnız ÇEVRİLEBİLİR metni taşır.
+     *
+     * Ad iki işi birden yapıyor: bağlantının erişilebilir adı ve vurguda
+     * (`hover`) açılan görünür etiket. İkisi AYNI düğümdür — ekran okuyucu
+     * aynı şeyi iki kez söylemesin (`ICON-03`) ve dokunmalı bir cihazda,
+     * vurgu hiç olmadığı için, ad yine de kayıp olmasın.
+     */
 
     /**
      * Bugün gerçekten çizilecek bağlantılar.
      *
      * @param  array<string, string>  $siteText  `SiteText::all()` çıktısı.
-     * @return list<array{id: string, url: string, icon: string, label: string}>
+     * @return list<array{id: string, url: string, icon: string, label: string, name: string}>
      */
     public static function forShell(array $siteText): array
     {
@@ -67,6 +81,7 @@ final class SocialProfiles
                 'url' => trim($url),
                 'icon' => $platform['icon'],
                 'label' => $siteText[$platform['labelKey']] ?? $platform['labelKey'],
+                'name' => $platform['name'],
             ];
         }
 
