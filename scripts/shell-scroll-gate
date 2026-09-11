@@ -229,6 +229,16 @@ let session;
 try {
     session = await launchBrowser({ label: 'shell-scroll-gate' });
 } catch (error) {
+    /*
+        ÇIKMADAN ÖNCE KENDİ ÇÖPÜNÜ TOPLA.
+
+        `exitBrowserUnavailable` süreci bitirir; aşağıdaki `finally` hiç
+        çalışmaz. Bu satır olmasaydı tarayıcı açılmayan her koşu ardında
+        bir `shell-scroll-*` dizini bırakırdı — ve bu, kapının kendi
+        başlatma testinin ölçtüğü şeydir: geçici dizinde yalnız testin
+        koyduğu dosya kalmalı.
+    */
+    rmSync(dir, { recursive: true, force: true });
     exitBrowserUnavailable(error);
 }
 
