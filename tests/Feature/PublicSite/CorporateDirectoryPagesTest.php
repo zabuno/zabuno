@@ -144,15 +144,31 @@ final class CorporateDirectoryPagesTest extends TestCase
     {
         $html = (string) $this->get('/pricing')->assertOk()->getContent();
 
-        // Doğrulanmış tek adres (MASTER: `gh api orgs/zabuno`).
-        self::assertStringContainsString('href="https://github.com/zabuno"', $html);
+        // Doğrulanmış tek adres — sahibin 2026-09-11 kararıyla ürünün
+        // organizasyonu değil, ürünü YAPAN (`config/social.php`).
+        self::assertStringContainsString('href="https://atonota.com"', $html);
         self::assertStringContainsString('data-social="github"', $html);
 
         // İkon TEK BAŞINA duruyor; adı bağlantıda yaşar, ikonda değil
         // (`ICON-03`: ekran okuyucu aynı şeyi iki kez söylemez).
         preg_match('#<a[^>]*data-social="github"[^>]*>#', $html, $anchor);
         self::assertNotSame([], $anchor, 'C3-SOCIAL-01: sosyal bağlantı bulunamadı.');
-        self::assertStringContainsString('aria-label=', $anchor[0]);
+
+        /*
+            AD GÖRÜNÜR BİR DÜĞÜMDE, `aria-label`DA DEĞİL.
+
+            Etiket artık gizli bir öznitelikte değil, bağlantının içindeki
+            gerçek metinde yaşıyor: iki kaynak bir gün ayrışır ve ayrışan
+            taraf her zaman kimsenin bakmadığı taraf olur. Bu madde onu
+            tersinden kilitler — `aria-label` GERİ GELİRSE kırılır.
+        */
+        self::assertStringNotContainsString('aria-label=', $anchor[0]);
+        self::assertMatchesRegularExpression(
+            '#<a[^>]*data-social="github"[^>]*>.*?<span class="site-social-name">İsmail Karaca</span>#s',
+            $html,
+            'C3-SOCIAL-01: yapımcının adı bağlantının içinde görünür bir düğüm olarak yok; '
+            .'vurgu yokken (dokunmalı cihaz) bağlantı adsız kalır.'
+        );
         self::assertStringContainsString('rel="me noopener"', $anchor[0]);
 
         /*

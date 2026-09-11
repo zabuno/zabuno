@@ -298,6 +298,7 @@ a.site-map-node:focus-visible {
     değil parmağın boyutuyla ölçülür.
 */
 .site-social-link {
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -315,6 +316,122 @@ a.site-map-node:focus-visible {
 .site-social-link .site-icon {
     inline-size: 1.5rem;
     block-size: 1.5rem;
+}
+
+/*
+    AD: HEP AĞAÇTA, AKIŞIN DIŞINDA.
+
+    ── NEDEN KUTU BÜYÜMÜYOR ──
+
+    İlk deneme adı bağlantının İÇİNDE açıyordu (`0fr → 1fr`) ve gerçek
+    tarayıcıda ölçüldüğünde iki kusur çıktı:
+
+    1. Bağlantı 44'ten 139 piksele büyüyünce kendi kutusu imlecin altından
+       kayıyor, vurgu düşüyor, kutu daralıyor, vurgu geri geliyordu —
+       kendi kendini tetikleyen bir TİTREME. Ölçüm: sekiz örneklemenin
+       beşinde `:hover` false.
+    2. Büyüyen kutu üst çubukta "Hesap oluştur" düğmesini her vurguda
+       itiyordu. Bir süs, sayfanın düzenini oynatmamalı.
+
+    Çözüm: bağlantının kutusu HİÇ DEĞİŞMEZ (44×44 sabit), ad akışın dışında
+    bir ipucu olarak belirir. Kutu değişmediği için vurgu düşmez ve hiçbir
+    komşu kıpırdamaz.
+
+    ── NEDEN `display: none` DEĞİL ──
+
+    `display: none` ya da `visibility: hidden` düğümü erişilebilirlik
+    ağacından çıkarır ve bağlantı ADSIZ kalırdı. Burada yalnız opaklık
+    sıfırdır: ekran okuyucu adı okur, klavye odağı onu bulur, göz görmez.
+    Dokunmalı cihazda vurgu hiç olmadığı için (`TOUCH-FIRST-INTERFACE`
+    md. 2) kaybolan şey bir SÜS olur, bir BİLGİ değil.
+
+    `pointer-events: none`: ipucunun kendisi imleci yakalayamaz, yoksa
+    belirdiği anda vurgunun hedefini değiştirirdi.
+*/
+/*
+    TABAN: İPUCU BAŞTAN HİZALI, ORTALANMIŞ DEĞİL.
+
+    Ortalama (`50%` + `-50%`) geniş ekranda güzeldir ama 320 pikselde
+    ölçüldüğünde SOL KENARDAN TAŞIYORDU: ikon şeridin başındayken 98
+    piksellik ipucu görünüm alanının dışına `-12,7 px` çıkıyordu. Taban
+    kural bu yüzden koşulsuz olarak baştan hizalı; ortalama, yeri
+    olduğu kanıtlanmış genişlikte ÜSTÜNE eklenir
+    (`TOUCH-FIRST-INTERFACE` md. 1 — dar ekran taban, geniş ekran
+    zenginleştirme).
+*/
+.site-social-name {
+    position: absolute;
+    inset-block-start: calc(100% + 0.25rem);
+    inset-inline-start: 0;
+    z-index: 20;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    padding-block: 0.3rem;
+    padding-inline: 0.55rem;
+    border-radius: var(--radius-md, 0.5rem);
+    background: var(--fg, #111);
+    color: var(--surface, #fff);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+    transform: translate(0, -0.25rem);
+}
+
+/* Yeri olduğu ölçülmüş genişlikte ipucu ikonun ortasına gelir. */
+@media (min-width: 30rem) {
+    .site-social-name {
+        inset-inline-start: 50%;
+        transform: translate(-50%, -0.25rem);
+    }
+
+    .site-social-link:hover .site-social-name,
+    .site-social-link:focus-visible .site-social-name {
+        transform: translate(-50%, 0);
+    }
+}
+
+/*
+    AÇILMA: işaretleyicide vurgu, her cihazda odak.
+
+    `hover: hover` VE `pointer: fine` — dokunmalı bir cihazda `hover`
+    "dokunduktan sonra" taklit edilir ve ipucu, kullanıcı başka bir yere
+    dokunana kadar açık kalırdı; kimsenin istemediği yapışkan bir durum.
+    Klavye odağı ise HER cihazda açar: odaklanan kişi nereye gittiğini
+    görmelidir.
+*/
+@media (hover: hover) and (pointer: fine) {
+    .site-social-link {
+        transition: background-color 180ms ease;
+    }
+
+    .site-social-link:hover {
+        background-color: var(--zc-surface-hover, rgb(128 128 128 / 16%));
+    }
+
+    .site-social-link:hover .site-social-name {
+        opacity: 1;
+        transform: translate(0, 0);
+    }
+}
+
+.site-social-name {
+    transition:
+        opacity 160ms ease,
+        transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.site-social-link:focus-visible .site-social-name {
+    opacity: 1;
+    transform: translate(0, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .site-social-link,
+    .site-social-name {
+        transition: none;
+    }
 }
 
 /* Dar düzende şerit MENÜ BÖLMESİNDE: 320 pikselde çubuk ölçülmüş sınırında

@@ -12,10 +12,18 @@ return [
      * ziyaretçi için tek yönlüdür — tıklar, 404 görür ve ürünün geri
      * kalanına da o gözle bakar.
      *
-     * Bu yüzden burada TEK doğrulanmış adres var: GitHub organizasyonu
-     * (`https://github.com/zabuno`, MASTER `gh api orgs/zabuno` ile
-     * doğruladı — `html_url` ve `login` alanları). Ötekiler `null` ve
+     * Bu yüzden burada TEK doğrulanmış adres var. Ötekiler `null` ve
      * `null` bir ikon ÇİZDİRMEZ: profil yoksa şeritte yeri de yoktur.
+     *
+     * ── ADRES DEĞİŞTİ, İKON DEĞİŞMEDİ (sahibin kararı, 2026-09-11) ──
+     *
+     * Şerit artık ürünün GitHub organizasyonuna değil, ürünü YAPANA
+     * gidiyor: `https://atonota.com`. Glif GitHub logosu olarak kalıyor —
+     * bu bilinçli bir kısayol, "yapımcı" işaretinin yaygın olarak tanınan
+     * biçimi. Kabul edilen bedel şu: logo artık gideceği yerin ADI değil,
+     * bağlantının TÜRÜ için duruyor. Bu yüzden bağlantının erişilebilir
+     * adı "GitHub" demiyor, kişinin adını söylüyor (`SocialProfiles`) —
+     * ikonun ima ettiğiyle bağlantının götürdüğü yer ayrışmasın.
      *
      * Kendi kurulumunu yapan biri kendi adresini `.env`'e yazar
      * (`SAAS-DOMAIN` ile aynı gerekçe) ve o gün ikon kendiliğinden belirir.
@@ -28,7 +36,7 @@ return [
      * sosyal bağlantı, şeridin okunmasını sağlayan tek işareti kaybeder.
      */
     'profiles' => [
-        'github' => env('SOCIAL_GITHUB_URL', 'https://github.com/zabuno'),
+        'github' => env('SOCIAL_GITHUB_URL', 'https://atonota.com'),
     ],
 
 ];
