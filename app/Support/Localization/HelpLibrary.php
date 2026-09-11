@@ -76,7 +76,10 @@ final class HelpLibrary
         'a-photo-on-a-dish',
         'add-your-restaurant',
         'table-cards-and-areas',
+        'menus-that-change-during-the-day',
+        'guest-ratings',
         'who-can-do-what',
+        'plan-and-invoices',
     ];
 
     private const FALLBACK = 'en';
