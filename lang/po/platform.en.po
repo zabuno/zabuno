@@ -1372,9 +1372,9 @@ msgstr "Close"
 msgid "platform.supportQueue.noAcknowledgement"
 msgstr "No acknowledgement email reached this sender, so they may not know the request arrived."
 
-#: platform:platform.supportQueue.noReplySurface
-msgid "platform.supportQueue.noReplySurface"
-msgstr "Oldest first: the longest wait is answered first. Replies are written by email — this product has no reply surface yet, so marking a request answered records the timing, it does not send anything."
+#: platform:platform.supportQueue.noReplyTo
+msgid "platform.supportQueue.noReplyTo"
+msgstr "No reply-to address is configured (SUPPORT_EMAIL), so the customer cannot reply to this email — they would have to write in again."
 
 #: platform:platform.supportQueue.noWorkspace
 msgid "platform.supportQueue.noWorkspace"
@@ -1383,6 +1383,26 @@ msgstr "This one came through the public contact form and is not tied to any res
 #: platform:platform.supportQueue.openDesk
 msgid "platform.supportQueue.openDesk"
 msgstr "Open the support desk for {reference}"
+
+#: platform:platform.supportQueue.reply.failed
+msgid "platform.supportQueue.reply.failed"
+msgstr "The reply could not be sent. The request is untouched and your draft is kept, so you can send it again."
+
+#: platform:platform.supportQueue.reply.label
+msgid "platform.supportQueue.reply.label"
+msgstr "Reply to {reference}"
+
+#: platform:platform.supportQueue.reply.noTransport
+msgid "platform.supportQueue.reply.noTransport"
+msgstr "No outbound email transport is configured, so nothing was sent. The request is untouched — add a mail credential and send the same reply again."
+
+#: platform:platform.supportQueue.reply.send
+msgid "platform.supportQueue.reply.send"
+msgstr "Send reply to {reference}"
+
+#: platform:platform.supportQueue.replyNote
+msgid "platform.supportQueue.replyNote"
+msgstr "Oldest first: the longest wait is answered first. A reply sent from a row really leaves the building, and only then is the request marked answered. The button beside it is a bookkeeping action: marking a request answered records the timing, it does not send anything. There is no duplicate guard on the server, so submitting the same reply twice sends two emails."
 
 #: platform:platform.supportQueue.status.answered
 msgid "platform.supportQueue.status.answered"

@@ -1372,8 +1372,8 @@ msgstr ""
 msgid "platform.supportQueue.noAcknowledgement"
 msgstr ""
 
-#: platform:platform.supportQueue.noReplySurface
-msgid "platform.supportQueue.noReplySurface"
+#: platform:platform.supportQueue.noReplyTo
+msgid "platform.supportQueue.noReplyTo"
 msgstr ""
 
 #: platform:platform.supportQueue.noWorkspace
@@ -1382,6 +1382,26 @@ msgstr ""
 
 #: platform:platform.supportQueue.openDesk
 msgid "platform.supportQueue.openDesk"
+msgstr ""
+
+#: platform:platform.supportQueue.reply.failed
+msgid "platform.supportQueue.reply.failed"
+msgstr ""
+
+#: platform:platform.supportQueue.reply.label
+msgid "platform.supportQueue.reply.label"
+msgstr ""
+
+#: platform:platform.supportQueue.reply.noTransport
+msgid "platform.supportQueue.reply.noTransport"
+msgstr ""
+
+#: platform:platform.supportQueue.reply.send
+msgid "platform.supportQueue.reply.send"
+msgstr ""
+
+#: platform:platform.supportQueue.replyNote
+msgid "platform.supportQueue.replyNote"
 msgstr ""
 
 #: platform:platform.supportQueue.status.answered

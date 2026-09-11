@@ -6,10 +6,13 @@ namespace App\Infrastructure\Support\Mail;
 
 use App\Application\Mail\Port\MailTransportSelectorPort;
 use App\Application\Support\Dto\ReceivedSupportRequest;
+use App\Application\Support\Dto\SupportReplyTarget;
 use App\Application\Support\Port\SupportNotifierPort;
 use App\Domain\Support\SupportChannel;
+use App\Domain\Support\SupportReplyOutcome;
 use App\Mail\ContactMessageReceived;
 use App\Mail\SupportRequestAcknowledged;
+use App\Mail\SupportRequestReplied;
 use App\Support\Contact\ResponseCommitment;
 use App\Support\Localization\SiteText;
 use Illuminate\Support\Facades\Log;
@@ -61,8 +64,7 @@ final readonly class MailSupportNotifier implements SupportNotifierPort
             }
 
             $locale = SiteText::pick($request->locale);
-            $replyTo = config('support.channel_email');
-            $replyTo = is_string($replyTo) && trim($replyTo) !== '' ? trim($replyTo) : null;
+            $replyTo = self::replyToAddress();
 
             /*
                 METİN KATALOGDAN, gönderenin dilinde. Alındı e-postası bir
@@ -145,6 +147,61 @@ final readonly class MailSupportNotifier implements SupportNotifierPort
         }
     }
 
+    public function reply(SupportReplyTarget $target, string $body): SupportReplyOutcome
+    {
+        // Seçim de gönderim ağının İÇİNDEDİR; gerekçe `acknowledge()` üstünde.
+        try {
+            $mailer = $this->mailTransport->select();
+
+            if ($mailer === self::NO_OUTBOUND_TRANSPORT) {
+                return SupportReplyOutcome::NoOutboundTransport;
+            }
+
+            $locale = SiteText::pick($target->locale);
+            $replyTo = self::replyToAddress();
+
+            /*
+                ÇERÇEVE KATALOGDAN, TALEBİN DİLİNDE. Müşteri talebini hangi
+                dilde yazdıysa cevabın çerçevesini de o dilde okur; ARADAKİ
+                gövde süperadminin cümlesidir ve çevrilmez.
+            */
+            $text = [
+                'subject' => $this->siteText->get('site.support.reply.subject', $locale),
+                'greeting' => $this->siteText->get('site.support.reply.greeting', $locale),
+                'intro' => $this->siteText->get('site.support.reply.intro', $locale),
+                'closing' => $this->siteText->get('site.support.reply.closing', $locale),
+                'reply' => $replyTo !== null
+                    ? $this->siteText->get('site.support.reply.reply', $locale)
+                    : null,
+            ];
+
+            Mail::mailer($mailer)
+                ->to($target->email)
+                ->send(new SupportRequestReplied(
+                    $target->reference,
+                    $target->name,
+                    $target->subject,
+                    $body,
+                    $text,
+                    $replyTo,
+                ));
+
+            return SupportReplyOutcome::Sent;
+        } catch (Throwable $exception) {
+            /*
+                HAM SEBEP YALNIZ BURADA. Sağlayıcı cümlesi bir anahtar
+                taşıyabilir; günlüğe yazılır, çağırana sabit bir kod döner.
+                Satır değişmez, aynı gövde yeniden gönderilebilir.
+            */
+            Log::warning('Destek cevabı gönderilemedi.', [
+                'support_request_id' => $target->id,
+                'reason' => $exception->getMessage(),
+            ]);
+
+            return SupportReplyOutcome::SendFailed;
+        }
+    }
+
     /**
      * Sebep KIRPILIR ve boş sebep de bir sebeptir: sütun sınırlı, yığın izi
      * orada okunmaz; boş mesajlı istisnanın SINIFI hiçbir zaman boş değildir.
@@ -154,5 +211,13 @@ final readonly class MailSupportNotifier implements SupportNotifierPort
         $reason = trim($exception->getMessage());
 
         return mb_substr($reason !== '' ? $reason : $exception::class, 0, 190);
+    }
+
+    /** `SUPPORT_EMAIL` doluysa cevap adresi, boşsa `null` (`docs/125` §7.2). */
+    public static function replyToAddress(): ?string
+    {
+        $address = config('support.channel_email');
+
+        return is_string($address) && trim($address) !== '' ? trim($address) : null;
     }
 }

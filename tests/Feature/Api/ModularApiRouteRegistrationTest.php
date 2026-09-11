@@ -557,6 +557,12 @@ final class ModularApiRouteRegistrationTest extends TestCase
                 durum geçişi; ilk `answered` geçişi `first_response_at`
                 damgasını bir kez atar. `throttle:20,1` — diğer süperadmin
                 yazma uçlarıyla aynı.
+              - `POST api/admin/support-requests/{supportRequest}/reply`
+                düz metin cevap. `throttle:20,1` — durum ucuyla aynı sınır,
+                çünkü aynı elin aynı ekrandaki iki hareketidir. UÇ
+                EXACTLY-ONCE DEĞİLDİR: sunucuda yinelenen gönderimi eleyen
+                bir anahtar yok, bu yüzden imza donarken bile "iki kez
+                basılırsa iki e-posta çıkar" gerçeği saklanmıyor.
 
             REFERANSLA KAMUYA AÇIK DURUM SORGUSU BU LİSTEDE YOKTUR ve olmayacak:
             referans kişisel veri anahtarı olurdu. Durum yalnız panelde ve
@@ -568,6 +574,7 @@ final class ModularApiRouteRegistrationTest extends TestCase
         'POST|api/workspaces/{workspace}/support-requests||App\Http\Controllers\Support\StoreWorkspaceSupportRequestController|api,auth:sanctum,throttle:5,1,verified',
         'GET|api/admin/support-requests||App\Http\Controllers\PlatformAdmin\ListSupportRequestsController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,verified',
         'PUT|api/admin/support-requests/{supportRequest}/status||App\Http\Controllers\PlatformAdmin\UpdateSupportRequestStatusController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,throttle:20,1,verified',
+        'POST|api/admin/support-requests/{supportRequest}/reply||App\Http\Controllers\PlatformAdmin\ReplyToSupportRequestController|App\Http\Middleware\EnsurePlatformSuperAdmin,api,auth:sanctum,throttle:20,1,verified',
         /*
             VERİ HAKLARI (FF-226, `docs/138`) — dört uç, listenin sonunda.
 

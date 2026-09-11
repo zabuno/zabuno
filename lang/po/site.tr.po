@@ -1504,6 +1504,26 @@ msgstr "Konu: {subject}"
 msgid "site.support.commitment"
 msgstr "{hours} saat içinde yanıt veririz."
 
+#: site:site.support.reply.closing
+msgid "site.support.reply.closing"
+msgstr "{reference} numarasını saklayın; bize yeniden yazarsanız bu numarayı belirtin."
+
+#: site:site.support.reply.greeting
+msgid "site.support.reply.greeting"
+msgstr "Merhaba {name},"
+
+#: site:site.support.reply.intro
+msgid "site.support.reply.intro"
+msgstr "{reference} numaralı talebinize ({subject}) cevabımız:"
+
+#: site:site.support.reply.reply
+msgid "site.support.reply.reply"
+msgstr "Daha fazla yardım gerekirse bu e-postayı cevaplayabilirsiniz."
+
+#: site:site.support.reply.subject
+msgid "site.support.reply.subject"
+msgstr "Zabuno — {reference} numaralı talebinize cevap"
+
 #: site:site.theme.dark
 msgid "site.theme.dark"
 msgstr "Koyu"

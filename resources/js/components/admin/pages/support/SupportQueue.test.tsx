@@ -9,8 +9,13 @@ import { SupportQueue, type SupportQueueRow } from './SupportQueue';
  *
  * O belge şunu yazıyordu: *"Uçlar var, ekran yok… Ekran `docs/122` Y7 ile
  * birlikte gelir."* Bu dosya o cümleyi kapatır ve ürünün BUGÜNKÜ gerçeğini
- * de dondurur: cevap yazma yüzeyi hâlâ yok ve ekran öyle bir yüzey varmış
- * gibi davranmıyor.
+ * de dondurur.
+ *
+ * CEVAP YÜZEYİ ARTIK VAR (SUPPORT-REPLY-01). Süperadmin kuyruk satırından
+ * çıkmadan düz metin cevap yollar; "bu üründe cevap yazma yüzeyi yok"
+ * cümlesi bugünden itibaren YANLIŞTIR ve ekranda durması, olmayan bir
+ * eksikliği ilan etmek olurdu. Manuel "Mark answered" AYRI kalır: o hâlâ
+ * yalnız zamanı kaydeder, hiçbir şey göndermez.
  */
 const rows: SupportQueueRow[] = [
     {
@@ -43,24 +48,35 @@ const rows: SupportQueueRow[] = [
     },
 ];
 
-function renderQueue(overrides: Partial<React.ComponentProps<typeof SupportQueue>> = {}) {
+type QueueProps = React.ComponentProps<typeof SupportQueue>;
+
+function renderQueue(overrides: Partial<QueueProps> = {}) {
     const onStatusFilter = vi.fn();
     const onChangeStatus = vi.fn();
     const onOpenWorkspace = vi.fn();
+    const onReply = vi.fn();
 
-    render(
-        <SupportQueue
-            rows={rows}
-            status=""
-            busy={false}
-            onStatusFilter={onStatusFilter}
-            onChangeStatus={onChangeStatus}
-            onOpenWorkspace={onOpenWorkspace}
-            {...overrides}
-        />,
-    );
+    const props: QueueProps = {
+        rows,
+        status: '',
+        busy: false,
+        onStatusFilter,
+        onChangeStatus,
+        onOpenWorkspace,
+        onReply,
+        replyError: null,
+        replyToConfigured: true,
+        ...overrides,
+    };
 
-    return { onStatusFilter, onChangeStatus, onOpenWorkspace };
+    const view = render(<SupportQueue {...props} />);
+
+    /** Aynı satır, yeni bir sunucu durumuyla yeniden çizilir. */
+    const rerenderQueue = (next: Partial<QueueProps>) => {
+        view.rerender(<SupportQueue {...props} {...next} />);
+    };
+
+    return { onStatusFilter, onChangeStatus, onOpenWorkspace, onReply, rerenderQueue };
 }
 
 describe('SupportQueue', () => {
@@ -83,16 +99,6 @@ describe('SupportQueue', () => {
         // "yazdım ama cevap gelmedi" demesinin sebebi çoğu zaman budur.
         const warnings = screen.getAllByText(/No acknowledgement email reached this sender/);
         expect(warnings).toHaveLength(1);
-    });
-
-    it('says plainly that marking a request answered sends nothing', () => {
-        renderQueue();
-
-        expect(
-            screen.getByText(
-                /this product has no reply surface yet, so marking a request answered/,
-            ),
-        ).toBeInTheDocument();
     });
 
     it('changes a status through the caller, and hides the button for the status already held', async () => {
@@ -139,5 +145,110 @@ describe('SupportQueue', () => {
         renderQueue({ rows: [] });
 
         expect(screen.getByText('Nothing is waiting.')).toBeInTheDocument();
+    });
+
+    /**
+     * SUPPORT-REPLY-UI-ONE-CLICK-01.
+     *
+     * SAHİBİN YOLCULUĞU: destek görevlisi bugün kuyruğu okuyor, adresi elle
+     * kopyalıyor, posta programını açıyor, cevabı orada yazıyor ve geri
+     * dönüp "Mark answered"a basıyor. Dört pencere, iki uygulama, tek bir
+     * cevap. Bu senaryo o yolculuğu SATIRIN İÇİNE indiriyor: yaz, bir kez
+     * bas, bitti.
+     *
+     * ÇİFT TIKLAMA İKİ E-POSTA DEMEKTİR. Sunucuda yinelenen gönderimi eleyen
+     * bir anahtar YOK (bu paket exactly-once vaat etmiyor), bu yüzden tek
+     * savunma ekrandadır: gönderim sürerken düğme basılamaz. Ekran bunu
+     * yapmazsa Hüseyin aynı cevabı iki kez alır.
+     */
+    it('sends a reply from inside the row with one click, and refuses the second click while busy', async () => {
+        const user = userEvent.setup();
+        const { onReply, rerenderQueue } = renderQueue();
+
+        // ARTIK YÜZEY VAR: ekran kendi eksikliğini ilan etmeyi bıraktı.
+        expect(screen.queryByText(/no reply surface yet/i)).toBeNull();
+
+        /*
+            HER SATIRIN KENDİ KUTUSU VE KENDİ ETİKETİ. İki satır aynı
+            etiketi taşısaydı, ekran okuyucuyla çalışan görevli hangi
+            talebe yazdığını yalnız sırayı sayarak bilebilirdi.
+        */
+        const box = screen.getByRole('textbox', {
+            name: /repl(y|ies).*ZB-3F7K2|ZB-3F7K2.*repl(y|ies)/i,
+        });
+        const others = screen.getAllByRole('textbox', { name: /repl/i });
+        expect(others).toHaveLength(rows.length);
+
+        await user.type(box, 'Menüyü yayınlayın.');
+
+        const send = screen.getByRole('button', {
+            name: /send reply.*ZB-3F7K2|ZB-3F7K2.*send reply/i,
+        });
+        await user.click(send);
+
+        expect(onReply).toHaveBeenCalledTimes(1);
+        expect(onReply).toHaveBeenCalledWith(1, 'Menüyü yayınlayın.');
+
+        // Gönderim sürerken ikinci tıklama hiçbir şey yollamaz.
+        rerenderQueue({ busy: true });
+        await user.click(
+            screen.getByRole('button', { name: /send reply.*ZB-3F7K2|ZB-3F7K2.*send reply/i }),
+        );
+        expect(onReply).toHaveBeenCalledTimes(1);
+
+        /*
+            MANUEL DAMGA AYRI DURUR ve dürüstlüğünü koruyor: durum
+            değiştirmek bir kayıt fiilidir, bir cevap değil.
+        */
+        expect(
+            screen.getByText(/marking a request answered records the timing, it does not send/i),
+        ).toBeInTheDocument();
+    });
+
+    /**
+     * SUPPORT-REPLY-UI-FAILURE-01.
+     *
+     * TAŞIYICI DÜŞTÜĞÜNDE YAZILAN CÜMLE KAYBOLMAZ. Görevli üç paragraf
+     * yazdı, gönderdi, sunucu "çıkaramadım" dedi. Kutu temizlenirse o üç
+     * paragraf gitmiştir ve görevli baştan yazar — ya da yazmaz. Taslak
+     * durur, hata satırın kendisinde duyurulur ve düğme yeniden basılabilir.
+     *
+     * CEVAP ADRESİ YOKSA BU DA SÖYLENİR: `SUPPORT_EMAIL` boşken müşteri
+     * "cevapla"ya bastığında yazdığı yer kimsenin okumadığı bir kutudur.
+     * Bunu görevliye söylememek, sessiz bir kayıp üretirdi.
+     */
+    it('keeps the draft, announces the failure on the row, and admits when there is no reply-to address', async () => {
+        const user = userEvent.setup();
+        const { rerenderQueue } = renderQueue({ replyToConfigured: false });
+
+        const box = screen.getByRole('textbox', {
+            name: /repl(y|ies).*ZB-3F7K2|ZB-3F7K2.*repl(y|ies)/i,
+        });
+        await user.type(box, 'Menüyü yayınlayın.');
+
+        rerenderQueue({
+            replyToConfigured: false,
+            replyError: { id: 1, message: 'The reply could not be sent.' },
+        });
+
+        const alert = screen.getByRole('alert');
+        expect(alert).toHaveTextContent('The reply could not be sent.');
+
+        // TASLAK DURUR — yeniden yazdırmıyoruz.
+        expect(
+            screen.getByRole('textbox', { name: /repl(y|ies).*ZB-3F7K2|ZB-3F7K2.*repl(y|ies)/i }),
+        ).toHaveValue('Menüyü yayınlayın.');
+
+        // Ve yeniden denenebilir.
+        expect(
+            screen.getByRole('button', { name: /send reply.*ZB-3F7K2|ZB-3F7K2.*send reply/i }),
+        ).toBeEnabled();
+
+        // Hata YALNIZ o satırda; ikinci satır sağlam görünür.
+        expect(screen.getAllByRole('alert')).toHaveLength(1);
+
+        expect(
+            screen.getByText(/no reply-to address is configured|cannot reply to this email/i),
+        ).toBeInTheDocument();
     });
 });

@@ -6,6 +6,7 @@ namespace App\Infrastructure\Support\Persistence;
 
 use App\Application\Support\Dto\NewSupportRequest;
 use App\Application\Support\Dto\ReceivedSupportRequest;
+use App\Application\Support\Dto\SupportReplyTarget;
 use App\Application\Support\Dto\SupportRequestAdminRow;
 use App\Application\Support\Dto\SupportRequestSummary;
 use App\Application\Support\Exception\SupportReferenceExhaustedException;
@@ -165,6 +166,23 @@ final class EloquentSupportRequestRepository implements SupportRequestRepository
                 DeliveryState::fromRow($row->acknowledged_at, $row->acknowledgement_failure),
             ))
             ->all();
+    }
+
+    public function findReplyTarget(int $id): ?SupportReplyTarget
+    {
+        $row = DB::table('support_requests')
+            ->where('id', $id)
+            ->select(['id', 'reference', 'email', 'name', 'subject', 'locale'])
+            ->first();
+
+        return $row === null ? null : new SupportReplyTarget(
+            (int) $row->id,
+            (string) $row->reference,
+            (string) $row->email,
+            (string) $row->name,
+            (string) $row->subject,
+            $row->locale === null ? null : (string) $row->locale,
+        );
     }
 
     public function changeStatus(int $id, SupportRequestStatus $status): ?SupportRequestSummary
