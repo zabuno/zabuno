@@ -205,7 +205,7 @@ else
   # arayuzler) ayrimini "yes" degerinin belirsizliginden kurtarmak.
   say host_listening_5432_local_addrs "$(printf '%s\n' "$CAP_OUT" | awk '
     $4 ~ /:5432$/ && !seen[$4]++ { if (n < 4) out = (n ? out "," : "") $4; n++ }
-    END { if (!n) print "none"; else if (n > 4) print out ",+" (n-4) "_more"; else print out }')"
+    END { if (!n) print "none"; else if (4 < n) print out ",+" (n-4) "_more"; else print out }')"
 fi
 
 echo "### section=metabase"
